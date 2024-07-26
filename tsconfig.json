@@ -1,0 +1,17 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+, "components/Battleship.js", "components/Carrier.js", "components/Destroyer.js", "components/Dreadnought.js", "components/Fighter.js", "components/Frigate.js", "assets/App.js", "components/Light_Cruiser.js", "components/Home.js", "components/Heavy_Cruiser.js", "constants/Colors.js", "index.js", "app/index.js"  ]
+}
