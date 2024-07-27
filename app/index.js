@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Image } from "react-native";
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -18,7 +18,6 @@ import { Colors } from '@/constants/Colors';
 import { useFonts } from 'expo-font';
 
 const Drawer = createDrawerNavigator();
-
 
 export default function Index() {
     const [fontsLoaded] = useFonts({
@@ -41,42 +40,78 @@ export default function Index() {
         <Drawer.Navigator drawerContent={props => <CustomDrawer{...props} />} initialRouteName = "Rules"
         screenOptions={{
             drawerStyle: {
-            width: 240,
+            width: 245,
         },
             drawerActiveTintColor: Colors.slate, // drawwer higlhited text color
-            headerTintColor: Colors.black, //header text color
+            headerTintColor: Colors.white, //header text color
             headerTitleStyle: {
                 fontFamily: 'aboreto', //header text font family
-                backgroundColor:Colors.blue_gray, //header text background color
-                fontSize: 25,
+                backgroundColor:Colors.dark_gray, //header text background color
+                fontSize: 15,
                 fontWeight: 'bold',
+                textAlign: 'left',
             },
             headerStyle: {
-                backgroundColor: Colors.blue_gray, //header background color
+                backgroundColor: Colors.dark_gray, //header background color
                 
             },
             drawerContentStyle:{
-                backgroundColor: Colors.blue_gray, //drawwer background color
+                backgroundColor: Colors.dark_gray, //drawwer background color
             },
-            drawerInactiveTintColor: Colors.black, //drawwers inactive text color
-            drawerActiveBackgroundColor: Colors.misty_blue, //drawwer active text background color
-            drawerActiveTintColor: Colors.black, //drawwers active text color
+            drawerInactiveTintColor: Colors.dark_gray, //drawwers inactive text color
+            drawerActiveBackgroundColor: Colors.dark_gray, //drawwer active text background color
+            drawerActiveTintColor: Colors.slate, //drawwers active text color
             headerTitleAlign: 'center',
             drawerLabelStyle:{
                 fontFamily: 'aboreto',
                 fontWeight: 'bold'
+            },
+            drawerLabelStyle:{
+                marginLeft: -25,
             }
           }}
           >
-            <Drawer.Screen name="Fighter" component={Fighter} />
-            <Drawer.Screen name="Frigate" component={Frigate} />
-            <Drawer.Screen name="Destroyer" component={Destroyer} />
-            <Drawer.Screen name="Light Cruiser" component={Light_Cruiser} />
-            <Drawer.Screen name="Heavy Cruiser" component={Heavy_Cruiser} />
-            <Drawer.Screen name="Carrier" component={Carrier} />
-            <Drawer.Screen name="Battleship" component={Battleship} />
-            <Drawer.Screen name="Dreadnought" component={Dreadnought} />
-            <Drawer.Screen name="Rules" component={Rules} />
+            <Drawer.Screen name="Fighter" component={Fighter} options={{
+                drawerIcon: ({ focused, size }) => (
+                    <Image source={require('../assets/icons/fighterb.png')} style={{ height: 45, width: 45 }}  resizeMode="contain"/>
+                )
+            }} />
+            <Drawer.Screen name="Frigate" component={Frigate} options={{
+                drawerIcon: ({ focused, size }) => (
+                    <Image source={require('../assets/icons/frigateb.png')} style={{ height: 45, width: 45 }}  resizeMode="contain"/>
+                )
+            }} />
+            <Drawer.Screen name="Destroyer" component={Destroyer} options={{
+                drawerIcon: ({ focused, size }) => (
+                    <Image source={require('../assets/icons/destroyerb.png')} style={{ height: 45, width: 45 }}  resizeMode="contain"/>
+                )
+            }} />
+            <Drawer.Screen name="Light Cruiser" component={Light_Cruiser} options={{
+                drawerIcon: ({ focused, size }) => (
+                    <Image source={require('../assets/icons/lcruiserb.png')} style={{ height: 45, width: 45}}  resizeMode="contain"/>
+                )
+            }} />
+            <Drawer.Screen name="Heavy Cruiser" component={Heavy_Cruiser} options={{
+                drawerIcon: ({ focused, size }) => (
+                    <Image source={require('../assets/icons/hcruiserb.png')} style={{ height: 45, width: 45 }}  resizeMode="contain"/>
+                )
+            }} />
+            <Drawer.Screen name="Carrier" component={Carrier} options={{
+                drawerIcon: ({ focused, size }) => (
+                    <Image source={require('../assets/icons/carrierb.png')} style={{ height: 45, width: 45 }}  resizeMode="contain"/>
+                )
+            }} />
+            <Drawer.Screen name="Battleship" component={Battleship} options={{
+                drawerIcon: ({ focused, size }) => (
+                    <Image source={require('../assets/icons/battleshipb.png')} style={{ height: 45, width: 45 }}  resizeMode="contain"/>
+                )
+            }} />
+            <Drawer.Screen name="Dreadnought" component={Dreadnought} options={{
+                drawerIcon: ({ focused, size }) => (
+                    <Image source={require('../assets/icons/dreadnoughtb.png')} style={{ height: 45, width: 45 }}  resizeMode="contain"/>
+                )
+            }} />
+            <Drawer.Screen name="Rules" component={Rules} options={{ drawerItemStyle: { display: 'none' } }} />
         </Drawer.Navigator>
   );
 }
