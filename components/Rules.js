@@ -25,12 +25,15 @@ export default function Rules() {
                             <Text style={styles.textSection}>Special Movement Orders:</Text>
                         </View>
                         <View style={styles.textBodyContainer}>
-                        <Text style={{fontWeight:'bold', fontSize: 15, color: Colors.white}}>All Ahead Full:</Text>
+                        <Text style={{fontWeight:'bold', fontSize: 15, color: Colors.white, paddingHorizontal: 16,}}>All Ahead Full:</Text>
                             <Text style={styles.textBody}>1. Roll 2d10. The result is the additional hexes the ship can move that turn.</Text>
-                            <Text style={styles.textBody}>2. This order must be declared at the start of the movement phase.</Text>
+                            <Text style={styles.textBody}><Text style={{fontWeight:'bold', color: '#ff2b2b'}}>Restriction:</Text> Ships that use All Ahead Full cannot fire any weapons until their next turn. This simulates the focus on maximum speed and maneuverability at the cost of offensive capability.</Text>
+                        </View>
+                        <View style={styles.textBodyContainer}>
+                        <Text style={{fontWeight:'bold', fontSize: 15, color: Colors.white, paddingHorizontal: 16,}}>Burn Retros</Text>
+                            <Text style={styles.textBody}>1. Allows a ship to reduce its movement by up to 2 hexes, enabling careful maneuvering around obstacles.</Text>
                         </View>
                     </View>
-
                     <Text style={styles.textHeader}>Combat System</Text>
                     <View style={styles.rulesSection}>
                         <View style={styles.textSectionContainer}>

@@ -78,7 +78,9 @@ export default function Light_Cruiser() {
             </View>
           </View>
         </View>
-        <View>
+            <View style={styles.shipTableStatsType}>
+                <Text style={styles.tableHeader}>Ship Class:</Text>    
+            </View>
             <View style={styles.shipTableStats}>
                 <Text style={styles.tableHeader}>Fi</Text>
                 <Text style={styles.tableHeader}>Fr</Text>
@@ -88,6 +90,9 @@ export default function Light_Cruiser() {
                 <Text style={styles.tableHeader}>Ca</Text>
                 <Text style={styles.tableHeader}>Ba</Text>
                 <Text style={styles.tableHeader}>Dn</Text>
+            </View>
+            <View style={styles.shipTableStatsType}>
+                <Text style={styles.tableHeader}>Threat Level:</Text>  
             </View>
             <View style={styles.shipTableStatsNumbers}>
                 <Text style={styles.tableHeader}>5</Text>
@@ -99,6 +104,9 @@ export default function Light_Cruiser() {
                 <Text style={styles.tableHeader}>12</Text>
                 <Text style={styles.tableHeader}>15</Text>
             </View>
+            <View style={styles.shipTableStatsType}>
+                <Text style={styles.tableHeader}>Damage Threshold:</Text>    
+            </View>
             <View style={styles.shipTableStatsNumbers}>
                 <Text style={styles.tableHeader}>2</Text>
                 <Text style={styles.tableHeader}>2</Text>
@@ -109,7 +117,6 @@ export default function Light_Cruiser() {
                 <Text style={styles.tableHeader}>8</Text>
                 <Text style={styles.tableHeader}>10</Text>
             </View>
-        </View>
             <View style={styles.diceWrapper}>
                 <View style={styles.diceItem}>
                     <Text style={styles.tableHeader}>To Hit</Text>
@@ -201,6 +208,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderBottomWidth: 1,
     borderColor: Colors.slate,
+  },
+  shipTableStatsType: {
+    marginHorizontal: 10,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: Colors.dark_gray,
+    marginTop: 2,
   },
   image: {
     flex: 1,

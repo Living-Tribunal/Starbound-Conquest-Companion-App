@@ -1,4 +1,3 @@
-
 export const Colors = {
     black: '#030303',
     slate: '#7b9aa0',
@@ -7,3 +6,6 @@ export const Colors = {
     white: '#FFFFFF',
     dark_gray: '#202020',
   }
+ 
+
+
