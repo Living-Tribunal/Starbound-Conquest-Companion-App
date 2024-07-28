@@ -59,6 +59,7 @@ export default function Light_Cruiser() {
             </View>
             <View style={styles.tableCellContainer}>
               <Text style={styles.tableCell}>Laser Cannons</Text>
+              <Image source={require('../assets/images/arcs/lc-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
             </View>
           </View>
           <View style={styles.tableRow}>

@@ -59,6 +59,7 @@ export default function Destroyers() {
             </View>
             <View style={styles.tableCellContainer}>
               <Text style={styles.tableCell}>Plasma Torpedoes</Text>
+              <Image source={require('../assets/images/arcs/ptf-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
             </View>
           </View>
           <View style={styles.tableRow}>

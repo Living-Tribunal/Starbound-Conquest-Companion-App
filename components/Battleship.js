@@ -58,7 +58,8 @@ export default function Battleship() {
               <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>Ion Beams</Text>
+              <Text style={styles.tableCell}>Ion Cannons</Text>
+              <Image source={require('../assets/images/arcs/lc-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
             </View>
           </View>
           <View style={styles.tableRow}>

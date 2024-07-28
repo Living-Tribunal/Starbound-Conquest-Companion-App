@@ -59,6 +59,7 @@ export default function Frigate() {
             </View>
             <View style={styles.tableCellContainer}>
               <Text style={styles.tableCell}>Missile Batteries</Text>
+              <Image source={require('../assets/images/arcs/mb-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
             </View>
           </View>
           <View style={styles.tableRow}>

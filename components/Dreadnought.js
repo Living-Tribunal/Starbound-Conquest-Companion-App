@@ -60,8 +60,12 @@ export default function Dreadnought() {
             </View>
             <View style={styles.tableCellContainer}>
               <Text style={styles.tableCell}>Plasma Torpedoes</Text>
+              <Image source={require('../assets/images/arcs/pt-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
               <Text style={styles.tableCell}>Railguns</Text>
+              <Image source={require('../assets/images/arcs/rg-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
               <Text style={styles.tableCell}>Ion Beams</Text>
+              <Image source={require('../assets/images/arcs/lc-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
+
             </View>
           </View>
           <View style={styles.tableRow}>
