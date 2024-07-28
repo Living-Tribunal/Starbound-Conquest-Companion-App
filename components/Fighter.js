@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View, ScrollView, Image} from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Dice from "./dice/Dice/";
+import D3Dice from "./dice/D3Dice/";
+import D20Dice from "./dice/D20Dice/";
 import { StatusBar } from 'expo-status-bar';
 
 export default function Fighters() {
@@ -27,7 +28,7 @@ export default function Fighters() {
               <Text style={styles.tableHeader}>Damage Threshold</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>0</Text>
+              <Text style={styles.tableCell}>2</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -48,10 +49,10 @@ export default function Fighters() {
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Turn Req</Text>
+              <Text style={styles.tableHeader}>Turn Requirement</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>1 Hex</Text>
+              <Text style={styles.tableCell}>1 Movement Hex</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -59,20 +60,20 @@ export default function Fighters() {
               <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>Lasers</Text>
+              <Text style={styles.tableCell}>Laser Cannons</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Damage</Text>
+              <Text style={styles.tableHeader}>Weapon Damage</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>1D4</Text>
+              <Text style={styles.tableCell}>1D3</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Range</Text>
+              <Text style={styles.tableHeader}>Weapon Range</Text>
             </View>
             <View style={styles.tableCellContainer}>
               <Text style={styles.tableCell}>0-6 Hexes</Text>
@@ -101,7 +102,7 @@ export default function Fighters() {
                 <Text style={styles.tableHeader}>15</Text>
             </View>
             <View style={styles.shipTableStatsNumbers}>
-                <Text style={styles.tableHeader}>0</Text>
+                <Text style={styles.tableHeader}>2</Text>
                 <Text style={styles.tableHeader}>2</Text>
                 <Text style={styles.tableHeader}>3</Text>
                 <Text style={styles.tableHeader}>4</Text>
@@ -111,14 +112,16 @@ export default function Fighters() {
                 <Text style={styles.tableHeader}>10</Text>
             </View>
         </View>
-        <View style={styles.diceContainerHeaders}>
-            <Text style={styles.tableHeader}>To Hit (D20)</Text>
-            <Text style={styles.tableHeader}>Damage (1D4)</Text>
-        </View>
-        <View style={styles.diceContainer}>
-            <Dice />
-            <Dice />
-        </View>
+            <View style={styles.diceWrapper}>
+                <View style={styles.diceItem}>
+                <Text style={styles.tableHeader}>To Hit</Text>
+                <D20Dice />
+                </View>
+                <View style={styles.diceItem}>
+                <Text style={styles.tableHeader}>Laser Cannons</Text>
+                <D3Dice />
+                </View>
+            </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -128,6 +131,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.dark_gray,
     flex: 1,
+    marginTop: 1,
   },
   header_text: {
     color: Colors.white,
@@ -161,9 +165,9 @@ const styles = StyleSheet.create({
   tableHeader: {
     color: Colors.misty_blue,
     fontSize: 13,
-    textAlign: "left",
     fontFamily: "monospace",
     fontWeight: "bold",
+    flex: 1,
   },
   tableCellContainer: {
     flex: 1,
@@ -174,7 +178,7 @@ const styles = StyleSheet.create({
   },
   tableCell: {
     color: Colors.white,
-    fontSize: 18,
+    fontSize: 12,
     textAlign: "right",
     fontFamily: "monospace",
   },
@@ -196,10 +200,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 5,
     marginTop: 2,
-    borderTopWidth: 1,
+    borderWidth: 1,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.slate,
-    borderTopColor: 'transparent',
+    borderColor: Colors.slate,
   },
   image: {
     flex: 1,
@@ -208,16 +211,15 @@ const styles = StyleSheet.create({
     marginBottom: -10,
     marginTop: -10,
   },
-  diceContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
+  diceWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 5,
+    marginBottom: 5,
+    padding: 5,
   },
-  diceContainerHeaders: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 10,
-    marginTop: 20,
-  }
+  diceItem: {
+    alignItems: 'center',
+  },
 });

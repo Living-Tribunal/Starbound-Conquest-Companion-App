@@ -1,13 +1,15 @@
 import { StyleSheet, Text, View, ScrollView, Image} from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
+import D6Dice from "./dice/D6Dice/";
+import D20Dice from "./dice/D20Dice/";
 
 export default function Carrier() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.image}>
-            <Image source={require('../assets/icons/carrier.png')} />
+            <Image source={require('../assets/icons/frigate.png')} />
         </View>
         <Text style={styles.header_text}>Ship Stats</Text>
         <View style={styles.table}>
@@ -16,7 +18,7 @@ export default function Carrier() {
               <Text style={styles.tableHeader}>Hit Point</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>1</Text>
+              <Text style={styles.tableCell}>7</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -24,7 +26,7 @@ export default function Carrier() {
               <Text style={styles.tableHeader}>Damage Threshold</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>0</Text>
+              <Text style={styles.tableCell}>7</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -32,7 +34,7 @@ export default function Carrier() {
               <Text style={styles.tableHeader}>Threat Level</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>5</Text>
+              <Text style={styles.tableCell}>10</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -40,15 +42,15 @@ export default function Carrier() {
               <Text style={styles.tableHeader}>Move Distance</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>14 Hexes</Text>
+              <Text style={styles.tableCell}>6 Hexes</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Turn Req</Text>
+              <Text style={styles.tableHeader}>Turn Requirement</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>1 Hex</Text>
+              <Text style={styles.tableCell}>3 Movement Hex</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -56,23 +58,24 @@ export default function Carrier() {
               <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>Lasers</Text>
+              <Text style={styles.tableCell}>Missile Batteries</Text>
+              <Text style={styles.tableCell}>Launch Bays</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Damage</Text>
+              <Text style={styles.tableHeader}>Weapon Damage</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>1D4</Text>
+              <Text style={styles.tableCell}>1d6</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Range</Text>
+              <Text style={styles.tableHeader}>Weapon Range</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>0-6 Hexes</Text>
+              <Text style={styles.tableCell}>0-14 Hexes</Text>
             </View>
           </View>
         </View>
@@ -98,7 +101,7 @@ export default function Carrier() {
                 <Text style={styles.tableHeader}>15</Text>
             </View>
             <View style={styles.shipTableStatsNumbers}>
-                <Text style={styles.tableHeader}>0</Text>
+                <Text style={styles.tableHeader}>2</Text>
                 <Text style={styles.tableHeader}>2</Text>
                 <Text style={styles.tableHeader}>3</Text>
                 <Text style={styles.tableHeader}>4</Text>
@@ -108,6 +111,16 @@ export default function Carrier() {
                 <Text style={styles.tableHeader}>10</Text>
             </View>
         </View>
+            <View style={styles.diceWrapper}>
+                <View style={styles.diceItem}>
+                    <Text style={styles.tableHeader}>To Hit</Text>
+                    <D20Dice />
+                </View>
+                <View style={styles.diceItem}>
+                    <Text style={styles.tableHeader}>Missile Batteries</Text>
+                    <D6Dice />
+                </View>
+            </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -149,10 +162,11 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     color: Colors.misty_blue,
-    fontSize: 13,
+    fontSize: 12,
     textAlign: "left",
     fontFamily: "monospace",
     fontWeight: "bold",
+    flex: 1,
   },
   tableCellContainer: {
     flex: 1,
@@ -163,7 +177,7 @@ const styles = StyleSheet.create({
   },
   tableCell: {
     color: Colors.white,
-    fontSize: 18,
+    fontSize: 12,
     textAlign: "right",
     fontFamily: "monospace",
   },
@@ -185,10 +199,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 5,
     marginTop: 2,
-    borderTopWidth: 1,
+    borderWidth: 1,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.slate,
-    borderTopColor: 'transparent',
+    borderColor: Colors.slate,
   },
   image: {
     flex: 1,
@@ -196,5 +209,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: -10,
     marginTop: -10,
-  }
+  },
+  diceWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 5,
+    marginBottom: 5,
+    padding: 5,
+  },
+  diceItem: {
+    alignItems: 'center',
+  },
 });

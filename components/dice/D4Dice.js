@@ -8,18 +8,10 @@ import {
 } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
-const diceImages = {
-  1: require('../../assets/icons/fighter.png'),
-  2: require('../../assets/icons/destroyer.png'),
-  3: require('../../assets/icons/lcruiser.png'),
-  4: require('../../assets/icons/hcruiser.png'),
-  5: require('../../assets/icons/battleship.png'),
-  6: require('../../assets/icons/dreadnought.png'),
-};
 
-export default function Dice() {
+export default function D4Dice() {
 
-  const [firstDice, setFirstDice] = React.useState(2);
+  const [firstDice, setFirstDice] = React.useState(1);
 
   const randomNum = (min = 1, max = 4) => Math.floor(Math.random() * (max - min + 1)) + min;
   
@@ -38,10 +30,9 @@ export default function Dice() {
   return (
       <View style={styles.container}>
         <View style={styles.diceContainer}>
-          <Image
-            style={styles.diceImage}
-            source={diceImages[firstDice]}
-          />
+        <Text style={styles.diceText}>
+            {firstDice}
+          </Text>
         </View>
         <Pressable onPress={rollDiceOnTap}>
           <Text
@@ -66,15 +57,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   diceContainer: {
-    margin: 20,
+    margin: 5,
     flexDirection: 'row', 
     justifyContent: 'space-evenly', 
   },
-  diceImage: {
-    marginHorizontal: 10,
-  },
-  lite: {
-    opacity: 0.95,
+  diceText: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: Colors.slate,
   },
   rollDiceBtnText: {
     paddingVertical: 10,
