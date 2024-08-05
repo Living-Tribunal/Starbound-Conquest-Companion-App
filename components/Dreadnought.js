@@ -4,13 +4,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import TD8Dice from "./dice/TD8Dice/";
 import TD6Dice from "./dice/TD6Dice/";
 import D20Dice from "./dice/D20Dice/";
+import TD4Dice from "./dice/TD4Dice/";
 
 export default function Dreadnought() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.image}>
-            <Image source={require('../assets/icons/frigate.png')} />
+            <Image source={require('../assets/icons/dreadnought.png')} />
         </View>
         <Text style={styles.header_text}>Ship Stats</Text>
         <View style={styles.table}>
@@ -48,24 +49,22 @@ export default function Dreadnought() {
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Turn Requirement</Text>
-            </View>
-            <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>2 Movement Hex</Text>
-            </View>
-          </View>
-          <View style={styles.tableRow}>
-            <View style={styles.tableHeaderContainer}>
               <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>
               <Text style={styles.tableCell}>Plasma Torpedoes</Text>
-              <Image source={require('../assets/images/arcs/pt-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
               <Text style={styles.tableCell}>Railguns</Text>
-              <Image source={require('../assets/images/arcs/rg-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
               <Text style={styles.tableCell}>Ion Beams</Text>
-              <Image source={require('../assets/images/arcs/lc-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
-
+            </View>
+          </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableHeaderContainer}>
+              <Text style={styles.tableHeader}>Firing Arc</Text>
+            </View>
+            <View style={styles.tableCellContainer}>
+              <Text style={styles.tableCell}>Forward(90°)</Text>
+              <Text style={styles.tableCell}>Port/Starboard(90°)</Text>
+              <Text style={styles.tableCell}>Aft(90°)</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -83,9 +82,9 @@ export default function Dreadnought() {
               <Text style={styles.tableHeader}>Weapon Range</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>0-10 Hexes</Text>
-              <Text style={styles.tableCell}>0-16 Hexes</Text>
-              <Text style={styles.tableCell}>0-8 Hexes</Text>
+              <Text style={styles.tableCell}>50ft</Text>
+              <Text style={styles.tableCell}>80ft</Text>
+              <Text style={styles.tableCell}>40ft</Text>
             </View>
           </View>
         </View>
@@ -157,6 +156,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.dark_gray,
     flex: 1,
+    paddingTop: 10
   },
   header_text: {
     color: Colors.white,

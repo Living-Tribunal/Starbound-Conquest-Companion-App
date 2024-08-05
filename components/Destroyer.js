@@ -9,7 +9,7 @@ export default function Destroyers() {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.image}>
-            <Image source={require('../assets/icons/frigate.png')} />
+            <Image source={require('../assets/icons/destroyer.png')} />
         </View>
         <Text style={styles.header_text}>Ship Stats</Text>
         <View style={styles.table}>
@@ -47,19 +47,18 @@ export default function Destroyers() {
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Turn Requirement</Text>
-            </View>
-            <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>4 Movement Hex</Text>
-            </View>
-          </View>
-          <View style={styles.tableRow}>
-            <View style={styles.tableHeaderContainer}>
               <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>
               <Text style={styles.tableCell}>Plasma Torpedoes</Text>
-              <Image source={require('../assets/images/arcs/ptf-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
+            </View>
+          </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableHeaderContainer}>
+              <Text style={styles.tableHeader}>Firing Arc</Text>
+            </View>
+            <View style={styles.tableCellContainer}>
+              <Text style={styles.tableCell}>Forward (90°)</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -75,7 +74,7 @@ export default function Destroyers() {
               <Text style={styles.tableHeader}>Weapon Range</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>0-10 Hexes</Text>
+              <Text style={styles.tableCell}>50ft</Text>
             </View>
           </View>
         </View>
@@ -137,6 +136,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.dark_gray,
     flex: 1,
+    paddingTop: 10
   },
   header_text: {
     color: Colors.white,

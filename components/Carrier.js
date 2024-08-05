@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, Image} from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import D6Dice from "./dice/D6Dice/";
+import TD6Dice from "./dice/TD6Dice/";
 import D20Dice from "./dice/D20Dice/";
 
 export default function Carrier() {
@@ -9,7 +9,7 @@ export default function Carrier() {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.image}>
-            <Image source={require('../assets/icons/frigate.png')} />
+            <Image source={require('../assets/icons/carrier.png')} />
         </View>
         <Text style={styles.header_text}>Ship Stats</Text>
         <View style={styles.table}>
@@ -47,28 +47,26 @@ export default function Carrier() {
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Turn Requirement</Text>
-            </View>
-            <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>3 Movement Hex</Text>
-            </View>
-          </View>
-          <View style={styles.tableRow}>
-            <View style={styles.tableHeaderContainer}>
               <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>
               <Text style={styles.tableCell}>Missile Batteries</Text>
-              <Image source={require('../assets/images/arcs/mb-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
-              <Text style={styles.tableCell}>Launch Bays</Text>
             </View>
           </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableHeaderContainer}>
+              <Text style={styles.tableHeader}>Firing Arc</Text>
+            </View>
+            <View style={styles.tableCellContainer}>
+              <Text style={styles.tableCell}>Forward/Aft(90°)</Text>
+            </View>
+          </View>          
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
               <Text style={styles.tableHeader}>Weapon Damage</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>1d6</Text>
+              <Text style={styles.tableCell}>2d6</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -76,7 +74,7 @@ export default function Carrier() {
               <Text style={styles.tableHeader}>Weapon Range</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>0-14 Hexes</Text>
+              <Text style={styles.tableCell}>70ft</Text>
             </View>
           </View>
         </View>
@@ -126,7 +124,7 @@ export default function Carrier() {
                 </View>
                 <View style={styles.diceItem}>
                     <Text style={styles.tableHeader}>Missile Batteries</Text>
-                    <D6Dice />
+                    <TD6Dice />
                 </View>
             </View>
       </ScrollView>
@@ -138,6 +136,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.dark_gray,
     flex: 1,
+    paddingTop: 10
   },
   header_text: {
     color: Colors.white,

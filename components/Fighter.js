@@ -49,19 +49,18 @@ export default function Fighters() {
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Turn Requirement</Text>
-            </View>
-            <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>1 Movement Hex</Text>
-            </View>
-          </View>
-          <View style={styles.tableRow}>
-            <View style={styles.tableHeaderContainer}>
               <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>
               <Text style={styles.tableCell}>Laser Cannons</Text>
-              <Image source={require('../assets/images/arcs/lc-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
+            </View>
+          </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableHeaderContainer}>
+              <Text style={styles.tableHeader}>Firing Arc</Text>
+            </View>
+            <View style={styles.tableCellContainer}>
+              <Text style={styles.tableCell}>Turret (360°)</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -69,7 +68,7 @@ export default function Fighters() {
               <Text style={styles.tableHeader}>Weapon Damage</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>1D3</Text>
+              <Text style={styles.tableCell}>1d3</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -77,7 +76,7 @@ export default function Fighters() {
               <Text style={styles.tableHeader}>Weapon Range</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>0-6 Hexes</Text>
+              <Text style={styles.tableCell}>30ft</Text>
             </View>
           </View>
         </View>
@@ -139,7 +138,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.dark_gray,
     flex: 1,
-    marginTop: 1,
+    paddingTop: 10
   },
   header_text: {
     color: Colors.white,
@@ -172,7 +171,7 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     color: Colors.misty_blue,
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: "monospace",
     fontWeight: "bold",
     flex: 1,

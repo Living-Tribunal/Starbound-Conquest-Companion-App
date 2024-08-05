@@ -9,7 +9,7 @@ export default function Battleship() {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.image}>
-            <Image source={require('../assets/icons/frigate.png')} />
+            <Image source={require('../assets/icons/battleship.png')} />
         </View>
         <Text style={styles.header_text}>Ship Stats</Text>
         <View style={styles.table}>
@@ -47,19 +47,18 @@ export default function Battleship() {
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Turn Requirement</Text>
+              <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>2 Movement Hex</Text>
+              <Text style={styles.tableCell}>Ion Beams</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Weapon Type</Text>
+              <Text style={styles.tableHeader}>Firing Arc</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>Ion Cannons</Text>
-              <Image source={require('../assets/images/arcs/lc-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
+              <Text style={styles.tableCell}>Portside/Starboard(90°)</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -75,7 +74,7 @@ export default function Battleship() {
               <Text style={styles.tableHeader}>Weapon Range</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>0-8 Hexes</Text>
+              <Text style={styles.tableCell}>40ft</Text>
             </View>
           </View>
         </View>
@@ -137,6 +136,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.dark_gray,
     flex: 1,
+    paddingTop: 10
   },
   header_text: {
     color: Colors.white,

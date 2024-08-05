@@ -47,19 +47,18 @@ export default function Frigate() {
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Turn Require</Text>
-            </View>
-            <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>4 Movement Hex</Text>
-            </View>
-          </View>
-          <View style={styles.tableRow}>
-            <View style={styles.tableHeaderContainer}>
               <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>
               <Text style={styles.tableCell}>Missile Batteries</Text>
-              <Image source={require('../assets/images/arcs/mb-arc.png')} style={{ height: 50, width: 50, alignSelf: 'flex-end', }} />
+            </View>
+          </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableHeaderContainer}>
+              <Text style={styles.tableHeader}>Firing Arc</Text>
+            </View>
+            <View style={styles.tableCellContainer}>
+              <Text style={styles.tableCell}>Forward (90°)</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -67,7 +66,7 @@ export default function Frigate() {
               <Text style={styles.tableHeader}>Weapon Damage</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>1D6</Text>
+              <Text style={styles.tableCell}>1d6</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -75,7 +74,7 @@ export default function Frigate() {
               <Text style={styles.tableHeader}>Weapon Range</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>0-14 Hexes</Text>
+              <Text style={styles.tableCell}>70ft</Text>
             </View>
           </View>
         </View>
@@ -137,6 +136,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.dark_gray,
     flex: 1,
+    paddingTop: 10
   },
   header_text: {
     color: Colors.white,
