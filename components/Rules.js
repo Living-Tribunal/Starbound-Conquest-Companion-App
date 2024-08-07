@@ -19,7 +19,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   Hex Measurement:
@@ -31,7 +31,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   Player Turn Sequence:
@@ -44,7 +44,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   Movement Distance:
@@ -57,7 +57,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   Movement Rules:
@@ -76,7 +76,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   All Ahead Full:
@@ -99,7 +99,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   Burn Retros:
@@ -120,7 +120,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   Check for Obstacles:
@@ -133,7 +133,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   Roll the Dice:
@@ -145,7 +145,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   Check Against Threat Level:
@@ -165,7 +165,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   If the Attack Hits:
@@ -177,7 +177,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   Roll Damage:
@@ -190,7 +190,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   Check Against Damage Threshold:
@@ -212,7 +212,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   Weapon Firing Arcs:
@@ -232,7 +232,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   Range:
@@ -246,7 +246,7 @@ export default function Rules() {
                   style={{
                     fontWeight: "bold",
                     color: Colors.slate,
-                    fontSize: 16,
+                    fontSize: 14,
                   }}
                 >
                   Line of Sight:
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
     fontFamily: "monospace",
     color: Colors.dark_gray,
     textAlign: "center",
-    fontSize: 18,
+    fontSize: 16,
     backgroundColor: Colors.slate,
     fontWeight: "bold",
     marginBottom: 5,
@@ -388,11 +388,11 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginLeft: 5,
     marginRight: 5,
-    fontSize: 15,
+    fontSize: 13,
   },
   textHeader: {
     color: Colors.white,
-    fontSize: 24,
+    fontSize: 20,
     textAlign: "center",
     fontFamily: "aboreto",
     marginBottom: 20,
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: "row",
-    borderWidth: 3,
+    borderWidth: 1,
     borderColor: Colors.misty_blue,
     marginLeft: 5,
     marginRight: 5,
@@ -425,13 +425,13 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     color: Colors.white,
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "monospace",
     fontWeight: "bold",
   },
   tableCellHeader: {
     color: Colors.slate,
-    fontSize: 17,
+    fontSize: 15,
     fontFamily: "monospace",
     padding: 4,
     fontWeight: "bold",

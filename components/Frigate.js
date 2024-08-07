@@ -77,6 +77,14 @@ export default function Frigate() {
               <Text style={styles.tableCell}>70ft</Text>
             </View>
           </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableHeaderContainer}>
+              <Text style={styles.tableHeader}>Point Value</Text>
+            </View>
+            <View style={styles.tableCellContainer}>
+              <Text style={styles.tableCell}>50</Text>
+            </View>
+          </View>
         </View>
         <View style={styles.shipTableStatsType}>
                 <Text style={styles.tableHeader}>Ship Class:</Text>    

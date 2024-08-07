@@ -77,6 +77,14 @@ export default function Heavy_Cruiser() {
               <Text style={styles.tableCell}>80ft</Text>
             </View>
           </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableHeaderContainer}>
+              <Text style={styles.tableHeader}>Point Value</Text>
+            </View>
+            <View style={styles.tableCellContainer}>
+              <Text style={styles.tableCell}>120</Text>
+            </View>
+          </View>
         </View>
         <View style={styles.shipTableStatsType}>
                 <Text style={styles.tableHeader}>Ship Class:</Text>    

@@ -13,7 +13,7 @@ export default function Fighters() {
         <View style={styles.image}>
             <Image source={require('../assets/icons/fighter.png')} />
         </View>
-        <Text style={styles.header_text}>Ship Stats</Text>
+        <Text style={styles.headerText}>Ship Stats</Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
@@ -79,6 +79,14 @@ export default function Fighters() {
               <Text style={styles.tableCell}>30ft</Text>
             </View>
           </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableHeaderContainer}>
+              <Text style={styles.tableHeader}>Point Value</Text>
+            </View>
+            <View style={styles.tableCellContainer}>
+              <Text style={styles.tableCell}>30</Text>
+            </View>
+          </View>
         </View>
         <View style={styles.shipTableStatsType}>
                 <Text style={styles.tableHeader}>Ship Class:</Text>    
@@ -140,7 +148,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 10
   },
-  header_text: {
+  headerText: {
     color: Colors.white,
     fontSize: 28,
     marginBottom: 10,

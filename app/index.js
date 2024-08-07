@@ -14,6 +14,7 @@ import Heavy_Cruiser from "../components/Heavy_Cruiser";
 import Light_Cruiser from "../components/Light_Cruiser";
 import Rules from "../components/Rules";
 import CustomDrawer from "../components/CustomDrawer";
+import Fleet_Points from "../components/Fleet_Points";
 import { Colors } from '@/constants/Colors';
 import { useFonts } from 'expo-font';
 
@@ -111,6 +112,7 @@ export default function Index() {
                     <Image source={require('../assets/icons/dreadnoughtb.png')} style={{ height: 45, width: 45 }}  resizeMode="contain"/>
                 )
             }} />
+            <Drawer.Screen name="Points" component={Fleet_Points} options={{ drawerItemStyle: { display: 'none' } }} />
             <Drawer.Screen name="Rules" component={Rules} options={{ drawerItemStyle: { display: 'none' } }} />
         </Drawer.Navigator>
   );

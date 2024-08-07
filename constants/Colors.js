@@ -5,6 +5,8 @@ export const Colors = {
     misty_blue: '#a3bac0',
     white: '#FFFFFF',
     dark_gray: '#202020',
+    deep_red: '#8B0000',
+    lightened_deep_red: '#B22222',
   }
  
 

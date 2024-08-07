@@ -77,6 +77,14 @@ export default function Light_Cruiser() {
               <Text style={styles.tableCell}>30ft</Text>
             </View>
           </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableHeaderContainer}>
+              <Text style={styles.tableHeader}>Point Value</Text>
+            </View>
+            <View style={styles.tableCellContainer}>
+              <Text style={styles.tableCell}>90</Text>
+            </View>
+          </View>
         </View>
             <View style={styles.shipTableStatsType}>
                 <Text style={styles.tableHeader}>Ship Class:</Text>    

@@ -32,6 +32,18 @@ const CustomDrawer = (props) => {
                     <DrawerItemList {...props} />
                 </View> 
                 <View>
+                <DrawerItem
+                        label="Points"
+                        labelStyle={{
+                            fontFamily: 'aboreto',
+                            fontWeight: 'bold',
+                            color: Colors.white,
+                            fontSize: 15,
+                            marginTop: 10,            
+                        }}
+                        
+                        onPress={() => props.navigation.navigate("Points")}
+                    />
                    <DrawerItem
                         label="Rules"
                         labelStyle={{
@@ -45,7 +57,6 @@ const CustomDrawer = (props) => {
                         onPress={() => props.navigation.navigate("Rules")}
                     /> 
                 </View>
-                
             </DrawerContentScrollView>
         </View>
     )
