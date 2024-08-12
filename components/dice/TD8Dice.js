@@ -34,11 +34,16 @@ export default function TD8Dice() {
             {firstDice}
           </Text>
         </View>
-        <Pressable onPress={rollDiceOnTap}>
+        <Pressable onPress={rollDiceOnTap}
+        style={({ pressed }) => [
+            styles.button,
+            {
+            backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
+            borderColor: pressed ? Colors.gold : Colors.slate,
+            },
+        ]}> 
           <Text
-          style={styles.rollDiceBtnText}
-          selectable={false}
-          >
+          style={styles.rollDiceBtnText}>
             Roll the dice
           </Text>
         </Pressable>
@@ -67,15 +72,18 @@ const styles = StyleSheet.create({
     color: Colors.slate,
   },
   rollDiceBtnText: {
-    paddingVertical: 10,
-    paddingHorizontal: 40,
-    borderWidth: 2,
-    borderRadius: 8,
-    borderColor: Colors.slate,
-    fontSize: 10,
     color: Colors.white,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    backgroundColor: Colors.dark_gray
   },
+  button: {
+    width: 175,
+    height: 50,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    marginRight: 10,
+    alignItems: "center",
+    borderTopLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    borderWidth: 2,
+    borderColor: Colors.slate,
+},
 });

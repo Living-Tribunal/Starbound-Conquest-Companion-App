@@ -33,16 +33,43 @@ const CustomDrawer = (props) => {
                 </View> 
                 <View>
                 <DrawerItem
-                        label="Points"
+                        label="Your Fleet"
                         labelStyle={{
                             fontFamily: 'aboreto',
                             fontWeight: 'bold',
                             color: Colors.white,
                             fontSize: 15,
-                            marginTop: 10,            
+                            marginTop: -5,
+                            marginLeft: -15,            
                         }}
+                        icon={({}) => (
+                            <Image
+                                source={require('../assets/icons/icons8-sergeant-major-of-army-sma-50.png')}
+                                style={{ width: 35, height: 35}}
+                                resizeMode="contain"
+                            />
+                        )}
                         
-                        onPress={() => props.navigation.navigate("Points")}
+                        onPress={() => props.navigation.navigate("Your Fleet")}
+                    /> 
+                <DrawerItem
+                        label="Fleet Points"
+                        labelStyle={{
+                            fontFamily: 'aboreto',
+                            fontWeight: 'bold',
+                            color: Colors.white,
+                            fontSize: 15,
+                            marginTop: -5,
+                            marginLeft: -15,            
+                        }}
+                        icon={({}) => (
+                            <Image
+                                source={require('../assets/icons/icons8-score-50.png')}
+                                style={{ width: 35, height: 35}}
+                                resizeMode="contain"
+                            />
+                        )}
+                        onPress={() => props.navigation.navigate("Fleet Points")}
                     />
                    <DrawerItem
                         label="Rules"
@@ -51,11 +78,20 @@ const CustomDrawer = (props) => {
                             fontWeight: 'bold',
                             color: Colors.white,
                             fontSize: 15,
-                            marginTop: 10,            
+                            marginTop: -5,
+                            marginLeft: -15,             
                         }}
+                        icon={({}) => (
+                            <Image
+                                source={require('../assets/icons/icons8-rules-50.png')}
+                                style={{ width: 35, height: 35}}
+                                resizeMode="contain"
+                            />
+                        )}
                         
                         onPress={() => props.navigation.navigate("Rules")}
                     /> 
+                   
                 </View>
             </DrawerContentScrollView>
         </View>

@@ -7,6 +7,8 @@ export const Colors = {
     dark_gray: '#202020',
     deep_red: '#8B0000',
     lightened_deep_red: '#B22222',
+    goldenrod: '#B8860B',
+    gold: '#FFD700'
   }
  
 

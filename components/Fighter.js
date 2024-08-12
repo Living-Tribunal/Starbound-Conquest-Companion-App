@@ -11,7 +11,7 @@ export default function Fighters() {
     <StatusBar hidden />
       <ScrollView>
         <View style={styles.image}>
-            <Image source={require('../assets/icons/fighter.png')} />
+            <Image source={require('../assets/icons/rookie_64.png')} style={{ height: 100, width: 100}} />
         </View>
         <Text style={styles.headerText}>Ship Stats</Text>
         <View style={styles.table}>
@@ -230,8 +230,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: -10,
-    marginTop: -10,
   },
   diceWrapper: {
     flexDirection: 'row',

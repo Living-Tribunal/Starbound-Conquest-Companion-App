@@ -1,4 +1,4 @@
-import React, { useState,useEffect  } from 'react';
+import React, { useState, useEffect  } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     StyleSheet,
@@ -7,6 +7,7 @@ import {
     StatusBar,
     Pressable,
     ScrollView,
+    Image
   } from "react-native";
   import { Colors } from "@/constants/Colors";
   import { SafeAreaView } from "react-native-safe-area-context";
@@ -198,14 +199,14 @@ import {
 
             </View>
             <View style={styles.shipTableStats}>
-                <Text style={styles.tableHeader}>Fi</Text>
-                <Text style={styles.tableHeader}>Fr</Text>
-                <Text style={styles.tableHeader}>De</Text>
-                <Text style={styles.tableHeader}>Lc</Text>
-                <Text style={styles.tableHeader}>Hc</Text>
-                <Text style={styles.tableHeader}>Ca</Text>
-                <Text style={styles.tableHeader}>Ba</Text>
-                <Text style={styles.tableHeader}>Dn</Text>
+            <Image style={styles.Image} source={require('../assets/icons/rookie_64.png')} />
+            <Image style={styles.Image} source={require('../assets/icons/shuttle_64.png')} />
+            <Image style={styles.Image} source={require('../assets/icons/destroyer_64.png')} />
+            <Image style={styles.Image} source={require('../assets/icons/cruiser_64.png')} />
+            <Image style={styles.Image} source={require('../assets/icons/battlecruiser_64.png')} />
+            <Image style={styles.Image} source={require('../assets/icons/superCapital_64.png')} />
+            <Image style={styles.Image} source={require('../assets/icons/battleship_64.png')} />
+            <Image style={styles.Image} source={require('../assets/icons/titan_64.png')} />
             </View>
             <View style={styles.shipTableStatsNumbers}>
                 <Text style={styles.tableHeader}>{fighterCount}</Text>
@@ -221,7 +222,8 @@ import {
             <Pressable style={({ pressed }) => [
                     styles.button,
                     {
-                    backgroundColor: pressed ? Colors.slate : Colors.blue_gray,
+                    backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
+                    borderColor: pressed ? Colors.gold : Colors.slate,
                     },
                 ]} 
                 onPress={() => handleAddShip('fighter')} 
@@ -231,7 +233,8 @@ import {
             <Pressable style={({ pressed }) => [
                     styles.button,
                     {
-                    backgroundColor: pressed ? Colors.slate : Colors.blue_gray,
+                    backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
+                    borderColor: pressed ? Colors.gold : Colors.slate,
                     },
                 ]} 
                 onPress={() => handleAddShip('frigate')} 
@@ -243,7 +246,8 @@ import {
             <Pressable style={({ pressed }) => [
                     styles.button,
                     {
-                    backgroundColor: pressed ? Colors.slate : Colors.blue_gray,
+                    backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
+                    borderColor: pressed ? Colors.gold : Colors.slate,
                     },
                 ]} 
                 onPress={() => handleAddShip('destroyer')} 
@@ -253,7 +257,8 @@ import {
             <Pressable style={({ pressed }) => [
                     styles.button,
                     {
-                    backgroundColor: pressed ? Colors.slate : Colors.blue_gray,
+                        backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
+                        borderColor: pressed ? Colors.gold : Colors.slate,
                     },
                 ]} 
                 onPress={() => handleAddShip('lightcruiser')} 
@@ -265,7 +270,8 @@ import {
             <Pressable style={({ pressed }) => [
                     styles.button,
                     {
-                    backgroundColor: pressed ? Colors.slate : Colors.blue_gray,
+                        backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
+                        borderColor: pressed ? Colors.gold : Colors.slate,
                     },
                 ]} 
                 onPress={() => handleAddShip('heavycruiser')} 
@@ -275,7 +281,8 @@ import {
             <Pressable style={({ pressed }) => [
                     styles.button,
                     {
-                    backgroundColor: pressed ? Colors.slate : Colors.blue_gray,
+                        backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
+                        borderColor: pressed ? Colors.gold : Colors.slate,
                     },
                 ]} 
                 onPress={() => handleAddShip('carrier')} 
@@ -287,7 +294,8 @@ import {
             <Pressable style={({ pressed }) => [
                     styles.button,
                     {
-                    backgroundColor: pressed ? Colors.slate : Colors.blue_gray,
+                        backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
+                        borderColor: pressed ? Colors.gold : Colors.slate,
                     },
                 ]} 
                 onPress={() => handleAddShip('battleship')} 
@@ -297,7 +305,8 @@ import {
             <Pressable style={({ pressed }) => [
                     styles.button,
                     {
-                    backgroundColor: pressed ? Colors.slate : Colors.blue_gray,
+                        backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
+                        borderColor: pressed ? Colors.gold : Colors.slate,
                     },
                 ]} 
                 onPress={() => handleAddShip('dreadnought')} 
@@ -415,5 +424,10 @@ import {
         fontWeight: "bold",
         flex: 1,
       },
+      Image: {
+        width: 35,
+        height: 35,
+        alignSelf: "center",
+      }
   });
   

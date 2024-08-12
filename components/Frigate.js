@@ -9,7 +9,7 @@ export default function Frigate() {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.image}>
-            <Image source={require('../assets/icons/frigate.png')} />
+            <Image source={require('../assets/icons/shuttle_64.png')} style={{ height: 100, width: 100}} />
         </View>
         <Text style={styles.header_text}>Ship Stats</Text>
         <View style={styles.table}>
@@ -229,8 +229,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: -10,
-    marginTop: -10,
   },
   diceWrapper: {
     flexDirection: 'row',

@@ -3,12 +3,32 @@ import { StyleSheet, Pressable, View, Modal, Text, TextInput, Image } from "reac
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
 
-// Define your key for AsyncStorage
-const statKey = '';
-
-export default function EditButton() {
+export default function EditButtonHP({ type, index, value }) {
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [text, setText] = useState("0");
+    const [text, setText] = useState("");
+
+    const statKey = `${type}-${index} -${value}-hp`;
+
+    const shipImages = {
+        "fighter": require('../../assets/icons/rookie_64.png'),
+        "frigate": require('../../assets/icons/shuttle_64.png'),
+        "destroyer": require('../../assets/icons/destroyer_64.png'),
+        "lightcruiser": require('../../assets/icons/cruiser_64.png'),
+        "heavycruiser": require('../../assets/icons/battlecruiser_64.png'),
+        "carrier": require('../../assets/icons/superCapital_64.png'),
+        "battleship": require('../../assets/icons/battleship_64.png'),
+        "dreadnought": require('../../assets/icons/titan_64.png'),
+    };
+    const shipHPValues = {
+        "fighter": 1,
+        "frigate": 2,
+        "destroyer": 3,
+        "lightcruiser": 4,
+        "heavycruiser": 5,
+        "carrier": 7,
+        "battleship": 8,
+        "dreadnought": 10,
+    }
 
     const save = async () => {
         try {
@@ -33,38 +53,42 @@ export default function EditButton() {
         load();
     }, []);
 
+    const imageSource = shipImages[type] || require('../../assets/icons/rookie_64.png');
+    const hpValue = shipHPValues[type] || 0;
+
     return (
         <View style={styles.buttonContainer}>
-            <Text style={styles.textStyle}>Fleet Limit:</Text>
             <View style={styles.fleetContainer}>
-                <Text style={styles.textStyle}>{text}</Text>
                 <Pressable
-                onPress={() => setIsModalVisible(true)}
-                style={({ pressed }) => [
-                    styles.button,
-                    {
-                    backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
-                    borderColor: pressed ? Colors.gold : Colors.slate,
-                    },
-                ]}>
-                    <Image source={require('../../assets/icons/icons8-create-50.png')} 
-                    style={{
-                        width: 25, 
-                        height: 25, }}/>
-                </Pressable>    
+                    onPress={() => setIsModalVisible(true)}
+                    style={({ pressed }) => [
+                        styles.button,
+                        {
+                            backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
+                            borderColor: pressed ? Colors.gold : Colors.slate,
+                        },
+                    ]}>
+                    <Image
+                        source={imageSource}
+                        style={{
+                            width: 50,
+                            height: 50,
+                        }}/>
+                    <Text style={styles.textStyle}>HP: {text || hpValue}</Text>
+                </Pressable>
             </View>
             <Modal
                 transparent={true}
                 visible={isModalVisible}
                 onRequestClose={() => setIsModalVisible(false)}
-                animationType="slide">
+                animationType="slide" >
                 <View style={styles.heroModalContainer}>
+                <Text style={styles.textModalStyle}>Enter the desired HP for the ship</Text>
                     <TextInput
                         style={styles.modalTextInput}
                         onChangeText={setText}
                         value={text}
-                        keyboardType="numeric"
-                    />
+                        keyboardType="numeric"/>
                     <View style={styles.heroModalContainerButtons}>
                         <Pressable
                             style={({ pressed }) => [
@@ -78,10 +102,12 @@ export default function EditButton() {
                                 setIsModalVisible(false);
                                 save();
                             }}>
-                                <Image source={require('../../assets/icons/icons8-save-50.png')} 
-                    style={{
-                        width: 25, 
-                        height: 25, }}/>
+                            <Image
+                                source={require('../../assets/icons/icons8-save-50.png')}
+                                style={{
+                                    width: 25,
+                                    height: 25,
+                                }}/>
                         </Pressable>
                         <Pressable
                             style={({ pressed }) => [
@@ -96,10 +122,12 @@ export default function EditButton() {
                                 setIsModalVisible(false);
                                 save();
                             }}>
-                                <Image source={require('../../assets/icons/delete50.png')} 
-                    style={{
-                        width: 25, 
-                        height: 25, }}/>
+                            <Image
+                                source={require('../../assets/icons/delete50.png')}
+                                style={{
+                                    width: 25,
+                                    height: 25,
+                                }}/>
                         </Pressable>
                     </View>
                 </View>
@@ -114,15 +142,13 @@ const styles = StyleSheet.create({
     },
     button: {
         width: 75,
-        paddingVertical: 10,
-        paddingHorizontal: 10,
-        marginBottom: 10,
+        paddingVertical: 5,
+        paddingHorizontal: 5,
         borderTopLeftRadius: 20,
         borderBottomRightRadius: 20,
         borderWidth: 2,
-        borderColor: Colors.slate,
         alignItems: "center",
-      },
+    },
     modalTextInput: {
         backgroundColor: Colors.slate,
         width: 300,
@@ -138,8 +164,14 @@ const styles = StyleSheet.create({
     },
     textStyle: {
         color: Colors.white,
-        fontSize: 18,
+        fontSize: 10,
         fontFamily: 'monospace',
+    },
+    textModalStyle: {
+        color: Colors.white,
+        fontSize: 14,
+        fontFamily: 'monospace',
+        justifyContent: 'center',
         textAlign: 'center',
     },
     heroModalContainerButtons: {
@@ -149,14 +181,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         gap: 20,
     },
-    buttonContainer: {
-       alignItems: 'center',
-       margin: 10,
-    },
     fleetContainer: {
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        marginTop: 10,
-        gap: 70,
-        },
+        padding: 2,
+    },
 });
