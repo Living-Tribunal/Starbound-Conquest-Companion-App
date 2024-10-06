@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, Image} from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import D3Dice from "./dice/D3Dice/";
+import D6Dice from "./dice/D6Dice/";
 import D20Dice from "./dice/D20Dice/";
 import { StatusBar } from 'expo-status-bar';
 
@@ -13,7 +13,7 @@ export default function Fighters() {
         <View style={styles.image}>
             <Image source={require('../assets/icons/rookie_64.png')} style={{ height: 100, width: 100}} />
         </View>
-        <Text style={styles.headerText}>Ship Stats</Text>
+        <Text style={styles.headerText}>Fighter Stats</Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
@@ -25,18 +25,18 @@ export default function Fighters() {
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Damage Threshold</Text>
+              <Text style={styles.tableHeader}>To Hit</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>2</Text>
+              <Text style={styles.tableCell}>15</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Threat Level</Text>
+              <Text style={styles.tableHeader}>Soak</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>5</Text>
+              <Text style={styles.tableCell}>1</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -44,7 +44,15 @@ export default function Fighters() {
               <Text style={styles.tableHeader}>Move Distance</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>70ft</Text>
+              <Text style={styles.tableCell}>80ft</Text>
+            </View>
+          </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableHeaderContainer}>
+              <Text style={styles.tableHeader}>Capacity</Text>
+            </View>
+            <View style={styles.tableCellContainer}>
+              <Text style={styles.tableCell}>0</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -52,7 +60,7 @@ export default function Fighters() {
               <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>Laser Cannons</Text>
+              <Text style={styles.tableCell}>Light Cannon</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -60,7 +68,7 @@ export default function Fighters() {
               <Text style={styles.tableHeader}>Firing Arc</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>Turret (360°)</Text>
+              <Text style={styles.tableCell}>Forward (90°)</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -68,7 +76,7 @@ export default function Fighters() {
               <Text style={styles.tableHeader}>Weapon Damage</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>1d3</Text>
+              <Text style={styles.tableCell}>1d6</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -88,44 +96,35 @@ export default function Fighters() {
             </View>
           </View>
         </View>
-        <View style={styles.shipTableStatsType}>
+            <View style={styles.shipTableStatsType}>
                 <Text style={styles.tableHeader}>Ship Class:</Text>    
             </View>
             <View style={styles.shipTableStats}>
                 <Text style={styles.tableHeader}>Fi</Text>
-                <Text style={styles.tableHeader}>Fr</Text>
                 <Text style={styles.tableHeader}>De</Text>
-                <Text style={styles.tableHeader}>Lc</Text>
-                <Text style={styles.tableHeader}>Hc</Text>
+                <Text style={styles.tableHeader}>Cr</Text>
                 <Text style={styles.tableHeader}>Ca</Text>
-                <Text style={styles.tableHeader}>Ba</Text>
                 <Text style={styles.tableHeader}>Dn</Text>
             </View>
             <View style={styles.shipTableStatsType}>
-                <Text style={styles.tableHeader}>Threat Level:</Text>  
+                <Text style={styles.tableHeader}>To Hit:</Text>  
             </View>
             <View style={styles.shipTableStatsNumbers}>
-                <Text style={styles.tableHeader}>5</Text>
+                <Text style={styles.tableHeader}>15</Text>
+                <Text style={styles.tableHeader}>10</Text>
+                <Text style={styles.tableHeader}>8</Text>
+                <Text style={styles.tableHeader}>6</Text>
+                <Text style={styles.tableHeader}>4</Text>
+            </View>
+            <View style={styles.shipTableStatsType}>
+                <Text style={styles.tableHeader}>Soak:</Text>    
+            </View>
+            <View style={styles.shipTableStatsNumbers}>
+                <Text style={styles.tableHeader}>1</Text>
+                <Text style={styles.tableHeader}>4</Text>
                 <Text style={styles.tableHeader}>6</Text>
                 <Text style={styles.tableHeader}>7</Text>
                 <Text style={styles.tableHeader}>8</Text>
-                <Text style={styles.tableHeader}>9</Text>
-                <Text style={styles.tableHeader}>10</Text>
-                <Text style={styles.tableHeader}>12</Text>
-                <Text style={styles.tableHeader}>15</Text>
-            </View>
-            <View style={styles.shipTableStatsType}>
-                <Text style={styles.tableHeader}>Damage Threshold:</Text>    
-            </View>
-            <View style={styles.shipTableStatsNumbers}>
-                <Text style={styles.tableHeader}>2</Text>
-                <Text style={styles.tableHeader}>2</Text>
-                <Text style={styles.tableHeader}>3</Text>
-                <Text style={styles.tableHeader}>4</Text>
-                <Text style={styles.tableHeader}>5</Text>
-                <Text style={styles.tableHeader}>7</Text>
-                <Text style={styles.tableHeader}>8</Text>
-                <Text style={styles.tableHeader}>10</Text>
             </View>
             <View style={styles.diceWrapper}>
                 <View style={styles.diceItem}>
@@ -133,8 +132,8 @@ export default function Fighters() {
                 <D20Dice />
                 </View>
                 <View style={styles.diceItem}>
-                <Text style={styles.tableHeader}>Laser Cannons</Text>
-                <D3Dice />
+                <Text style={styles.tableHeader}>Laser Cannon</Text>
+                <D6Dice/>
                 </View>
             </View>
       </ScrollView>
@@ -182,7 +181,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "monospace",
     fontWeight: "bold",
-    flex: 1,
   },
   tableCellContainer: {
     flex: 1,
@@ -193,24 +191,25 @@ const styles = StyleSheet.create({
   },
   tableCell: {
     color: Colors.white,
-    fontSize: 12,
+    fontSize: 10,
     textAlign: "right",
     fontFamily: "monospace",
   },
   shipTableStats: {
     flexDirection: "row",
-    justifyContent: "space-around",
     backgroundColor: Colors.blue_gray,
+    marginTop: 5,
+    borderTopColor: 'transparent',
+    justifyContent: "space-evenly",
+    alignItems: "center",
     paddingVertical: 10,
     paddingHorizontal: 5,
-    marginTop: 10,
-    borderTopColor: 'transparent',
     marginHorizontal: 10,
   },
   shipTableStatsNumbers: {
     marginHorizontal: 10,
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-evenly",
     backgroundColor: Colors.dark_gray,
     paddingVertical: 10,
     paddingHorizontal: 5,

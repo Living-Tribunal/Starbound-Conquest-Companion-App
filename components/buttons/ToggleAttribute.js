@@ -14,6 +14,14 @@ export default function ToggleAtributeButton({ type, index }) {
     dreadnought: 5,
   };
 
+  const shipImages = {
+    "fighter": require('../../assets/icons/rookie_64.png'),
+    "destroyer": require('../../assets/icons/destroyer_64.png'),
+    "cruiser": require('../../assets/icons/cruiser_64.png'),
+    "carrier": require('../../assets/icons/superCapital_64.png'),
+    "dreadnought": require('../../assets/icons/titan_64.png'),
+};
+
   const [toggleStates, setToggleStates] = useState(
     Array(SHIP_TOGGLES[type]).fill(false)
   );
@@ -57,7 +65,7 @@ export default function ToggleAtributeButton({ type, index }) {
       // Save the updated value immediately
       save(toggleIndex, updatedToggleStates[toggleIndex]);
       
-      return updatedToggleStates; // Return the new state
+      return updatedToggleStates;
     });
   };
 

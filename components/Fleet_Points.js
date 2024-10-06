@@ -258,8 +258,6 @@ import {
             </Pressable>
         </View>
         </View>
-
-
         </ScrollView>
       </SafeAreaView>
     );

@@ -80,7 +80,7 @@ useFocusEffect(
                 <View style={styles.imageRow}>
                     {carrierImages.map((image, index) => (
                         <View key={image.id} style={styles.imageContainer}>
-                        <EditButtonHP type="carrier"/>
+                        <EditButtonHP type="carrier" index={index} />
                         <ToggleAttributeButton type="carrier" index={index} />
                     </View>
                     ))}

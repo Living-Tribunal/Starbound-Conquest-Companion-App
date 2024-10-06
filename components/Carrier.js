@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View, ScrollView, Image} from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import TD6Dice from "./dice/TD6Dice/";
+import D6Dice from "./dice/D6Dice/";
+import D8Dice from "./dice/D8Dice/";
 import D20Dice from "./dice/D20Dice/";
 
 export default function Carrier() {
@@ -11,30 +12,30 @@ export default function Carrier() {
         <View style={styles.image}>
             <Image source={require('../assets/icons/superCapital_64.png')} style={{ height: 100, width: 100}} />
         </View>
-        <Text style={styles.header_text}>Ship Stats</Text>
+        <Text style={styles.headerText}>Carrier Stats</Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
               <Text style={styles.tableHeader}>Hit Point</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>7</Text>
+              <Text style={styles.tableCell}>14</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Damage Threshold</Text>
+              <Text style={styles.tableHeader}>To Hit</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>7</Text>
+              <Text style={styles.tableCell}>6</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Threat Level</Text>
+              <Text style={styles.tableHeader}>Soak</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>10</Text>
+              <Text style={styles.tableCell}>7</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -42,7 +43,15 @@ export default function Carrier() {
               <Text style={styles.tableHeader}>Move Distance</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>30ft</Text>
+              <Text style={styles.tableCell}>40ft</Text>
+            </View>
+          </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableHeaderContainer}>
+              <Text style={styles.tableHeader}>Capacity</Text>
+            </View>
+            <View style={styles.tableCellContainer}>
+              <Text style={styles.tableCell}>20</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -50,7 +59,8 @@ export default function Carrier() {
               <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>Missile Batteries</Text>
+              <Text style={styles.tableCell}>350mm Railgun</Text>
+              <Text style={styles.tableCell}>Missile Battery</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -59,6 +69,7 @@ export default function Carrier() {
             </View>
             <View style={styles.tableCellContainer}>
               <Text style={styles.tableCell}>Forward/Aft(90°)</Text>
+              <Text style={styles.tableCell}>All(360°)</Text>
             </View>
           </View>          
           <View style={styles.tableRow}>
@@ -66,7 +77,8 @@ export default function Carrier() {
               <Text style={styles.tableHeader}>Weapon Damage</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>2d6</Text>
+              <Text style={styles.tableCell}>1d8</Text>
+              <Text style={styles.tableCell}>1d6</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -74,7 +86,8 @@ export default function Carrier() {
               <Text style={styles.tableHeader}>Weapon Range</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>70ft</Text>
+              <Text style={styles.tableCell}>30ft-120ft</Text>
+              <Text style={styles.tableCell}>15ft-60ft</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -82,7 +95,7 @@ export default function Carrier() {
               <Text style={styles.tableHeader}>Point Value</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>130</Text>
+              <Text style={styles.tableCell}>120</Text>
             </View>
           </View>
         </View>
@@ -91,154 +104,150 @@ export default function Carrier() {
             </View>
             <View style={styles.shipTableStats}>
                 <Text style={styles.tableHeader}>Fi</Text>
-                <Text style={styles.tableHeader}>Fr</Text>
                 <Text style={styles.tableHeader}>De</Text>
-                <Text style={styles.tableHeader}>Lc</Text>
-                <Text style={styles.tableHeader}>Hc</Text>
+                <Text style={styles.tableHeader}>Cr</Text>
                 <Text style={styles.tableHeader}>Ca</Text>
-                <Text style={styles.tableHeader}>Ba</Text>
                 <Text style={styles.tableHeader}>Dn</Text>
             </View>
             <View style={styles.shipTableStatsType}>
-                <Text style={styles.tableHeader}>Threat Level:</Text>  
+                <Text style={styles.tableHeader}>To Hit:</Text>  
             </View>
             <View style={styles.shipTableStatsNumbers}>
-                <Text style={styles.tableHeader}>5</Text>
+                <Text style={styles.tableHeader}>15</Text>
+                <Text style={styles.tableHeader}>10</Text>
+                <Text style={styles.tableHeader}>8</Text>
+                <Text style={styles.tableHeader}>6</Text>
+                <Text style={styles.tableHeader}>4</Text>
+            </View>
+            <View style={styles.shipTableStatsType}>
+                <Text style={styles.tableHeader}>Soak:</Text>    
+            </View>
+            <View style={styles.shipTableStatsNumbers}>
+                <Text style={styles.tableHeader}>1</Text>
+                <Text style={styles.tableHeader}>4</Text>
                 <Text style={styles.tableHeader}>6</Text>
                 <Text style={styles.tableHeader}>7</Text>
                 <Text style={styles.tableHeader}>8</Text>
-                <Text style={styles.tableHeader}>9</Text>
-                <Text style={styles.tableHeader}>10</Text>
-                <Text style={styles.tableHeader}>12</Text>
-                <Text style={styles.tableHeader}>15</Text>
             </View>
-            <View style={styles.shipTableStatsType}>
-                <Text style={styles.tableHeader}>Damage Threshold:</Text>    
-            </View>
-            <View style={styles.shipTableStatsNumbers}>
-                <Text style={styles.tableHeader}>2</Text>
-                <Text style={styles.tableHeader}>2</Text>
-                <Text style={styles.tableHeader}>3</Text>
-                <Text style={styles.tableHeader}>4</Text>
-                <Text style={styles.tableHeader}>5</Text>
-                <Text style={styles.tableHeader}>7</Text>
-                <Text style={styles.tableHeader}>8</Text>
-                <Text style={styles.tableHeader}>10</Text>
-            </View>
+            <ScrollView horizontal={true}>
             <View style={styles.diceWrapper}>
                 <View style={styles.diceItem}>
                     <Text style={styles.tableHeader}>To Hit</Text>
                     <D20Dice />
                 </View>
                 <View style={styles.diceItem}>
-                    <Text style={styles.tableHeader}>Missile Batteries</Text>
-                    <TD6Dice />
+                    <Text style={styles.tableHeader}>350mm Railgun</Text>
+                    <D8Dice />
+                </View>
+                <View style={styles.diceItem}>
+                    <Text style={styles.tableHeader}>Missile Battery</Text>
+                    <D6Dice />
                 </View>
             </View>
+            </ScrollView>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors.dark_gray,
-    flex: 1,
-    paddingTop: 10
-  },
-  header_text: {
-    color: Colors.white,
-    fontSize: 28,
-    marginBottom: 10,
-    marginTop: 20,
-    textAlign: "center",
-    fontFamily: "aboreto",
-    borderWidth: 1,
-    borderBottomColor: Colors.white,
-    borderTopColor: 'transparent',
-  },
-  table: {
-    marginHorizontal: 10,
-    borderWidth: 1,
-    borderColor: Colors.misty_blue,
-    borderTopColor: 'transparent',
-  },
-  tableRow: {
-    flexDirection: "row",
-    borderBottomWidth: 2,
-    borderColor: Colors.misty_blue,
-  },
-  tableHeaderContainer: {
-    flex: 1,
-    backgroundColor: Colors.blue_gray,
-    justifyContent: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-  },
-  tableHeader: {
-    color: Colors.misty_blue,
-    fontSize: 12,
-    textAlign: "left",
-    fontFamily: "monospace",
-    fontWeight: "bold",
-    flex: 1,
-  },
-  tableCellContainer: {
-    flex: 1,
-    backgroundColor: Colors.dark_gray,
-    justifyContent: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-  },
-  tableCell: {
-    color: Colors.white,
-    fontSize: 12,
-    textAlign: "right",
-    fontFamily: "monospace",
-  },
-  shipTableStats: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: Colors.blue_gray,
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    marginTop: 10,
-    borderTopColor: 'transparent',
-    marginHorizontal: 10,
-  },
-  shipTableStatsNumbers: {
-    marginHorizontal: 10,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: Colors.dark_gray,
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    marginTop: 2,
-    borderWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: Colors.slate,
-  },
-  shipTableStatsType: {
-    marginHorizontal: 10,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: Colors.dark_gray,
-    marginTop: 2,
-  },
-  image: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  diceWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 5,
-    marginBottom: 5,
-    padding: 5,
-  },
-  diceItem: {
-    alignItems: 'center',
-  },
-});
+    container: {
+      backgroundColor: Colors.dark_gray,
+      flex: 1,
+      paddingTop: 10
+    },
+    headerText: {
+      color: Colors.white,
+      fontSize: 28,
+      marginBottom: 10,
+      marginTop: 20,
+      textAlign: "center",
+      fontFamily: "aboreto",
+      borderWidth: 1,
+      borderBottomColor: Colors.white,
+      borderTopColor: 'transparent',
+    },
+    table: {
+      marginHorizontal: 10,
+      borderWidth: 1,
+      borderColor: Colors.misty_blue,
+      borderTopColor: 'transparent',
+    },
+    tableRow: {
+      flexDirection: "row",
+      borderBottomWidth: 2,
+      borderColor: Colors.misty_blue,
+    },
+    tableHeaderContainer: {
+      flex: 1,
+      backgroundColor: Colors.blue_gray,
+      justifyContent: "center",
+      paddingVertical: 10,
+      paddingHorizontal: 5,
+    },
+    tableHeader: {
+      color: Colors.misty_blue,
+      fontSize: 12,
+      fontFamily: "monospace",
+      fontWeight: "bold",
+    },
+    tableCellContainer: {
+      flex: 1,
+      backgroundColor: Colors.dark_gray,
+      justifyContent: "center",
+      paddingVertical: 10,
+      paddingHorizontal: 5,
+    },
+    tableCell: {
+      color: Colors.white,
+      fontSize: 10,
+      textAlign: "right",
+      fontFamily: "monospace",
+    },
+    shipTableStats: {
+        flexDirection: "row",
+        backgroundColor: Colors.blue_gray,
+        marginTop: 5,
+        borderTopColor: 'transparent',
+        justifyContent: "space-evenly",
+        alignItems: "center",
+        paddingVertical: 10,
+        paddingHorizontal: 5,
+        marginHorizontal: 10,
+      },
+    shipTableStatsNumbers: {
+      marginHorizontal: 10,
+      flexDirection: "row",
+      justifyContent: "space-evenly",
+      backgroundColor: Colors.dark_gray,
+      paddingVertical: 10,
+      paddingHorizontal: 5,
+      marginTop: 2,
+      borderWidth: 1,
+      borderBottomWidth: 1,
+      borderColor: Colors.slate,
+    },
+    shipTableStatsType: {
+      marginHorizontal: 10,
+      flexDirection: "row",
+      justifyContent: "space-around",
+      backgroundColor: Colors.dark_gray,
+      marginTop: 2,
+    },
+    image: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    diceWrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: 5,
+      marginBottom: 5,
+      padding: 5,
+    },
+    diceItem: {
+      alignItems: 'center',
+    },
+  });
