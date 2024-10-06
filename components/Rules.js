@@ -11,21 +11,9 @@ export default function Rules() {
           <Text style={styles.textHeader}>Movement Rules</Text>
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
-              <Text style={styles.textSection}>Hex Movement Basics:</Text>
+              <Text style={styles.textSection}>Movement Basics:</Text>
             </View>
             <View style={styles.textBodyContainer}>
-              <Text style={styles.textBody}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: Colors.slate,
-                    fontSize: 14,
-                  }}
-                >
-                  Hex Measurement:
-                </Text>{" "}
-                Each hex represents a distance of 5 feet.
-              </Text>
               <Text style={styles.textBody}>
                 <Text
                   style={{
@@ -49,20 +37,8 @@ export default function Rules() {
                 >
                   Movement Distance:
                 </Text>{" "}
-                Each ship can move a number of hexes equal to, or less than, its Move Distance
+                Each ship can move a number of feet equal to, or less than, its Move Distance
                 each turn.
-              </Text>
-              <Text style={styles.textBody}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: Colors.slate,
-                    fontSize: 14,
-                  }}
-                >
-                  Movement Rules:
-                </Text>{" "}
-                Movement can be in any direction, but must follow the hex grid.
               </Text>
             </View>
           </View>
@@ -81,7 +57,7 @@ export default function Rules() {
                 >
                   All Ahead Full:
                 </Text>{" "}
-                Roll 2d10. The result is the additional hexes the ship can move
+                Roll 2d10. The result is the additional feet the ship can move
                 that turn.
               </Text>
               <Text style={styles.textBody}>
@@ -91,21 +67,6 @@ export default function Rules() {
                 Ships that use All Ahead Full cannot fire any weapons until
                 their next turn. This simulates the focus on maximum speed and
                 maneuverability at the cost of offensive capability.
-              </Text>
-            </View>
-            <View style={styles.textBodyContainer}>
-              <Text style={styles.textBody}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: Colors.slate,
-                    fontSize: 14,
-                  }}
-                >
-                  Burn Retros:
-                </Text>{" "}
-                Allows a ship to reduce its movement by up to 2 hexes, enabling
-                careful maneuvering around obstacles.
               </Text>
             </View>
           </View>
@@ -238,8 +199,8 @@ export default function Rules() {
                   Range:
                 </Text>{" "}
                 To determine if a target is within range, measure from the
-                center of the firing ship's hex to the center of the target
-                ship's hex using the in-game ruler.
+                center of the firing ship to the center of the target
+                ship using the in-game ruler.
               </Text>
               <Text style={styles.textBody}>
                 <Text

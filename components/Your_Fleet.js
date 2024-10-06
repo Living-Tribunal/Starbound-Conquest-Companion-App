@@ -4,78 +4,37 @@ import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from "@/constants/Colors";
 import EditButtonHP from './buttons/EditButtonHP';
+import ToggleAttributeButton from './buttons/ToggleAttribute';
 
 export default function Your_Fleet() {
     const [fighterImages, setFighterImages] = useState([]);
-    const [frigateImages, setFrigateImages] = useState([]);
     const [destroyerImages, setDestroyerImages] = useState([]);
-    const [lightCruiserImages, setLightCruiserImages] = useState([]);
-    const [heavyCrusierImages, setHeavyCruiserImages] = useState([]);
+    const [cruiserImages, setCruiserImages] = useState([]);
     const [carrierImages, setCarrierImages] = useState([]);
-    const [battleshipImages, setBattleshipImages] = useState([]);
     const [dreadnoughtImages, setDreadnoughtImages] = useState([]);
-    
-
-    const handleLongPress = (index, type) =>{
-        switch (type) {
-            case 'fighter':
-                setFighterImages(fighterImages.filter((_, i) => i!== index));
-                break;
-            case 'frigate':
-                setFrigateImages(frigateImages.filter((_, i) => i!== index));
-                break;
-            case 'destroyer':
-                setDestroyerImages(destroyerImages.filter((_, i) => i!== index));
-                break;
-            case 'lightCruiser':
-                setLightCruiserImages(lightCruiserImages.filter((_, i) => i!== index));
-                break;
-            case 'heavyCrusier':
-                setHeavyCruiserImages(heavyCrusierImages.filter((_, i) => i!== index));
-                break;
-            case 'carrier':
-                setCarrierImages(carrierImages.filter((_, i) => i!== index));
-                break;
-            case 'battleship':
-                setBattleshipImages(battleshipImages.filter((_, i) => i!== index));
-                break;
-            case 'dreadnought':
-                setDreadnoughtImages(dreadnoughtImages.filter((_, i) => i!== index));
-                break;  
-    }
-};
 
 useFocusEffect(
     useCallback(() => {
         const loadCounts = async () => {
             try {
                 const savedFighterCount = await AsyncStorage.getItem('fighterCount');
-                const savedFrigateCount = await AsyncStorage.getItem('frigateCount');
                 const savedCarrierCount = await AsyncStorage.getItem('carrierCount');
-                const savedBattleshipCount = await AsyncStorage.getItem('battleshipCount');
                 const savedDreadnoughtCount = await AsyncStorage.getItem('dreadnoughtCount');
-                const savedLightcruiserCount = await AsyncStorage.getItem('lightcruiserCount');
-                const savedHeavycruiserCount = await AsyncStorage.getItem('heavycruiserCount');
+                const savedCruiserCount = await AsyncStorage.getItem('cruiserCount');
                 const savedDestroyerCount = await AsyncStorage.getItem('destroyerCount');
 
                 const counts = {
                     fighterCount: parseInt(savedFighterCount) || 0,
-                    frigateCount: parseInt(savedFrigateCount) || 0,
                     carrierCount: parseInt(savedCarrierCount) || 0,
-                    battleshipCount: parseInt(savedBattleshipCount) || 0,
                     dreadnoughtCount: parseInt(savedDreadnoughtCount) || 0,
-                    lightcruiserCount: parseInt(savedLightcruiserCount) || 0,
-                    heavycruiserCount: parseInt(savedHeavycruiserCount) || 0,
+                    cruiserCount: parseInt(savedCruiserCount) || 0,
                     destroyerCount: parseInt(savedDestroyerCount) || 0,
                 };
 
                 setFighterImages(Array.from({ length: counts.fighterCount }, (_, i) => ({ id: i })));
-                setFrigateImages(Array.from({ length: counts.frigateCount }, (_, i) => ({ id: i })));
                 setDestroyerImages(Array.from({ length: counts.destroyerCount }, (_, i) => ({ id: i })));
-                setLightCruiserImages(Array.from({ length: counts.lightcruiserCount }, (_, i) => ({ id: i })));
-                setHeavyCruiserImages(Array.from({ length: counts.heavycruiserCount }, (_, i) => ({ id: i })));
+                setCruiserImages(Array.from({ length: counts.cruiserCount }, (_, i) => ({ id: i })));
                 setCarrierImages(Array.from({ length: counts.carrierCount }, (_, i) => ({ id: i })));
-                setBattleshipImages(Array.from({ length: counts.battleshipCount }, (_, i) => ({ id: i })));
                 setDreadnoughtImages(Array.from({ length: counts.dreadnoughtCount }, (_, i) => ({ id: i })));
             } catch (e) {
                 console.error('Failed to load counts:', e);
@@ -95,56 +54,34 @@ useFocusEffect(
                     {fighterImages.map((image, index) => (
                         <View key={image.id} style={styles.imageContainer}>
                             <EditButtonHP type="fighter" index={index} />
+                            <ToggleAttributeButton type="fighter" index={index} />
                         </View>
                     ))}
-                </View>
-            <Text style={styles.shipTextHeader}>Frigates</Text>
-                <View style={styles.imageRow}>
-                {frigateImages.map((image, index) => (
-                    <View key={image.id} style={styles.imageContainer}>
-                        <EditButtonHP type="frigate" index={index} />
-                    </View>
-                ))}
                 </View>
             <Text style={styles.shipTextHeader}>Destroyers</Text>
                 <View style={styles.imageRow}>
                     {destroyerImages.map((image, index) => (
                     <View key={image.id} style={styles.imageContainer}>
                         <EditButtonHP type="destroyer" index={index} />
+                        <ToggleAttributeButton type="destroyer" index={index} />
                     </View>
                     ))}
                 </View>
-            <Text style={styles.shipTextHeader}>Light Cruisers</Text>
+            <Text style={styles.shipTextHeader}>Cruisers</Text>
                 <View style={styles.imageRow}>
-                    {lightCruiserImages.map((image, index) => (
+                    {cruiserImages.map((image, index) => (
                         <View key={image.id} style={styles.imageContainer}>
-                        <EditButtonHP type="lightcruiser" index={index} />
+                        <EditButtonHP type="cruiser" index={index} />
+                        <ToggleAttributeButton type="cruiser" index={index} />
                     </View>
-                    ))}
-                </View>
-            <Text style={styles.shipTextHeader}>Heavy Cruisers</Text>
-                <View style={styles.imageRow}>
-                    {heavyCrusierImages.map((image, index) => (
-                        <View key={image.id} style={styles.imageContainer}>
-                            <View key={image.id} style={styles.imageContainer}>
-                        <EditButtonHP type="heavycruiser" index={index} />
-                    </View>
-                        </View>
                     ))}
                 </View>
             <Text style={styles.shipTextHeader}>Carriers</Text>
                 <View style={styles.imageRow}>
                     {carrierImages.map((image, index) => (
                         <View key={image.id} style={styles.imageContainer}>
-                        <EditButtonHP type="carrier" index={index} />
-                    </View>
-                    ))}
-                </View>
-            <Text style={styles.shipTextHeader}>Battleships</Text>
-                <View style={styles.imageRow}>
-                    {battleshipImages.map((image, index) => (
-                        <View key={image.id} style={styles.imageContainer}>
-                        <EditButtonHP type="battleship" index={index} value />
+                        <EditButtonHP type="carrier"/>
+                        <ToggleAttributeButton type="carrier" index={index} />
                     </View>
                     ))}
                 </View>
@@ -153,6 +90,7 @@ useFocusEffect(
                     {dreadnoughtImages.map((image, index) => (
                         <View key={image.id} style={styles.imageContainer}>
                         <EditButtonHP type="dreadnought" index={index} />
+                        <ToggleAttributeButton type="dreadnought" index={index}/>
                     </View>
                     ))}
                 </View>

@@ -44,7 +44,7 @@ export default function Dreadnought() {
               <Text style={styles.tableHeader}>Move Distance</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>4 Hexes</Text>
+              <Text style={styles.tableCell}>20ft</Text>
             </View>
           </View>
           <View style={styles.tableRow}>

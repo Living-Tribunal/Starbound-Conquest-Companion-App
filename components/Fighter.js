@@ -44,7 +44,7 @@ export default function Fighters() {
               <Text style={styles.tableHeader}>Move Distance</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>14 Hexes</Text>
+              <Text style={styles.tableCell}>70ft</Text>
             </View>
           </View>
           <View style={styles.tableRow}>

@@ -42,7 +42,7 @@ export default function Carrier() {
               <Text style={styles.tableHeader}>Move Distance</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>6 Hexes</Text>
+              <Text style={styles.tableCell}>30ft</Text>
             </View>
           </View>
           <View style={styles.tableRow}>

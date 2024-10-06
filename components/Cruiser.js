@@ -1,15 +1,15 @@
 import { StyleSheet, Text, View, ScrollView, Image} from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import TD6Dice from "./dice/TD6Dice/";
+import TD3Dice from "./dice/TD3Dice/";
 import D20Dice from "./dice/D20Dice/";
 
-export default function Heavy_Cruiser() {
+export default function Cruiser() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.image}>
-            <Image source={require('../assets/icons/battlecruiser_64.png')} style={{ height: 100, width: 100}} />
+            <Image source={require('../assets/icons/cruiser_64.png')} style={{ height: 100, width: 100}} />
         </View>
         <Text style={styles.header_text}>Ship Stats</Text>
         <View style={styles.table}>
@@ -18,7 +18,7 @@ export default function Heavy_Cruiser() {
               <Text style={styles.tableHeader}>Hit Point</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>5</Text>
+              <Text style={styles.tableCell}>4</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -26,7 +26,7 @@ export default function Heavy_Cruiser() {
               <Text style={styles.tableHeader}>Damage Threshold</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>6</Text>
+              <Text style={styles.tableCell}>4</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -34,7 +34,7 @@ export default function Heavy_Cruiser() {
               <Text style={styles.tableHeader}>Threat Level</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>9</Text>
+              <Text style={styles.tableCell}>8</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -42,7 +42,7 @@ export default function Heavy_Cruiser() {
               <Text style={styles.tableHeader}>Move Distance</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>6 Hexes</Text>
+              <Text style={styles.tableCell}>50ft</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -50,7 +50,7 @@ export default function Heavy_Cruiser() {
               <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>Railguns</Text>
+              <Text style={styles.tableCell}>Dual Laser Cannons</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -58,7 +58,7 @@ export default function Heavy_Cruiser() {
               <Text style={styles.tableHeader}>Firing Arc</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>Portside/Starboard(90°)</Text>
+              <Text style={styles.tableCell}>Turret (360°)</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -66,7 +66,7 @@ export default function Heavy_Cruiser() {
               <Text style={styles.tableHeader}>Weapon Damage</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>2D6</Text>
+              <Text style={styles.tableCell}>2D3</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -74,7 +74,7 @@ export default function Heavy_Cruiser() {
               <Text style={styles.tableHeader}>Weapon Range</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>80ft</Text>
+              <Text style={styles.tableCell}>30ft</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -82,11 +82,11 @@ export default function Heavy_Cruiser() {
               <Text style={styles.tableHeader}>Point Value</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>120</Text>
+              <Text style={styles.tableCell}>90</Text>
             </View>
           </View>
         </View>
-        <View style={styles.shipTableStatsType}>
+            <View style={styles.shipTableStatsType}>
                 <Text style={styles.tableHeader}>Ship Class:</Text>    
             </View>
             <View style={styles.shipTableStats}>
@@ -131,8 +131,8 @@ export default function Heavy_Cruiser() {
                     <D20Dice />
                 </View>
                 <View style={styles.diceItem}>
-                    <Text style={styles.tableHeader}>Railguns</Text>
-                    <TD6Dice />
+                    <Text style={styles.tableHeader}>Laser Cannons</Text>
+                    <TD3Dice />
                 </View>
             </View>
       </ScrollView>

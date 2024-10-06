@@ -25,8 +25,8 @@ const CustomDrawer = (props) => {
     return (
         <View style={{flex: 1, backgroundColor: Colors.dark_gray, borderColor: Colors.dark_gray}}>
             <DrawerContentScrollView {...props} contentContainerStyle={{backgroundColor: Colors.dark_gray}}>
-                <ImageBackground source={require('../assets/images/ships.jpg')} style={{width: 250, height: 75, justifyContent: 'center', alignItems: 'center'}}>
-                <Text style={{color: Colors.white, fontSize: 14, fontFamily: 'aboreto'}}>Starbound Conquest</Text>
+                <ImageBackground source={require('../assets/images/sbc.jpg')} style={{width: 240, height: 150, justifyContent: 'center', alignItems: 'center'}}>
+                {/* <Text style={{color: Colors.white, fontSize: 12, fontFamily: 'aboreto'}}>Starbound Conquest</Text> */}
                 </ImageBackground>
                 <View style={{backgroundColor: Colors.slate}}>
                     <DrawerItemList {...props} />

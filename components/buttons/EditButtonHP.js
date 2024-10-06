@@ -11,23 +11,17 @@ export default function EditButtonHP({ type, index, value }) {
 
     const shipImages = {
         "fighter": require('../../assets/icons/rookie_64.png'),
-        "frigate": require('../../assets/icons/shuttle_64.png'),
         "destroyer": require('../../assets/icons/destroyer_64.png'),
-        "lightcruiser": require('../../assets/icons/cruiser_64.png'),
-        "heavycruiser": require('../../assets/icons/battlecruiser_64.png'),
+        "cruiser": require('../../assets/icons/cruiser_64.png'),
         "carrier": require('../../assets/icons/superCapital_64.png'),
-        "battleship": require('../../assets/icons/battleship_64.png'),
         "dreadnought": require('../../assets/icons/titan_64.png'),
     };
     const shipHPValues = {
         "fighter": 1,
-        "frigate": 2,
-        "destroyer": 3,
-        "lightcruiser": 4,
-        "heavycruiser": 5,
-        "carrier": 7,
-        "battleship": 8,
-        "dreadnought": 10,
+        "destroyer": 8,
+        "cruiser": 12,
+        "carrier": 14,
+        "dreadnought": 30,
     }
 
     const save = async () => {

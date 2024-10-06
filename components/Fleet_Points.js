@@ -14,37 +14,28 @@ import {
   import EditButton from "./buttons/EditButton";
 
   const SHIP_VALUES = {
-    fighter: 30,
-    frigate: 50,
-    destroyer: 70,
-    lightcruiser: 90,
-    heavycruiser: 120,
-    battleship: 150,
-    carrier: 130,
-    dreadnought: 180
+    fighter: 1,
+    destroyer: 30,
+    cruiser: 80,
+    carrier: 120,
+    dreadnought: 240
   };
   
   export default function Fleet_Points() {
 
     const [fighterCount, setFighterCount] = useState(0);
-    const [frigateCount, setFrigateCount] = useState(0);
     const [carrierCount, setCarrierCount] = useState(0);
-    const [battleshipCount, setBattleshipCount] = useState(0);
     const [dreadnoughtCount, setDreadnoughtCount] = useState(0);
-    const [lightcruiserCount, setLightcruiserCount] = useState(0);
-    const [heavycruiserCount, setHeavycruiserCount] = useState(0);
+    const [cruiserCount, setCruiserCount] = useState(0);
     const [destroyerCount, setDestroyerCount] = useState(0);
     const [fleetValue, setFleetValue] = useState(0);
 
     const handleAddShip = async (shipType) => {
         const newCount = {
             fighter: fighterCount,
-            frigate: frigateCount,
             carrier: carrierCount,
-            battleship: battleshipCount,
             dreadnought: dreadnoughtCount,
-            lightcruiser: lightcruiserCount,
-            heavycruiser: heavycruiserCount,
+            cruiser: cruiserCount,
             destroyer: destroyerCount
         }[shipType] + 1;
 
@@ -54,23 +45,14 @@ import {
             case 'fighter':
                 setFighterCount(newCount);
                 break;
-            case 'frigate':
-                setFrigateCount(newCount);
-                break;
             case 'carrier':
                 setCarrierCount(newCount);
-                break;
-            case 'battleship':
-                setBattleshipCount(newCount);
                 break;
             case 'dreadnought':
                 setDreadnoughtCount(newCount);
                 break;
-            case 'lightcruiser':
-                setLightcruiserCount(newCount);
-                break;
-            case 'heavycruiser':
-                setHeavycruiserCount(newCount);
+            case 'cruiser':
+                setCruiserCount(newCount);
                 break;
             case 'destroyer':
                 setDestroyerCount(newCount);
@@ -83,12 +65,9 @@ import {
     const handleRemoveShip = async (shipType) => {
         const currentCount = {
             fighter: fighterCount,
-            frigate: frigateCount,
             carrier: carrierCount,
-            battleship: battleshipCount,
             dreadnought: dreadnoughtCount,
-            lightcruiser: lightcruiserCount,
-            heavycruiser: heavycruiserCount,
+            cruiser: cruiserCount,
             destroyer: destroyerCount,
         }[shipType];
     
@@ -100,23 +79,14 @@ import {
                 case 'fighter':
                     setFighterCount(newCount);
                     break;
-                case 'frigate':
-                    setFrigateCount(newCount);
-                    break;
                 case 'carrier':
                     setCarrierCount(newCount);
-                    break;
-                case 'battleship':
-                    setBattleshipCount(newCount);
                     break;
                 case 'dreadnought':
                     setDreadnoughtCount(newCount);
                     break;
-                case 'lightcruiser':
-                    setLightcruiserCount(newCount);
-                    break;
-                case 'heavycruiser':
-                    setHeavycruiserCount(newCount);
+                case 'cruiser':
+                    setCruiserCount(newCount);
                     break;
                 case 'destroyer':
                     setDestroyerCount(newCount);
@@ -131,22 +101,16 @@ import {
         const loadCounts = async () => {
             try {
                 const savedFighterCount = await AsyncStorage.getItem('fighterCount');
-                const savedFrigateCount = await AsyncStorage.getItem('frigateCount');
                 const savedCarrierCount = await AsyncStorage.getItem('carrierCount');
-                const savedBattleshipCount = await AsyncStorage.getItem('battleshipCount');
                 const savedDreadnoughtCount = await AsyncStorage.getItem('dreadnoughtCount');
-                const savedLightcruiserCount = await AsyncStorage.getItem('lightcruiserCount');
-                const savedHeavycruiserCount = await AsyncStorage.getItem('heavycruiserCount');
+                const savedCruiserCount = await AsyncStorage.getItem('cruiserCount');
                 const savedDestroyerCount = await AsyncStorage.getItem('destroyerCount');
                 const savedFleetValue = await AsyncStorage.getItem('fleetValue');
         
                 setFighterCount(savedFighterCount !== null ? JSON.parse(savedFighterCount) : 0);
-                setFrigateCount(savedFrigateCount !== null ? JSON.parse(savedFrigateCount) : 0);
                 setCarrierCount(savedCarrierCount !== null ? JSON.parse(savedCarrierCount) : 0);
-                setBattleshipCount(savedBattleshipCount !== null ? JSON.parse(savedBattleshipCount) : 0);
                 setDreadnoughtCount(savedDreadnoughtCount !== null ? JSON.parse(savedDreadnoughtCount) : 0);
-                setLightcruiserCount(savedLightcruiserCount !== null ? JSON.parse(savedLightcruiserCount) : 0);
-                setHeavycruiserCount(savedHeavycruiserCount !== null ? JSON.parse(savedHeavycruiserCount) : 0);
+                setCruiserCount(savedCruiserCount !== null ? JSON.parse(savedCruiserCount) : 0);
                 setDestroyerCount(savedDestroyerCount !== null ? JSON.parse(savedDestroyerCount) : 0);
                 setFleetValue(savedFleetValue !== null ? JSON.parse(savedFleetValue) : 0);
             } catch (e) {
@@ -172,12 +136,9 @@ import {
         try {
           await AsyncStorage.clear();
           setFighterCount(0);
-          setFrigateCount(0);
           setDestroyerCount(0);
-          setLightcruiserCount(0);
-          setHeavycruiserCount(0);
+          setCruiserCount(0);
           setCarrierCount(0);
-          setBattleshipCount(0);
           setDreadnoughtCount(0);
           setFleetValue(0);
           console.log("Storage cleared");
@@ -200,22 +161,16 @@ import {
             </View>
             <View style={styles.shipTableStats}>
             <Image style={styles.Image} source={require('../assets/icons/rookie_64.png')} />
-            <Image style={styles.Image} source={require('../assets/icons/shuttle_64.png')} />
             <Image style={styles.Image} source={require('../assets/icons/destroyer_64.png')} />
             <Image style={styles.Image} source={require('../assets/icons/cruiser_64.png')} />
-            <Image style={styles.Image} source={require('../assets/icons/battlecruiser_64.png')} />
             <Image style={styles.Image} source={require('../assets/icons/superCapital_64.png')} />
-            <Image style={styles.Image} source={require('../assets/icons/battleship_64.png')} />
             <Image style={styles.Image} source={require('../assets/icons/titan_64.png')} />
             </View>
             <View style={styles.shipTableStatsNumbers}>
                 <Text style={styles.tableHeader}>{fighterCount}</Text>
-                <Text style={styles.tableHeader}>{frigateCount}</Text>
                 <Text style={styles.tableHeader}>{destroyerCount}</Text>
-                <Text style={styles.tableHeader}>{lightcruiserCount}</Text>
-                <Text style={styles.tableHeader}>{heavycruiserCount}</Text>
+                <Text style={styles.tableHeader}>{cruiserCount}</Text>
                 <Text style={styles.tableHeader}>{carrierCount}</Text>
-                <Text style={styles.tableHeader}>{battleshipCount}</Text>
                 <Text style={styles.tableHeader}>{dreadnoughtCount}</Text>
             </View>
           <View style={styles.pressableContainer}>
@@ -228,42 +183,18 @@ import {
                 ]} 
                 onPress={() => handleAddShip('fighter')} 
                 onLongPress={() =>handleRemoveShip('fighter')}>
-                <Text style={styles.pressableText}>Fighter +30</Text>
+                <Text style={styles.pressableText}>Fighter +1</Text>
             </Pressable>
             <Pressable style={({ pressed }) => [
                     styles.button,
                     {
-                    backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
-                    borderColor: pressed ? Colors.gold : Colors.slate,
-                    },
-                ]} 
-                onPress={() => handleAddShip('frigate')} 
-                onLongPress={() =>handleRemoveShip('frigate')}>
-                <Text style={styles.pressableText}>Frigate +50</Text>
-            </Pressable>
-        </View>
-        <View style={styles.pressableContainer}>
-            <Pressable style={({ pressed }) => [
-                    styles.button,
-                    {
-                    backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
-                    borderColor: pressed ? Colors.gold : Colors.slate,
+                        backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
+                        borderColor: pressed ? Colors.gold : Colors.slate,
                     },
                 ]} 
                 onPress={() => handleAddShip('destroyer')} 
                 onLongPress={() =>handleRemoveShip('destroyer')}>
-                <Text style={styles.pressableText}>Destroyer +70</Text>
-            </Pressable>
-            <Pressable style={({ pressed }) => [
-                    styles.button,
-                    {
-                        backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
-                        borderColor: pressed ? Colors.gold : Colors.slate,
-                    },
-                ]} 
-                onPress={() => handleAddShip('lightcruiser')} 
-                onLongPress={() =>handleRemoveShip('lightcruiser')}>
-                <Text style={styles.pressableText}>Light Cruiser +90</Text>
+                <Text style={styles.pressableText}>Destroyer +30</Text>
             </Pressable>
         </View>
         <View style={styles.pressableContainer}>
@@ -274,9 +205,9 @@ import {
                         borderColor: pressed ? Colors.gold : Colors.slate,
                     },
                 ]} 
-                onPress={() => handleAddShip('heavycruiser')} 
-                onLongPress={() =>handleRemoveShip('heavycruiser')}>
-                <Text style={styles.pressableText}>Heavy Cruiser +120</Text>
+                onPress={() => handleAddShip('cruiser')} 
+                onLongPress={() =>handleRemoveShip('cruiser')}>
+                <Text style={styles.pressableText}>Cruiser +80</Text>
             </Pressable>
             <Pressable style={({ pressed }) => [
                     styles.button,
@@ -287,21 +218,10 @@ import {
                 ]} 
                 onPress={() => handleAddShip('carrier')} 
                 onLongPress={() =>handleRemoveShip('carrier')}>
-                <Text style={styles.pressableText}>Carrier +130</Text>
+                <Text style={styles.pressableText}>Carrier +120</Text>
             </Pressable>
-            </View>
-            <View style={styles.pressableContainer}>
-            <Pressable style={({ pressed }) => [
-                    styles.button,
-                    {
-                        backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
-                        borderColor: pressed ? Colors.gold : Colors.slate,
-                    },
-                ]} 
-                onPress={() => handleAddShip('battleship')} 
-                onLongPress={() =>handleRemoveShip('battleship')}>
-                <Text style={styles.pressableText}>Battleship +150</Text>
-            </Pressable>
+        </View>
+        <View style={styles.pressableContainer}>
             <Pressable style={({ pressed }) => [
                     styles.button,
                     {
@@ -311,7 +231,7 @@ import {
                 ]} 
                 onPress={() => handleAddShip('dreadnought')} 
                 onLongPress={() =>handleRemoveShip('dreadnought')}>
-                <Text style={styles.pressableText}>Dreadnought +180</Text>
+                <Text style={styles.pressableText}>Dreadnought +240</Text>
             </Pressable>
             </View>
             <View style={styles.pressableContainer}>
@@ -320,14 +240,23 @@ import {
                 style={({ pressed }) => [
                         styles.deleteButton,
                         {
-                        backgroundColor: pressed ? Colors.deep_red : Colors.blue_gray,
-                        borderColor: pressed ? Colors.lightened_deep_red : Colors.slate,
+                        backgroundColor: pressed ? Colors.gold : Colors.deep_red,
+                        borderColor: pressed ? Colors.lightened_gold : Colors.lightened_deep_red,
                         },
                     ]}>  
-    
-                <Text style={styles.pressableText}>Delete Everything</Text>
+                {({ pressed }) => (
+                <Text
+                    style={{
+                        color: pressed ? Colors.dark_gray : Colors.white,
+                        fontFamily: "monospace",
+                        fontSize: 10
+                    }}
+                >
+                    Delete Everything
+                </Text>
+            )}
             </Pressable>
-          </View>
+        </View>
         </View>
 
 

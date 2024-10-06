@@ -42,7 +42,7 @@ export default function Destroyers() {
               <Text style={styles.tableHeader}>Move Distance</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>10 Hexes</Text>
+              <Text style={styles.tableCell}>50ft</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
