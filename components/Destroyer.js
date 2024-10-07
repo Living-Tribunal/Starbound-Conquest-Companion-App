@@ -55,6 +55,16 @@ export default function Destroyers() {
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
+              <Text style={styles.tableHeader}>Maneuvers</Text>
+            </View>
+            <View style={styles.tableCellContainer}>
+              <Text style={styles.tableCell}>Full Throttle</Text>
+              <Text style={styles.tableCell}>Anti-Fighter Barrage</Text>
+              <Text style={styles.tableCell}>Power Up Main Guns</Text>
+            </View>
+          </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableHeaderContainer}>
               <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>

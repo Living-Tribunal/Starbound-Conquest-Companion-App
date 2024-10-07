@@ -57,6 +57,16 @@ export default function Fighters() {
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
+              <Text style={styles.tableHeader}>Maneuvers</Text>
+            </View>
+            <View style={styles.tableCellContainer}>
+              <Text style={styles.tableCell}>Full Throttle</Text>
+              <Text style={styles.tableCell}>Combine Fire</Text>
+              <Text style={styles.tableCell}>Eevasive Maneuvers</Text>
+            </View>
+          </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableHeaderContainer}>
               <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>

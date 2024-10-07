@@ -57,6 +57,18 @@ export default function Dreadnought() {
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
+              <Text style={styles.tableHeader}>Maneuvers</Text>
+            </View>
+            <View style={styles.tableCellContainer}>
+              <Text style={styles.tableCell}>Full Throttle</Text>
+              <Text style={styles.tableCell}>Reinforce Shields</Text>
+              <Text style={styles.tableCell}>Launch Fighters</Text>
+              <Text style={styles.tableCell}>All Systems Fire</Text>
+              <Text style={styles.tableCell}>Charge Ion Beam</Text>
+            </View>
+          </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableHeaderContainer}>
               <Text style={styles.tableHeader}>Weapon Type</Text>
             </View>
             <View style={styles.tableCellContainer}>
