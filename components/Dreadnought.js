@@ -57,7 +57,7 @@ export default function Dreadnought() {
           </View>
           <View style={styles.tableRow}>
             <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Maneuvers</Text>
+              <Text style={styles.tableHeader}>Special Orders</Text>
             </View>
             <View style={styles.tableCellContainer}>
               <Text style={styles.tableCell}>Full Throttle</Text>
