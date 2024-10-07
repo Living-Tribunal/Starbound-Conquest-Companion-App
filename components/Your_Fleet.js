@@ -80,8 +80,10 @@ useFocusEffect(
                 <View style={styles.imageRow}>
                     {carrierImages.map((image, index) => (
                         <View key={image.id} style={styles.imageContainer}>
+                            <View style={styles.toggleContainer} >
                         <EditButtonHP type="carrier" index={index} />
                         <ToggleAttributeButton type="carrier" index={index} />
+                        </View>
                     </View>
                     ))}
                 </View>
@@ -89,8 +91,10 @@ useFocusEffect(
                 <View style={styles.imageRow}>
                     {dreadnoughtImages.map((image, index) => (
                         <View key={image.id} style={styles.imageContainer}>
-                        <EditButtonHP type="dreadnought" index={index} />
-                        <ToggleAttributeButton type="dreadnought" index={index}/>
+                        <View style={styles.toggleContainer} >
+                            <EditButtonHP type="dreadnought" index={index} />
+                            <ToggleAttributeButton type="dreadnought" index={index}/>
+                        </View>
                     </View>
                     ))}
                 </View>
@@ -166,5 +170,9 @@ const styles = StyleSheet.create({
         borderLeftColor: "transparent",
         borderRightColor: "transparent",
     },
-
+    toggleContainer: {
+        flexDirection: "column",
+        justifyContent: "space-between",
+        marginBottom: 10,
+    }
 });
