@@ -37,7 +37,7 @@ export default function Index() {
     }
   return (
 
-        <Drawer.Navigator drawerContent={props => <CustomDrawer{...props} />} initialRouteName = "Rules"
+        <Drawer.Navigator drawerContent={props => <CustomDrawer{...props} />} initialRouteName = "Fleet Points"
         screenOptions={{
             drawerStyle: {
             width: 235,

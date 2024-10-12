@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Pressable, View, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
+import ToggleDone from "./ToggleDone";
 
 export default function ToggleAtributeButton({ type, index }) {
   const statKey = `${type}-${index}`;
@@ -116,12 +117,13 @@ export default function ToggleAtributeButton({ type, index }) {
     <View style={styles.buttonContainer}>
       <View style={styles.fleetContainer}>
         <View style={styles.ordersContainer}>
+        <ToggleDone type="fighter" index={index} /> 
           <Text style={styles.fightersText}>Orders</Text>
           <View
           style={[
             styles.ordersButtons,
             {
-              flexDirection: type === "carrier" || type === "dreadnought" ? "row" : "column",
+              flexDirection: type === "carrier" || type === "dreadnought" ? "row" : "row",
             },
           ]}
         >
@@ -188,38 +190,37 @@ export default function ToggleAtributeButton({ type, index }) {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    marginTop: 10,
+    marginTop: 5,
   },
   ordersContainer: {
     marginTop: 10,
     marginLeft: 10,
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
   },
   ordersButtons: {
-    flexDirection: "row",
+    alignContent: 'center',
+    justifyContent: "space-around",
+    flex: 1,
   },
   fightersContainer: {
     marginTop: 10,
     marginLeft: 10,
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
   },
   button: {
-    width: 25,
-    height: 25,
-    margin: 5,
+    width: 20,
+    height: 20,
+    margin: 3,
     borderRadius: 20,
     borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
   },
   buttonFighters: {
-    width: 25,
-    height: 25,
-    margin: 5,
+    width: 20,
+    height: 20,
+    margin: 2,
     borderRadius: 20,
     borderWidth: 2,
     alignItems: "center",
@@ -227,10 +228,10 @@ const styles = StyleSheet.create({
   },
   fightersText: {
     color: Colors.white,
+    textAlign: "center",
   },
   fighterRow: {
-    flexDirection: "row", // Makes the buttons align horizontally in a row
-    justifyContent: "center", // Centers the row
-    marginBottom: 5, // Adds spacing between rows
+    flexDirection: "row",
+    marginBottom: 2,
   },
 });

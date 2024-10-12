@@ -10,7 +10,8 @@ export const Colors = {
     goldenrod: '#B8860B',
     gold: '#FFD700',
     lightened_gold: '#FFEA70',
-
+    green_toggle: '#30da20',
+    darker_green_toggle: '#197510'
   }
  
 

@@ -111,8 +111,8 @@ export default function EditButtonHP({ type, index, value, short }) {
           <Image
             source={imageSource}
             style={{
-              width: 50,
-              height: 50,
+              width: 25,
+              height: 25,
             }}
           />
           <Text style={styles.textStyle}>
@@ -209,9 +209,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   button: {
-    width: 100,
-    paddingVertical: 5,
-    paddingHorizontal: 5,
+    width: 75,
+    paddingVertical: 2,
+    paddingHorizontal: 2,
     borderTopLeftRadius: 20,
     borderBottomRightRadius: 20,
     borderWidth: 2,
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark_gray,
     alignItems: "center",
     justifyContent: "center",
-    gap: 20,
+    gap: 5,
   },
   fleetContainer: {
     padding: 2,

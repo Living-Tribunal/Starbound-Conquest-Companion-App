@@ -106,7 +106,7 @@ useFocusEffect(
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 20,
+        paddingTop: 10,
         backgroundColor: Colors.dark_gray,
     },
     title: {
@@ -114,20 +114,8 @@ const styles = StyleSheet.create({
         fontSize: 28,
         textAlign: "center",
         fontFamily: "monospace",
-        marginBottom: 20,
-        marginTop: 20,
-    },
-    button: {
-        width: 75,
-        height: 50,
-        paddingVertical: 10,
-        paddingHorizontal: 10,
-        marginRight: 10,
-        alignItems: "center",
-        borderTopLeftRadius: 20,
-        borderBottomRightRadius: 20,
-        borderWidth: 2,
-        borderColor: Colors.slate,
+        marginBottom: 10,
+        marginTop: 10,
     },
     scrollView: {
         flex: 1,
@@ -136,43 +124,34 @@ const styles = StyleSheet.create({
     imageRow: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        padding: 1,
         justifyContent: 'space-evenly',
+        borderColor: Colors.slate,
+        borderWidth: 2,
     },
     imageContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingBottom: 10,
-    },
-    image: {
-        width: 25,
-        height: 25,
+        paddingBottom: 2,
     },
     imageContainerHP: {
         flexDirection: "row",
         alignItems: 'center',
     },
-    shipText: {
-        color: Colors.white,
-        marginLeft: 2,
-        fontSize: 10,
-        fontFamily: "monospace",
-    },
     shipTextHeader:{
-        color: Colors.white,
-        marginLeft: 2,
-        fontSize: 16,
+        color: Colors.dark_gray,
+        fontSize: 20,
         fontFamily: "monospace",
-        marginTop: 10,
+        marginTop: 5,
+        marginBottom: 5,
         borderWidth: 2,
-        borderBottomColor: Colors.slate,
-        borderTopColor: "transparent",
-        borderLeftColor: "transparent",
-        borderRightColor: "transparent",
+        borderColor: Colors.dark_gray,
+        textAlign: "center",
+        backgroundColor: Colors.slate,
     },
     toggleContainer: {
-        flexDirection: "column",
+        flexDirection: "row",
         justifyContent: "space-between",
+        alignItems: "center",
         marginBottom: 10,
     }
 });
