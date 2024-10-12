@@ -4,27 +4,24 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
 
 export default function ToggleDone({ type, index }) {
-  const statKey = `${type}-${index}`;
+  const statDoneKey = `${type}-${index}`;
 
-  const SHIP_TOGGLES = {
-    fighter: 1,
-    destroyer: 1,
-    cruiser: 1,
-    carrier: 1,
-    dreadnought: 1,
+  const SHIP_TOGGLES_DONE = {
+    fighter1: 1,
+    destroyer2: 1,
+    cruiser3: 1,
+    carrier4: 1,
+    dreadnought5: 1,
   };
 
-  const [toggleStates, setToggleStates] = useState(
-    Array(SHIP_TOGGLES[type]).fill(false)
+  const [toggleDoneStates, setToggleDoneStates] = useState(
+    Array(SHIP_TOGGLES_DONE[type]).fill(false)
   );
 
-  const save = async (toggleIndex, valueToSave, keyType) => {
+  const save = async (toggleDoneIndex, valueToSave) => {
     try {
-      const key = statKey;
-      await AsyncStorage.setItem(
-        `${key}-${toggleIndex}`,
-        JSON.stringify(valueToSave)
-      );
+      const key = `${statDoneKey}-${toggleDoneIndex}`;
+      await AsyncStorage.setItem(key, JSON.stringify(valueToSave));
     } catch (err) {
       alert(err);
     }
@@ -32,13 +29,13 @@ export default function ToggleDone({ type, index }) {
 
   const load = async () => {
     try {
-      let savedStates = [];;
-      for (let i = 0; i < SHIP_TOGGLES[type]; i++) {
-        const savedState = await AsyncStorage.getItem(`${statKey}-${i}`);
-        console.log(`Loaded state for toggle ${i}: ${savedState}`);
-        savedStates.push(savedState === "true");
+      let savedDoneStates = [];;
+      for (let i = 0; i < SHIP_TOGGLES_DONE[type]; i++) {
+        const savedDoneState = await AsyncStorage.getItem(`${statDoneKey}-${i}`);
+        console.log(`Loaded state for toggle ${i}: ${savedDoneState}`);
+        savedDoneStates.push(savedDoneState === "true");
       }
-      setToggleStates(savedStates);
+      setToggleDoneStates(savedDoneStates);
     } catch (err) {
       alert(err);
     }
@@ -48,22 +45,22 @@ export default function ToggleDone({ type, index }) {
     load();
   }, []);
 
-  const handlePress = (toggleIndex) => {
-    setToggleStates((prevStates) => {
-      const updatedToggleStates = [...prevStates];
-      updatedToggleStates[toggleIndex] = !updatedToggleStates[toggleIndex];
+  const handlePress = (toggleDoneIndex) => {
+    setToggleDoneStates((prevStates) => {
+      const updatedToggleDoneStates = [...prevStates];
+      updatedToggleDoneStates[toggleDoneIndex] = !updatedToggleDoneStates[toggleDoneIndex];
 
       // Log the new state before saving
       console.log(
-        `Updated toggle states after pressing ${toggleIndex}: ${JSON.stringify(
-          updatedToggleStates
+        `Updated toggle states after pressing ${toggleDoneIndex}: ${JSON.stringify(
+          updatedToggleDoneStates
         )}`
       );
 
       // Save the updated value immediately
-      save(toggleIndex, updatedToggleStates[toggleIndex]);
+      save(toggleDoneIndex, updatedToggleDoneStates[toggleDoneIndex]);
 
-      return updatedToggleStates;
+      return updatedToggleDoneStates;
     });
   };
 
@@ -72,19 +69,19 @@ export default function ToggleDone({ type, index }) {
       <View style={styles.fleetContainer}>
         <View style={styles.ordersContainer}>
           <Text style={styles.fightersText}>Toggle Turn</Text>
-            {Array(SHIP_TOGGLES[type])
+            {Array(SHIP_TOGGLES_DONE[type])
               .fill(null)
-              .map((_, toggleIndex) => (
+              .map((_, toggleDoneIndex) => (
                 <Pressable
-                  key={toggleIndex}
-                  onPress={() => handlePress(toggleIndex)}
+                  key={toggleDoneIndex}
+                  onPress={() => handlePress(toggleDoneIndex)}
                   style={({ pressed }) => [
                     styles.button,
                     {
-                      backgroundColor: toggleStates[toggleIndex]
+                      backgroundColor: toggleDoneStates[toggleDoneIndex]
                         ? Colors.deep_red
                         : Colors.darker_green_toggle,
-                      borderColor: toggleStates[toggleIndex]
+                      borderColor: toggleDoneStates[toggleDoneIndex]
                         ? Colors.lightened_deep_red
                         : Colors.green_toggle,
                     },
@@ -116,5 +113,6 @@ const styles = StyleSheet.create({
   },
   fightersText: {
     color: Colors.white,
+    padding: 10,
   },
 });

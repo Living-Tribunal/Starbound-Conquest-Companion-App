@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Pressable, View, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
-import ToggleDone from "./ToggleDone";
 
 export default function ToggleAtributeButton({ type, index }) {
   const statKey = `${type}-${index}`;
@@ -117,7 +116,6 @@ export default function ToggleAtributeButton({ type, index }) {
     <View style={styles.buttonContainer}>
       <View style={styles.fleetContainer}>
         <View style={styles.ordersContainer}>
-        <ToggleDone type="fighter" index={index} /> 
           <Text style={styles.fightersText}>Orders</Text>
           <View
           style={[
