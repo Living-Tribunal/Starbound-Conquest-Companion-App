@@ -105,8 +105,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    width: 20,
-    height: 20,
+    width: 25,
+    height: 25,
     margin: 5,
     borderRadius: 20,
     borderWidth: 2,

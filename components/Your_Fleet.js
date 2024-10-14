@@ -14,11 +14,11 @@ export default function Your_Fleet() {
   const [carrierImages, setCarrierImages] = useState([]);
   const [dreadnoughtImages, setDreadnoughtImages] = useState([]);
 
-  const [showFighterClass, setShowFighterClass] = useState(true);
-  const [showDestroyerClass, setShowDestroyerClass] = useState(true);
-  const [showCarrierClass, setShowCarrierClass] = useState(true);
-  const [showCruiserClass, setShowCruiserClass] = useState(true);
-  const [showDreadnoughtClass, setShowDreadnoughtClass] = useState(true);
+  const [showFighterClass, setShowFighterClass] = useState(false);
+  const [showDestroyerClass, setShowDestroyerClass] = useState(false);
+  const [showCarrierClass, setShowCarrierClass] = useState(false);
+  const [showCruiserClass, setShowCruiserClass] = useState(false);
+  const [showDreadnoughtClass, setShowDreadnoughtClass] = useState(false);
 
   const handlePressFi = () => {
     setShowFighterClass((prevState) => !prevState);
@@ -42,13 +42,9 @@ export default function Your_Fleet() {
         try {
           const savedFighterCount = await AsyncStorage.getItem("fighterCount");
           const savedCarrierCount = await AsyncStorage.getItem("carrierCount");
-          const savedDreadnoughtCount = await AsyncStorage.getItem(
-            "dreadnoughtCount"
-          );
+          const savedDreadnoughtCount = await AsyncStorage.getItem("dreadnoughtCount");
           const savedCruiserCount = await AsyncStorage.getItem("cruiserCount");
-          const savedDestroyerCount = await AsyncStorage.getItem(
-            "destroyerCount"
-          );
+          const savedDestroyerCount = await AsyncStorage.getItem("destroyerCount");
 
           const counts = {
             fighterCount: parseInt(savedFighterCount) || 0,
@@ -98,7 +94,7 @@ export default function Your_Fleet() {
           ]}
         >
           <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>Fighters</Text>
+            <Text style={styles.shipTextHeader}>Fighters - {fighterImages.length} Ships</Text>
           </View>
         </Pressable>
 
@@ -126,7 +122,7 @@ export default function Your_Fleet() {
           ]}
         >
           <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>Destroyers</Text>
+            <Text style={styles.shipTextHeader}>Destroyers - {destroyerImages.length} Ships</Text>
           </View>
         </Pressable>
 
@@ -154,7 +150,7 @@ export default function Your_Fleet() {
           ]}
         >
           <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>Cruisers</Text>
+            <Text style={styles.shipTextHeader}>Cruisers - {cruiserImages.length} Ships</Text>
           </View>
         </Pressable>
 
@@ -182,7 +178,7 @@ export default function Your_Fleet() {
           ]}
         >
           <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>Carriers</Text>
+            <Text style={styles.shipTextHeader}>Carriers - {carrierImages.length} Ships</Text>
           </View>
         </Pressable>
 
@@ -210,7 +206,7 @@ export default function Your_Fleet() {
           ]}
         >
           <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>Dreadnoughts</Text>
+            <Text style={styles.shipTextHeader}>Dreadnoughts - {dreadnoughtImages.length} Ships</Text>
           </View>
         </Pressable>
 
