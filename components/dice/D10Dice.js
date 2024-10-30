@@ -44,7 +44,7 @@ export default function D10Dice() {
         ]}> 
           <Text
           style={styles.rollDiceBtnText}>
-            Roll the dice
+           (d10) Roll the dice
           </Text>
         </Pressable>
       </View>

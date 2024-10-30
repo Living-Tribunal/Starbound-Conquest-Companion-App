@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, Image} from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import D6Dice from "./dice/D6Dice/";
+import D4Dice from "./dice/D4Dice/";
 import D20Dice from "./dice/D20Dice/";
 import { StatusBar } from 'expo-status-bar';
 
@@ -86,7 +86,7 @@ export default function Fighters() {
               <Text style={styles.tableHeader}>Weapon Damage</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>1d6</Text>
+              <Text style={styles.tableCell}>1d4</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -102,7 +102,7 @@ export default function Fighters() {
               <Text style={styles.tableHeader}>Point Value</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>30</Text>
+              <Text style={styles.tableCell}>1</Text>
             </View>
           </View>
         </View>
@@ -117,33 +117,33 @@ export default function Fighters() {
                 <Text style={styles.tableHeader}>Dn</Text>
             </View>
             <View style={styles.shipTableStatsType}>
-                <Text style={styles.tableHeader}>To Hit:</Text>  
+                <Text style={styles.tableHeaderValues}>To Hit:</Text>  
             </View>
             <View style={styles.shipTableStatsNumbers}>
-                <Text style={styles.tableHeader}>15</Text>
-                <Text style={styles.tableHeader}>10</Text>
-                <Text style={styles.tableHeader}>8</Text>
-                <Text style={styles.tableHeader}>6</Text>
-                <Text style={styles.tableHeader}>4</Text>
+                <Text style={styles.tableHeaderValues}>15</Text>
+                <Text style={styles.tableHeaderValues}>10</Text>
+                <Text style={styles.tableHeaderValues}>8</Text>
+                <Text style={styles.tableHeaderValues}>6</Text>
+                <Text style={styles.tableHeaderValues}>4</Text>
             </View>
             <View style={styles.shipTableStatsType}>
-                <Text style={styles.tableHeader}>Soak:</Text>    
+                <Text style={styles.tableHeaderValues}>Soak:</Text>    
             </View>
             <View style={styles.shipTableStatsNumbers}>
-                <Text style={styles.tableHeader}>1</Text>
-                <Text style={styles.tableHeader}>4</Text>
-                <Text style={styles.tableHeader}>6</Text>
-                <Text style={styles.tableHeader}>7</Text>
-                <Text style={styles.tableHeader}>8</Text>
+                <Text style={styles.tableHeaderValues}>1</Text>
+                <Text style={styles.tableHeaderValues}>4</Text>
+                <Text style={styles.tableHeaderValues}>6</Text>
+                <Text style={styles.tableHeaderValues}>7</Text>
+                <Text style={styles.tableHeaderValues}>8</Text>
             </View>
             <View style={styles.diceWrapper}>
                 <View style={styles.diceItem}>
-                <Text style={styles.tableHeader}>To Hit</Text>
+                <Text style={styles.tableHeaderValues}>To Hit</Text>
                 <D20Dice />
                 </View>
                 <View style={styles.diceItem}>
-                <Text style={styles.tableHeader}>Laser Cannon</Text>
-                <D6Dice/>
+                <Text style={styles.tableHeaderValues}>Laser Cannon</Text>
+                <D4Dice/>
                 </View>
             </View>
       </ScrollView>
@@ -187,10 +187,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   tableHeader: {
-    color: Colors.misty_blue,
-    fontSize: 12,
+    color: Colors.dark_gray,
+    fontSize: 13,
     fontFamily: "monospace",
     fontWeight: "bold",
+    textAlign: "center",
+  },
+  tableHeaderValues: {
+    color: Colors.slate,
+    fontSize: 13,
+    fontFamily: "monospace",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   tableCellContainer: {
     flex: 1,
@@ -202,7 +210,7 @@ const styles = StyleSheet.create({
   tableCell: {
     color: Colors.white,
     fontSize: 10,
-    textAlign: "right",
+    textAlign: "center",
     fontFamily: "monospace",
   },
   shipTableStats: {

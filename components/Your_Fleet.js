@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,11 +14,11 @@ export default function Your_Fleet() {
   const [carrierImages, setCarrierImages] = useState([]);
   const [dreadnoughtImages, setDreadnoughtImages] = useState([]);
 
-  const [showFighterClass, setShowFighterClass] = useState(false);
-  const [showDestroyerClass, setShowDestroyerClass] = useState(false);
-  const [showCarrierClass, setShowCarrierClass] = useState(false);
-  const [showCruiserClass, setShowCruiserClass] = useState(false);
-  const [showDreadnoughtClass, setShowDreadnoughtClass] = useState(false);
+  const [showFighterClass, setShowFighterClass] = useState(true);
+  const [showDestroyerClass, setShowDestroyerClass] = useState(true);
+  const [showCarrierClass, setShowCarrierClass] = useState(true);
+  const [showCruiserClass, setShowCruiserClass] = useState(true);
+  const [showDreadnoughtClass, setShowDreadnoughtClass] = useState(true);
 
   const handlePressFi = () => {
     setShowFighterClass((prevState) => !prevState);
@@ -82,7 +82,30 @@ export default function Your_Fleet() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Your Fleet</Text>
+        <View style={styles.endcontainer}>
+            <Text style={styles.title}>Your Fleet</Text>
+            <Pressable
+            style={({ pressed }) => [
+                styles.resetbutton,
+                {
+                backgroundColor: pressed ? Colors.gold : Colors.deep_red,
+                borderColor: pressed ? Colors.lightened_gold : Colors.lightened_deep_red,
+                },
+            ]}
+            >
+            {({ pressed }) => (
+              <Text
+                style={{
+                  color: pressed ? Colors.dark_gray : Colors.white,
+                  fontFamily: "monospace",
+                  fontSize: 10,
+                }}
+              >
+                End Turn
+              </Text>
+            )}
+        </Pressable> 
+        </View>
       <ScrollView style={styles.scrollView}>
         <Pressable
           onPress={handlePressFi}
@@ -234,6 +257,11 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     backgroundColor: Colors.dark_gray,
   },
+  endcontainer: {
+    gap: 5,
+    marginBottom: 10,
+    padding: 5,
+  },
   title: {
     color: Colors.white,
     fontSize: 28,
@@ -278,5 +306,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
+  },
+  resetbutton: {
+    alignSelf: 'center',
+    width: 125,
+    paddingVertical: 2,
+    paddingHorizontal: 2,
+    borderTopLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

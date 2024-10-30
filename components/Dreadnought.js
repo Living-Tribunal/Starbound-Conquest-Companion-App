@@ -127,41 +127,41 @@ export default function Dreadnought() {
                 <Text style={styles.tableHeader}>Dn</Text>
             </View>
             <View style={styles.shipTableStatsType}>
-                <Text style={styles.tableHeader}>To Hit:</Text>  
+                <Text style={styles.tableHeaderValues}>To Hit:</Text>  
             </View>
             <View style={styles.shipTableStatsNumbers}>
-                <Text style={styles.tableHeader}>15</Text>
-                <Text style={styles.tableHeader}>10</Text>
-                <Text style={styles.tableHeader}>8</Text>
-                <Text style={styles.tableHeader}>6</Text>
-                <Text style={styles.tableHeader}>4</Text>
+                <Text style={styles.tableHeaderValues}>15</Text>
+                <Text style={styles.tableHeaderValues}>10</Text>
+                <Text style={styles.tableHeaderValues}>8</Text>
+                <Text style={styles.tableHeaderValues}>6</Text>
+                <Text style={styles.tableHeaderValues}>4</Text>
             </View>
             <View style={styles.shipTableStatsType}>
-                <Text style={styles.tableHeader}>Soak:</Text>    
+                <Text style={styles.tableHeaderValues}>Soak:</Text>    
             </View>
             <View style={styles.shipTableStatsNumbers}>
-                <Text style={styles.tableHeader}>1</Text>
-                <Text style={styles.tableHeader}>4</Text>
-                <Text style={styles.tableHeader}>6</Text>
-                <Text style={styles.tableHeader}>7</Text>
-                <Text style={styles.tableHeader}>8</Text>
+                <Text style={styles.tableHeaderValues}>1</Text>
+                <Text style={styles.tableHeaderValues}>4</Text>
+                <Text style={styles.tableHeaderValues}>6</Text>
+                <Text style={styles.tableHeaderValues}>7</Text>
+                <Text style={styles.tableHeaderValues}>8</Text>
             </View>
         <ScrollView horizontal={true}>
         <View style={styles.diceWrapper}>
             <View style={styles.diceItem}>
-                <Text style={styles.tableHeader}>To Hit</Text>
+                <Text style={styles.tableHeaderValues}>To Hit</Text>
                 <D20Dice />
             </View>
             <View style={styles.diceItem}>
-                <Text style={styles.tableHeader}>Ion Particle Beam</Text>
+                <Text style={styles.tableHeaderValues}>Ion Particle Beam</Text>
                 <D12Dice />
             </View>
             <View style={styles.diceItem}>
-                <Text style={styles.tableHeader}>Plasma Cannon</Text>
+                <Text style={styles.tableHeaderValues}>Plasma Cannon</Text>
                 <D10Dice />
             </View>
             <View style={styles.diceItem}>
-                <Text style={styles.tableHeader}>350mm Railgun</Text>
+                <Text style={styles.tableHeaderValues}>350mm Railgun</Text>
                 <D8Dice />
             </View>
         </View>
@@ -207,11 +207,19 @@ const styles = StyleSheet.create({
       paddingHorizontal: 5,
     },
     tableHeader: {
-      color: Colors.misty_blue,
-      fontSize: 12,
-      fontFamily: "monospace",
-      fontWeight: "bold",
-    },
+        color: Colors.dark_gray,
+        fontSize: 13,
+        fontFamily: "monospace",
+        fontWeight: "bold",
+        textAlign: "center",
+      },
+      tableHeaderValues: {
+        color: Colors.slate,
+        fontSize: 13,
+        fontFamily: "monospace",
+        fontWeight: "bold",
+        textAlign: "center",
+      },
     tableCellContainer: {
       flex: 1,
       backgroundColor: Colors.dark_gray,
@@ -222,7 +230,7 @@ const styles = StyleSheet.create({
     tableCell: {
       color: Colors.white,
       fontSize: 10,
-      textAlign: "right",
+      textAlign: "center",
       fontFamily: "monospace",
     },
     shipTableStats: {

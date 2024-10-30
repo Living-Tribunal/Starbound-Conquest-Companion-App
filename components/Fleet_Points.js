@@ -210,9 +210,7 @@ export default function Fleet_Points() {
               style={({ pressed }) => [
                 styles.button,
                 {
-                  backgroundColor: pressed
-                    ? Colors.goldenrod
-                    : Colors.blue_gray,
+                  backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
                   borderColor: pressed ? Colors.gold : Colors.slate,
                 },
               ]}
@@ -225,16 +223,14 @@ export default function Fleet_Points() {
               style={({ pressed }) => [
                 styles.button,
                 {
-                  backgroundColor: pressed
-                    ? Colors.goldenrod
-                    : Colors.blue_gray,
+                  backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
                   borderColor: pressed ? Colors.gold : Colors.slate,
                 },
               ]}
               onPress={() => handleAddShip("destroyer")}
               onLongPress={() => handleRemoveShip("destroyer")}
             >
-              <Text style={styles.pressableText}>Destroyer +30</Text>
+              <Text style={styles.pressableText}>Destroyer +1</Text>
             </Pressable>
           </View>
 
@@ -245,10 +241,8 @@ export default function Fleet_Points() {
                 style={({ pressed }) => [
                     styles.buttonIncrements,
                     {
-                      backgroundColor: pressed
-                        ? Colors.slate_gray
-                        : Colors.goldenrod,
-                      borderColor: pressed ? Colors.slate : Colors.gold,
+                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
+                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
                     },
                   ]}
                 onPress={() => handleAddShip("fighter", 5)}
@@ -260,10 +254,8 @@ export default function Fleet_Points() {
                 style={({ pressed }) => [
                     styles.buttonIncrements,
                     {
-                      backgroundColor: pressed
-                        ? Colors.slate_gray
-                        : Colors.goldenrod,
-                      borderColor: pressed ? Colors.slate : Colors.gold,
+                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
+                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
                     },
                   ]}
                 onPress={() => handleAddShip("fighter", 10)}
@@ -277,10 +269,8 @@ export default function Fleet_Points() {
                 style={({ pressed }) => [
                     styles.buttonIncrements,
                     {
-                      backgroundColor: pressed
-                        ? Colors.slate_gray
-                        : Colors.goldenrod,
-                      borderColor: pressed ? Colors.slate : Colors.gold,
+                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
+                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
                     },
                   ]}
                 onPress={() => handleAddShip("destroyer", 5)}
@@ -292,10 +282,8 @@ export default function Fleet_Points() {
                 style={({ pressed }) => [
                     styles.buttonIncrements,
                     {
-                      backgroundColor: pressed
-                        ? Colors.slate_gray
-                        : Colors.goldenrod,
-                      borderColor: pressed ? Colors.slate : Colors.gold,
+                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
+                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
                     },
                   ]}
                 onPress={() => handleAddShip("destroyer", 10)}
@@ -311,31 +299,27 @@ export default function Fleet_Points() {
               style={({ pressed }) => [
                 styles.button,
                 {
-                  backgroundColor: pressed
-                    ? Colors.goldenrod
-                    : Colors.blue_gray,
+                  backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
                   borderColor: pressed ? Colors.gold : Colors.slate,
                 },
               ]}
               onPress={() => handleAddShip("cruiser")}
               onLongPress={() => handleRemoveShip("cruiser")}
             >
-              <Text style={styles.pressableText}>Cruiser +80</Text>
+              <Text style={styles.pressableText}>Cruiser +1</Text>
             </Pressable>
             <Pressable
               style={({ pressed }) => [
                 styles.button,
                 {
-                  backgroundColor: pressed
-                    ? Colors.goldenrod
-                    : Colors.blue_gray,
+                  backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
                   borderColor: pressed ? Colors.gold : Colors.slate,
                 },
               ]}
               onPress={() => handleAddShip("carrier")}
               onLongPress={() => handleRemoveShip("carrier")}
             >
-              <Text style={styles.pressableText}>Carrier +120</Text>
+              <Text style={styles.pressableText}>Carrier +1</Text>
             </Pressable>
           </View>
 
@@ -346,10 +330,8 @@ export default function Fleet_Points() {
                 style={({ pressed }) => [
                     styles.buttonIncrements,
                     {
-                      backgroundColor: pressed
-                        ? Colors.slate_gray
-                        : Colors.goldenrod,
-                      borderColor: pressed ? Colors.slate : Colors.gold,
+                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
+                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
                     },
                   ]}
                 onPress={() => handleAddShip("cruiser", 5)}
@@ -361,10 +343,8 @@ export default function Fleet_Points() {
                 style={({ pressed }) => [
                     styles.buttonIncrements,
                     {
-                      backgroundColor: pressed
-                        ? Colors.slate_gray
-                        : Colors.goldenrod,
-                      borderColor: pressed ? Colors.slate : Colors.gold,
+                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
+                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
                     },
                   ]}
                 onPress={() => handleAddShip("cruiser", 10)}
@@ -378,10 +358,8 @@ export default function Fleet_Points() {
                 style={({ pressed }) => [
                     styles.buttonIncrements,
                     {
-                      backgroundColor: pressed
-                        ? Colors.slate_gray
-                        : Colors.goldenrod,
-                      borderColor: pressed ? Colors.slate : Colors.gold,
+                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
+                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
                     },
                   ]}
                 onPress={() => handleAddShip("carrier", 5)}
@@ -393,10 +371,8 @@ export default function Fleet_Points() {
                 style={({ pressed }) => [
                     styles.buttonIncrements,
                     {
-                      backgroundColor: pressed
-                        ? Colors.slate_gray
-                        : Colors.goldenrod,
-                      borderColor: pressed ? Colors.slate : Colors.gold,
+                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
+                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
                     },
                   ]}
                 onPress={() => handleAddShip("carrier", 10)}
@@ -411,13 +387,11 @@ export default function Fleet_Points() {
             <Pressable
               style={({ pressed }) => [
                 styles.buttonIncrements,
-                {
-                  backgroundColor: pressed
-                    ? Colors.slate_gray
-                    : Colors.goldenrod,
-                  borderColor: pressed ? Colors.slate : Colors.gold,
-                },
-              ]}
+                    {
+                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
+                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
+                    },
+                  ]}
               onPress={() => handleAddShip("dreadnought", 5)}
               onLongPress={() => handleRemoveShip("dreadnought", 5)}
             >
@@ -427,27 +401,23 @@ export default function Fleet_Points() {
               style={({ pressed }) => [
                 styles.button,
                 {
-                  backgroundColor: pressed
-                    ? Colors.goldenrod
-                    : Colors.blue_gray,
+                  backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
                   borderColor: pressed ? Colors.gold : Colors.slate,
                 },
               ]}
               onPress={() => handleAddShip("dreadnought")}
               onLongPress={() => handleRemoveShip("dreadnought")}
             >
-              <Text style={styles.pressableText}>Dreadnought +240</Text>
+              <Text style={styles.pressableText}>Dreadnought +1</Text>
             </Pressable>
             <Pressable
               style={({ pressed }) => [
                 styles.buttonIncrements,
-                {
-                  backgroundColor: pressed
-                    ? Colors.slate_gray
-                    : Colors.goldenrod,
-                  borderColor: pressed ? Colors.slate : Colors.gold,
-                },
-              ]}
+                    {
+                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
+                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
+                    },
+                  ]}
               onPress={() => handleAddShip("dreadnought", 10)}
               onLongPress={() => handleRemoveShip("dreadnought", 10)}
             >

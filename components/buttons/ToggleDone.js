@@ -3,16 +3,16 @@ import { StyleSheet, Pressable, View, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
 
-export default function ToggleDone({ type, index }) {
-  const statDoneKey = `${type}-${index}`;
-
-  const SHIP_TOGGLES_DONE = {
+const SHIP_TOGGLES_DONE = {
     fighter1: 1,
     destroyer2: 1,
     cruiser3: 1,
     carrier4: 1,
     dreadnought5: 1,
   };
+  
+export default function ToggleDone({ type, index }) {
+  const statDoneKey = `${type}-${index}`;
 
   const [toggleDoneStates, setToggleDoneStates] = useState(
     Array(SHIP_TOGGLES_DONE[type]).fill(false)
@@ -21,7 +21,9 @@ export default function ToggleDone({ type, index }) {
   const save = async (toggleDoneIndex, valueToSave) => {
     try {
       const key = `${statDoneKey}-${toggleDoneIndex}`;
+      console.log("Stat done key " + statDoneKey + "and toggle done index: " + toggleDoneIndex);
       await AsyncStorage.setItem(key, JSON.stringify(valueToSave));
+      console.log("The value saved is " + valueToSave);
     } catch (err) {
       alert(err);
     }
@@ -29,7 +31,7 @@ export default function ToggleDone({ type, index }) {
 
   const load = async () => {
     try {
-      let savedDoneStates = [];;
+      let savedDoneStates = [];
       for (let i = 0; i < SHIP_TOGGLES_DONE[type]; i++) {
         const savedDoneState = await AsyncStorage.getItem(`${statDoneKey}-${i}`);
         console.log(`Loaded state for toggle ${i}: ${savedDoneState}`);
@@ -48,22 +50,26 @@ export default function ToggleDone({ type, index }) {
   const handlePress = (toggleDoneIndex) => {
     setToggleDoneStates((prevStates) => {
       const updatedToggleDoneStates = [...prevStates];
+      console.log("Previous Toggle Done state: " + updatedToggleDoneStates)
       updatedToggleDoneStates[toggleDoneIndex] = !updatedToggleDoneStates[toggleDoneIndex];
-
-      // Log the new state before saving
       console.log(
-        `Updated toggle states after pressing ${toggleDoneIndex}: ${JSON.stringify(
-          updatedToggleDoneStates
-        )}`
+        `Updated toggle states after pressing ${toggleDoneIndex}: ${JSON.stringify(updatedToggleDoneStates)}`
       );
-
-      // Save the updated value immediately
       save(toggleDoneIndex, updatedToggleDoneStates[toggleDoneIndex]);
-
       return updatedToggleDoneStates;
     });
   };
 
+  const handleLongPress = () => {
+    // Reset toggle states to all false
+    setToggleDoneStates(Array(SHIP_TOGGLES_DONE[type]).fill(false));
+    
+    // Save the reset state to AsyncStorage for all toggles
+    for (let i = 0; i < SHIP_TOGGLES_DONE[type]; i++) {
+      save(i, false); // Save false for each toggle
+    }
+  };
+  
   return (
     <View style={styles.buttonContainer}>
       <View style={styles.fleetContainer}>
@@ -90,16 +96,24 @@ export default function ToggleDone({ type, index }) {
               ))}
           </View>
         </View>
+        <Pressable
+              onLongPress={handleLongPress}
+              style={({ pressed }) => [
+                    styles.button,
+                    {
+                      backgroundColor: pressed ? Colors.deep_red : Colors.darker_green_toggle,
+                      borderColor: pressed ? Colors.lightened_deep_red : Colors.green_toggle,
+                    },
+                  ]}
+                  />
+                  <Text style={styles.fightersText}>Reset Toggle</Text>
         </View>
   );
 }
 
+
 const styles = StyleSheet.create({
-  buttonContainer: {
-    marginTop: 5,
-  },
   ordersContainer: {
-    marginTop: 5,
     marginLeft: 5,
     flex: 1,
     alignItems: "center",
