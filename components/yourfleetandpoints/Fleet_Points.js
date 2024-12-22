@@ -10,8 +10,8 @@ import {
   Image,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
-import { SafeAreaView } from "react-native-safe-area-context";
-import EditButton from "./buttons/EditButton";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import EditButton from "../buttons/EditButton";
 
 const SHIP_VALUES = {
   fighter: 1,
@@ -166,6 +166,7 @@ export default function Fleet_Points() {
   };
 
   return (
+    <SafeAreaProvider>
     <SafeAreaView style={styles.container}>
       <StatusBar hidden />
       <ScrollView>
@@ -179,23 +180,23 @@ export default function Fleet_Points() {
           <View style={styles.shipTableStats}>
             <Image
               style={styles.Image}
-              source={require("../assets/icons/rookie_64.png")}
+              source={require("../../assets/icons/rookie_64.png")}
             />
             <Image
               style={styles.Image}
-              source={require("../assets/icons/destroyer_64.png")}
+              source={require("../../assets/icons/destroyer_64.png")}
             />
             <Image
               style={styles.Image}
-              source={require("../assets/icons/cruiser_64.png")}
+              source={require("../../assets/icons/cruiser_64.png")}
             />
             <Image
               style={styles.Image}
-              source={require("../assets/icons/superCapital_64.png")}
+              source={require("../../assets/icons/superCapital_64.png")}
             />
             <Image
               style={styles.Image}
-              source={require("../assets/icons/titan_64.png")}
+              source={require("../../assets/icons/titan_64.png")}
             />
           </View>
           <View style={styles.shipTableStatsNumbers}>
@@ -454,6 +455,7 @@ export default function Fleet_Points() {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

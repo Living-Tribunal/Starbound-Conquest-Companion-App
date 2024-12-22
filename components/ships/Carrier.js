@@ -1,16 +1,17 @@
 import { StyleSheet, Text, View, ScrollView, Image} from "react-native";
 import { Colors } from "@/constants/Colors";
-import { SafeAreaView } from "react-native-safe-area-context";
-import D6Dice from "./dice/D6Dice.js";
-import D8Dice from "./dice/D8Dice.js";
-import D20Dice from "./dice/D20Dice.js";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import D6Dice from "../dice/D6Dice.js";
+import D8Dice from "../dice/D8Dice.js";
+import D20Dice from "../dice/D20Dice.js";
 
 export default function Carrier() {
   return (
+    <SafeAreaProvider>
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.image}>
-            <Image source={require('../assets/icons/superCapital_64.png')} style={{ height: 100, width: 100}} />
+            <Image source={require('../../assets/icons/superCapital_64.png')} style={{ height: 100, width: 100}} />
         </View>
         <Text style={styles.headerText}>Carrier Stats</Text>
         <View style={styles.table}>
@@ -158,6 +159,7 @@ export default function Carrier() {
             </ScrollView>
       </ScrollView>
     </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

@@ -7,7 +7,7 @@ import { useFonts } from "expo-font";
 
 const CustomDrawer = (props) => {
   const [fontsLoaded] = useFonts({
-    aboreto: require("../assets/fonts/Aboreto-Regular.ttf"),
+    aboreto: require("../../assets/fonts/Aboreto-Regular.ttf"),
   });
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const CustomDrawer = (props) => {
         }}
       >
         <ImageBackground
-          source={require("../assets/images/sbc.jpg")}
+          source={require("../../assets/images/sbc.jpg")}
           style={{
             width: "100%",
             height: 150,
@@ -71,7 +71,7 @@ const CustomDrawer = (props) => {
                 }}
                 icon={() => (
                   <Image
-                    source={require("../assets/icons/icons8-sergeant-major-of-army-sma-50.png")}
+                    source={require("../../assets/icons/icons8-sergeant-major-of-army-sma-50.png")}
                     style={{
                       width: 35,
                       height: 35,

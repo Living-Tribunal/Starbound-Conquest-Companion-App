@@ -1,16 +1,17 @@
 import { StyleSheet, Text, View, ScrollView, Image} from "react-native";
 import { Colors } from "@/constants/Colors";
-import { SafeAreaView } from "react-native-safe-area-context";
-import D8Dice from "./dice/D8Dice.js";
-import D10Dice from "./dice/D10Dice.js";
-import D20Dice from "./dice/D20Dice.js";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import D8Dice from "../dice/D8Dice.js";
+import D10Dice from "../dice/D10Dice.js";
+import D20Dice from "../dice/D20Dice.js";
 
 export default function Cruiser() {
   return (
+    <SafeAreaProvider>
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.image}>
-            <Image source={require('../assets/icons/cruiser_64.png')} style={{ height: 100, width: 100}} />
+            <Image source={require('../../assets/icons/cruiser_64.png')} style={{ height: 100, width: 100}} />
         </View>
         <Text style={styles.headerText}>Cruiser Stats</Text>
         <View style={styles.table}>
@@ -158,6 +159,7 @@ export default function Cruiser() {
             </ScrollView>
       </ScrollView>
     </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

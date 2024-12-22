@@ -3,10 +3,11 @@ import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
-import EditButtonHP from "./buttons/EditButtonHP";
-import ToggleAttributeButton from "./buttons/ToggleAttribute";
-import ToggleDone from "./buttons/ToggleDone";
-import { useStarBoundContext } from "../components/Global/StarBoundProvider";
+import EditButtonHP from "../buttons/EditButtonHP";
+import ToggleAttributeButton from "../buttons/ToggleAttribute";
+import ToggleDone from "../buttons/ToggleDone";
+import { useStarBoundContext } from "../Global/StarBoundProvider";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function Your_Fleet() {
     const { 
@@ -86,6 +87,8 @@ export default function Your_Fleet() {
   const onLongPress = () => resetToggles();
 
   return (
+    <SafeAreaProvider>
+        <SafeAreaView>
     <View style={styles.container}>
       <View style={styles.endcontainer}>
         <Text style={styles.title}>Your Fleet</Text>
@@ -242,6 +245,8 @@ export default function Your_Fleet() {
         )}
       </ScrollView>
     </View>
+    </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

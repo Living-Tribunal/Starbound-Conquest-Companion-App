@@ -4,15 +4,16 @@ import React, { useEffect } from 'react';
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import 'react-native-gesture-handler';
 import 'react-native-gesture-handler';
-import Carrier from "../components/Carrier";
-import Destroyer from "../components/Destroyer";
-import Dreadnought from "../components/Dreadnought";
-import Fighter from "../components/Fighter";
-import Cruiser from "../components/Cruiser";
-import Rules from "../components/Rules";
-import CustomDrawer from "../components/CustomDrawer";
-import Fleet_Points from "../components/Fleet_Points";
-import Your_Fleet from "../components/Your_Fleet";
+import Carrier from "@/components/ships/Carrier";
+import Destroyer from "@/components/ships/Destroyer";
+import Dreadnought from "@/components/ships/Dreadnought";
+import Fighter from "@/components/ships/Fighter";
+import Cruiser from "@/components/ships/Cruiser";
+import Rules from "@/components/rules/Rules";
+import Login from "@/components/login/Login";
+import CustomDrawer from "@/components/customdrawer/CustomDrawer";
+import Fleet_Points from "@/components/yourfleetandpoints/Fleet_Points";
+import Your_Fleet from "@/components/yourfleetandpoints/Your_Fleet";
 import { Colors } from '@/constants/Colors';
 import { useFonts } from 'expo-font';
 import { StarBoundProvider, useStarBoundContext } from '../components/Global/StarBoundProvider';
@@ -38,7 +39,7 @@ export default function Index() {
     }
   return (
     <StarBoundProvider>
-        <Drawer.Navigator drawerContent={props => <CustomDrawer{...props} />} initialRouteName = "Fleet Points"
+        <Drawer.Navigator drawerContent={props => <CustomDrawer{...props} />} initialRouteName = "Login"
         screenOptions={{
             drawerStyle: {
             width: 250,
@@ -98,6 +99,7 @@ export default function Index() {
                     <Image source={require('../assets/icons/titan_64.png')} style={{ height: 45, width: 45, tintColor: focused ? Colors.slate : Colors.dark_gray, }}  resizeMode="contain"/>
                 )
             }} />
+            <Drawer.Screen name="Login" component={Login} options={{ drawerItemStyle: { display: 'none' }}} />
             <Drawer.Screen name="Fleet Points" component={Fleet_Points} options={{ drawerItemStyle: { display: 'none' } }} />
             <Drawer.Screen name="Rules" component={Rules} options={{ drawerItemStyle: { display: 'none' } }} />
             <Drawer.Screen name="Your Fleet" component={Your_Fleet} options={{ drawerItemStyle: { display: 'none' } }} />

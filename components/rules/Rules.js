@@ -328,7 +328,7 @@ export default function Rules() {
               </Text>
               <View style={styles.exampleContainer}>
                 <Image
-                  source={require("../assets/images/arcs/firingarc.png")}
+                  source={require("../../assets/images/arcs/firingarc.png")}
                   style={{ height: 250, width: 250 }}
                 />
               </View>
