@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, Image} from "react-native";
 import { Colors } from "@/constants/Colors";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import D10Dice from "./dice/D10Dice.js";
 import D8Dice from "./dice/D8Dice.js";
 import D20Dice from "./dice/D20Dice.js";
@@ -8,6 +8,7 @@ import D12Dice from "./dice/D12Dice.js";
 
 export default function Dreadnought() {
   return (
+    <SafeAreaProvider >
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.image}>
@@ -168,6 +169,7 @@ export default function Dreadnought() {
         </ScrollView>
       </ScrollView>
     </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
@@ -175,7 +177,6 @@ const styles = StyleSheet.create({
     container: {
       backgroundColor: Colors.dark_gray,
       flex: 1,
-      paddingTop: 10
     },
     headerText: {
       color: Colors.white,

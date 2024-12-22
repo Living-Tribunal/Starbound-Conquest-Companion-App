@@ -248,7 +248,6 @@ export default function Your_Fleet() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 10,
     backgroundColor: Colors.dark_gray,
   },
   endcontainer: {

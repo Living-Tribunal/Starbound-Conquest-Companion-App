@@ -41,7 +41,7 @@ export default function Index() {
         <Drawer.Navigator drawerContent={props => <CustomDrawer{...props} />} initialRouteName = "Fleet Points"
         screenOptions={{
             drawerStyle: {
-            width: 245,
+            width: 250,
         },
             drawerActiveTintColor: Colors.slate, // drawwer higlhited text color
             headerTintColor: Colors.white, //header text color
@@ -67,6 +67,10 @@ export default function Index() {
                 fontFamily: 'aboreto',
                 fontWeight: 'bold'
             },
+            drawerItemStyle:{
+                borderRadius: 10,
+
+            }
           }}
           >
             <Drawer.Screen name="Fighter" component={Fighter} options={{

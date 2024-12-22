@@ -165,7 +165,6 @@ const styles = StyleSheet.create({
     container: {
       backgroundColor: Colors.dark_gray,
       flex: 1,
-      paddingTop: 10
     },
     headerText: {
       color: Colors.white,

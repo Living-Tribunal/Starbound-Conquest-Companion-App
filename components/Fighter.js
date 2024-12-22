@@ -1,14 +1,15 @@
 import { StyleSheet, Text, View, ScrollView, Image} from "react-native";
 import { Colors } from "@/constants/Colors";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import D4Dice from "./dice/D4Dice.js";
 import D20Dice from "./dice/D20Dice.js";
 import { StatusBar } from 'expo-status-bar';
 
 export default function Fighters() {
   return (
+    <SafeAreaProvider>
     <SafeAreaView style={styles.container}>
-    <StatusBar hidden />
+    <StatusBar/>
       <ScrollView>
         <View style={styles.image}>
             <Image source={require('../assets/icons/rookie_64.png')} style={{ height: 100, width: 100}} />
@@ -148,6 +149,7 @@ export default function Fighters() {
             </View>
       </ScrollView>
     </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
@@ -155,7 +157,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.dark_gray,
     flex: 1,
-    paddingTop: 10
   },
   headerText: {
     color: Colors.white,

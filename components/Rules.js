@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, StatusBar, Image,  Pressable } from "react-native";
 import React, { useState } from 'react';
 import { Colors } from "@/constants/Colors";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
 
 
@@ -13,6 +13,7 @@ export default function Rules() {
     };
 
   return (
+    <SafeAreaProvider>
     <SafeAreaView style={styles.container}>
       <StatusBar hidden />
       <ScrollView>
@@ -458,6 +459,7 @@ export default function Rules() {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
