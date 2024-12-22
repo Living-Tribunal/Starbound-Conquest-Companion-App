@@ -6,19 +6,22 @@ import { Colors } from "@/constants/Colors";
 import EditButtonHP from "./buttons/EditButtonHP";
 import ToggleAttributeButton from "./buttons/ToggleAttribute";
 import ToggleDone from "./buttons/ToggleDone";
+import { useStarBoundContext } from "../components/Global/StarBoundProvider";
 
 export default function Your_Fleet() {
-  const [fighterImages, setFighterImages] = useState([]);
-  const [destroyerImages, setDestroyerImages] = useState([]);
-  const [cruiserImages, setCruiserImages] = useState([]);
-  const [carrierImages, setCarrierImages] = useState([]);
-  const [dreadnoughtImages, setDreadnoughtImages] = useState([]);
+    const { 
+        fighterImages, setFighterImages, 
+        destroyerImages, setDestroyerImages, 
+        cruiserImages, setCruiserImages, 
+        carrierImages, setCarrierImages, 
+        dreadnoughtImages, setDreadnoughtImages,
+        showFighterClass, setShowFighterClass,
+        showDestroyerClass, setShowDestroyerClass,
+        showCarrierClass, setShowCarrierClass,
+        showCruiserClass, setShowCruiserClass,
+        showDreadnoughtClass, setShowDreadnoughtClass,
 
-  const [showFighterClass, setShowFighterClass] = useState(true);
-  const [showDestroyerClass, setShowDestroyerClass] = useState(true);
-  const [showCarrierClass, setShowCarrierClass] = useState(true);
-  const [showCruiserClass, setShowCruiserClass] = useState(true);
-  const [showDreadnoughtClass, setShowDreadnoughtClass] = useState(true);
+      } = useStarBoundContext();
 
   const handlePressFi = () => {
     setShowFighterClass((prevState) => !prevState);
@@ -80,44 +83,27 @@ export default function Your_Fleet() {
     }, [])
   );
 
+  const onLongPress = () => resetToggles();
+
   return (
     <View style={styles.container}>
-        <View style={styles.endcontainer}>
-            <Text style={styles.title}>Your Fleet</Text>
-            <Pressable
-            style={({ pressed }) => [
-                styles.resetbutton,
-                {
-                backgroundColor: pressed ? Colors.gold : Colors.deep_red,
-                borderColor: pressed ? Colors.lightened_gold : Colors.lightened_deep_red,
-                },
-            ]}
-            >
-            {({ pressed }) => (
-              <Text
-                style={{
-                  color: pressed ? Colors.dark_gray : Colors.white,
-                  fontFamily: "monospace",
-                  fontSize: 10,
-                }}
-              >
-                End Turn
-              </Text>
-            )}
-        </Pressable> 
-        </View>
+      <View style={styles.endcontainer}>
+        <Text style={styles.title}>Your Fleet</Text>
+      </View>
       <ScrollView style={styles.scrollView}>
         <Pressable
           onPress={handlePressFi}
           style={({ pressed }) => [
             styles.textSectionSpecial,
             {
-                backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
+              backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
             },
           ]}
         >
           <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>Fighters - {fighterImages.length} Ships</Text>
+            <Text style={styles.shipTextHeader}>
+              Fighters - {fighterImages.length} Ships
+            </Text>
           </View>
         </Pressable>
 
@@ -140,12 +126,14 @@ export default function Your_Fleet() {
           style={({ pressed }) => [
             styles.textSectionSpecial,
             {
-                backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
+              backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
             },
           ]}
         >
           <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>Destroyers - {destroyerImages.length} Ships</Text>
+            <Text style={styles.shipTextHeader}>
+              Destroyers - {destroyerImages.length} Ships
+            </Text>
           </View>
         </Pressable>
 
@@ -168,12 +156,14 @@ export default function Your_Fleet() {
           style={({ pressed }) => [
             styles.textSectionSpecial,
             {
-                backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
+              backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
             },
           ]}
         >
           <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>Cruisers - {cruiserImages.length} Ships</Text>
+            <Text style={styles.shipTextHeader}>
+              Cruisers - {cruiserImages.length} Ships
+            </Text>
           </View>
         </Pressable>
 
@@ -196,12 +186,14 @@ export default function Your_Fleet() {
           style={({ pressed }) => [
             styles.textSectionSpecial,
             {
-                backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
+              backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
             },
           ]}
         >
           <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>Carriers - {carrierImages.length} Ships</Text>
+            <Text style={styles.shipTextHeader}>
+              Carriers - {carrierImages.length} Ships
+            </Text>
           </View>
         </Pressable>
 
@@ -229,7 +221,9 @@ export default function Your_Fleet() {
           ]}
         >
           <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>Dreadnoughts - {dreadnoughtImages.length} Ships</Text>
+            <Text style={styles.shipTextHeader}>
+              Dreadnoughts - {dreadnoughtImages.length} Ships
+            </Text>
           </View>
         </Pressable>
 
@@ -308,7 +302,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   resetbutton: {
-    alignSelf: 'center',
+    alignSelf: "center",
     width: 125,
     paddingVertical: 2,
     paddingHorizontal: 2,

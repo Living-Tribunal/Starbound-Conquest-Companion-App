@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, ScrollView, Image} from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import D6Dice from "./dice/D6Dice/";
-import D8Dice from "./dice/D8Dice/";
-import D20Dice from "./dice/D20Dice/";
+import D6Dice from "./dice/D6Dice.js";
+import D8Dice from "./dice/D8Dice.js";
+import D20Dice from "./dice/D20Dice.js";
 
 export default function Carrier() {
   return (
@@ -59,10 +59,10 @@ export default function Carrier() {
               <Text style={styles.tableHeader}>Special Orders</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>Full Throttle</Text>
-              <Text style={styles.tableCell}>Reinforce Shields</Text>
-              <Text style={styles.tableCell}>Launch Fighters</Text>
-              <Text style={styles.tableCell}>All Systems Fire</Text>
+              <Text style={styles.tableCell}>1 Full Throttle</Text>
+              <Text style={styles.tableCell}>2 Reinforce Shields</Text>
+              <Text style={styles.tableCell}>3 Launch Fighters</Text>
+              <Text style={styles.tableCell}>4 All Systems Fire</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -190,18 +190,17 @@ const styles = StyleSheet.create({
       borderColor: Colors.misty_blue,
     },
     tableHeaderContainer: {
-      flex: 1,
-      backgroundColor: Colors.blue_gray,
-      justifyContent: "center",
-      paddingVertical: 10,
-      paddingHorizontal: 5,
-    },
+        flex: 1,
+        backgroundColor: Colors.blue_gray,
+        justifyContent: "center",
+      },
     tableHeader: {
         color: Colors.dark_gray,
         fontSize: 13,
         fontFamily: "monospace",
         fontWeight: "bold",
-        textAlign: "center",
+        textAlign: "left",
+        padding: 5,
       },
       tableHeaderValues: {
         color: Colors.slate,
@@ -220,7 +219,7 @@ const styles = StyleSheet.create({
     tableCell: {
       color: Colors.white,
       fontSize: 10,
-      textAlign: "center",
+      textAlign: "left",
       fontFamily: "monospace",
     },
     shipTableStats: {

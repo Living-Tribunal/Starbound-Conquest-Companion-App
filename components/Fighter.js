@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, ScrollView, Image} from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import D4Dice from "./dice/D4Dice/";
-import D20Dice from "./dice/D20Dice/";
+import D4Dice from "./dice/D4Dice.js";
+import D20Dice from "./dice/D20Dice.js";
 import { StatusBar } from 'expo-status-bar';
 
 export default function Fighters() {
@@ -60,9 +60,9 @@ export default function Fighters() {
               <Text style={styles.tableHeader}>Special Orders</Text>
             </View>
             <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>Full Throttle</Text>
-              <Text style={styles.tableCell}>Combine Fire</Text>
-              <Text style={styles.tableCell}>Eevasive Maneuvers</Text>
+              <Text style={styles.tableCell}>1 Full Throttle</Text>
+              <Text style={styles.tableCell}>2 Combine Fire</Text>
+              <Text style={styles.tableCell}>3 Eevasive Maneuvers</Text>
             </View>
           </View>
           <View style={styles.tableRow}>
@@ -183,15 +183,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.blue_gray,
     justifyContent: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 5,
   },
   tableHeader: {
     color: Colors.dark_gray,
     fontSize: 13,
     fontFamily: "monospace",
     fontWeight: "bold",
-    textAlign: "center",
+    textAlign: "left",
+    padding: 5,
   },
   tableHeaderValues: {
     color: Colors.slate,
@@ -210,7 +209,7 @@ const styles = StyleSheet.create({
   tableCell: {
     color: Colors.white,
     fontSize: 10,
-    textAlign: "center",
+    textAlign: "left",
     fontFamily: "monospace",
   },
   shipTableStats: {

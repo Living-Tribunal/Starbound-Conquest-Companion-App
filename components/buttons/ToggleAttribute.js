@@ -2,26 +2,11 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Pressable, View, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
+import { SHIP_CAPACITY, SHIP_TOGGLES } from "@/constants/Ships";
 
 export default function ToggleAtributeButton({ type, index }) {
   const statKey = `${type}-${index}`;
   const capacityKey = `${type}-${index}`;
-
-  const SHIP_TOGGLES = {
-    fighter: 3,
-    destroyer: 3,
-    cruiser: 4,
-    carrier: 4,
-    dreadnought: 5,
-  };
-
-  const SHIP_CAPACITY = {
-    fighter: 0,
-    destroyer: 0,
-    cruiser: 0,
-    carrier: 20,
-    dreadnought: 20,
-  };
 
   const [toggleStates, setToggleStates] = useState(
     Array(SHIP_TOGGLES[type]).fill(false)
@@ -49,20 +34,14 @@ export default function ToggleAtributeButton({ type, index }) {
       let savedCapacityStates = [];
       for (let i = 0; i < SHIP_TOGGLES[type]; i++) {
         const savedState = await AsyncStorage.getItem(`${statKey}-${i}`);
-        console.log(`Loaded state for toggle ${i}: ${savedState}`);
         savedStates.push(savedState === "true");
       }
       for (let i = 0; i < SHIP_CAPACITY[type]; i++) {
         const savedCapacityState = await AsyncStorage.getItem(
           `${capacityKey}-${i}`
         );
-        console.log(`Loaded state for toggle ${i}: ${savedCapacityState}`);
         savedCapacityStates.push(savedCapacityState === "true");
       }
-      console.log(`Initial toggle states: ${JSON.stringify(savedStates)}`);
-      console.log(
-        `Initial toggle states: ${JSON.stringify(savedCapacityStates)}`
-      );
       setToggleStates(savedStates);
       setToggleCapacity(savedCapacityStates);
     } catch (err) {
@@ -78,15 +57,7 @@ export default function ToggleAtributeButton({ type, index }) {
     setToggleStates((prevStates) => {
       const updatedToggleStates = [...prevStates];
       updatedToggleStates[toggleIndex] = !updatedToggleStates[toggleIndex];
-
-      // Log the new state before saving
-      console.log(
-        `Updated toggle states after pressing ${toggleIndex}: ${JSON.stringify(
-          updatedToggleStates
-        )}`
-      );
-
-      // Save the updated value immediately
+      
       save(toggleIndex, updatedToggleStates[toggleIndex]);
 
       return updatedToggleStates;
@@ -97,16 +68,8 @@ export default function ToggleAtributeButton({ type, index }) {
       const updatedCapacityToggleStates = [...prevStates];
       updatedCapacityToggleStates[toggleIndex] =
         !updatedCapacityToggleStates[toggleIndex];
-
-      // Log the new state before saving
-      console.log(
-        `Updated toggle states after pressing ${toggleIndex}: ${JSON.stringify(
-          updatedCapacityToggleStates
-        )}`
-      );
-
-      // Save the updated value immediately
-      save(toggleIndex, updatedCapacityToggleStates[toggleIndex]);
+      
+        save(toggleIndex, updatedCapacityToggleStates[toggleIndex]);
 
       return updatedCapacityToggleStates;
     });
@@ -141,8 +104,9 @@ export default function ToggleAtributeButton({ type, index }) {
                         ? Colors.gold
                         : Colors.slate,
                     },
-                  ]}
-                />
+                  ]}>
+                    <Text style={styles.toggleText}>{toggleIndex + 1}</Text>
+                </Pressable>
               ))}
           </View>
         </View>
@@ -173,8 +137,9 @@ export default function ToggleAtributeButton({ type, index }) {
                                 ? Colors.gold
                                 : Colors.slate,
                             },
-                          ]}
-                        />
+                          ]}>
+                        <Text style={styles.toggleText}>{toggleIndex + 1}</Text>
+                        </Pressable>
                       );
                     }
                   })}
@@ -227,6 +192,10 @@ const styles = StyleSheet.create({
   fightersText: {
     color: Colors.white,
     textAlign: "center",
+  },
+  toggleText:{
+    color: Colors.white,
+    fontSize: 8,
   },
   fighterRow: {
     flexDirection: "row",

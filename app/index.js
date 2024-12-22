@@ -15,6 +15,7 @@ import Fleet_Points from "../components/Fleet_Points";
 import Your_Fleet from "../components/Your_Fleet";
 import { Colors } from '@/constants/Colors';
 import { useFonts } from 'expo-font';
+import { StarBoundProvider, useStarBoundContext } from '../components/Global/StarBoundProvider';
 
 const Drawer = createDrawerNavigator();
 
@@ -36,18 +37,18 @@ export default function Index() {
         SplashScreen.hideAsync();
     }
   return (
-
+    <StarBoundProvider>
         <Drawer.Navigator drawerContent={props => <CustomDrawer{...props} />} initialRouteName = "Fleet Points"
         screenOptions={{
             drawerStyle: {
-            width: 235,
+            width: 245,
         },
             drawerActiveTintColor: Colors.slate, // drawwer higlhited text color
             headerTintColor: Colors.white, //header text color
             headerTitleStyle: {
                 fontFamily: 'aboreto', //header text font family
                 backgroundColor:Colors.dark_gray, //header text background color
-                fontSize: 15,
+                fontSize: 25,
                 fontWeight: 'bold',
                 textAlign: 'left',
             },
@@ -66,9 +67,6 @@ export default function Index() {
                 fontFamily: 'aboreto',
                 fontWeight: 'bold'
             },
-            drawerLabelStyle:{
-                marginLeft: -25,
-            }
           }}
           >
             <Drawer.Screen name="Fighter" component={Fighter} options={{
@@ -100,6 +98,7 @@ export default function Index() {
             <Drawer.Screen name="Rules" component={Rules} options={{ drawerItemStyle: { display: 'none' } }} />
             <Drawer.Screen name="Your Fleet" component={Your_Fleet} options={{ drawerItemStyle: { display: 'none' } }} />
        </Drawer.Navigator>
+       </StarBoundProvider>
   );
 }
 

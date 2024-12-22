@@ -2,28 +2,22 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Pressable, View, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
+import { SHIP_TOGGLES_DONE } from "@/constants/Ships";
+import { useStarBoundContext } from "../Global/StarBoundProvider";
 
-const SHIP_TOGGLES_DONE = {
-    fighter1: 1,
-    destroyer2: 1,
-    cruiser3: 1,
-    carrier4: 1,
-    dreadnought5: 1,
-  };
+
   
 export default function ToggleDone({ type, index }) {
   const statDoneKey = `${type}-${index}`;
 
-  const [toggleDoneStates, setToggleDoneStates] = useState(
-    Array(SHIP_TOGGLES_DONE[type]).fill(false)
-  );
+ /*  const { toggleDoneStates, setToggleDoneStates } = useStarBoundContext(); */
+
+  const [toggleDoneStates, setToggleDoneStates] = useState(Array(SHIP_TOGGLES_DONE[type]).fill(false));
 
   const save = async (toggleDoneIndex, valueToSave) => {
     try {
       const key = `${statDoneKey}-${toggleDoneIndex}`;
-      console.log("Stat done key " + statDoneKey + "and toggle done index: " + toggleDoneIndex);
       await AsyncStorage.setItem(key, JSON.stringify(valueToSave));
-      console.log("The value saved is " + valueToSave);
     } catch (err) {
       alert(err);
     }
@@ -34,7 +28,6 @@ export default function ToggleDone({ type, index }) {
       let savedDoneStates = [];
       for (let i = 0; i < SHIP_TOGGLES_DONE[type]; i++) {
         const savedDoneState = await AsyncStorage.getItem(`${statDoneKey}-${i}`);
-        console.log(`Loaded state for toggle ${i}: ${savedDoneState}`);
         savedDoneStates.push(savedDoneState === "true");
       }
       setToggleDoneStates(savedDoneStates);
@@ -47,29 +40,21 @@ export default function ToggleDone({ type, index }) {
     load();
   }, []);
 
+  //fucntion to toggle button toggle
   const handlePress = (toggleDoneIndex) => {
+    //setToggleDoneStates recieves the new state from function call (from what it was initialized as)
     setToggleDoneStates((prevStates) => {
+    //prevState now has the new toggled state
       const updatedToggleDoneStates = [...prevStates];
-      console.log("Previous Toggle Done state: " + updatedToggleDoneStates)
+      //toggles the state of the specific button
       updatedToggleDoneStates[toggleDoneIndex] = !updatedToggleDoneStates[toggleDoneIndex];
-      console.log(
-        `Updated toggle states after pressing ${toggleDoneIndex}: ${JSON.stringify(updatedToggleDoneStates)}`
-      );
+      //saves state to storage
       save(toggleDoneIndex, updatedToggleDoneStates[toggleDoneIndex]);
+      //return the updated state array, which updates the state.
       return updatedToggleDoneStates;
     });
   };
 
-  const handleLongPress = () => {
-    // Reset toggle states to all false
-    setToggleDoneStates(Array(SHIP_TOGGLES_DONE[type]).fill(false));
-    
-    // Save the reset state to AsyncStorage for all toggles
-    for (let i = 0; i < SHIP_TOGGLES_DONE[type]; i++) {
-      save(i, false); // Save false for each toggle
-    }
-  };
-  
   return (
     <View style={styles.buttonContainer}>
       <View style={styles.fleetContainer}>
@@ -91,22 +76,11 @@ export default function ToggleDone({ type, index }) {
                         ? Colors.lightened_deep_red
                         : Colors.green_toggle,
                     },
-                  ]}
-                />
+                  ]}>
+                 </Pressable>
               ))}
           </View>
         </View>
-        <Pressable
-              onLongPress={handleLongPress}
-              style={({ pressed }) => [
-                    styles.button,
-                    {
-                      backgroundColor: pressed ? Colors.deep_red : Colors.darker_green_toggle,
-                      borderColor: pressed ? Colors.lightened_deep_red : Colors.green_toggle,
-                    },
-                  ]}
-                  />
-                  <Text style={styles.fightersText}>Reset Toggle</Text>
         </View>
   );
 }
@@ -114,14 +88,12 @@ export default function ToggleDone({ type, index }) {
 
 const styles = StyleSheet.create({
   ordersContainer: {
-    marginLeft: 5,
     flex: 1,
     alignItems: "center",
   },
   button: {
     width: 25,
     height: 25,
-    margin: 5,
     borderRadius: 20,
     borderWidth: 2,
   },

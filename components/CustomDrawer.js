@@ -23,12 +23,12 @@ const CustomDrawer = (props) => {
         SplashScreen.hideAsync();
     }
     return (
-        <View style={{flex: 1, backgroundColor: Colors.dark_gray, borderColor: Colors.dark_gray}}>
-            <DrawerContentScrollView {...props} contentContainerStyle={{backgroundColor: Colors.dark_gray}}>
-                <ImageBackground source={require('../assets/images/sbc.jpg')} style={{width: 240, height: 150, justifyContent: 'center', alignItems: 'center'}}>
+        <View style={{flex: 1}}>
+            <DrawerContentScrollView {...props} contentContainerStyle={{backgroundColor:Colors.blue_gray, justifyContent: 'space-between', height: "100%"}}>
+                <ImageBackground source={require('../assets/images/sbc.jpg')} style={{width: "100%", height: 150}}>
                 {/* <Text style={{color: Colors.white, fontSize: 12, fontFamily: 'aboreto'}}>Starbound Conquest</Text> */}
                 </ImageBackground>
-                <View style={{backgroundColor: Colors.slate}}>
+                <View style={{backgroundColor: Colors.blue_gray}}>
                     <DrawerItemList {...props} />
                 </View> 
                 <View>
@@ -38,9 +38,7 @@ const CustomDrawer = (props) => {
                             fontFamily: 'aboreto',
                             fontWeight: 'bold',
                             color: Colors.white,
-                            fontSize: 15,
-                            marginTop: -5,
-                            marginLeft: -15,            
+                            fontSize: 15,          
                         }}
                         icon={({}) => (
                             <Image
@@ -58,9 +56,7 @@ const CustomDrawer = (props) => {
                             fontFamily: 'aboreto',
                             fontWeight: 'bold',
                             color: Colors.white,
-                            fontSize: 15,
-                            marginTop: -5,
-                            marginLeft: -15,            
+                            fontSize: 15,          
                         }}
                         icon={({}) => (
                             <Image
@@ -77,9 +73,7 @@ const CustomDrawer = (props) => {
                             fontFamily: 'aboreto',
                             fontWeight: 'bold',
                             color: Colors.white,
-                            fontSize: 15,
-                            marginTop: -5,
-                            marginLeft: -15,             
+                            fontSize: 15,        
                         }}
                         icon={({}) => (
                             <Image
