@@ -58,7 +58,8 @@ console.log(selectedShip);
                 keyExtractor={(item) => item[0]}
               />
             </View>
-            <Text style={styles.headerText}>Ship Stats</Text>
+            {/* <Text style={styles.headerText}>-Ship Stats-</Text> */}
+            <Text style={styles.headerText}>{selectedShip}</Text>
             <View style={{ width: "50%", alignSelf: "center" }}>
               {areAllStatsShows ? (
                 <TouchableOpacity
