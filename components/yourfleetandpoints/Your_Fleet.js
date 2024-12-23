@@ -7,7 +7,7 @@ import EditButtonHP from "../buttons/EditButtonHP";
 import ToggleAttributeButton from "../buttons/ToggleAttribute";
 import ToggleDone from "../buttons/ToggleDone";
 import { useStarBoundContext } from "../Global/StarBoundProvider";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function Your_Fleet() {
     const { 
@@ -88,7 +88,7 @@ export default function Your_Fleet() {
 
   return (
     <SafeAreaProvider>
-        <SafeAreaView>
+        <SafeAreaView style={styles.container}>
     <View style={styles.container}>
       <View style={styles.endcontainer}>
         <Text style={styles.title}>Your Fleet</Text>

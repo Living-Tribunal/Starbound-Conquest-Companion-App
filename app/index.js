@@ -42,12 +42,8 @@ export default function Index() {
     }
   return (
     <StarBoundProvider>
-        {/* <Drawer.Navigator drawerContent={props => <CustomDrawer{...props} />} initialRouteName = "Login"
+        <Tab.Navigator  initialRouteName = "Login"
         screenOptions={{
-            drawerStyle: {
-            width: 250,
-        },
-            drawerActiveTintColor: Colors.slate, // drawwer higlhited text color
             headerTintColor: Colors.white, //header text color
             headerTitleStyle: {
                 fontFamily: 'aboreto', //header text font family
@@ -55,9 +51,15 @@ export default function Index() {
                 fontSize: 25,
                 fontWeight: 'bold',
                 textAlign: 'left',
+                justifyContent: 'center',
+            },
+            tabBarLabelStyle:{ //text for tab nav  below icons
+                color: Colors.dark_gray,
             },
             headerStyle: {
                 backgroundColor: Colors.dark_gray, //header background color
+            },
+            tabBarIconStyle:{
                 
             },
             drawerContentStyle:{
@@ -76,8 +78,7 @@ export default function Index() {
 
             }
           }}
-          > */}
-          <Tab.Navigator>
+          >
             <Tab.Screen name="Ship Stats" component={ShipStats} options={{
                 tabBarIcon: ({ focused, size }) => (
                     <Image source={require('../assets/icons/icons8-battleship-top-view-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
@@ -88,7 +89,7 @@ export default function Index() {
                     <Image source={require('../assets/icons/icons8-sergeant-major-of-army-sma-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
                 )
             }} />
-            <Tab.Screen name="Fleet Points" component={Fleet_Points} options={{
+            <Tab.Screen name="Points" component={Fleet_Points} options={{
                 tabBarIcon: ({ focused, size }) => (
                     <Image source={require('../assets/icons/icons8-score-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
                 )
@@ -99,9 +100,8 @@ export default function Index() {
                 )
             }} />
             
-            {/* <Tab.Screen name="Login" component={Login} options={{ drawerItemStyle: { display: 'none' }}} /> */}
+            <Tab.Screen name="Login" component={Login} options={{ drawerItemStyle: { display: 'none' }}} />
             </Tab.Navigator>
-       {/* </Drawer.Navigator> */}
        </StarBoundProvider>
   );
 }
