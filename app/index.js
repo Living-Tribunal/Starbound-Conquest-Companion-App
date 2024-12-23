@@ -18,8 +18,10 @@ import { Colors } from '../constants/Colors';
 import { useFonts } from 'expo-font';
 import { StarBoundProvider, useStarBoundContext } from '../components/Global/StarBoundProvider';
 import { ImagePaths } from "../constants/ImagePaths";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-const Drawer = createDrawerNavigator();
+/* const Drawer = createDrawerNavigator(); */
+const Tab = createBottomTabNavigator()
 
 export default function Index() {
     const [fontsLoaded] = useFonts({
@@ -40,7 +42,7 @@ export default function Index() {
     }
   return (
     <StarBoundProvider>
-        <Drawer.Navigator drawerContent={props => <CustomDrawer{...props} />} initialRouteName = "Login"
+        {/* <Drawer.Navigator drawerContent={props => <CustomDrawer{...props} />} initialRouteName = "Login"
         screenOptions={{
             drawerStyle: {
             width: 250,
@@ -74,26 +76,32 @@ export default function Index() {
 
             }
           }}
-          >
-            <Drawer.Screen name="Ship Stats" component={ShipStats} options={{
-                drawerIcon: ({ focused, size }) => (
-                    <Image source={require('../assets/icons/icons8-battleship-top-view-50.png')} style={{ height: 45, width: 45, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
+          > */}
+          <Tab.Navigator>
+            <Tab.Screen name="Ship Stats" component={ShipStats} options={{
+                tabBarIcon: ({ focused, size }) => (
+                    <Image source={require('../assets/icons/icons8-battleship-top-view-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
                 )
             }} />
-            <Drawer.Screen name="Your Fleet" component={Your_Fleet} options={{
-                drawerIcon: ({ focused, size }) => (
-                    <Image source={require('../assets/icons/icons8-sergeant-major-of-army-sma-50.png')} style={{ height: 45, width: 45, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
+            <Tab.Screen name="Your Fleet" component={Your_Fleet} options={{
+                tabBarIcon: ({ focused, size }) => (
+                    <Image source={require('../assets/icons/icons8-sergeant-major-of-army-sma-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
                 )
             }} />
-            <Drawer.Screen name="Fleet Points" component={Fleet_Points} options={{
-                drawerIcon: ({ focused, size }) => (
-                    <Image source={require('../assets/icons/icons8-score-50.png')} style={{ height: 45, width: 45, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
+            <Tab.Screen name="Fleet Points" component={Fleet_Points} options={{
+                tabBarIcon: ({ focused, size }) => (
+                    <Image source={require('../assets/icons/icons8-score-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
+                )
+            }} />
+            <Tab.Screen name="Rules" component={Rules} options={{
+                tabBarIcon: ({ focused, size }) => (
+                    <Image source={require('../assets/icons/icons8-score-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
                 )
             }} />
             
-            <Drawer.Screen name="Login" component={Login} options={{ drawerItemStyle: { display: 'none' }}} />
-            <Drawer.Screen name="Rules" component={Rules} options={{ drawerItemStyle: { display: 'none' } }} />
-       </Drawer.Navigator>
+            {/* <Tab.Screen name="Login" component={Login} options={{ drawerItemStyle: { display: 'none' }}} /> */}
+            </Tab.Navigator>
+       {/* </Drawer.Navigator> */}
        </StarBoundProvider>
   );
 }
