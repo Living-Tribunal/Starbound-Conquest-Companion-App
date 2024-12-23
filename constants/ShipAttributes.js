@@ -10,7 +10,7 @@ Fighter: {
         "Combine Fire",
         "Evasise Maneuvers"
     ],
-    weaponType: "Light Cannon",
+    weaponType: ["Light Cannon"],
     firingArc: "Forward(90°)",
     weaponDamage: "1d4",
     weaponRange: "30ft",
@@ -28,7 +28,7 @@ Destroyer: {
         "Anti-Fighter Barrage",
         "Powerup Main Guns"
     ],
-    weaponType: "Medium Cannon",
+    weaponType: ["Medium Cannon"],
     firingArc: "Forward(90°)",
     weaponDamage: "1d6",
     weaponRange: "30ft",
