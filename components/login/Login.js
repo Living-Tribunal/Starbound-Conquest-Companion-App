@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, StatusBar, Image,  Pressable, TextInput, TouchableOpacity } from "react-native";
 import React, { useState } from 'react';
-import { Colors } from "@/constants/Colors";
+import { Colors } from "../../constants/Colors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -24,12 +24,13 @@ export default function Login(){
                 <TextInput style={styles.input} placeholder="Enter password"/>
             </View>
             <View style={{justifyContent: 'center', alignContent: 'center', alignItems: 'center'}}>
-            <TouchableOpacity style={styles.loginButton}>
-                <Text style={[styles.loginText, { color: isPressed? Colors.dark_gray : Colors.white},]}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity >
-                <Image {...isPressed} source={require("../../assets/images/google.png")} style={{width: 189, height: 40}} />       
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.loginButton}>
+                    <Text style={[styles.loginText, { color: isPressed? Colors.dark_gray : Colors.white},]}>Login</Text>
+                </TouchableOpacity>
+                <Text style={[styles.loginText, { color: isPressed? Colors.dark_gray : Colors.white},]}>-or-</Text>
+                <TouchableOpacity >
+                    <Image source={require("../../assets/images/google.png")} style={{marginTop: 10, width: 189, height: 40}} />       
+                </TouchableOpacity>
             </View>
             
         </SafeAreaView>
@@ -84,6 +85,6 @@ export default function Login(){
             backgroundColor: Colors.slate,
         },
         loginText: {
-            fontWeight: 'bold'
+            fontWeight: 'bold',
         }
     })

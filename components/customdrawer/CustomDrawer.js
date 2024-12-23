@@ -2,8 +2,10 @@ import React, { useEffect } from "react";
 import { View, Text, ImageBackground, Image } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { DrawerContentScrollView, DrawerItemList, DrawerItem } from "@react-navigation/drawer";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "../../constants/Colors";
 import { useFonts } from "expo-font";
+import { ImagePaths } from "../../constants/ImagePaths.js";
+
 
 const CustomDrawer = (props) => {
   const [fontsLoaded] = useFonts({
@@ -40,7 +42,6 @@ const CustomDrawer = (props) => {
             height: 150,
             borderRadius: 10,
             overflow: "hidden",
-            marginBottom: 10
           }}
         />
         <View style={{ backgroundColor: Colors.blue_gray }}>
@@ -48,9 +49,9 @@ const CustomDrawer = (props) => {
         </View>
         <View style={{ backgroundColor: Colors.dark_gray, borderRadius: 20, padding: 10 }}>
           {[
-            { label: "Your Fleet", screen: "Your Fleet" },
-            { label: "Fleet Points", screen: "Fleet Points" },
-            { label: "Rules", screen: "Rules" },
+            /* { label: "Your Fleet", screen: "Your Fleet"},
+            { label: "Fleet Points", screen: "Fleet Points"}, */
+            { label: "Rules", screen: "Rules"},
           ].map((item, index) => {
             const isFocused = props.state.routes[props.state.index]?.name === item.screen;
 
@@ -71,7 +72,7 @@ const CustomDrawer = (props) => {
                 }}
                 icon={() => (
                   <Image
-                    source={require("../../assets/icons/icons8-sergeant-major-of-army-sma-50.png")}
+                    source={ImagePaths[item.screen]}
                     style={{
                       width: 35,
                       height: 35,

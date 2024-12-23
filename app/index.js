@@ -4,19 +4,20 @@ import React, { useEffect } from 'react';
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import 'react-native-gesture-handler';
 import 'react-native-gesture-handler';
-import Carrier from "@/components/ships/Carrier";
+/* import Carrier from "@/components/ships/Carrier";
 import Destroyer from "@/components/ships/Destroyer";
-import Dreadnought from "@/components/ships/Dreadnought";
-import Fighter from "@/components/ships/Fighter";
-import Cruiser from "@/components/ships/Cruiser";
-import Rules from "@/components/rules/Rules";
-import Login from "@/components/login/Login";
-import CustomDrawer from "@/components/customdrawer/CustomDrawer";
-import Fleet_Points from "@/components/yourfleetandpoints/Fleet_Points";
-import Your_Fleet from "@/components/yourfleetandpoints/Your_Fleet";
-import { Colors } from '@/constants/Colors';
+import Dreadnought from "@/components/ships/Dreadnought"; */
+import ShipStats from "../components/ships/ShipStats";
+/* import Cruiser from "@/components/ships/Cruiser"; */
+import Rules from "../components/rules/Rules";
+import Login from "../components/login/Login";
+import CustomDrawer from "../components/customdrawer/CustomDrawer";
+import Fleet_Points from "../components/yourfleetandpoints/Fleet_Points";
+import Your_Fleet from "../components/yourfleetandpoints/Your_Fleet";
+import { Colors } from '../constants/Colors';
 import { useFonts } from 'expo-font';
 import { StarBoundProvider, useStarBoundContext } from '../components/Global/StarBoundProvider';
+import { ImagePaths } from "../constants/ImagePaths";
 
 const Drawer = createDrawerNavigator();
 
@@ -74,35 +75,24 @@ export default function Index() {
             }
           }}
           >
-            <Drawer.Screen name="Fighter" component={Fighter} options={{
+            <Drawer.Screen name="Ship Stats" component={ShipStats} options={{
                 drawerIcon: ({ focused, size }) => (
-                    <Image source={require('../assets/icons/rookie_64.png')} style={{ height: 45, width: 45, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
+                    <Image source={require('../assets/icons/icons8-battleship-top-view-50.png')} style={{ height: 45, width: 45, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
                 )
             }} />
-            <Drawer.Screen name="Destroyer" component={Destroyer} options={{
+            <Drawer.Screen name="Your Fleet" component={Your_Fleet} options={{
                 drawerIcon: ({ focused, size }) => (
-                    <Image source={require('../assets/icons/destroyer_64.png')} style={{ height: 45, width: 45, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
+                    <Image source={require('../assets/icons/icons8-sergeant-major-of-army-sma-50.png')} style={{ height: 45, width: 45, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
                 )
             }} />
-            <Drawer.Screen name="Cruiser" component={Cruiser} options={{
+            <Drawer.Screen name="Fleet Points" component={Fleet_Points} options={{
                 drawerIcon: ({ focused, size }) => (
-                    <Image source={require('../assets/icons/cruiser_64.png')} style={{ height: 45, width: 45, tintColor: focused ? Colors.slate : Colors.dark_gray}}  resizeMode="contain"/>
+                    <Image source={require('../assets/icons/icons8-score-50.png')} style={{ height: 45, width: 45, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
                 )
             }} />
-            <Drawer.Screen name="Carrier" component={Carrier} options={{
-                drawerIcon: ({ focused, size }) => (
-                    <Image source={require('../assets/icons/superCapital_64.png')} style={{ height: 45, width: 45, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
-                )
-            }} />
-            <Drawer.Screen name="Dreadnought" component={Dreadnought} options={{
-                drawerIcon: ({ focused, size }) => (
-                    <Image source={require('../assets/icons/titan_64.png')} style={{ height: 45, width: 45, tintColor: focused ? Colors.slate : Colors.dark_gray, }}  resizeMode="contain"/>
-                )
-            }} />
+            
             <Drawer.Screen name="Login" component={Login} options={{ drawerItemStyle: { display: 'none' }}} />
-            <Drawer.Screen name="Fleet Points" component={Fleet_Points} options={{ drawerItemStyle: { display: 'none' } }} />
             <Drawer.Screen name="Rules" component={Rules} options={{ drawerItemStyle: { display: 'none' } }} />
-            <Drawer.Screen name="Your Fleet" component={Your_Fleet} options={{ drawerItemStyle: { display: 'none' } }} />
        </Drawer.Navigator>
        </StarBoundProvider>
   );

@@ -1,11 +1,16 @@
 import { StyleSheet, Text, View, ScrollView, Image} from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import D4Dice from "../dice/D4Dice.js";
-import D20Dice from "../dice/D20Dice.js";
+import D4Dice from "./components/dice/D4Dice.js";
+import D20Dice from "./components/dice/D20Dice.js";
 import { StatusBar } from 'expo-status-bar';
+import  ShowStat from "../useState/ShowStat.js";
+
 
 export default function Fighters() {
+
+    const {ShowStat, handlePress} = ShowStat();
+
   return (
     <SafeAreaProvider>
     <SafeAreaView style={styles.container}>
