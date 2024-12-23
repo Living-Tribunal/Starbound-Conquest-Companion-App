@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from "react";
-import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Pressable, StatusBar } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
@@ -89,9 +89,9 @@ export default function Your_Fleet() {
   return (
     <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
+            <StatusBar hidden backgroundColor="#61dafb" />
     <View style={styles.container}>
       <View style={styles.endcontainer}>
-        <Text style={styles.title}>Your Fleet</Text>
       </View>
       <ScrollView style={styles.scrollView}>
         <Pressable

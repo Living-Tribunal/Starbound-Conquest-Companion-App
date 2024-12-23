@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, StatusBar, Image,  Pressable } from "react-nati
 import React, { useState } from 'react';
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { ScrollView } from "react-native-gesture-handler";
+import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
 
 
 export default function Rules() {
@@ -14,8 +14,9 @@ export default function Rules() {
 
   return (
     <SafeAreaProvider>
-    <SafeAreaView style={styles.container}>
-      <StatusBar hidden />
+    <SafeAreaView style={[styles.container,{backgroundColor:'red'}]}>
+        <GestureHandlerRootView>
+      <StatusBar hidden backgroundColor="#61dafb" />
       <ScrollView>
         <View style={styles.container}>
           <Text style={styles.textHeader}>Movement Rules</Text>
@@ -458,6 +459,7 @@ export default function Rules() {
           </View>
         </View>
       </ScrollView>
+      </GestureHandlerRootView>
     </SafeAreaView>
     </SafeAreaProvider>
   );

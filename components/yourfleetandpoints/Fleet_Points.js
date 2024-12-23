@@ -168,10 +168,9 @@ export default function Fleet_Points() {
   return (
     <SafeAreaProvider>
     <SafeAreaView style={styles.container}>
-      <StatusBar hidden />
+      <StatusBar hidden backgroundColor="#61dafb" />
       <ScrollView>
         <View style={styles.container}>
-          <Text style={styles.headerText}>Fleet Points</Text>
           <View style={styles.limitsValues}>
             <EditButton />
             <Text style={styles.values}>Your Fleet Value:</Text>

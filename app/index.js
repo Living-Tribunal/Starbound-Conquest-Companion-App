@@ -42,7 +42,7 @@ export default function Index() {
     }
   return (
     <StarBoundProvider>
-        <Tab.Navigator  initialRouteName = "Login"
+        <Tab.Navigator  initialRouteName = "Rules"
         screenOptions={{
             headerTintColor: Colors.white, //header text color
             headerTitleStyle: {
@@ -51,23 +51,14 @@ export default function Index() {
                 fontSize: 25,
                 fontWeight: 'bold',
                 textAlign: 'left',
-                justifyContent: 'center',
             },
-            tabBarLabelStyle:{ //text for tab nav  below icons
-                color: Colors.dark_gray,
-            },
+            tabBarLabelStyle:{ color: Colors.dark_gray},
             headerStyle: {
                 backgroundColor: Colors.dark_gray, //header background color
             },
-            tabBarIconStyle:{
+            tabBarIconStyle:{ //nav bar icon image
                 
             },
-            drawerContentStyle:{
-                backgroundColor: Colors.dark_gray, //drawwer background color
-            },
-            drawerInactiveTintColor: Colors.dark_gray, //drawwers inactive text color
-            drawerActiveBackgroundColor: Colors.dark_gray, //drawwer active text background color
-            drawerActiveTintColor: Colors.slate, //drawwers active text color
             headerTitleAlign: 'center',
             drawerLabelStyle:{
                 fontFamily: 'aboreto',
@@ -76,31 +67,32 @@ export default function Index() {
             drawerItemStyle:{
                 borderRadius: 10,
 
-            }
+            },
+            tabBarStyle: { backgroundColor: Colors.misty_blue, marginBottom: -40 },
           }}
           >
             <Tab.Screen name="Ship Stats" component={ShipStats} options={{
                 tabBarIcon: ({ focused, size }) => (
-                    <Image source={require('../assets/icons/icons8-battleship-top-view-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
+                    <Image source={require('../assets/icons/icons8-imperial-star-destroyer-48.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.blue_gray : Colors.dark_gray  }}  resizeMode="contain"/>
                 )
             }} />
             <Tab.Screen name="Your Fleet" component={Your_Fleet} options={{
                 tabBarIcon: ({ focused, size }) => (
-                    <Image source={require('../assets/icons/icons8-sergeant-major-of-army-sma-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
+                    <Image source={require('../assets/icons/icons8-sergeant-major-of-army-sma-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.blue_gray : Colors.dark_gray }}  resizeMode="contain"/>
                 )
             }} />
-            <Tab.Screen name="Points" component={Fleet_Points} options={{
+            <Tab.Screen name="Fleet Points" component={Fleet_Points} options={{
                 tabBarIcon: ({ focused, size }) => (
-                    <Image source={require('../assets/icons/icons8-score-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
+                    <Image source={require('../assets/icons/icons8-score-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.blue_gray : Colors.dark_gray }}  resizeMode="contain"/>
                 )
             }} />
             <Tab.Screen name="Rules" component={Rules} options={{
                 tabBarIcon: ({ focused, size }) => (
-                    <Image source={require('../assets/icons/icons8-score-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.slate : Colors.dark_gray }}  resizeMode="contain"/>
+                    <Image source={require('../assets/icons/icons8-score-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.blue_gray : Colors.dark_gray }}  resizeMode="contain"/>
                 )
             }} />
             
-            <Tab.Screen name="Login" component={Login} options={{ drawerItemStyle: { display: 'none' }}} />
+            {/* <Tab.Screen name="Login" component={Login} options={{ drawerItemStyle: { display: 'hidden' }}} /> */}
             </Tab.Navigator>
        </StarBoundProvider>
   );

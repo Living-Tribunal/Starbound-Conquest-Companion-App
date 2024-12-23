@@ -15,6 +15,7 @@ import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import ShowStat from "../../hooks/ShowStat.js";
 import { ShipTypeIcons } from "../../constants/ImagePaths.js";
+import { ShipAttributes } from "../../constants/ShipAttributes.js";
 
 export default function ShipStats() {
   const { showStat, handlePress, showAllStat } = ShowStat();
@@ -23,7 +24,7 @@ export default function ShipStats() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <StatusBar />
+        <StatusBar hidden backgroundColor="#61dafb" />
         <ScrollView nestedScrollEnabled style>
           <View style={styles.image}>
             <View style={{}}>
@@ -33,8 +34,8 @@ export default function ShipStats() {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 data={Object.entries(ShipTypeIcons)}
-                renderItem={({ item }) => (
-                  <TouchableOpacity>
+                renderItem={({ item, index }) => (
+                    <TouchableOpacity >
                     <View style={{alignItems: "center"}}>
                     <Image
                     source={item[1]}
@@ -100,7 +101,7 @@ export default function ShipStats() {
               {showStat.hitPoint && (
                 <View style={{}}>
                   <Text style={{ textAlign: "center", color: Colors.white }}>
-                    1
+                    {ShipAttributes.hp}
                   </Text>
                 </View>
               )}
