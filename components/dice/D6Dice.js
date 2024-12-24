@@ -27,63 +27,51 @@ export default function D6Dice() {
     setFirstDice((prev) => getDiceNum(prev));
   }
 
-  return (
-      <View style={styles.container}>
-        <View style={styles.diceContainer}>
-        <Text style={styles.diceText}>
-            {firstDice}
-          </Text>
-        </View>
-        <Pressable onPress={rollDiceOnTap}
-        style={({ pressed }) => [
-            styles.button,
-            {
-            backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
-            borderColor: pressed ? Colors.gold : Colors.slate,
-            },
-        ]}> 
-          <Text
-          style={styles.rollDiceBtnText}>
-            (d6) Roll the dice
-          </Text>
-        </Pressable>
-      </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  }, 
-  imageWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  diceContainer: {
-    margin: 5,
-    flexDirection: 'row', 
-    justifyContent: 'space-evenly', 
-  },
-  diceText: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: Colors.slate,
-  },
-  rollDiceBtnText: {
-    color: Colors.white,
-  },
-  button: {
-    width: 175,
-    height: 50,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    marginRight: 10,
-    alignItems: "center",
-    borderTopLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    borderWidth: 2,
-    borderColor: Colors.slate,
-},
+ return (
+               <View style={styles.diceContainer}>
+               <Pressable onPress={rollDiceOnTap}
+               style={({ pressed }) => [
+                   styles.button,
+                   {
+                   backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
+                   borderColor: pressed ? Colors.gold : Colors.slate,
+                   },
+               ]}> 
+                 <Text
+                 style={styles.rollDiceBtnText}>
+                  D6
+                 </Text>
+               </Pressable>
+               <Text style={styles.diceText}>
+                   {firstDice}
+                 </Text>
+             </View>
+         );
+       }
+       
+       const styles = StyleSheet.create({
+         container: {
+           alignItems: 'center',
+         }, 
+         diceContainer: {
+           flexDirection: 'row',
+           alignItems: 'center',
+           gap: 20
+         },
+         diceText: {
+           fontSize: 14,
+           fontWeight: 'bold',
+           color: Colors.slate,
+         },
+         rollDiceBtnText: {
+           color: Colors.white,
+           fontSize: 10,
+           padding: 10,
+         },
+         button: {
+           alignItems: "center",
+           borderRadius: 10,
+           borderWidth: 2,
+           borderColor: Colors.slate,
+       },
 });

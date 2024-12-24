@@ -28,12 +28,7 @@ export default function D4Dice() {
   }
 
   return (
-      <View style={styles.container}>
         <View style={styles.diceContainer}>
-        <Text style={styles.diceText}>
-            {firstDice}
-          </Text>
-        </View>
         <Pressable onPress={rollDiceOnTap}
         style={({ pressed }) => [
             styles.button,
@@ -44,9 +39,12 @@ export default function D4Dice() {
         ]}> 
           <Text
           style={styles.rollDiceBtnText}>
-           (d4) Roll the dice
+           D4
           </Text>
         </Pressable>
+        <Text style={styles.diceText}>
+            {firstDice}
+          </Text>
       </View>
   );
 }
@@ -54,35 +52,25 @@ export default function D4Dice() {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    justifyContent: 'center',
   }, 
-  imageWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
   diceContainer: {
-    margin: 5,
-    flexDirection: 'row', 
-    justifyContent: 'space-evenly', 
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 20
   },
   diceText: {
-    fontSize: 48,
+    fontSize: 14,
     fontWeight: 'bold',
     color: Colors.slate,
   },
   rollDiceBtnText: {
     color: Colors.white,
+    fontSize: 10,
+    padding: 10,
   },
   button: {
-    width: 175,
-    height: 50,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    marginRight: 10,
     alignItems: "center",
-    borderTopLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderRadius: 10,
     borderWidth: 2,
     borderColor: Colors.slate,
 },

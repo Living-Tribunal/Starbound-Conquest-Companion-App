@@ -17,7 +17,6 @@ import Your_Fleet from "../components/yourfleetandpoints/Your_Fleet";
 import { Colors } from '../constants/Colors';
 import { useFonts } from 'expo-font';
 import { StarBoundProvider, useStarBoundContext } from '../components/Global/StarBoundProvider';
-import { ImagePaths } from "../constants/ImagePaths";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 /* const Drawer = createDrawerNavigator(); */
@@ -88,7 +87,7 @@ export default function Index() {
             }} />
             <Tab.Screen name="Rules" component={Rules} options={{
                 tabBarIcon: ({ focused, size }) => (
-                    <Image source={require('../assets/icons/icons8-score-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.blue_gray : Colors.dark_gray }}  resizeMode="contain"/>
+                    <Image source={require('../assets/icons/icons8-rules-50.png')} style={{ height: 25, width: 25, tintColor: focused ? Colors.blue_gray : Colors.dark_gray }}  resizeMode="contain"/>
                 )
             }} />
             

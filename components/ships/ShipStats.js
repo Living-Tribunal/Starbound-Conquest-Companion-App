@@ -6,29 +6,33 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  Pressable
 } from "react-native";
 import { Colors } from "../../constants/Colors.js";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import D4Dice from "../dice/D4Dice.js";
-import D20Dice from "../dice/D20Dice.js";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import ShowStat from "../../hooks/ShowStat.js";
 import { ShipTypeIcons } from "../../constants/ImagePaths.js";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
+import { shipDiceMapping } from "../buttons/Dice.js";
+import { SpecialOrders} from "../buttons/SpecialOrders.js";
 
 export default function ShipStats() {
   const { showStat, handlePress, showAllStat } = ShowStat();
-  const [ areAllStatsShows, setAreAllStatsShows ] = useState(false);
-  const [ pressed, setPressed ] = useState(false);
-  const [ selectedShip, setSelectedShip ] = useState("Fighter");
+  const [areAllStatsShows, setAreAllStatsShows] = useState(false);
+  const [pressed, setPressed] = useState(false);
+  const [selectedShip, setSelectedShip] = useState("Fighter");
 
   const ShipData = ShipAttributes[selectedShip];
+
+  const selectedShipDice = shipDiceMapping[selectedShip];
+  const selectedShipSpecialOrders = SpecialOrders[selectedShip];
 
   const handleShipSelectionPress = (shipName) => {
     setSelectedShip(shipName);
   };
-console.log(selectedShip);
+  console.log(selectedShip);
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
@@ -36,23 +40,25 @@ console.log(selectedShip);
         <ScrollView nestedScrollEnabled style>
           <View style={styles.image}>
             <View style={{}}>
-            <Text style={styles.headerText}>Ship Classes</Text>
+              <Text style={styles.headerText}>Ship Classes</Text>
               <FlatList
-                style={{}}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 data={Object.entries(ShipTypeIcons)}
                 renderItem={({ item, index }) => (
-                    <TouchableOpacity onPress={() => handleShipSelectionPress(item[0])} >
-                    <View style={{alignItems: "center"}}>
-                    <Image
-                    source={item[1]}
-                    style={{ width: 65, height: 65, margin: 10 }}
-                    resizeMode="contain"
-                    />
-                    <Text style={{color: Colors.white, margin: 10 }}>{item[0]}</Text>
-                  </View>
-                    
+                  <TouchableOpacity
+                    onPress={() => handleShipSelectionPress(item[0], setPressed(true))}
+                  >
+                    <View style={{ alignItems: "center" }}>
+                      <Image
+                        source={item[1]}
+                        style={{ width: 45, height: 45, margin: 5 }}
+                        resizeMode="contain"
+                      />
+                      <Text style={{ color: Colors.white, margin: 10 }}>
+                        {item[0]}
+                      </Text>
+                    </View>
                   </TouchableOpacity>
                 )}
                 keyExtractor={(item) => item[0]}
@@ -75,7 +81,7 @@ console.log(selectedShip);
                     setAreAllStatsShows(false);
                   }}
                 >
-                  <Text style={[styles.showText, { color: Colors.dark_gray }]}>
+                  <Text style={[styles.showText, { color: Colors.goldenrod }]}>
                     Hide All Stats
                   </Text>
                 </TouchableOpacity>
@@ -97,12 +103,17 @@ console.log(selectedShip);
           </View>
           <View style={styles.buttonContainer}>
             <View style={{ width: "45%" }}>
-              <View style={[styles.statButton, {backgroundColor: pressed? Colors.gold : Colors.blue_gray}]}>
-              <TouchableOpacity
-                onPress={() => {
+              <View
+                style={[
+                  styles.statButton,
+                  { backgroundColor: Colors.blue_gray },
+                ]}
+              >
+                <TouchableOpacity
+                  onPress={() => {
                     handlePress("hitPoint");
                     setPressed((prev) => !prev);
-                }}
+                  }}
                 >
                   <Text style={styles.statButtonText}>Hit Point</Text>
                 </TouchableOpacity>
@@ -118,7 +129,7 @@ console.log(selectedShip);
             <View style={{ width: "45%" }}>
               <View style={[styles.statButton]}>
                 <TouchableOpacity onPress={() => handlePress("toHit")}>
-                  <Text style={[styles.statButtonText,{}]}>To Hit</Text>
+                  <Text style={[styles.statButtonText, {}]}>To Hit</Text>
                 </TouchableOpacity>
               </View>
               {showStat.toHit && (
@@ -141,7 +152,7 @@ console.log(selectedShip);
               {showStat.soak && (
                 <View style={{}}>
                   <Text style={{ textAlign: "center", color: Colors.white }}>
-                  {ShipData.soak}
+                    {ShipData.soak}
                   </Text>
                 </View>
               )}
@@ -155,7 +166,7 @@ console.log(selectedShip);
               {showStat.moveDistance && (
                 <View style={{}}>
                   <Text style={{ textAlign: "center", color: Colors.white }}>
-                  {ShipData.moveDistance}
+                    {ShipData.moveDistance}
                   </Text>
                 </View>
               )}
@@ -165,27 +176,31 @@ console.log(selectedShip);
           <View style={styles.buttonContainer}>
             <View style={{ width: "45%" }}>
               <View style={[styles.statButton]}>
-                <TouchableOpacity onPress={() => handlePress("weaponType")}>
-                  <Text style={styles.statButtonText}>Weapon Type</Text>
+                <TouchableOpacity onPress={() => handlePress("weaponRange")}>
+                  <Text style={styles.statButtonText}>Weapon Range</Text>
                 </TouchableOpacity>
               </View>
-              {showStat.weaponType && (
+              {showStat.weaponRange && (
                 <View style={{}}>
-                  {Array.isArray(ShipData.weaponType) ? (
-                    ShipData.weaponType.map((weapon, index) => (
-                        <Text key={index} style={{ textAlign: "center", color: Colors.white }}>
-                        {weapon}
-                        </Text>
+                  {Array.isArray(ShipData.weaponRange) ? (
+                    ShipData.weaponRange.map((weaponRange, index) => (
+                      <Text
+                        key={index}
+                        style={{ textAlign: "center", color: Colors.white }}
+                      >
+                        {weaponRange}
+                      </Text>
                     ))
-                    ) : (
-                    // Fallback if weaponType is a single value
+                  ) : (
+                    // Fallback if firingArc is a single value
                     <Text style={{ textAlign: "center", color: Colors.white }}>
-                        {ShipData.weaponType}
+                      {ShipData.weaponRange}
                     </Text>
-                    )}
+                  )}
                 </View>
               )}
             </View>
+
             <View style={{ width: "45%" }}>
               <View style={[styles.statButton]}>
                 <TouchableOpacity onPress={() => handlePress("firingArc")}>
@@ -194,18 +209,21 @@ console.log(selectedShip);
               </View>
               {showStat.firingArc && (
                 <View style={{}}>
-                    {Array.isArray(ShipData.firingArc) ? (
-                        ShipData.firingArc.map((firingArc, index) => (
-                  <Text key={index} style={{ textAlign: "center", color: Colors.white }}>
-                  {firingArc}
-                  </Text>
-                        ))
-                    ) : (
-                        // Fallback if firingArc is a single value
-                        <Text style={{ textAlign: "center", color: Colors.white }}>
-                        {ShipData.firingArc}
-                        </Text>
-                    )}
+                  {Array.isArray(ShipData.firingArc) ? (
+                    ShipData.firingArc.map((firingArc, index) => (
+                      <Text
+                        key={index}
+                        style={{ textAlign: "center", color: Colors.white }}
+                      >
+                        {firingArc}
+                      </Text>
+                    ))
+                  ) : (
+                    // Fallback if firingArc is a single value
+                    <Text style={{ textAlign: "center", color: Colors.white }}>
+                      {ShipData.firingArc}
+                    </Text>
+                  )}
                 </View>
               )}
             </View>
@@ -220,41 +238,39 @@ console.log(selectedShip);
               </View>
               {showStat.weaponDamage && (
                 <View style={{}}>
-                  {Array.isArray(ShipData.weaponDamage) ? (
-                        ShipData.weaponDamage.map((weaponDamage, index) => (
-                  <Text key={index} style={{ textAlign: "center", color: Colors.white }}>
-                  {weaponDamage}
-                  </Text>
-                        ))
-                    ) : (
-                        // Fallback if firingArc is a single value
-                        <Text style={{ textAlign: "center", color: Colors.white }}>
-                        {ShipData.weaponDamage}
-                        </Text>
-                    )}
+                    {selectedShipDice.map((DiceComponent, index) => (
+                      <View key={index} style={{alignSelf: "center", margin: 2, flexDirection: "row", gap: 20}}>
+                            {DiceComponent}
+                        <View>
+                        </View>
+                      </View>
+                    ))}
                 </View>
               )}
             </View>
             <View style={{ width: "45%" }}>
               <View style={[styles.statButton]}>
-                <TouchableOpacity onPress={() => handlePress("weaponRange")}>
-                  <Text style={styles.statButtonText}>Weapon Range</Text>
+                <TouchableOpacity onPress={() => handlePress("weaponType")}>
+                  <Text style={styles.statButtonText}>Weapon Type</Text>
                 </TouchableOpacity>
               </View>
-              {showStat.weaponRange && (
+              {showStat.weaponType && (
                 <View style={{}}>
-                  {Array.isArray(ShipData.weaponRange) ? (
-                        ShipData.weaponRange.map((weaponRange, index) => (
-                  <Text key={index} style={{ textAlign: "center", color: Colors.white }}>
-                  {weaponRange}
-                  </Text>
-                        ))
-                    ) : (
-                        // Fallback if firingArc is a single value
-                        <Text style={{ textAlign: "center", color: Colors.white }}>
-                        {ShipData.weaponRange}
-                        </Text>
-                    )}
+                  {Array.isArray(ShipData.weaponType) ? (
+                    ShipData.weaponType.map((weapon, index) => (
+                      <Text
+                        key={index}
+                        style={{ textAlign: "center", color: Colors.white }}
+                      >
+                        {weapon}
+                      </Text>
+                    ))
+                  ) : (
+                    // Fallback if weaponType is a single value
+                    <Text style={{ textAlign: "center", color: Colors.white }}>
+                      {ShipData.weaponType}
+                    </Text>
+                  )}
                 </View>
               )}
             </View>
@@ -270,7 +286,7 @@ console.log(selectedShip);
               {showStat.capacity && (
                 <View style={{}}>
                   <Text style={{ textAlign: "center", color: Colors.white }}>
-                  {ShipData.capacity}
+                    {ShipData.capacity}
                   </Text>
                 </View>
               )}
@@ -284,23 +300,45 @@ console.log(selectedShip);
               {showStat.pointValue && (
                 <View style={{}}>
                   <Text style={{ textAlign: "center", color: Colors.white }}>
-                  {ShipData.pointValue}
+                    {ShipData.pointValue}
                   </Text>
                 </View>
               )}
             </View>
           </View>
-          {/* <View style={styles.tableRow}>
-            <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableHeader}>Special Orders</Text>
+
+          <View style={styles.buttonContainer}>
+            <View style={{ width: "95%" }}>
+              <View style={[styles.statButton]}>
+                <TouchableOpacity onPress={() => handlePress("specialOrders")}>
+                  <Text style={styles.statButtonText}>Special Orders</Text>
+                </TouchableOpacity>
+              </View>
+              {showStat.specialOrders && (
+                <>
+              <View style={{}}>
+                    {selectedShipSpecialOrders.map((SpecialOrders, index) => (
+                      <View key={index} style={{alignSelf: "center", margin: 2, flexDirection: "row", gap: 20}}>
+                      {SpecialOrders}
+                </View> 
+                    ))}
+    
+                </View>
+                <View style={{}}>
+                    {selectedShipSpecialOrders.map((SpecialOrders, index) => (
+                      <View key={index} style={{alignSelf: "center", margin: 2, flexDirection: "row", gap: 20}}>
+                            {SpecialOrders}
+                        <View>
+                        </View>
+                      </View>
+                    ))}
+                </View>
+                </>
+                )}
             </View>
-            <View style={styles.tableCellContainer}>
-              <Text style={styles.tableCell}>1 Full Throttle</Text>
-              <Text style={styles.tableCell}>2 Combine Fire</Text>
-              <Text style={styles.tableCell}>3 Eevasive Maneuvers</Text>
-            </View>
-          </View> */}
-          <View style={styles.shipTableStatsType}>
+          </View>
+
+          {/* <View style={styles.shipTableStatsType}>
             <Text style={styles.tableHeader}>Ship Class:</Text>
           </View>
           <View style={styles.shipTableStats}>
@@ -329,17 +367,7 @@ console.log(selectedShip);
             <Text style={styles.tableHeaderValues}>6</Text>
             <Text style={styles.tableHeaderValues}>7</Text>
             <Text style={styles.tableHeaderValues}>8</Text>
-          </View>
-          <View style={styles.diceWrapper}>
-            <View style={styles.diceItem}>
-              <Text style={styles.tableHeaderValues}>To Hit</Text>
-              <D20Dice />
-            </View>
-            <View style={styles.diceItem}>
-              <Text style={styles.tableHeaderValues}>Laser Cannon</Text>
-              <D4Dice />
-            </View>
-          </View>
+          </View> */}
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -358,12 +386,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "aboreto",
     borderBottomColor: Colors.white,
-    borderTopColor: "transparent",
-  },
-  table: {
-    marginHorizontal: 10,
-    borderWidth: 1,
-    borderColor: Colors.misty_blue,
     borderTopColor: "transparent",
   },
   tableRow: {
@@ -437,20 +459,11 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
   },
-  diceWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 5,
-    marginBottom: 5,
-    padding: 5,
-  },
   diceItem: {
     alignItems: "center",
   },
   statButton: {
-    borderTopLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderRadius: 5,
     backgroundColor: Colors.blue_gray,
     borderWidth: 2,
     borderColor: Colors.slate,
@@ -481,4 +494,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: "center",
   },
+  button:{
+    borderRadius: 5,
+    borderWidth: 2,
+  }
 });

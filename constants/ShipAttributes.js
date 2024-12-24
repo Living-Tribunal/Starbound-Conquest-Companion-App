@@ -3,7 +3,7 @@ Fighter: {
     hp: 1,
     toHit: 15,
     soak: 1,
-    moveDistance: 80,
+    moveDistance: '80ft',
     capacity: 0,
     specialOrders: [
         "Full Throttle",
@@ -21,7 +21,7 @@ Destroyer: {
     hp: 8,
     toHit: 10,
     soak: 4,
-    moveDistance: 60,
+    moveDistance: "60ft",
     capacity: 0,
     specialOrders: [
         "Full Throttle",
@@ -38,7 +38,7 @@ Cruiser:{
     hp: 12,
     toHit: 8,
     soak: 6,
-    moveDistance: 50,
+    moveDistance: "50ft",
     capacity: 0,
     specialOrders: [
         "Full Throttle",
@@ -64,7 +64,7 @@ Carrier: {
     hp: 14,
     toHit: 6,
     soak: 7,
-    moveDistance: 40,
+    moveDistance: "40ft",
     capacity: 20,
     specialOrders: [
         "Full Throttle",
@@ -90,7 +90,7 @@ Dreadnought: {
     hp: 30,
     toHit: 4,
     soak: 8,
-    moveDistance: 30,
+    moveDistance: "30ft",
     capacity: 20,
     specialOrders: [
         "Full Throttle",
