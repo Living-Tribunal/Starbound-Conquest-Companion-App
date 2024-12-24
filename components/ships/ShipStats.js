@@ -17,12 +17,14 @@ import { ShipTypeIcons } from "../../constants/ImagePaths.js";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
 import { shipDiceMapping } from "../buttons/Dice.js";
 import { SpecialOrders} from "../buttons/SpecialOrders.js";
+import { arrowUp, arrowDown } from "../../constants/Icons.js";
 
 export default function ShipStats() {
   const { showStat, handlePress, showAllStat } = ShowStat();
   const [areAllStatsShows, setAreAllStatsShows] = useState(false);
   const [pressed, setPressed] = useState(false);
   const [selectedShip, setSelectedShip] = useState("Fighter");
+  const [activeIndex, setActiveIndex] = useState(null); 
 
   const ShipData = ShipAttributes[selectedShip];
 
@@ -120,7 +122,7 @@ export default function ShipStats() {
               </View>
               {showStat.hitPoint && (
                 <View style={{}}>
-                  <Text style={{ textAlign: "center", color: Colors.white }}>
+                  <Text style={{ textAlign: "center", color: Colors.white, fontFamily: "monospace", }}>
                     {ShipData.hp}
                   </Text>
                 </View>
@@ -134,7 +136,7 @@ export default function ShipStats() {
               </View>
               {showStat.toHit && (
                 <View style={{}}>
-                  <Text style={{ textAlign: "center", color: Colors.white }}>
+                  <Text style={{ textAlign: "center", color: Colors.white, fontFamily: "monospace", }}>
                     {ShipData.toHit}
                   </Text>
                 </View>
@@ -151,7 +153,7 @@ export default function ShipStats() {
               </View>
               {showStat.soak && (
                 <View style={{}}>
-                  <Text style={{ textAlign: "center", color: Colors.white }}>
+                  <Text style={{ textAlign: "center", color: Colors.white, fontFamily: "monospace", }}>
                     {ShipData.soak}
                   </Text>
                 </View>
@@ -165,7 +167,7 @@ export default function ShipStats() {
               </View>
               {showStat.moveDistance && (
                 <View style={{}}>
-                  <Text style={{ textAlign: "center", color: Colors.white }}>
+                  <Text style={{ textAlign: "center", color: Colors.white, fontFamily: "monospace", }}>
                     {ShipData.moveDistance}
                   </Text>
                 </View>
@@ -186,14 +188,14 @@ export default function ShipStats() {
                     ShipData.weaponRange.map((weaponRange, index) => (
                       <Text
                         key={index}
-                        style={{ textAlign: "center", color: Colors.white }}
+                        style={{ textAlign: "center", color: Colors.white, fontFamily: "monospace", }}
                       >
                         {weaponRange}
                       </Text>
                     ))
                   ) : (
                     // Fallback if firingArc is a single value
-                    <Text style={{ textAlign: "center", color: Colors.white }}>
+                    <Text style={{ textAlign: "center", color: Colors.white, fontFamily: "monospace", }}>
                       {ShipData.weaponRange}
                     </Text>
                   )}
@@ -213,14 +215,14 @@ export default function ShipStats() {
                     ShipData.firingArc.map((firingArc, index) => (
                       <Text
                         key={index}
-                        style={{ textAlign: "center", color: Colors.white }}
+                        style={{ textAlign: "center", color: Colors.white, fontFamily: "monospace", }}
                       >
                         {firingArc}
                       </Text>
                     ))
                   ) : (
                     // Fallback if firingArc is a single value
-                    <Text style={{ textAlign: "center", color: Colors.white }}>
+                    <Text style={{ textAlign: "center", color: Colors.white, fontFamily: "monospace", }}>
                       {ShipData.firingArc}
                     </Text>
                   )}
@@ -260,14 +262,14 @@ export default function ShipStats() {
                     ShipData.weaponType.map((weapon, index) => (
                       <Text
                         key={index}
-                        style={{ textAlign: "center", color: Colors.white }}
+                        style={{ textAlign: "center", color: Colors.white, fontFamily: "monospace", }}
                       >
                         {weapon}
                       </Text>
                     ))
                   ) : (
                     // Fallback if weaponType is a single value
-                    <Text style={{ textAlign: "center", color: Colors.white }}>
+                    <Text style={{ textAlign: "center", color: Colors.white, fontFamily: "monospace", }}>
                       {ShipData.weaponType}
                     </Text>
                   )}
@@ -285,7 +287,7 @@ export default function ShipStats() {
               </View>
               {showStat.capacity && (
                 <View style={{}}>
-                  <Text style={{ textAlign: "center", color: Colors.white }}>
+                  <Text style={{ textAlign: "center", color: Colors.white, fontFamily: "monospace", }}>
                     {ShipData.capacity}
                   </Text>
                 </View>
@@ -299,7 +301,7 @@ export default function ShipStats() {
               </View>
               {showStat.pointValue && (
                 <View style={{}}>
-                  <Text style={{ textAlign: "center", color: Colors.white }}>
+                  <Text style={{ textAlign: "center", color: Colors.white,fontFamily: "monospace", }}>
                     {ShipData.pointValue}
                   </Text>
                 </View>
@@ -316,22 +318,26 @@ export default function ShipStats() {
               </View>
               {showStat.specialOrders && (
                 <>
-              <View style={{}}>
-                    {selectedShipSpecialOrders.map((SpecialOrders, index) => (
-                      <View key={index} style={{alignSelf: "center", margin: 2, flexDirection: "row", gap: 20}}>
-                      {SpecialOrders}
-                </View> 
-                    ))}
-    
-                </View>
                 <View style={{}}>
-                    {selectedShipSpecialOrders.map((SpecialOrders, index) => (
-                      <View key={index} style={{alignSelf: "center", margin: 2, flexDirection: "row", gap: 20}}>
-                            {SpecialOrders}
-                        <View>
+                  {Array.isArray(ShipData.specialOrders) ? (
+                    ShipData.specialOrders.map((orders, index) => (
+                        
+                        <View>                        
+                            <Text
+                        key={index}
+                        style={{ textAlign: "center", color: Colors.white, marginRight: 5, paddingBottom: 10, fontFamily: "monospace", }}
+                      >
+                        {orders}
+                      </Text>   
                         </View>
-                      </View>
-                    ))}
+                    ))
+                  ) : (
+                    // Fallback if weaponType is a single value
+                    <Text style={{ textAlign: "center", color: Colors.white }}>
+                      {ShipData.specialOrders}
+                    </Text>
+                  )}
+
                 </View>
                 </>
                 )}
@@ -473,8 +479,9 @@ const styles = StyleSheet.create({
   statButtonText: {
     justifyContent: "center",
     color: Colors.white,
-    fontSize: 15,
+    fontSize: 13,
     textAlign: "center",
+    fontFamily: "monospace",
   },
   buttonContainer: {
     flexDirection: "row",

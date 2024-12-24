@@ -1,3 +1,5 @@
+import { SpecialOrders } from "./SpecialOrders.js";
+
 export const ShipAttributes =  {
 Fighter: {
     hp: 1,
@@ -6,9 +8,9 @@ Fighter: {
     moveDistance: '80ft',
     capacity: 0,
     specialOrders: [
-        "Full Throttle",
-        "Combine Fire",
-        "Evasise Maneuvers"
+        [SpecialOrders[1].name, SpecialOrders[3].text],
+        [SpecialOrders[2].name, SpecialOrders[2].text],
+        [SpecialOrders[3].name, SpecialOrders[3].text],
     ],
     weaponType: ["Light Cannon"],
     firingArc: "Forward(90°)",
@@ -24,7 +26,7 @@ Destroyer: {
     moveDistance: "60ft",
     capacity: 0,
     specialOrders: [
-        "Full Throttle",
+        "All Ahead Full",
         "Anti-Fighter Barrage",
         "Powerup Main Guns"
     ],
@@ -41,7 +43,7 @@ Cruiser:{
     moveDistance: "50ft",
     capacity: 0,
     specialOrders: [
-        "Full Throttle",
+        "All Ahead Full",
         "Reinforce Shields",
         "All Systems Fire",
         "Broadside"
@@ -67,7 +69,7 @@ Carrier: {
     moveDistance: "40ft",
     capacity: 20,
     specialOrders: [
-        "Full Throttle",
+        "All Ahead Full",
         "Reinforce Shields",
         "All Systems Fire",
         "Launch Fighters"
@@ -93,7 +95,7 @@ Dreadnought: {
     moveDistance: "30ft",
     capacity: 20,
     specialOrders: [
-        "Full Throttle",
+        "All Ahead Full",
         "Reinforce Shields",
         "All Systems Fire",
         "Launch Fighters",
