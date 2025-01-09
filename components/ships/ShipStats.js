@@ -6,25 +6,24 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
-  Pressable
+  Pressable,
+  StatusBar,
+  ToastAndroid
 } from "react-native";
 import { Colors } from "../../constants/Colors.js";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { StatusBar } from "expo-status-bar";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import ShowStat from "../../hooks/ShowStat.js";
 import { ShipTypeIcons } from "../../constants/ImagePaths.js";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
 import { shipDiceMapping } from "../buttons/Dice.js";
-import { SpecialOrders} from "../buttons/SpecialOrders.js";
-import { arrowUp, arrowDown } from "../../constants/Icons.js";
+import { SpecialOrders} from "../../constants/SpecialOrders.js";
 
 export default function ShipStats() {
   const { showStat, handlePress, showAllStat } = ShowStat();
   const [areAllStatsShows, setAreAllStatsShows] = useState(false);
   const [pressed, setPressed] = useState(false);
   const [selectedShip, setSelectedShip] = useState("Fighter");
-  const [activeIndex, setActiveIndex] = useState(null); 
 
   const ShipData = ShipAttributes[selectedShip];
 
@@ -34,37 +33,44 @@ export default function ShipStats() {
   const handleShipSelectionPress = (shipName) => {
     setSelectedShip(shipName);
   };
-  console.log(selectedShip);
+  /* console.log(selectedShip); */
   return (
-    <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <StatusBar hidden backgroundColor="#61dafb" />
+        <StatusBar/>
         <ScrollView nestedScrollEnabled style>
           <View style={styles.image}>
             <View style={{}}>
               <Text style={styles.headerText}>Ship Classes</Text>
               <FlatList
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                data={Object.entries(ShipTypeIcons)}
-                renderItem={({ item, index }) => (
-                  <TouchableOpacity
-                    onPress={() => handleShipSelectionPress(item[0], setPressed(true))}
-                  >
-                    <View style={{ alignItems: "center" }}>
-                      <Image
-                        source={item[1]}
-                        style={{ width: 45, height: 45, margin: 5 }}
-                        resizeMode="contain"
-                      />
-                      <Text style={{ color: Colors.white, margin: 10 }}>
-                        {item[0]}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                )}
-                keyExtractor={(item) => item[0]}
-              />
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  data={Object.entries(ShipTypeIcons)}
+  renderItem={({ item }) => {
+    const isSelected = selectedShip === item[0];
+    return (
+      <Pressable
+        onPress={() => handleShipSelectionPress(item[0])}
+        style={{
+          borderTopLeftRadius: 20,
+          borderBottomRightRadius: 20,
+          margin: 5,
+          alignItems: "center",
+          borderColor: isSelected ? Colors.gold : Colors.blue_gray,
+          borderWidth: isSelected?  2:1,
+        }}
+      >
+        <Image
+          source={item[1]}
+          style={{ width: isSelected?  45:35, height: 45, margin: 5, tintColor: isSelected ? Colors.gold : Colors.misty_blue }}
+          resizeMode="contain"
+        />
+        <Text style={{fontSize: isSelected?  14:12,fontFamily: "monospace", color: isSelected ? Colors.gold : Colors.misty_blue, margin: 5 }}>{item[0]}</Text>
+      </Pressable>
+    );
+  }}
+  keyExtractor={(item) => item[0]}
+/>
+
             </View>
             {/* <Text style={styles.headerText}>-Ship Stats-</Text> */}
             <Text style={styles.headerText}>{selectedShip}</Text>
@@ -322,9 +328,9 @@ export default function ShipStats() {
                   {Array.isArray(ShipData.specialOrders) ? (
                     ShipData.specialOrders.map((orders, index) => (
                         
-                        <View>                        
+                        <View key={index}>                        
                             <Text
-                        key={index}
+                        
                         style={{ textAlign: "center", color: Colors.white, marginRight: 5, paddingBottom: 10, fontFamily: "monospace", }}
                       >
                         {orders}
@@ -376,7 +382,6 @@ export default function ShipStats() {
           </View> */}
         </ScrollView>
       </SafeAreaView>
-    </SafeAreaProvider>
   );
 }
 

@@ -1,9 +1,9 @@
 export const SHIP_TOGGLES_DONE = {
-    fighter1: 1,
-    destroyer2: 1,
-    cruiser3: 1,
-    carrier4: 1,
-    dreadnought5: 1,
+    fighter: 1,
+    destroyer: 1,
+    cruiser: 1,
+    carrier: 1,
+    dreadnought: 1,
   };
 
   export const SHIP_TOGGLES = {

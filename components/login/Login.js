@@ -9,7 +9,6 @@ export default function Login(){
     const [isPressed, setIsPressed ] = useState(false);
 
     return (
-        <SafeAreaProvider >
         <SafeAreaView style={styles.container}>
             <StatusBar/>
             <View style={styles.logoContainer}>
@@ -34,7 +33,6 @@ export default function Login(){
             </View>
             
         </SafeAreaView>
-        </SafeAreaProvider>
     )
 }
     const styles = StyleSheet.create({

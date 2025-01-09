@@ -13,10 +13,9 @@ export default function Rules() {
     };
 
   return (
-    <SafeAreaProvider>
-    <SafeAreaView style={[styles.container,{backgroundColor:'red'}]}>
+    <SafeAreaView style={[styles.container]}>
         <GestureHandlerRootView>
-      <StatusBar hidden backgroundColor="#61dafb" />
+      <StatusBar/>
       <ScrollView>
         <View style={styles.container}>
           <Text style={styles.textHeader}>Movement Rules</Text>
@@ -461,7 +460,6 @@ export default function Rules() {
       </ScrollView>
       </GestureHandlerRootView>
     </SafeAreaView>
-    </SafeAreaProvider>
   );
 }
 

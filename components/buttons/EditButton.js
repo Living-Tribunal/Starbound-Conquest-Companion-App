@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Pressable, View, Modal, Text, TextInput, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
+import { useStarBoundContext } from "../Global/StarBoundProvider";
 
 // Define your key for AsyncStorage
 const statKey = '';
 
 export default function EditButton() {
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [text, setText] = useState("0");
-
+    /* const [isModalVisible, setIsModalVisible] = useState(false); */
+    const { isModalVisible, setIsModalVisible, text, setText } = useStarBoundContext();
+    
     const save = async () => {
         try {
             await AsyncStorage.setItem(statKey, text);

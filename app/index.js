@@ -1,17 +1,11 @@
-import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
+
+import { Image } from "react-native";
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
-import { createDrawerNavigator } from "@react-navigation/drawer";
 import 'react-native-gesture-handler';
 import 'react-native-gesture-handler';
-/* import Carrier from "@/components/ships/Carrier";
-import Destroyer from "@/components/ships/Destroyer";
-import Dreadnought from "@/components/ships/Dreadnought"; */
 import ShipStats from "../components/ships/ShipStats";
-/* import Cruiser from "@/components/ships/Cruiser"; */
 import Rules from "../components/rules/Rules";
-import Login from "../components/login/Login";
-import CustomDrawer from "../components/customdrawer/CustomDrawer";
 import Fleet_Points from "../components/yourfleetandpoints/Fleet_Points";
 import Your_Fleet from "../components/yourfleetandpoints/Your_Fleet";
 import { Colors } from '../constants/Colors';
@@ -41,7 +35,8 @@ export default function Index() {
     }
   return (
     <StarBoundProvider>
-        <Tab.Navigator  initialRouteName = "Rules"
+        <Tab.Navigator  
+        initialRouteName = "Ship Stats"
         screenOptions={{
             headerTintColor: Colors.white, //header text color
             headerTitleStyle: {
@@ -51,23 +46,14 @@ export default function Index() {
                 fontWeight: 'bold',
                 textAlign: 'left',
             },
-            tabBarLabelStyle:{ color: Colors.dark_gray},
+            tabBarLabelStyle:{ color: Colors.dark_gray, fontFamily: 'alberto'},
             headerStyle: {
-                backgroundColor: Colors.dark_gray, //header background color
-            },
-            tabBarIconStyle:{ //nav bar icon image
-                
+                backgroundColor: Colors.dark_gray //header background color
             },
             headerTitleAlign: 'center',
-            drawerLabelStyle:{
-                fontFamily: 'aboreto',
-                fontWeight: 'bold'
-            },
-            drawerItemStyle:{
-                borderRadius: 10,
-
-            },
-            tabBarStyle: { backgroundColor: Colors.misty_blue, marginBottom: -40 },
+            tabBarItemStyle: {backgroundColor: Colors.misty_blue },
+            headerShown:true,
+            
           }}
           >
             <Tab.Screen name="Ship Stats" component={ShipStats} options={{

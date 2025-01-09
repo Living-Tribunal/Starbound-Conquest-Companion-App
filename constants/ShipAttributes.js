@@ -8,7 +8,7 @@ Fighter: {
     moveDistance: '80ft',
     capacity: 0,
     specialOrders: [
-        [SpecialOrders[1].name, SpecialOrders[3].text],
+        [SpecialOrders[1].name, SpecialOrders[1].text],
         [SpecialOrders[2].name, SpecialOrders[2].text],
         [SpecialOrders[3].name, SpecialOrders[3].text],
     ],
@@ -26,9 +26,9 @@ Destroyer: {
     moveDistance: "60ft",
     capacity: 0,
     specialOrders: [
-        "All Ahead Full",
-        "Anti-Fighter Barrage",
-        "Powerup Main Guns"
+        [SpecialOrders[1].name, SpecialOrders[1].text],
+        [SpecialOrders[4].name, SpecialOrders[4].text],
+        [SpecialOrders[5].name, SpecialOrders[5].text],
     ],
     weaponType: ["Medium Cannon"],
     firingArc: "Forward(90°)",
@@ -43,10 +43,10 @@ Cruiser:{
     moveDistance: "50ft",
     capacity: 0,
     specialOrders: [
-        "All Ahead Full",
-        "Reinforce Shields",
-        "All Systems Fire",
-        "Broadside"
+        [SpecialOrders[1].name, SpecialOrders[1].text],
+        [SpecialOrders[7].name, SpecialOrders[7].text],
+        [SpecialOrders[6].name, SpecialOrders[6].text],
+        [SpecialOrders[8].name, SpecialOrders[8].text],
     ],
     weaponType: [
         "Heavy Cannon",
@@ -69,10 +69,10 @@ Carrier: {
     moveDistance: "40ft",
     capacity: 20,
     specialOrders: [
-        "All Ahead Full",
-        "Reinforce Shields",
-        "All Systems Fire",
-        "Launch Fighters"
+        [SpecialOrders[1].name, SpecialOrders[1].text],
+        [SpecialOrders[7].name, SpecialOrders[7].text],
+        [SpecialOrders[6].name, SpecialOrders[6].text],
+        [SpecialOrders[9].name, SpecialOrders[9].text],
     ],
     weaponType: [
         "350mm Railgun",
@@ -95,11 +95,11 @@ Dreadnought: {
     moveDistance: "30ft",
     capacity: 20,
     specialOrders: [
-        "All Ahead Full",
-        "Reinforce Shields",
-        "All Systems Fire",
-        "Launch Fighters",
-        "Charge Ion Beam"
+        [SpecialOrders[1].name, SpecialOrders[1].text],
+        [SpecialOrders[7].name, SpecialOrders[7].text],
+        [SpecialOrders[6].name, SpecialOrders[6].text],
+        [SpecialOrders[9].name, SpecialOrders[9].text],
+        [SpecialOrders[10].name, SpecialOrders[10].text],
     ],
     weaponType: [
         "350mm Railgun",

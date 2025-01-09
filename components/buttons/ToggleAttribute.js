@@ -1,24 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Pressable, View, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ToastAndroid } from "react-native";
 import { Colors } from "@/constants/Colors";
-import { SHIP_CAPACITY, SHIP_TOGGLES } from "@/constants/Ships";
+import { useStarBoundContext } from "../Global/StarBoundProvider";
+import { SHIP_TOGGLES_DONE, SHIP_CAPACITY, SHIP_TOGGLES } from '@/constants/Ships';
 
 export default function ToggleAtributeButton({ type, index }) {
-  const statKey = `${type}-${index}`;
-  const capacityKey = `${type}-${index}`;
-
-  const [toggleStates, setToggleStates] = useState(
-    Array(SHIP_TOGGLES[type]).fill(false)
-  );
-
-  const [toggleCapacity, setToggleCapacity] = useState(
-    Array(SHIP_CAPACITY[type]).fill(false)
-  );
+  const statKey = `toggle-stat-${type}-${index}`;
+  const capacityKey = `toggle-capacity-${type}-${index}`;
+  const doneKey = `toggle-done-${type}-${index}`;
+  
+  const { toggleStates, setToggleStates, toggleDone, setToggleDone, toggleCapacity, setToggleCapacity } = useStarBoundContext();
 
   const save = async (toggleIndex, valueToSave, keyType) => {
     try {
-      const key = keyType === "capacity" ? capacityKey : statKey;
+      const key =
+        keyType === "capacity"
+          ? capacityKey
+          : keyType === "stat"
+          ? statKey
+          : doneKey;
       await AsyncStorage.setItem(
         `${key}-${toggleIndex}`,
         JSON.stringify(valueToSave)
@@ -32,6 +34,7 @@ export default function ToggleAtributeButton({ type, index }) {
     try {
       let savedStates = [];
       let savedCapacityStates = [];
+      let savedDoneStates = [];
       for (let i = 0; i < SHIP_TOGGLES[type]; i++) {
         const savedState = await AsyncStorage.getItem(`${statKey}-${i}`);
         savedStates.push(savedState === "true");
@@ -42,8 +45,24 @@ export default function ToggleAtributeButton({ type, index }) {
         );
         savedCapacityStates.push(savedCapacityState === "true");
       }
-      setToggleStates(savedStates);
-      setToggleCapacity(savedCapacityStates);
+      for (let i = 0; i < SHIP_TOGGLES_DONE[type]; i++) {
+        const savedDoneState = await AsyncStorage.getItem(`${doneKey}-${i}`);
+        savedDoneStates.push(savedDoneState === "true");
+      }
+
+      // Update state for the specific type
+      setToggleStates((prevState) => ({
+        ...prevState,
+        [type]: savedStates,
+      }));
+      setToggleCapacity((prevState) => ({
+        ...prevState,
+        [type]: savedCapacityStates,
+      }));
+      setToggleDone((prevState) => ({
+        ...prevState,
+        [type]: savedDoneStates,
+      }));
     } catch (err) {
       alert(err);
     }
@@ -53,41 +72,130 @@ export default function ToggleAtributeButton({ type, index }) {
     load();
   }, []);
 
+  const handleDonePress = (toggleIndex) => {
+    setToggleDone((prevState) => {
+      const updatedToggleDoneStates = { ...prevState };
+      updatedToggleDoneStates[type][toggleIndex] =
+        !updatedToggleDoneStates[type][toggleIndex];
+
+      save(toggleIndex, updatedToggleDoneStates[type][toggleIndex], "done");
+
+      return updatedToggleDoneStates;
+    });
+  };
+
   const handlePress = (toggleIndex) => {
-    setToggleStates((prevStates) => {
-      const updatedToggleStates = [...prevStates];
-      updatedToggleStates[toggleIndex] = !updatedToggleStates[toggleIndex];
-      
-      save(toggleIndex, updatedToggleStates[toggleIndex]);
+    setToggleStates((prevState) => {
+      const updatedToggleStates = { ...prevState };
+      updatedToggleStates[type][toggleIndex] =
+        !updatedToggleStates[type][toggleIndex];
+
+      save(toggleIndex, updatedToggleStates[type][toggleIndex], "stat");
 
       return updatedToggleStates;
     });
   };
+
   const handleCapacityPress = (toggleIndex) => {
-    setToggleCapacity((prevStates) => {
-      const updatedCapacityToggleStates = [...prevStates];
-      updatedCapacityToggleStates[toggleIndex] =
-        !updatedCapacityToggleStates[toggleIndex];
-      
-        save(toggleIndex, updatedCapacityToggleStates[toggleIndex]);
+    setToggleCapacity((prevState) => {
+      const updatedCapacityToggleStates = { ...prevState };
+      updatedCapacityToggleStates[type][toggleIndex] =
+        !updatedCapacityToggleStates[type][toggleIndex];
+
+      save(toggleIndex, updatedCapacityToggleStates[type][toggleIndex], "capacity");
 
       return updatedCapacityToggleStates;
     });
   };
 
+  const handleLongPress = async () => {
+    // Reset all toggle states to false for every ship type
+    const resetDoneStates = {};
+    const resetStatStates = {};
+    const resetCapacityStates = {};
+  
+    // Iterate through all ship types and reset each state
+    Object.keys(SHIP_TOGGLES_DONE).forEach((shipType) => {
+      resetDoneStates[shipType] = Array(SHIP_TOGGLES_DONE[shipType]).fill(false);
+      resetStatStates[shipType] = Array(SHIP_TOGGLES[shipType]).fill(false);
+      resetCapacityStates[shipType] = Array(SHIP_CAPACITY[shipType]).fill(false);
+    });
+  
+    // Save the reset states in AsyncStorage
+    Object.keys(SHIP_TOGGLES_DONE).forEach((shipType) => {
+      resetDoneStates[shipType].forEach((_, index) => save(index, false, "done"));
+      resetStatStates[shipType].forEach((_, index) => save(index, false, "stat"));
+      resetCapacityStates[shipType].forEach((_, index) => save(index, false, "capacity"));
+    });
+
+    
+    // Update the state with reset values for all ship types
+    setToggleDone(resetDoneStates);
+    setToggleStates(resetStatStates);
+    setToggleCapacity(resetCapacityStates);
+
+  
+    // Show confirmation of reset action
+    ToastAndroid.showWithGravity(
+      'All Turns Reset!',
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER,
+    );
+  };
+
+  useEffect(() => {
+  load();
+}, []);
+  
+
   return (
     <View style={styles.buttonContainer}>
       <View style={styles.fleetContainer}>
         <View style={styles.ordersContainer}>
+          <Text style={styles.fightersText}>Toggle Turn</Text>
+          <View
+            style={[
+              styles.ordersButtons,
+              {
+                flexDirection: "row",
+              },
+            ]}
+          >
+            {Array(SHIP_TOGGLES_DONE[type])
+              .fill(null)
+              .map((_, toggleIndex) => (
+                <Pressable
+                  key={toggleIndex}
+                  onLongPress={handleLongPress}
+                  onPress={() => handleDonePress(toggleIndex)}
+                  style={({ pressed }) => [
+                    styles.button,
+                    {
+                      backgroundColor: toggleDone[type][toggleIndex]
+                        ? Colors.deep_red
+                        : Colors.darker_green_toggle,
+                      borderColor: toggleDone[type][toggleIndex]
+                        ? Colors.lightened_deep_red
+                        : Colors.green_toggle,
+                    },
+                  ]}
+                >
+                  <Text style={styles.toggleText}>{toggleIndex + 1}</Text>
+                </Pressable>
+              ))}
+          </View>
+        </View>
+        <View style={styles.ordersContainer}>
           <Text style={styles.fightersText}>Orders</Text>
           <View
-          style={[
-            styles.ordersButtons,
-            {
-              flexDirection: type === "carrier" || type === "dreadnought" ? "row" : "row",
-            },
-          ]}
-        >
+            style={[
+              styles.ordersButtons,
+              {
+                flexDirection:
+                  type === "carrier" || type === "dreadnought" ? "row" : "row",
+              },
+            ]}
+          >
             {Array(SHIP_TOGGLES[type])
               .fill(null)
               .map((_, toggleIndex) => (
@@ -97,15 +205,16 @@ export default function ToggleAtributeButton({ type, index }) {
                   style={({ pressed }) => [
                     styles.button,
                     {
-                      backgroundColor: toggleStates[toggleIndex]
+                      backgroundColor: toggleStates[type][toggleIndex]
                         ? Colors.goldenrod
                         : Colors.blue_gray,
-                      borderColor: toggleStates[toggleIndex]
+                      borderColor: toggleStates[type][toggleIndex]
                         ? Colors.gold
                         : Colors.slate,
                     },
-                  ]}>
-                    <Text style={styles.toggleText}>{toggleIndex + 1}</Text>
+                  ]}
+                >
+                  <Text style={styles.toggleText}>{toggleIndex + 1}</Text>
                 </Pressable>
               ))}
           </View>
@@ -130,15 +239,18 @@ export default function ToggleAtributeButton({ type, index }) {
                           style={({ pressed }) => [
                             styles.buttonFighters,
                             {
-                              backgroundColor: toggleCapacity[toggleIndex]
+                              backgroundColor: toggleCapacity[type][toggleIndex]
                                 ? Colors.goldenrod
                                 : Colors.blue_gray,
-                              borderColor: toggleCapacity[toggleIndex]
+                              borderColor: toggleCapacity[type][toggleIndex]
                                 ? Colors.gold
                                 : Colors.slate,
                             },
-                          ]}>
-                        <Text style={styles.toggleText}>{toggleIndex + 1}</Text>
+                          ]}
+                        >
+                          <Text style={styles.toggleText}>
+                            {toggleIndex + 1}
+                          </Text>
                         </Pressable>
                       );
                     }
@@ -158,10 +270,10 @@ const styles = StyleSheet.create({
   ordersContainer: {
     marginTop: 10,
     marginLeft: 10,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   ordersButtons: {
-    alignContent: 'center',
+    alignContent: "center",
     justifyContent: "space-around",
     flex: 1,
   },
@@ -193,7 +305,7 @@ const styles = StyleSheet.create({
     color: Colors.white,
     textAlign: "center",
   },
-  toggleText:{
+  toggleText: {
     color: Colors.white,
     fontSize: 8,
   },

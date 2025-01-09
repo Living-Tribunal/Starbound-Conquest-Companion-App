@@ -1,5 +1,12 @@
 import React, { useState, useCallback, useRef } from "react";
-import { View, Text, ScrollView, StyleSheet, Pressable, StatusBar } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Pressable,
+  StatusBar,
+} from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
@@ -10,19 +17,30 @@ import { useStarBoundContext } from "../Global/StarBoundProvider";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function Your_Fleet() {
-    const { 
-        fighterImages, setFighterImages, 
-        destroyerImages, setDestroyerImages, 
-        cruiserImages, setCruiserImages, 
-        carrierImages, setCarrierImages, 
-        dreadnoughtImages, setDreadnoughtImages,
-        showFighterClass, setShowFighterClass,
-        showDestroyerClass, setShowDestroyerClass,
-        showCarrierClass, setShowCarrierClass,
-        showCruiserClass, setShowCruiserClass,
-        showDreadnoughtClass, setShowDreadnoughtClass,
-
-      } = useStarBoundContext();
+  const {
+    fighterImages,
+    setFighterImages,
+    destroyerImages,
+    setDestroyerImages,
+    cruiserImages,
+    setCruiserImages,
+    carrierImages,
+    setCarrierImages,
+    dreadnoughtImages,
+    setDreadnoughtImages,
+    showFighterClass,
+    setShowFighterClass,
+    showDestroyerClass,
+    setShowDestroyerClass,
+    showCarrierClass,
+    setShowCarrierClass,
+    showCruiserClass,
+    setShowCruiserClass,
+    showDreadnoughtClass,
+    setShowDreadnoughtClass,
+    toggleDoneStates, 
+    setToggleDoneStates
+  } = useStarBoundContext();
 
   const handlePressFi = () => {
     setShowFighterClass((prevState) => !prevState);
@@ -87,166 +105,163 @@ export default function Your_Fleet() {
   const onLongPress = () => resetToggles();
 
   return (
-    <SafeAreaProvider>
-        <SafeAreaView style={styles.container}>
-            <StatusBar hidden backgroundColor="#61dafb" />
-    <View style={styles.container}>
-      <View style={styles.endcontainer}>
+    <SafeAreaView style={styles.container}>
+      <StatusBar />
+      <View style={styles.container}>
+        <View style={styles.endcontainer}></View>
+        <ScrollView style={styles.scrollView}>
+          <Pressable
+            onPress={handlePressFi}
+            style={({ pressed }) => [
+              styles.textSectionSpecial,
+              {
+                backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
+              },
+            ]}
+          >
+            <View style={styles.textSectionContainer}>
+              <Text style={styles.shipTextHeader}>
+                Fighters - {fighterImages.length} Ships
+              </Text>
+            </View>
+          </Pressable>
+
+          {showFighterClass && (
+            <View style={styles.imageRow}>
+              {fighterImages.map((image, index) => (
+                <View key={image.id} style={styles.imageContainer}>
+                  {/* <ToggleDone type="fighter1" index={index} /> */}
+                  <View style={styles.toggleContainer}>
+                    <EditButtonHP type="fighter" index={index} />
+                    <ToggleAttributeButton type="fighter" index={index} />
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
+
+          <Pressable
+            onPress={handlePressDe}
+            style={({ pressed }) => [
+              styles.textSectionSpecial,
+              {
+                backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
+              },
+            ]}
+          >
+            <View style={styles.textSectionContainer}>
+              <Text style={styles.shipTextHeader}>
+                Destroyers - {destroyerImages.length} Ships
+              </Text>
+            </View>
+          </Pressable>
+
+          {showDestroyerClass && (
+            <View style={styles.imageRow}>
+              {destroyerImages.map((image, index) => (
+                <View key={image.id} style={styles.imageContainer}>
+                  {/* <ToggleDone type="destroyer2" index={index} /> */}
+                  <View style={styles.toggleContainer}>
+                    <EditButtonHP type="destroyer" index={index} />
+                    <ToggleAttributeButton type="destroyer" index={index} />
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
+
+          <Pressable
+            onPress={handlePressCr}
+            style={({ pressed }) => [
+              styles.textSectionSpecial,
+              {
+                backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
+              },
+            ]}
+          >
+            <View style={styles.textSectionContainer}>
+              <Text style={styles.shipTextHeader}>
+                Cruisers - {cruiserImages.length} Ships
+              </Text>
+            </View>
+          </Pressable>
+
+          {showCruiserClass && (
+            <View style={styles.imageRow}>
+              {cruiserImages.map((image, index) => (
+                <View key={image.id} style={styles.imageContainer}>
+                 {/*  <ToggleDone type="cruiser3" index={index} /> */}
+                  <View style={styles.toggleContainer}>
+                    <EditButtonHP type="cruiser" index={index} />
+                    <ToggleAttributeButton type="cruiser" index={index} />
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
+
+          <Pressable
+            onPress={handlePressCa}
+            style={({ pressed }) => [
+              styles.textSectionSpecial,
+              {
+                backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
+              },
+            ]}
+          >
+            <View style={styles.textSectionContainer}>
+              <Text style={styles.shipTextHeader}>
+                Carriers - {carrierImages.length} Ships
+              </Text>
+            </View>
+          </Pressable>
+
+          {showCarrierClass && (
+            <View style={styles.imageRow}>
+              {carrierImages.map((image, index) => (
+                <View key={image.id} style={styles.imageContainer}>
+                  {/* <ToggleDone type="carrier4" index={index} /> */}
+                  <View style={styles.toggleContainer}>
+                    <EditButtonHP type="carrier" index={index} />
+                    <ToggleAttributeButton type="carrier" index={index} />
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
+
+          <Pressable
+            onPress={handlePressDr}
+            style={({ pressed }) => [
+              styles.textSectionSpecial,
+              {
+                backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
+              },
+            ]}
+          >
+            <View style={styles.textSectionContainer}>
+              <Text style={styles.shipTextHeader}>
+                Dreadnoughts - {dreadnoughtImages.length} Ships
+              </Text>
+            </View>
+          </Pressable>
+
+          {showDreadnoughtClass && (
+            <View style={styles.imageRow}>
+              {dreadnoughtImages.map((image, index) => (
+                <View key={image.id} style={styles.imageContainer}>
+                 {/*  <ToggleDone type="dreadnought5" index={index} /> */}
+                  <View style={styles.toggleContainer}>
+                    <EditButtonHP type="dreadnought" index={index} />
+                    <ToggleAttributeButton type="dreadnought" index={index} />
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
+        </ScrollView>
       </View>
-      <ScrollView style={styles.scrollView}>
-        <Pressable
-          onPress={handlePressFi}
-          style={({ pressed }) => [
-            styles.textSectionSpecial,
-            {
-              backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
-            },
-          ]}
-        >
-          <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>
-              Fighters - {fighterImages.length} Ships
-            </Text>
-          </View>
-        </Pressable>
-
-        {showFighterClass && (
-          <View style={styles.imageRow}>
-            {fighterImages.map((image, index) => (
-              <View key={image.id} style={styles.imageContainer}>
-                <ToggleDone type="fighter1" index={index} />
-                <View style={styles.toggleContainer}>
-                  <EditButtonHP type="fighter" index={index} />
-                  <ToggleAttributeButton type="fighter" index={index} />
-                </View>
-              </View>
-            ))}
-          </View>
-        )}
-
-        <Pressable
-          onPress={handlePressDe}
-          style={({ pressed }) => [
-            styles.textSectionSpecial,
-            {
-              backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
-            },
-          ]}
-        >
-          <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>
-              Destroyers - {destroyerImages.length} Ships
-            </Text>
-          </View>
-        </Pressable>
-
-        {showDestroyerClass && (
-          <View style={styles.imageRow}>
-            {destroyerImages.map((image, index) => (
-              <View key={image.id} style={styles.imageContainer}>
-                <ToggleDone type="destroyer2" index={index} />
-                <View style={styles.toggleContainer}>
-                  <EditButtonHP type="destroyer" index={index} />
-                  <ToggleAttributeButton type="destroyer" index={index} />
-                </View>
-              </View>
-            ))}
-          </View>
-        )}
-
-        <Pressable
-          onPress={handlePressCr}
-          style={({ pressed }) => [
-            styles.textSectionSpecial,
-            {
-              backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
-            },
-          ]}
-        >
-          <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>
-              Cruisers - {cruiserImages.length} Ships
-            </Text>
-          </View>
-        </Pressable>
-
-        {showCruiserClass && (
-          <View style={styles.imageRow}>
-            {cruiserImages.map((image, index) => (
-              <View key={image.id} style={styles.imageContainer}>
-                <ToggleDone type="cruiser3" index={index} />
-                <View style={styles.toggleContainer}>
-                  <EditButtonHP type="cruiser" index={index} />
-                  <ToggleAttributeButton type="cruiser" index={index} />
-                </View>
-              </View>
-            ))}
-          </View>
-        )}
-
-        <Pressable
-          onPress={handlePressCa}
-          style={({ pressed }) => [
-            styles.textSectionSpecial,
-            {
-              backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
-            },
-          ]}
-        >
-          <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>
-              Carriers - {carrierImages.length} Ships
-            </Text>
-          </View>
-        </Pressable>
-
-        {showCarrierClass && (
-          <View style={styles.imageRow}>
-            {carrierImages.map((image, index) => (
-              <View key={image.id} style={styles.imageContainer}>
-                <ToggleDone type="carrier4" index={index} />
-                <View style={styles.toggleContainer}>
-                  <EditButtonHP type="carrier" index={index} />
-                  <ToggleAttributeButton type="carrier" index={index} />
-                </View>
-              </View>
-            ))}
-          </View>
-        )}
-
-        <Pressable
-          onPress={handlePressDr}
-          style={({ pressed }) => [
-            styles.textSectionSpecial,
-            {
-              backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
-            },
-          ]}
-        >
-          <View style={styles.textSectionContainer}>
-            <Text style={styles.shipTextHeader}>
-              Dreadnoughts - {dreadnoughtImages.length} Ships
-            </Text>
-          </View>
-        </Pressable>
-
-        {showDreadnoughtClass && (
-          <View style={styles.imageRow}>
-            {dreadnoughtImages.map((image, index) => (
-              <View key={image.id} style={styles.imageContainer}>
-                <ToggleDone type="dreadnought5" index={index} />
-                <View style={styles.toggleContainer}>
-                  <EditButtonHP type="dreadnought" index={index} />
-                  <ToggleAttributeButton type="dreadnought" index={index} />
-                </View>
-              </View>
-            ))}
-          </View>
-        )}
-      </ScrollView>
-    </View>
     </SafeAreaView>
-    </SafeAreaProvider>
   );
 }
 
