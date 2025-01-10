@@ -8,7 +8,6 @@ import {
   Pressable,
   ScrollView,
   Image,
-  ToastAndroid
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -106,9 +105,13 @@ export default function Fleet_Points() {
       try {
         const savedFighterCount = await AsyncStorage.getItem("fighterCount");
         const savedCarrierCount = await AsyncStorage.getItem("carrierCount");
-        const savedDreadnoughtCount = await AsyncStorage.getItem("dreadnoughtCount");
+        const savedDreadnoughtCount = await AsyncStorage.getItem(
+          "dreadnoughtCount"
+        );
         const savedCruiserCount = await AsyncStorage.getItem("cruiserCount");
-        const savedDestroyerCount = await AsyncStorage.getItem("destroyerCount");
+        const savedDestroyerCount = await AsyncStorage.getItem(
+          "destroyerCount"
+        );
         const savedFleetValue = await AsyncStorage.getItem("fleetValue");
 
         setFighterCount(
@@ -156,11 +159,7 @@ export default function Fleet_Points() {
       setCarrierCount(0);
       setDreadnoughtCount(0);
       setFleetValue(0);
-      ToastAndroid.showWithGravity(
-        'Your Fleet has Been Deleted.',
-        ToastAndroid.SHORT,
-        ToastAndroid.CENTER,
-      );
+      console.log("Storage cleared");
     } catch (e) {
       console.error("Error clearing storage:", e);
     }
@@ -168,7 +167,7 @@ export default function Fleet_Points() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar/>
+      <StatusBar />
       <ScrollView>
         <View style={styles.container}>
           <View style={styles.limitsValues}>

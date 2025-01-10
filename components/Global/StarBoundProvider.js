@@ -18,11 +18,11 @@ export const StarBoundProvider = ({ children }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [text, setText] = useState("0");
 
-    /* const [toggleDone, setToggleDone] = useState(Array(SHIP_TOGGLES_DONE[type]).fill(false));
-    const [toggleStates, setToggleStates] = useState( Array(SHIP_TOGGLES[type]).fill(false));
-    const [toggleCapacity, setToggleCapacity] = useState(Array(SHIP_CAPACITY[type]).fill(false)); */
+    const [toggleDone, setToggleDone] = useState(Array(SHIP_TOGGLES_DONE).fill(false));
+    const [toggleStates, setToggleStates] = useState( Array(SHIP_TOGGLES).fill(false));
+    const [toggleCapacity, setToggleCapacity] = useState(Array(SHIP_CAPACITY).fill(false));
 
-    const [toggleDone, setToggleDone] = useState({
+   /*  const [toggleDone, setToggleDone] = useState({
         fighter: Array(SHIP_TOGGLES_DONE.fighter).fill(false),
         destroyer: Array(SHIP_TOGGLES_DONE.destroyer).fill(false),
         cruiser: Array(SHIP_TOGGLES_DONE.cruiser).fill(false),
@@ -45,6 +45,10 @@ export const StarBoundProvider = ({ children }) => {
         carrier: Array(SHIP_CAPACITY.carrier).fill(false),
         dreadnought: Array(SHIP_CAPACITY.dreadnought).fill(false),
       });
+
+        console.log("Toggles Done", SHIP_TOGGLES_DONE);
+        console.log("Toggles",SHIP_TOGGLES);
+        console.log("Capacity", SHIP_CAPACITY); */
 
 return (
     <StarBoundContext.Provider value={{ 

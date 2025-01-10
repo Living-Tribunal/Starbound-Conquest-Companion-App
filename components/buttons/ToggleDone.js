@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+/* import React, { useEffect, useState } from "react";
 import { StyleSheet, Pressable, View, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
@@ -8,9 +8,9 @@ import { useStarBoundContext } from "../Global/StarBoundProvider";
 
   
 export default function ToggleDone({ type, index }) {
-  const statDoneKey = `${type}-${index}`;
+    const stat = `toggle-done-${type}-${index}`;
 
- /*  const { toggleDoneStates, setToggleDoneStates } = useStarBoundContext(); */
+ const { toggleDoneStates, setToggleDoneStates } = useStarBoundContext();
 
   const [toggleDoneStates, setToggleDoneStates] = useState(Array(SHIP_TOGGLES_DONE[type]).fill(false));
 
@@ -102,3 +102,4 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
+ */
