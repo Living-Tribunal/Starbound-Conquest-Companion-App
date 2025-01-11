@@ -8,7 +8,6 @@ import { useStarBoundContext } from "../Global/StarBoundProvider";
 const statKey = '';
 
 export default function EditButton() {
-    /* const [isModalVisible, setIsModalVisible] = useState(false); */
     const { isModalVisible, setIsModalVisible, text, setText } = useStarBoundContext();
     
     const save = async () => {

@@ -10,7 +10,7 @@ import {
   Image,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import EditButton from "../buttons/EditButton";
 
 const SHIP_VALUES = {

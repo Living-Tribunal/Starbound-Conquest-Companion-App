@@ -38,8 +38,6 @@ export default function Your_Fleet() {
     setShowCruiserClass,
     showDreadnoughtClass,
     setShowDreadnoughtClass,
-    toggleDoneStates, 
-    setToggleDoneStates
   } = useStarBoundContext();
 
   const handlePressFi = () => {
@@ -101,8 +99,6 @@ export default function Your_Fleet() {
       loadCounts();
     }, [])
   );
-
-  const onLongPress = () => resetToggles();
 
   return (
     <SafeAreaView style={styles.container}>
