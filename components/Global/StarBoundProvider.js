@@ -1,9 +1,13 @@
 import React, { createContext, useContext, useState } from 'react';
-import { SHIP_TOGGLES_DONE } from '@/constants/Ships';
+import {
+    SHIP_CAPACITY,
+    SHIP_TOGGLES,
+    SHIP_TOGGLES_DONE,
+  } from "@/constants/Ships";
 
 const StarBoundContext = createContext();
 
-export const StarBoundProvider = ({ children }) => {
+export const StarBoundProvider = ({ children, shipType }) => {
     const [fighterImages, setFighterImages] = useState([]);
     const [destroyerImages, setDestroyerImages] = useState([]);
     const [cruiserImages, setCruiserImages] = useState([]);
@@ -18,6 +22,11 @@ export const StarBoundProvider = ({ children }) => {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
+    const [toggleOrders, setToggleOrders] = useState(Array(SHIP_TOGGLES[shipType]).fill(false));
+    
+    const [toggleCapacity, setToggleCapacity] = useState(Array(SHIP_CAPACITY[shipType]).fill(false));
+    
+    const [toggleDoneState, setToggleDoneState] = useState(Array(SHIP_TOGGLES_DONE[shipType]).fill(false));
 
 return (
     <StarBoundContext.Provider value={{ 
@@ -33,11 +42,15 @@ return (
         showCruiserClass, setShowCruiserClass,
         showDreadnoughtClass, setShowDreadnoughtClass,
 
+        toggleOrders, setToggleOrders,
+        toggleCapacity, setToggleCapacity,
+        toggleDoneState, setToggleDoneState,
+
 
         isModalVisible, setIsModalVisible
         
         }}>
-        {children}
+        {[children, shipType]}
     </StarBoundContext.Provider>
  );
 };

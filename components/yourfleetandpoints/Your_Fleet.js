@@ -15,8 +15,13 @@ import ToggleAttributeButton from "../buttons/ToggleAttribute";
 import ToggleDone from "../buttons/ToggleDone";
 import { useStarBoundContext } from "../Global/StarBoundProvider";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import {
+    SHIP_CAPACITY,
+    SHIP_TOGGLES,
+    SHIP_TOGGLES_DONE,
+  } from "@/constants/Ships";
 
-export default function Your_Fleet() {
+export default function Your_Fleet(type) {
   const {
     fighterImages,
     setFighterImages,
@@ -38,6 +43,9 @@ export default function Your_Fleet() {
     setShowCruiserClass,
     showDreadnoughtClass,
     setShowDreadnoughtClass,
+    toggleOrders, setToggleOrders,
+    toggleCapacity, setToggleCapacity,
+    toggleDoneState, setToggleDoneState,
   } = useStarBoundContext();
 
   const handlePressFi = () => {
@@ -100,10 +108,51 @@ export default function Your_Fleet() {
     }, [])
   );
 
+  const handleLongPress = () => {
+    // Reset state arrays to their initial state
+    setToggleOrders(Array(SHIP_TOGGLES[type]).fill(false));
+    setToggleCapacity(Array(SHIP_CAPACITY[type]).fill(false));
+    setToggleDoneState(Array(SHIP_TOGGLES_DONE[type]).fill(false));
+  
+    // Clear AsyncStorage for the associated keys
+    const clearAsyncStorage = async () => {
+      try {
+        for (let i = 0; i < SHIP_TOGGLES[type]; i++) {
+          await AsyncStorage.removeItem(`${orderKey}-${i}`);
+        }
+        for (let i = 0; i < SHIP_CAPACITY[type]; i++) {
+          await AsyncStorage.removeItem(`${capacityKey}-${i}`);
+        }
+        for (let i = 0; i < SHIP_TOGGLES_DONE[type]; i++) {
+          await AsyncStorage.removeItem(`${doneKey}-${i}`);
+        }
+        console.log("All states reset and AsyncStorage cleared!");
+      } catch (err) {
+        alert("Failed to clear storage: " + err);
+      }
+    };
+  
+    clearAsyncStorage();
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar />
       <View style={styles.container}>
+        <View style={{justifyContent: 'center'}}>
+            <Pressable 
+            onLongPress={handleLongPress}
+            style={({ pressed }) => [
+                styles.resetbutton,
+                {
+                    borderColor: pressed ? Colors.deep_red : Colors.lightened_deep_red, backgroundColor: pressed ? Colors.lightened_deep_red : Colors.deep_red,
+                },
+            ]}
+            >
+                <Text style={styles.resetText}>End Turn</Text>
+            </Pressable>    
+        </View>
+        
         <View style={styles.endcontainer}></View>
         <ScrollView style={styles.scrollView}>
           <Pressable
@@ -129,7 +178,7 @@ export default function Your_Fleet() {
                   {/* <ToggleDone type="fighter1" index={index} /> */}
                   <View style={styles.toggleContainer}>
                     <EditButtonHP type="fighter" index={index} />
-                    <ToggleAttributeButton type="fighter" index={index} />
+                    <ToggleAttributeButton shipType="fighter" index={index} />
                   </View>
                 </View>
               ))}
@@ -159,7 +208,7 @@ export default function Your_Fleet() {
                   {/* <ToggleDone type="destroyer2" index={index} /> */}
                   <View style={styles.toggleContainer}>
                     <EditButtonHP type="destroyer" index={index} />
-                    <ToggleAttributeButton type="destroyer" index={index} />
+                    <ToggleAttributeButton shipType="destroyer" index={index} />
                   </View>
                 </View>
               ))}
@@ -189,7 +238,7 @@ export default function Your_Fleet() {
                  {/*  <ToggleDone type="cruiser3" index={index} /> */}
                   <View style={styles.toggleContainer}>
                     <EditButtonHP type="cruiser" index={index} />
-                    <ToggleAttributeButton type="cruiser" index={index} />
+                    <ToggleAttributeButton shipType="cruiser" index={index} />
                   </View>
                 </View>
               ))}
@@ -219,7 +268,7 @@ export default function Your_Fleet() {
                   {/* <ToggleDone type="carrier4" index={index} /> */}
                   <View style={styles.toggleContainer}>
                     <EditButtonHP type="carrier" index={index} />
-                    <ToggleAttributeButton type="carrier" index={index} />
+                    <ToggleAttributeButton shipType="carrier" index={index} />
                   </View>
                 </View>
               ))}
@@ -249,7 +298,7 @@ export default function Your_Fleet() {
                  {/*  <ToggleDone type="dreadnought5" index={index} /> */}
                   <View style={styles.toggleContainer}>
                     <EditButtonHP type="dreadnought" index={index} />
-                    <ToggleAttributeButton type="dreadnought" index={index} />
+                    <ToggleAttributeButton shipType="dreadnought" index={index} />
                   </View>
                 </View>
               ))}
@@ -327,4 +376,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  resetText:{
+    color: Colors.white,
+    fontSize: 16,
+    fontFamily: "monospace",
+    fontWeight: "bold",
+    textAlign: "center",
+  }
 });

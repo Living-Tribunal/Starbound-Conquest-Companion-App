@@ -7,23 +7,32 @@ import {
   SHIP_TOGGLES,
   SHIP_TOGGLES_DONE,
 } from "@/constants/Ships";
+import { useStarBoundContext } from "../Global/StarBoundProvider";
 
-export default function ToggleAtributeButton({ type, index }) {
-  const orderKey = `toggle-order-${type}-${index}`;
-  const capacityKey = `toggle-capacity-${type}-${index}`;
-  const doneKey = `toggle-done-${type}-${index}`;
+export default function ToggleAtributeButton({ shipType, index }) {
 
-  const [toggleOrders, setToggleOrders] = useState(
-    Array(SHIP_TOGGLES[type]).fill(false)
+    const {
+        toggleOrders, setToggleOrders,
+        toggleCapacity, setToggleCapacity,
+        toggleDoneState, setToggleDoneState,
+      } = useStarBoundContext();
+
+
+  const orderKey = `toggle-order-${shipType}-${index}`;
+  const capacityKey = `toggle-capacity-${shipType}-${index}`;
+  const doneKey = `toggle-done-${shipType}-${index}`;
+
+  /* const [toggleOrders, setToggleOrders] = useState(
+    Array(SHIP_TOGGLES[shipType]).fill(false)
   );
 
   const [toggleCapacity, setToggleCapacity] = useState(
-    Array(SHIP_CAPACITY[type]).fill(false)
+    Array(SHIP_CAPACITY[shipType]).fill(false)
   );
 
   const [toggleDoneState, setToggleDoneState] = useState(
-    Array(SHIP_TOGGLES_DONE[type]).fill(false)
-  );
+    Array(SHIP_TOGGLES_DONE[shipType]).fill(false)
+  ); */
 
   const save = async (toggleIndex, valueToSave, toggleType) => {
     try {
@@ -38,7 +47,7 @@ export default function ToggleAtributeButton({ type, index }) {
       await AsyncStorage.setItem(
         `${key}-${toggleIndex}`,
         JSON.stringify(valueToSave),
-        console.log("Key:",key, "Toggled Type:", toggleType, "Index:", index, "Saved Value:", valueToSave)
+        console.log("INITIAL STATES: ","Key: ",key,"||", "Toggled Type: ", toggleType," |", "Index: ", index, "||", "Saved Value:", valueToSave)
       );
     } catch (err) {
       alert(err);
@@ -51,51 +60,47 @@ export default function ToggleAtributeButton({ type, index }) {
       let savedCapacityStates = [];
       let savedDoneStates = [];
       
-      for ( let i = 0; i <SHIP_TOGGLES_DONE[type]; i++) {
+      for ( let i = 0; i <SHIP_TOGGLES_DONE[shipType]; i++) {
         const savedDoneState = await AsyncStorage.getItem(`${doneKey}-${i}`);
-        savedDoneStates.push(savedDoneState === 'true');
+        savedDoneStates[i] = savedDoneState === "true";
       }
 
-      for (let i = 0; i < SHIP_TOGGLES[type]; i++) {
+      for (let i = 0; i < SHIP_TOGGLES[shipType]; i++) {
         const savedOrder = await AsyncStorage.getItem(`${orderKey}-${i}`);
-        savedOrders.push(savedOrder === "true");
+        savedOrders[i] = savedOrder === "true";
       }
 
-      for (let i = 0; i < SHIP_CAPACITY[type]; i++) {
+      for (let i = 0; i < SHIP_CAPACITY[shipType]; i++) {
         const savedCapacityState = await AsyncStorage.getItem(`${capacityKey}-${i}`);
-        savedCapacityStates.push(savedCapacityState === "true");
+        savedCapacityStates[i] = savedCapacityState === "true";
       }
       setToggleOrders(savedOrders);
       setToggleCapacity(savedCapacityStates);
       setToggleDoneState(savedDoneStates);
 
-      console.log(type, savedOrders, savedDoneStates);
+      console.log("LOADED STATE: ", "Type of ship:", shipType, "||", "Ships Index:", index, "||", "Loaded Order State:", savedOrders, "||", "Loaded Turn Done State:", savedDoneStates, "||",  "Loaded Ship Capacity:", savedCapacityStates);
 
     } catch (err) {
       alert(err);
     }
   };
 
-  useEffect(() => {
-    load();
-  }, []);
-
-  const handleLongPress = () => {
+/*   const handleLongPress = () => {
   // Reset state arrays to their initial state
-  setToggleOrders(Array(SHIP_TOGGLES[type]).fill(false));
-  setToggleCapacity(Array(SHIP_CAPACITY[type]).fill(false));
-  setToggleDoneState(Array(SHIP_TOGGLES_DONE[type]).fill(false));
+  setToggleOrders(Array(SHIP_TOGGLES[shipType]).fill(false));
+  setToggleCapacity(Array(SHIP_CAPACITY[shipType]).fill(false));
+  setToggleDoneState(Array(SHIP_TOGGLES_DONE[shipType]).fill(false));
 
   // Clear AsyncStorage for the associated keys
   const clearAsyncStorage = async () => {
     try {
-      for (let i = 0; i < SHIP_TOGGLES[type]; i++) {
+      for (let i = 0; i < SHIP_TOGGLES[shipType]; i++) {
         await AsyncStorage.removeItem(`${orderKey}-${i}`);
       }
-      for (let i = 0; i < SHIP_CAPACITY[type]; i++) {
+      for (let i = 0; i < SHIP_CAPACITY[shipType]; i++) {
         await AsyncStorage.removeItem(`${capacityKey}-${i}`);
       }
-      for (let i = 0; i < SHIP_TOGGLES_DONE[type]; i++) {
+      for (let i = 0; i < SHIP_TOGGLES_DONE[shipType]; i++) {
         await AsyncStorage.removeItem(`${doneKey}-${i}`);
       }
       console.log("All states reset and AsyncStorage cleared!");
@@ -105,41 +110,52 @@ export default function ToggleAtributeButton({ type, index }) {
   };
 
   clearAsyncStorage();
-};
+}; */
 
   const handleToggleDone = (toggleIndex) =>{
-    setToggleDoneState((prevState) =>{
-        const updatedToggleDoneStates = {...prevState };
+    setToggleDoneState((prevToggleDoneState) =>{
+        // Create a new array to avoid direct mutation
+        const updatedToggleDoneStates = [...prevToggleDoneState ];
+        // Toggle the specific index
         updatedToggleDoneStates[toggleIndex] =!updatedToggleDoneStates[toggleIndex];
-
+        // Call save to persist the change
         save(toggleIndex, updatedToggleDoneStates[toggleIndex], 'done');
-
+        console.log("SAVED STATES: ", "Ship Type:", shipType, "||", "Ship Type Index:", index, "||", "Toggled Order State:", updatedToggleDoneStates,"||","Toggled Index:", toggleIndex);
+        // Return the updated state
         return updatedToggleDoneStates;
     })
   }
 
   const handlePress = (toggleIndex) => {
-    setToggleOrders((prevStates) => {
-      const updatedToggleOrders = [...prevStates];
+    console.log("handlePress called for toggleIndex:", toggleIndex);
+    setToggleOrders((prevToggleOrders) => {
+      const updatedToggleOrders = [...prevToggleOrders];
+      console.log("Previous Toggled Orders:", prevToggleOrders);
       updatedToggleOrders[toggleIndex] = !updatedToggleOrders[toggleIndex];
 
       save(toggleIndex, updatedToggleOrders[toggleIndex], "order");
-      console.log(type, updatedToggleOrders);
+      console.log("SAVED STATES: ", "Ship Type:", shipType, "||", "Ship Type Index:", index, "||", "Toggled Order State:", updatedToggleOrders);
 
       return updatedToggleOrders;
     });
   };
   const handleCapacityPress = (toggleIndex) => {
-    setToggleCapacity((prevStates) => {
-      const updatedCapacityToggleStates = [...prevStates];
-      updatedCapacityToggleStates[toggleIndex] =
-        !updatedCapacityToggleStates[toggleIndex];
+    setToggleCapacity((prevToggleCapacity) => {
+      const updatedCapacityToggleStates = [...prevToggleCapacity];
+      updatedCapacityToggleStates[toggleIndex] = !updatedCapacityToggleStates[toggleIndex];
 
       save(toggleIndex, updatedCapacityToggleStates[toggleIndex], "capacity");
+      console.log("SAVED STATES: ", "Ship Type:", shipType, "||", "Ship Type Index:", index, "||", "Toggled Order State:", updatedCapacityToggleStates);
 
       return updatedCapacityToggleStates;
     });
   };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  /* console.log(orderKey, capacityKey, doneKey) */
 
   return (
     <View style={styles.buttonContainer}>
@@ -151,19 +167,18 @@ export default function ToggleAtributeButton({ type, index }) {
               styles.ordersButtons,
               {
                 flexDirection:
-                  type === "carrier" || type === "dreadnought" ? "row" : "row",
+                shipType === "carrier" || shipType === "dreadnought" ? "row" : "row",
               },
             ]}
           >
-            {Array(SHIP_TOGGLES_DONE[type])
+            {Array(SHIP_TOGGLES_DONE[shipType])
               .fill(null)
               .map((_, toggleIndex) => (
                 <Pressable
                   key={toggleIndex}
-                  onLongPress={() => handleLongPress(toggleIndex)}
                   onPress={() => handleToggleDone(toggleIndex)}
                   style={({ pressed }) => [
-                    styles.button,
+                    styles.toggleButton,
                     {
                       backgroundColor: toggleDoneState[toggleIndex]
                         ? Colors.goldenrod
@@ -174,7 +189,7 @@ export default function ToggleAtributeButton({ type, index }) {
                     },
                   ]}
                 >
-                  <Text style={styles.toggleText}>{toggleIndex + 1}</Text>
+                  <Text style={styles.toggleButtonText}>{toggleDoneState[toggleIndex]? 1 : 2}</Text>
                 </Pressable>
               ))}
           </View>
@@ -186,11 +201,11 @@ export default function ToggleAtributeButton({ type, index }) {
               styles.ordersButtons,
               {
                 flexDirection:
-                  type === "carrier" || type === "dreadnought" ? "row" : "row",
+                shipType === "carrier" || shipType === "dreadnought" ? "row" : "row",
               },
             ]}
           >
-            {Array(SHIP_TOGGLES[type])
+            {Array(SHIP_TOGGLES[shipType])
               .fill(null)
               .map((_, toggleIndex) => (
                 <Pressable
@@ -214,10 +229,10 @@ export default function ToggleAtributeButton({ type, index }) {
           </View>
         </View>
         <View style={styles.fightersContainer}>
-          {(type === "carrier" || type === "dreadnought") && (
+          {(shipType === "carrier" || shipType === "dreadnought") && (
             <Text style={styles.fightersText}>Fighters</Text>
           )}
-          {Array(Math.ceil(SHIP_CAPACITY[type] / 5))
+          {Array(Math.ceil(SHIP_CAPACITY[shipType] / 5))
             .fill(null)
             .map((_, rowIndex) => (
               <View key={rowIndex} style={styles.fighterRow}>
@@ -225,7 +240,7 @@ export default function ToggleAtributeButton({ type, index }) {
                   .fill(null)
                   .map((_, colIndex) => {
                     const toggleIndex = rowIndex * 5 + colIndex;
-                    if (toggleIndex < SHIP_CAPACITY[type]) {
+                    if (toggleIndex < SHIP_CAPACITY[shipType]) {
                       return (
                         <Pressable
                           key={toggleIndex}
@@ -307,4 +322,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 2,
   },
+  toggleButton:{
+    marginTop: 3,
+    borderRadius: 10,
+    borderWidth: 2,
+    width: 40,
+    height: 25,
+  },
+  toggleButtonText:{
+    color: Colors.white,
+    fontSize: 12,
+    textAlign: "center",
+  }
 });
