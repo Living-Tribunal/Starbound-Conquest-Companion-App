@@ -7,22 +7,14 @@ import {
   SHIP_TOGGLES,
   SHIP_TOGGLES_DONE,
 } from "@/constants/Ships";
-import { useStarBoundContext } from "../Global/StarBoundProvider";
 
 export default function ToggleAtributeButton({ shipType, index }) {
-
-    const {
-        toggleOrders, setToggleOrders,
-        toggleCapacity, setToggleCapacity,
-        toggleDoneState, setToggleDoneState,
-      } = useStarBoundContext();
-
 
   const orderKey = `toggle-order-${shipType}-${index}`;
   const capacityKey = `toggle-capacity-${shipType}-${index}`;
   const doneKey = `toggle-done-${shipType}-${index}`;
 
-  /* const [toggleOrders, setToggleOrders] = useState(
+  const [toggleOrders, setToggleOrders] = useState(
     Array(SHIP_TOGGLES[shipType]).fill(false)
   );
 
@@ -32,7 +24,7 @@ export default function ToggleAtributeButton({ shipType, index }) {
 
   const [toggleDoneState, setToggleDoneState] = useState(
     Array(SHIP_TOGGLES_DONE[shipType]).fill(false)
-  ); */
+  );
 
   const save = async (toggleIndex, valueToSave, toggleType) => {
     try {
@@ -85,7 +77,7 @@ export default function ToggleAtributeButton({ shipType, index }) {
     }
   };
 
-/*   const handleLongPress = () => {
+  const handleLongPress = () => {
   // Reset state arrays to their initial state
   setToggleOrders(Array(SHIP_TOGGLES[shipType]).fill(false));
   setToggleCapacity(Array(SHIP_CAPACITY[shipType]).fill(false));
@@ -110,7 +102,7 @@ export default function ToggleAtributeButton({ shipType, index }) {
   };
 
   clearAsyncStorage();
-}; */
+};
 
   const handleToggleDone = (toggleIndex) =>{
     setToggleDoneState((prevToggleDoneState) =>{
@@ -176,6 +168,7 @@ export default function ToggleAtributeButton({ shipType, index }) {
               .map((_, toggleIndex) => (
                 <Pressable
                   key={toggleIndex}
+                  onLongPress={handleLongPress}
                   onPress={() => handleToggleDone(toggleIndex)}
                   style={({ pressed }) => [
                     styles.toggleButton,
@@ -189,7 +182,7 @@ export default function ToggleAtributeButton({ shipType, index }) {
                     },
                   ]}
                 >
-                  <Text style={styles.toggleButtonText}>{toggleDoneState[toggleIndex]? 1 : 2}</Text>
+                  <Text style={styles.toggleButtonText}>{toggleDoneState[toggleIndex]? "\u2713" : "X"}</Text>
                 </Pressable>
               ))}
           </View>

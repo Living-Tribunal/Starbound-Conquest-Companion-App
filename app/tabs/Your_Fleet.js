@@ -6,15 +6,17 @@ import {
   StyleSheet,
   Pressable,
   StatusBar,
+  Button,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
-import EditButtonHP from "../buttons/EditButtonHP";
-import ToggleAttributeButton from "../buttons/ToggleAttribute";
-import ToggleDone from "../buttons/ToggleDone";
-import { useStarBoundContext } from "../Global/StarBoundProvider";
+import EditButtonHP from "../../components/buttons/EditButtonHP";
+import ToggleAttributeButton from "../../components/buttons/ToggleAttribute";
+import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { FIREBASE_AUTH } from '@/FirebaseConfig';
+import { getAuth } from "firebase/auth";
 import {
     SHIP_CAPACITY,
     SHIP_TOGGLES,
@@ -22,6 +24,9 @@ import {
   } from "@/constants/Ships";
 
 export default function Your_Fleet(type) {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    
   const {
     fighterImages,
     setFighterImages,
@@ -43,9 +48,6 @@ export default function Your_Fleet(type) {
     setShowCruiserClass,
     showDreadnoughtClass,
     setShowDreadnoughtClass,
-    toggleOrders, setToggleOrders,
-    toggleCapacity, setToggleCapacity,
-    toggleDoneState, setToggleDoneState,
   } = useStarBoundContext();
 
   const handlePressFi = () => {
@@ -136,9 +138,12 @@ export default function Your_Fleet(type) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.mainContainer]}>
       <StatusBar />
       <View style={styles.container}>
+      <Button title="Sign Out" onPress={() => FIREBASE_AUTH.signOut()} />
+      <Button title="Delete Account" onPress={() => FIREBASE_AUTH.currentUser?.delete()} />
+      <Text> {user.email}</Text>
         <View style={{justifyContent: 'center'}}>
             <Pressable 
             onLongPress={handleLongPress}
@@ -314,6 +319,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.dark_gray,
+  },
+  mainContainer: {
+    flex: 1,
+    backgroundColor: Colors.dark_gray,
+    paddingBottom: 20
   },
   endcontainer: {
     gap: 5,

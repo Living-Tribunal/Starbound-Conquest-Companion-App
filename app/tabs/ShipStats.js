@@ -16,7 +16,7 @@ import { useState } from "react";
 import ShowStat from "../../hooks/ShowStat.js";
 import { ShipTypeIcons } from "../../constants/ImagePaths.js";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
-import { shipDiceMapping } from "../buttons/Dice.js";
+import { shipDiceMapping } from "../../components/buttons/Dice.js";
 import { SpecialOrders} from "../../constants/SpecialOrders.js";
 
 export default function ShipStats() {
@@ -35,7 +35,7 @@ export default function ShipStats() {
   };
   /* console.log(selectedShip); */
   return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.mainContainer}>
         <StatusBar/>
         <ScrollView nestedScrollEnabled style>
           <View style={styles.image}>
@@ -389,6 +389,11 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.dark_gray,
     flex: 1,
+  },
+  mainContainer: {
+    flex: 1,
+    backgroundColor: Colors.dark_gray,
+    paddingBottom: 20
   },
   headerText: {
     color: Colors.white,

@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import EditButton from "../buttons/EditButton";
+import EditButton from "../../components/buttons/EditButton";
 
 const SHIP_VALUES = {
   fighter: 1,
@@ -166,7 +166,7 @@ export default function Fleet_Points() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.mainContainer}>
       <StatusBar />
       <ScrollView>
         <View style={styles.container}>
@@ -460,6 +460,11 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.dark_gray,
     flex: 1,
+  },
+  mainContainer: {
+    flex: 1,
+    backgroundColor: Colors.dark_gray,
+    paddingBottom: 20
   },
   headerText: {
     color: Colors.white,

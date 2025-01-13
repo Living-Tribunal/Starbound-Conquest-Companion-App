@@ -3,20 +3,21 @@ import React, { useState } from 'react';
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 
 export default function Rules() {
     const [showText, setShowText] = useState(false);
-    
+    const tabBarHeight = useBottomTabBarHeight();
     const handlePress = () => {
         setShowText(!showText);
     };
 
   return (
-    <SafeAreaView style={[styles.container]}>
+    <SafeAreaView style={[styles.mainContainer]}>
         <GestureHandlerRootView>
       <StatusBar/>
-      <ScrollView>
+      <ScrollView contentContainerStyle={{flexGrow: 1}}>
         <View style={styles.container}>
           <Text style={styles.textHeader}>Movement Rules</Text>
           <View style={styles.rulesSection}>
@@ -467,6 +468,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.dark_gray,
+    paddingBottom: 20
+  },
+  mainContainer: {
+    flex: 1,
+    backgroundColor: Colors.dark_gray,
+    paddingBottom: 20
   },
   text: {
     color: Colors.misty_blue,
