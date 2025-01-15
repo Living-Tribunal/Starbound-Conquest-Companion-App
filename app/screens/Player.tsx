@@ -9,23 +9,24 @@ export default function Player() {
 
 
   useEffect(() => {
-    const loadUsername = async () => {
-      try {
-        const storedUsername = await AsyncStorage.getItem("username");
-        if (storedUsername) {
-          setUsername(storedUsername);
+    const getUserName = async () => {
+        try {
+            const username = await AsyncStorage.getItem("UserName");
+            if (username) {
+                setUsername(username); // Only set if a username exists
+              } else {
+                setUsername("Commander");
+          }
+        } catch (error) {
+          // Error retrieving data
         }
-      } catch (error) {
-        console.error("Error loading username from AsyncStorage:", error);
-      }
-    };
-
-    loadUsername();
-  }, [setUsername]);
+      };
+      getUserName();
+  },[]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Welcome, {username || "Commander"}</Text>
+      <Text style={styles.text}>{/* Welcome, {username || "Commander"} */}{`Welcome, ${username || "Commander"}`}</Text>
     </View>
   );
 }
