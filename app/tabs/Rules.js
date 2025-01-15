@@ -1,25 +1,61 @@
-import { StyleSheet, Text, View, StatusBar, Image,  Pressable } from "react-native";
-import React, { useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  StatusBar,
+  Image,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
+import React, { useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-
+import {
+  GestureHandlerRootView,
+  ScrollView,
+} from "react-native-gesture-handler";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Rules() {
-    const [showText, setShowText] = useState(false);
-    const tabBarHeight = useBottomTabBarHeight();
-    const handlePress = () => {
-        setShowText(!showText);
-    };
+  const [showText, setShowText] = useState(false);
+  const tabBarHeight = useBottomTabBarHeight();
+  const navigation = useNavigation();
+  const handlePress = () => {
+    setShowText(!showText);
+  };
 
   return (
     <SafeAreaView style={[styles.mainContainer]}>
-        <GestureHandlerRootView>
-      <StatusBar/>
-      <ScrollView contentContainerStyle={{flexGrow: 1}}>
-        <View style={styles.container}>
-          <Text style={styles.textHeader}>Movement Rules</Text>
+      <GestureHandlerRootView>
+        <StatusBar />
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={styles.container}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "flex-end",
+                alignItems:"center",
+                top: 10,
+                right: 10,
+                 flexDirection: 'row',
+              }}
+            >
+                {/* <Text style={styles.textHeaderTop}>Movement Rules</Text> */}
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("Logout");
+                }}
+              >
+                <Image
+                  style={styles.gearImage}
+                  source={require("../../assets/icons/icons8-gear-64.png")}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          
+
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
               <Text style={styles.textSection}>Movement Basics:</Text>
@@ -54,166 +90,170 @@ export default function Rules() {
             </View>
           </View>
           <View style={styles.rulesSection}>
-            <Pressable onPress={handlePress} style={({ pressed }) => [
+            <Pressable
+              onPress={handlePress}
+              style={({ pressed }) => [
                 styles.textSectionSpecial,
                 {
                   backgroundColor: pressed ? Colors.goldenrod : Colors.gold,
                 },
-              ]}>
-            <View style={styles.textSectionContainer}>
-              <Text style={styles.textSectionSpecial}>Special Orders :</Text>
-            </View>    
+              ]}
+            >
+              <View style={styles.textSectionContainer}>
+                <Text style={styles.textSectionSpecial}>Special Orders :</Text>
+              </View>
             </Pressable>
             {showText && (
-            <View style={styles.textBodyContainer}>
-              <Text style={styles.textBody}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: Colors.slate,
-                    fontSize: 14,
-                  }}
-                >
-                  All Ahead Full:
-                </Text>{" "}
-                Roll 2d10. The result is the additional feet the ship can move
-                that turn.
-              </Text>
-              <Text style={styles.textBody}>
-                <Text style={{ fontWeight: "bold", color: "#ff2b2b" }}>
-                  Restriction:
-                </Text>{" "}
-                Ships that use All Ahead Full cannot fire any weapons until
-                their next turn. This simulates the focus on maximum speed and
-                maneuverability at the cost of offensive capability.
-              </Text>
-              <Text style={styles.textBody}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: Colors.slate,
-                    fontSize: 14,
-                  }}
-                >
-                  Evasive Maneuvers:
-                </Text>{" "}
-                Roll 1d20, on an 11 or higher, this ship cannon be targeted by
-                Anti-Fighter Barrage this turn and attack rolls against it are
-                made with disadvantage.
-              </Text>
-              <Text style={styles.textBody}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: Colors.slate,
-                    fontSize: 14,
-                  }}
-                >
-                  Combine Fire:
-                </Text>{" "}
-                You can choose and number of ships with this maneuver to combine
-                fire against a target that is within the weapon's range of each
-                ship involved. When you do so, roll 1d20, if the attack hits,
-                roll the damage dice for all the ships and add their totals
-                together and compare against the target's soak value to deal
-                damage as normal. If the attack misses, all ships miss.
-              </Text>
-              <Text style={styles.textBody}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: Colors.slate,
-                    fontSize: 14,
-                  }}
-                >
-                  Anti-Fire Barrage:
-                </Text>{" "}
-                For up to six Fighters within 60ft of your ship, you can roll
-                1d6. On a 6, that Fighter is destroyed.
-              </Text>
-              <Text style={styles.textBody}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: Colors.slate,
-                    fontSize: 14,
-                  }}
-                >
-                  Power Up Main Guns:
-                </Text>{" "}
-                Roll 1d20, on an 11 or higher, you can upgrade the die type of
-                your weapon by one step, ex. 1d6 to 1d8.
-              </Text>
-              <Text style={styles.textBody}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: Colors.slate,
-                    fontSize: 14,
-                  }}
-                >
-                  All Systems Fire:
-                </Text>{" "}
-                Roll 1d20, on an 11 or higher, you can fire another weapon
-                avaliable to the ship. Weapon's whose firing arc is to the sides
-                can be selected to fire again if they target a ship on the
-                opposite side of the one that already was fired upon.
-              </Text>
-              <Text style={styles.textBody}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: Colors.slate,
-                    fontSize: 14,
-                  }}
-                >
-                  Reinforce Shields:
-                </Text>{" "}
-                Roll 1d20, on an 11 or higher, you regain 1hp.
-              </Text>
-              <Text style={styles.textBody}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: Colors.slate,
-                    fontSize: 14,
-                  }}
-                >
-                  Broadside:
-                </Text>{" "}
-                Roll 1d20, on an 11 or higher, you can move 15ft in the
-                direction you're facing, rotate 90 degrees and fire a weapon
-                with a firing arc that faces the sides.
-              </Text>
-              <Text style={styles.textBody}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: Colors.slate,
-                    fontSize: 14,
-                  }}
-                >
-                  Launch Fighters:
-                </Text>{" "}
-                Roll 1d20, deploy or collect up to the number of Fighters
-                rolled. For each turn you take this maneuver in a row, you can
-                add an additional +5 to the die result.
-              </Text>
-              <Text style={styles.textBody}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: Colors.slate,
-                    fontSize: 14,
-                  }}
-                >
-                  Charge Ion Beams:
-                </Text>{" "}
-                Roll 1d20, on an 11 or higher, your Ion Particle Beam Recharges
-                and can fire again.
-              </Text>
-            </View>
-        )}
+              <View style={styles.textBodyContainer}>
+                <Text style={styles.textBody}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      color: Colors.slate,
+                      fontSize: 14,
+                    }}
+                  >
+                    All Ahead Full:
+                  </Text>{" "}
+                  Roll 2d10. The result is the additional feet the ship can move
+                  that turn.
+                </Text>
+                <Text style={styles.textBody}>
+                  <Text style={{ fontWeight: "bold", color: "#ff2b2b" }}>
+                    Restriction:
+                  </Text>{" "}
+                  Ships that use All Ahead Full cannot fire any weapons until
+                  their next turn. This simulates the focus on maximum speed and
+                  maneuverability at the cost of offensive capability.
+                </Text>
+                <Text style={styles.textBody}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      color: Colors.slate,
+                      fontSize: 14,
+                    }}
+                  >
+                    Evasive Maneuvers:
+                  </Text>{" "}
+                  Roll 1d20, on an 11 or higher, this ship cannon be targeted by
+                  Anti-Fighter Barrage this turn and attack rolls against it are
+                  made with disadvantage.
+                </Text>
+                <Text style={styles.textBody}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      color: Colors.slate,
+                      fontSize: 14,
+                    }}
+                  >
+                    Combine Fire:
+                  </Text>{" "}
+                  You can choose and number of ships with this maneuver to
+                  combine fire against a target that is within the weapon's
+                  range of each ship involved. When you do so, roll 1d20, if the
+                  attack hits, roll the damage dice for all the ships and add
+                  their totals together and compare against the target's soak
+                  value to deal damage as normal. If the attack misses, all
+                  ships miss.
+                </Text>
+                <Text style={styles.textBody}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      color: Colors.slate,
+                      fontSize: 14,
+                    }}
+                  >
+                    Anti-Fire Barrage:
+                  </Text>{" "}
+                  For up to six Fighters within 60ft of your ship, you can roll
+                  1d6. On a 6, that Fighter is destroyed.
+                </Text>
+                <Text style={styles.textBody}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      color: Colors.slate,
+                      fontSize: 14,
+                    }}
+                  >
+                    Power Up Main Guns:
+                  </Text>{" "}
+                  Roll 1d20, on an 11 or higher, you can upgrade the die type of
+                  your weapon by one step, ex. 1d6 to 1d8.
+                </Text>
+                <Text style={styles.textBody}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      color: Colors.slate,
+                      fontSize: 14,
+                    }}
+                  >
+                    All Systems Fire:
+                  </Text>{" "}
+                  Roll 1d20, on an 11 or higher, you can fire another weapon
+                  avaliable to the ship. Weapon's whose firing arc is to the
+                  sides can be selected to fire again if they target a ship on
+                  the opposite side of the one that already was fired upon.
+                </Text>
+                <Text style={styles.textBody}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      color: Colors.slate,
+                      fontSize: 14,
+                    }}
+                  >
+                    Reinforce Shields:
+                  </Text>{" "}
+                  Roll 1d20, on an 11 or higher, you regain 1hp.
+                </Text>
+                <Text style={styles.textBody}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      color: Colors.slate,
+                      fontSize: 14,
+                    }}
+                  >
+                    Broadside:
+                  </Text>{" "}
+                  Roll 1d20, on an 11 or higher, you can move 15ft in the
+                  direction you're facing, rotate 90 degrees and fire a weapon
+                  with a firing arc that faces the sides.
+                </Text>
+                <Text style={styles.textBody}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      color: Colors.slate,
+                      fontSize: 14,
+                    }}
+                  >
+                    Launch Fighters:
+                  </Text>{" "}
+                  Roll 1d20, deploy or collect up to the number of Fighters
+                  rolled. For each turn you take this maneuver in a row, you can
+                  add an additional +5 to the die result.
+                </Text>
+                <Text style={styles.textBody}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      color: Colors.slate,
+                      fontSize: 14,
+                    }}
+                  >
+                    Charge Ion Beams:
+                  </Text>{" "}
+                  Roll 1d20, on an 11 or higher, your Ion Particle Beam
+                  Recharges and can fire again.
+                </Text>
+              </View>
+            )}
           </View>
           <Text style={styles.textHeader}>Combat System</Text>
           <View style={styles.rulesSection}>
@@ -256,8 +296,8 @@ export default function Rules() {
                 >
                   Check Against To Hit:
                 </Text>{" "}
-                Compare the result to the target's To Hit number. If your roll is
-                equal to or higher than the target's To Hit number, you hit!
+                Compare the result to the target's To Hit number. If your roll
+                is equal to or higher than the target's To Hit number, you hit!
               </Text>
             </View>
           </View>
@@ -301,9 +341,9 @@ export default function Rules() {
                 >
                   Check Against Target's Soak:
                 </Text>{" "}
-                Compare the rolled damage to the target ship's Soak.
-                If the damage meets or exceeds this threshold, the ship takes
-                damage; otherwise, it withstands the attack.
+                Compare the rolled damage to the target ship's Soak. If the
+                damage meets or exceeds this threshold, the ship takes damage;
+                otherwise, it withstands the attack.
               </Text>
             </View>
           </View>
@@ -457,23 +497,27 @@ export default function Rules() {
               </View>
             </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
       </GestureHandlerRootView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    alignItems: "center",
+    height: 100,
+    backgroundColor: Colors.dark_gray,
+  },
   container: {
     flex: 1,
     backgroundColor: Colors.dark_gray,
-    paddingBottom: 20
+    paddingBottom: 20,
   },
   mainContainer: {
     flex: 1,
     backgroundColor: Colors.dark_gray,
-    paddingBottom: 20
+    paddingBottom: 20,
   },
   text: {
     color: Colors.misty_blue,
@@ -522,8 +566,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
     fontFamily: "aboreto",
-    marginBottom: 20,
     marginTop: 20,
+  },
+  textHeaderTop: {
+    color: Colors.white,
+    fontSize: 20,
+    textAlign: "center",
+    fontFamily: "aboreto",
   },
   textBodyContainer: {
     flex: 1,
@@ -562,5 +611,9 @@ const styles = StyleSheet.create({
     fontFamily: "monospace",
     padding: 3,
     fontWeight: "bold",
+  },
+  gearImage: {
+    width: 35,
+    height: 35,
   },
 });

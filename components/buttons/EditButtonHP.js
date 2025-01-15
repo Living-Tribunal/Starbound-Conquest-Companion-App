@@ -79,7 +79,7 @@ export default function EditButtonHP({ type, index, value, short }) {
     if (parseInt(hpText) === 0) {
       return Colors.lightened_deep_red;
     } else {
-      return Colors.slate;
+      return Colors.hud;
     }
   };
 
@@ -103,7 +103,7 @@ export default function EditButtonHP({ type, index, value, short }) {
           style={({ pressed }) => [
             styles.button,
             {
-              backgroundColor: pressed ? Colors.goldenrod : changeButtonColor(),
+              /* backgroundColor: pressed ? Colors.goldenrod : changeButtonColor(), */
               borderColor: pressed ? Colors.gold : changeBorderButtonColor(),
             },
           ]}
@@ -213,7 +213,6 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     paddingHorizontal: 2,
     borderTopLeftRadius: 20,
-    borderBottomRightRadius: 20,
     borderWidth: 2,
     alignItems: "center",
   },

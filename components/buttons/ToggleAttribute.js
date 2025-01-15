@@ -39,8 +39,8 @@ export default function ToggleAtributeButton({ shipType, index }) {
       await AsyncStorage.setItem(
         `${key}-${toggleIndex}`,
         JSON.stringify(valueToSave),
-        console.log("INITIAL STATES: ","Key: ",key,"||", "Toggled Type: ", toggleType," |", "Index: ", index, "||", "Saved Value:", valueToSave)
-      );
+/*         console.log("INITIAL STATES: ","Key: ",key,"||", "Toggled Type: ", toggleType," |", "Index: ", index, "||", "Saved Value:", valueToSave)
+ */      );
     } catch (err) {
       alert(err);
     }
@@ -70,8 +70,8 @@ export default function ToggleAtributeButton({ shipType, index }) {
       setToggleCapacity(savedCapacityStates);
       setToggleDoneState(savedDoneStates);
 
-      console.log("LOADED STATE: ", "Type of ship:", shipType, "||", "Ships Index:", index, "||", "Loaded Order State:", savedOrders, "||", "Loaded Turn Done State:", savedDoneStates, "||",  "Loaded Ship Capacity:", savedCapacityStates);
-
+/*       console.log("LOADED STATE: ", "Type of ship:", shipType, "||", "Ships Index:", index, "||", "Loaded Order State:", savedOrders, "||", "Loaded Turn Done State:", savedDoneStates, "||",  "Loaded Ship Capacity:", savedCapacityStates);
+ */
     } catch (err) {
       alert(err);
     }
@@ -95,8 +95,8 @@ export default function ToggleAtributeButton({ shipType, index }) {
       for (let i = 0; i < SHIP_TOGGLES_DONE[shipType]; i++) {
         await AsyncStorage.removeItem(`${doneKey}-${i}`);
       }
-      console.log("All states reset and AsyncStorage cleared!");
-    } catch (err) {
+/*       console.log("All states reset and AsyncStorage cleared!");
+ */    } catch (err) {
       alert("Failed to clear storage: " + err);
     }
   };
@@ -112,22 +112,22 @@ export default function ToggleAtributeButton({ shipType, index }) {
         updatedToggleDoneStates[toggleIndex] =!updatedToggleDoneStates[toggleIndex];
         // Call save to persist the change
         save(toggleIndex, updatedToggleDoneStates[toggleIndex], 'done');
-        console.log("SAVED STATES: ", "Ship Type:", shipType, "||", "Ship Type Index:", index, "||", "Toggled Order State:", updatedToggleDoneStates,"||","Toggled Index:", toggleIndex);
-        // Return the updated state
+/*         console.log("SAVED STATES: ", "Ship Type:", shipType, "||", "Ship Type Index:", index, "||", "Toggled Order State:", updatedToggleDoneStates,"||","Toggled Index:", toggleIndex);
+ */        // Return the updated state
         return updatedToggleDoneStates;
     })
   }
 
   const handlePress = (toggleIndex) => {
-    console.log("handlePress called for toggleIndex:", toggleIndex);
-    setToggleOrders((prevToggleOrders) => {
+/*     console.log("handlePress called for toggleIndex:", toggleIndex);
+ */    setToggleOrders((prevToggleOrders) => {
       const updatedToggleOrders = [...prevToggleOrders];
-      console.log("Previous Toggled Orders:", prevToggleOrders);
-      updatedToggleOrders[toggleIndex] = !updatedToggleOrders[toggleIndex];
+/*       console.log("Previous Toggled Orders:", prevToggleOrders);
+ */      updatedToggleOrders[toggleIndex] = !updatedToggleOrders[toggleIndex];
 
       save(toggleIndex, updatedToggleOrders[toggleIndex], "order");
-      console.log("SAVED STATES: ", "Ship Type:", shipType, "||", "Ship Type Index:", index, "||", "Toggled Order State:", updatedToggleOrders);
-
+/*       console.log("SAVED STATES: ", "Ship Type:", shipType, "||", "Ship Type Index:", index, "||", "Toggled Order State:", updatedToggleOrders);
+ */
       return updatedToggleOrders;
     });
   };
@@ -137,8 +137,8 @@ export default function ToggleAtributeButton({ shipType, index }) {
       updatedCapacityToggleStates[toggleIndex] = !updatedCapacityToggleStates[toggleIndex];
 
       save(toggleIndex, updatedCapacityToggleStates[toggleIndex], "capacity");
-      console.log("SAVED STATES: ", "Ship Type:", shipType, "||", "Ship Type Index:", index, "||", "Toggled Order State:", updatedCapacityToggleStates);
-
+/*       console.log("SAVED STATES: ", "Ship Type:", shipType, "||", "Ship Type Index:", index, "||", "Toggled Order State:", updatedCapacityToggleStates);
+ */
       return updatedCapacityToggleStates;
     });
   };
@@ -173,12 +173,9 @@ export default function ToggleAtributeButton({ shipType, index }) {
                   style={({ pressed }) => [
                     styles.toggleButton,
                     {
-                      backgroundColor: toggleDoneState[toggleIndex]
-                        ? Colors.goldenrod
-                        : Colors.blue_gray,
                       borderColor: toggleDoneState[toggleIndex]
                         ? Colors.gold
-                        : Colors.slate,
+                        : Colors.hud,
                     },
                   ]}
                 >
@@ -207,12 +204,9 @@ export default function ToggleAtributeButton({ shipType, index }) {
                   style={({ pressed }) => [
                     styles.button,
                     {
-                      backgroundColor: toggleOrders[toggleIndex]
-                        ? Colors.goldenrod
-                        : Colors.blue_gray,
                       borderColor: toggleOrders[toggleIndex]
                         ? Colors.gold
-                        : Colors.slate,
+                        : Colors.hud,
                     },
                   ]}
                 >
@@ -246,7 +240,7 @@ export default function ToggleAtributeButton({ shipType, index }) {
                                 : Colors.blue_gray,
                               borderColor: toggleCapacity[toggleIndex]
                                 ? Colors.gold
-                                : Colors.slate,
+                                : Colors.misty_blue,
                             },
                           ]}
                         >

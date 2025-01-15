@@ -11,8 +11,9 @@ import {
   Alert,
   SafeAreaView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocalSearchParams } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import {
   createUserWithEmailAndPassword,
@@ -20,14 +21,43 @@ import {
 } from "firebase/auth";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
+import { useStarBoundContext } from "../components/Global/StarBoundProvider";
 
 const Login = () => {
+    /* const {username} = useStarBoundContext();
+    console.log(username); */
   const { type } = useLocalSearchParams();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPressed, setIsPressed] = useState(false);
+  const [getUsername, setGetUsername ] = useState<any | null>(null);
   const auth = FIREBASE_AUTH;
+
+   // State variable to track password visibility
+   const [showPassword, setShowPassword] = useState(false);
+
+   // Function to toggle the password visibility state
+   const toggleShowPassword = () => {
+       setShowPassword(!showPassword);
+   };
+
+
+  useEffect(() => {
+    const getUserName = async () => {
+        try {
+            const username = await AsyncStorage.getItem("UserName");
+            if (username) {
+                setGetUsername(username); // Only set if a username exists
+              } else {
+                setGetUsername("Commander");
+          }
+        } catch (error) {
+          // Error retrieving data
+        }
+      };
+      getUserName();
+  },[]);
 
   const signIn = async () => {
     setLoading(true);
@@ -85,26 +115,35 @@ const Login = () => {
           </View>
           <View style={{ paddingTop: 20 }}>
             <Text style={styles.title}>
-              {isPressed ? "Welcome, Commander" : "Create an Account"}{" "}
+            {isPressed ? "Create an Account" : `Welcome, ${getUsername || "Commander"}`}
             </Text>
           </View>
 
           <View style={{ marginBottom: 20 }}>
-            <TextInput
-              autoCapitalize="none"
-              placeholder="Email"
-              style={styles.inputField}
-              value={email}
-              onChangeText={setEmail}
-            />
+                <TextInput
+                autoCapitalize="none"
+                placeholder="Email"
+                style={styles.inputField}
+                value={email}
+                onChangeText={setEmail}
+                />
+          <View style={styles.showContainer}>  
             <TextInput
               autoCapitalize="none"
               placeholder="Password"
               style={styles.inputField}
               value={password}
               onChangeText={setPassword}
-              secureTextEntry
+              secureTextEntry={!showPassword}
             />
+            <View style={{right: 50}}>
+            <TouchableOpacity
+                  onPress={toggleShowPassword}>
+                    <Image source={ showPassword? require("../assets/icons/icons8-hide-30.png") : require("../assets/icons/icons8-show-30.png") }/>
+                </TouchableOpacity>    
+            </View>
+            
+            </View>
           </View>
           <View
             style={{
@@ -153,6 +192,7 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   inputField: {
+    width: "100%",
     marginVertical: 4,
     height: 50,
     borderWidth: 1,
@@ -218,6 +258,10 @@ const styles = StyleSheet.create({
   loginText: {
     fontWeight: "bold",
   },
+  showContainer: {
+    flexDirection: 'row',
+    alignItems: "center",
+  }
 });
 
 export default Login;

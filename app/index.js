@@ -14,7 +14,9 @@ import ShipStats from "./tabs/ShipStats";
 import Rules from "./tabs/Rules";
 import Fleet_Points from "./tabs/Fleet_Points";
 import Login from "./Login";
-import index from "./tabs/Your_Fleet";
+import LogOutDeleteScreen from "./screens/LogOutDeleteScreen";
+import Player from "./screens/Player";
+import index from "./screens/Your_Fleet";
 import { Colors } from "../constants/Colors";
 import { useFonts } from "expo-font";
 import {
@@ -106,13 +108,12 @@ const[ isLoggedIn, setIsLoggedIn ] = useState(false);
 
   getAuth().onAuthStateChanged((user) => {
     setIsLoading(false);
-    console.log("Logged In", user);
+    /* console.log("Logged In", user); */
     if (!user) {
       navigation.navigate('Login'); 
       console.log("Logged out");
     }
   });
-
 
   const [fontsLoaded] = useFonts({
     aboreto: require("../assets/fonts/Aboreto-Regular.ttf"),
@@ -138,7 +139,7 @@ const[ isLoggedIn, setIsLoggedIn ] = useState(false);
     <StarBoundProvider>
       <Tab.Navigator
         sceneContainerStyle={{ backgroundColor: "transparent" }}
-        initialRouteName="Fleet"
+        initialRouteName="Player"
         screenOptions={{
           headerTintColor: Colors.white, //header text color
           headerTitleStyle: {
@@ -212,8 +213,8 @@ const[ isLoggedIn, setIsLoggedIn ] = useState(false);
           }}
         />
         <Tab.Screen
-          name="Fleet"
-          component={index}
+          name="Player"
+          component={Player}
           options={{
             tabBarButton: (props) => (
                 <TabBarAdvancedButton
@@ -269,10 +270,22 @@ const[ isLoggedIn, setIsLoggedIn ] = useState(false);
           }}
         />
         <Tab.Screen
-  name="Login"
-  component={Login}
-  options={{ tabBarItemStyle: { display: 'none' } }}
-/>
+            name="Login"
+            component={Login}
+            options={{ tabBarItemStyle: { display: 'none' } }}
+            />
+            <Tab.Screen
+            name="Logout"
+            component={LogOutDeleteScreen}
+            options={{ tabBarItemStyle: { display: 'none' }, tabBarStyle: { display: 'none' }, headerShown: false }}
+            screenOptions={{headerShown: false}}
+            />
+            <Tab.Screen
+            name="Fleet"
+            component={index}
+            options={{ tabBarItemStyle: { display: 'none' }, tabBarStyle: { display: 'none' }, headerShown: false }}
+            screenOptions={{headerShown: false}}
+            />
       </Tab.Navigator>
     </StarBoundProvider>
     </SafeAreaView>

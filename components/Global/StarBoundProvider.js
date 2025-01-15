@@ -19,6 +19,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
     const [showCarrierClass, setShowCarrierClass] = useState(true);
     const [showCruiserClass, setShowCruiserClass] = useState(true);
     const [showDreadnoughtClass, setShowDreadnoughtClass] = useState(true);
+    const [username, setUsername] = useState('');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -47,7 +48,8 @@ return (
         toggleDoneState, setToggleDoneState,
 
 
-        isModalVisible, setIsModalVisible
+        isModalVisible, setIsModalVisible,
+        username, setUsername
         
         }}>
         {[children, shipType]}

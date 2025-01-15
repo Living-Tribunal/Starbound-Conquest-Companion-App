@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Pressable,
   StatusBar,
-  Button,
+  Image,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,19 +14,9 @@ import { Colors } from "@/constants/Colors";
 import EditButtonHP from "../../components/buttons/EditButtonHP";
 import ToggleAttributeButton from "../../components/buttons/ToggleAttribute";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { FIREBASE_AUTH } from '@/FirebaseConfig';
-import { getAuth } from "firebase/auth";
-import {
-    SHIP_CAPACITY,
-    SHIP_TOGGLES,
-    SHIP_TOGGLES_DONE,
-  } from "@/constants/Ships";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Your_Fleet(type) {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    
   const {
     fighterImages,
     setFighterImages,
@@ -72,9 +62,13 @@ export default function Your_Fleet(type) {
         try {
           const savedFighterCount = await AsyncStorage.getItem("fighterCount");
           const savedCarrierCount = await AsyncStorage.getItem("carrierCount");
-          const savedDreadnoughtCount = await AsyncStorage.getItem("dreadnoughtCount");
+          const savedDreadnoughtCount = await AsyncStorage.getItem(
+            "dreadnoughtCount"
+          );
           const savedCruiserCount = await AsyncStorage.getItem("cruiserCount");
-          const savedDestroyerCount = await AsyncStorage.getItem("destroyerCount");
+          const savedDestroyerCount = await AsyncStorage.getItem(
+            "destroyerCount"
+          );
 
           const counts = {
             fighterCount: parseInt(savedFighterCount) || 0,
@@ -110,7 +104,7 @@ export default function Your_Fleet(type) {
     }, [])
   );
 
-  const handleLongPress = () => {
+  /* const handleLongPress = () => {
     // Reset state arrays to their initial state
     setToggleOrders(Array(SHIP_TOGGLES[type]).fill(false));
     setToggleCapacity(Array(SHIP_CAPACITY[type]).fill(false));
@@ -135,45 +129,43 @@ export default function Your_Fleet(type) {
     };
   
     clearAsyncStorage();
-  };
+  }; */
 
   return (
     <SafeAreaView style={[styles.mainContainer]}>
       <StatusBar />
       <View style={styles.container}>
-      <Button title="Sign Out" onPress={() => FIREBASE_AUTH.signOut()} />
-      <Button title="Delete Account" onPress={() => FIREBASE_AUTH.currentUser?.delete()} />
-      <Text> {user.email}</Text>
-        <View style={{justifyContent: 'center'}}>
-            <Pressable 
-            onLongPress={handleLongPress}
-            style={({ pressed }) => [
-                styles.resetbutton,
-                {
-                    borderColor: pressed ? Colors.deep_red : Colors.lightened_deep_red, backgroundColor: pressed ? Colors.lightened_deep_red : Colors.deep_red,
-                },
-            ]}
-            >
-                <Text style={styles.resetText}>End Turn</Text>
-            </Pressable>    
-        </View>
-        
         <View style={styles.endcontainer}></View>
         <ScrollView style={styles.scrollView}>
           <Pressable
             onPress={handlePressFi}
-            style={({ pressed }) => [
-              styles.textSectionSpecial,
-              {
-                backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
-              },
-            ]}
+            style={({ pressed }) => [styles.textSectionSpecial]}
           >
-            <View style={styles.textSectionContainer}>
-              <Text style={styles.shipTextHeader}>
-                Fighters - {fighterImages.length} Ships
-              </Text>
-            </View>
+            {({ pressed }) => (
+              <View style={{ position: "relative", alignItems: "center" }}>
+                <Image
+                  style={{
+                    width: 400,
+                    height: 100,
+                    tintColor: pressed ? Colors.gold : Colors.hud,
+                  }}
+                  source={require("../../assets/images/hudcontainer.png")}
+                />
+                <Text
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: [{ translateX: -65 }, { translateY: -18 }],
+                    color: "#b9e5ff",
+                    fontWeight: "bold",
+                    fontSize: 15,
+                  }}
+                >
+                  Fighters - {fighterImages.length} Ships
+                </Text>
+              </View>
+            )}
           </Pressable>
 
           {showFighterClass && (
@@ -184,6 +176,12 @@ export default function Your_Fleet(type) {
                   <View style={styles.toggleContainer}>
                     <EditButtonHP type="fighter" index={index} />
                     <ToggleAttributeButton shipType="fighter" index={index} />
+                    <View style={styles.hudContainer}>
+                      <Image
+                        style={styles.hudImage}
+                        source={require("../../assets/images/hud.png")}
+                      />
+                    </View>
                   </View>
                 </View>
               ))}
@@ -240,7 +238,7 @@ export default function Your_Fleet(type) {
             <View style={styles.imageRow}>
               {cruiserImages.map((image, index) => (
                 <View key={image.id} style={styles.imageContainer}>
-                 {/*  <ToggleDone type="cruiser3" index={index} /> */}
+                  {/*  <ToggleDone type="cruiser3" index={index} /> */}
                   <View style={styles.toggleContainer}>
                     <EditButtonHP type="cruiser" index={index} />
                     <ToggleAttributeButton shipType="cruiser" index={index} />
@@ -300,10 +298,13 @@ export default function Your_Fleet(type) {
             <View style={styles.imageRow}>
               {dreadnoughtImages.map((image, index) => (
                 <View key={image.id} style={styles.imageContainer}>
-                 {/*  <ToggleDone type="dreadnought5" index={index} /> */}
+                  {/*  <ToggleDone type="dreadnought5" index={index} /> */}
                   <View style={styles.toggleContainer}>
                     <EditButtonHP type="dreadnought" index={index} />
-                    <ToggleAttributeButton shipType="dreadnought" index={index} />
+                    <ToggleAttributeButton
+                      shipType="dreadnought"
+                      index={index}
+                    />
                   </View>
                 </View>
               ))}
@@ -323,7 +324,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: Colors.dark_gray,
-    paddingBottom: 20
+    paddingBottom: 20,
   },
   endcontainer: {
     gap: 5,
@@ -386,11 +387,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  resetText:{
+  resetText: {
     color: Colors.white,
     fontSize: 16,
     fontFamily: "monospace",
     fontWeight: "bold",
     textAlign: "center",
-  }
+  },
+  hudImage: {
+    width: 275,
+    height: 260,
+    resizeMode: "contain",
+  },
+  hudContainer: {
+    position: "absolute",
+    top: -50,
+    right: -40,
+    zIndex: -1,
+  },
 });
