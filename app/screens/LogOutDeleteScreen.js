@@ -75,7 +75,7 @@ export default function LogOutDeleteScreen() {
     <SafeAreaView style={[styles.mainContainer]}>
       <View style={styles.container}>
         <View style={{ flexDirection: 'row', alignItems:'center'}}>
-          <TouchableOpacity onPress={() => navigation.navigate("Rules")}>
+          <TouchableOpacity onPress={() => navigation.navigate("Player")}>
             <Image
               style={styles.image}
               source={require("../../assets/icons/icons8-back-arrow-50.png")}
@@ -83,10 +83,9 @@ export default function LogOutDeleteScreen() {
           </TouchableOpacity>
           <Text style={[styles.text,{left:40}]}>Settings</Text>
         </View>
-        <View style={{ flex: 5, /* backgroundColor: "green"  */}}>
-            {/* <Text>{user.email}</Text> */}
+        <View style={{ flex: 5}}>
             <Text style={{color: "white"}}>Username</Text>
-            <TextInput style={{backgroundColor: "white"}} onChangeText={username => setUsername(username)} placeholder="Enter a UserName"></TextInput>
+            <TextInput maxLength={20} style={{backgroundColor: "white"}} onChangeText={username => setUsername(username)} placeholder="Enter a UserName"></TextInput>
             <TouchableOpacity onPress={saveName} style={{backgroundColor: "orange"}}><Text>Poosh Me</Text></TouchableOpacity>
             <TouchableOpacity onPress={() => { deleteName()}} style={{backgroundColor: "orange"}}><Text>Delete Me</Text></TouchableOpacity>
             {username ? (
@@ -174,7 +173,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: Colors.white,
-    fontSize: 16,
+    fontSize: 20,
     textAlign: "center",
     fontFamily: "aboreto",
   },

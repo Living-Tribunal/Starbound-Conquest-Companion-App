@@ -12,8 +12,7 @@ export const Colors = {
     lightened_gold: '#FFEA70',
     green_toggle: '#30da20',
     darker_green_toggle: '#197510',
-    hud: '#26c5ef',
+    hud: '#43d5fc',
+    hudDarker: '#284B54',
   }
  
-
-

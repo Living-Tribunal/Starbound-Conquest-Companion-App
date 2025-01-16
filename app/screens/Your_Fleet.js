@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Pressable,
   StatusBar,
   Image,
+  TouchableOpacity,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -15,8 +16,11 @@ import EditButtonHP from "../../components/buttons/EditButtonHP";
 import ToggleAttributeButton from "../../components/buttons/ToggleAttribute";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 
-export default function Your_Fleet(type) {
+export default function Your_Fleet({ type, route }) {
+  const navigation = useNavigation();
+  const { shipClass } = route.params;
   const {
     fighterImages,
     setFighterImages,
@@ -104,37 +108,54 @@ export default function Your_Fleet(type) {
     }, [])
   );
 
-  /* const handleLongPress = () => {
-    // Reset state arrays to their initial state
-    setToggleOrders(Array(SHIP_TOGGLES[type]).fill(false));
-    setToggleCapacity(Array(SHIP_CAPACITY[type]).fill(false));
-    setToggleDoneState(Array(SHIP_TOGGLES_DONE[type]).fill(false));
-  
-    // Clear AsyncStorage for the associated keys
-    const clearAsyncStorage = async () => {
-      try {
-        for (let i = 0; i < SHIP_TOGGLES[type]; i++) {
-          await AsyncStorage.removeItem(`${orderKey}-${i}`);
-        }
-        for (let i = 0; i < SHIP_CAPACITY[type]; i++) {
-          await AsyncStorage.removeItem(`${capacityKey}-${i}`);
-        }
-        for (let i = 0; i < SHIP_TOGGLES_DONE[type]; i++) {
-          await AsyncStorage.removeItem(`${doneKey}-${i}`);
-        }
-        console.log("All states reset and AsyncStorage cleared!");
-      } catch (err) {
-        alert("Failed to clear storage: " + err);
-      }
-    };
-  
-    clearAsyncStorage();
-  }; */
+  useEffect(() => {
+    switch (shipClass) {
+      case "fighter":
+        setShowFighterClass(true);
+        break;
+      case "destroyer":
+        setShowDestroyerClass(true);
+        break;
+      case "carrier":
+        setShowCarrierClass(true);
+        break;
+      case "cruiser":
+        setShowCruiserClass(true);
+        break;
+      case "dreadnought":
+        setShowDreadnoughtClass(true);
+        break;
+      default:
+        break;
+    }
+  }, []);
+
+  const onBackPress = () => {
+    setShowCarrierClass(false);
+    setShowDestroyerClass(false);
+    setShowCruiserClass(false);
+    setShowFighterClass(false);
+    setShowDreadnoughtClass(false);
+  };
 
   return (
     <SafeAreaView style={[styles.mainContainer]}>
       <StatusBar />
       <View style={styles.container}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableOpacity
+            onPress={() => {
+              onBackPress();
+              navigation.navigate("Player");
+            }}
+          >
+            <Image
+              style={styles.image}
+              source={require("../../assets/icons/icons8-back-arrow-50.png")}
+            />
+          </TouchableOpacity>
+          <Text style={[styles.text, { left: 40 }]}>Your Fleet</Text>
+        </View>
         <View style={styles.endcontainer}></View>
         <ScrollView style={styles.scrollView}>
           <Pressable
@@ -142,24 +163,31 @@ export default function Your_Fleet(type) {
             style={({ pressed }) => [styles.textSectionSpecial]}
           >
             {({ pressed }) => (
-              <View style={{ position: "relative", alignItems: "center" }}>
+              <View
+                style={{
+                  position: "relative",
+                  alignItems: "center",
+                  marginBottom: 10,
+                }}
+              >
                 <Image
                   style={{
-                    width: 400,
+                    width: 380,
                     height: 100,
                     tintColor: pressed ? Colors.gold : Colors.hud,
                   }}
-                  source={require("../../assets/images/hudcontainer.png")}
+                  source={require("../../assets/images/hudcont.png")}
                 />
                 <Text
                   style={{
                     position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: [{ translateX: -65 }, { translateY: -18 }],
-                    color: "#b9e5ff",
+                    color: Colors.hudDarker,
                     fontWeight: "bold",
-                    fontSize: 15,
+                    top: "44%",
+                    fontSize: 17,
+                    textAlign: "center",
+                    backgroundColor: Colors.hud,
+                    width: "60%",
                   }}
                 >
                   Fighters - {fighterImages.length} Ships
@@ -167,8 +195,7 @@ export default function Your_Fleet(type) {
               </View>
             )}
           </Pressable>
-
-          {showFighterClass && (
+          {shipClass === "fighter" && setShowFighterClass && (
             <View style={styles.imageRow}>
               {fighterImages.map((image, index) => (
                 <View key={image.id} style={styles.imageContainer}>
@@ -179,7 +206,7 @@ export default function Your_Fleet(type) {
                     <View style={styles.hudContainer}>
                       <Image
                         style={styles.hudImage}
-                        source={require("../../assets/images/hud.png")}
+                        source={require("../../assets/images/shipcont.png")}
                       />
                     </View>
                   </View>
@@ -190,28 +217,56 @@ export default function Your_Fleet(type) {
 
           <Pressable
             onPress={handlePressDe}
-            style={({ pressed }) => [
-              styles.textSectionSpecial,
-              {
-                backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
-              },
-            ]}
+            style={({ pressed }) => [styles.textSectionSpecial]}
           >
-            <View style={styles.textSectionContainer}>
-              <Text style={styles.shipTextHeader}>
-                Destroyers - {destroyerImages.length} Ships
-              </Text>
-            </View>
+            {({ pressed }) => (
+              <View
+                style={{
+                  position: "relative",
+                  alignItems: "center",
+                  marginBottom: 10,
+                }}
+              >
+                <Image
+                  style={{
+                    width: 380,
+                    height: 100,
+                    tintColor: pressed ? Colors.gold : Colors.hud,
+                  }}
+                  source={require("../../assets/images/hudcont.png")}
+                />
+                <Text
+                  style={{
+                    position: "absolute",
+                    color: Colors.hudDarker,
+                    fontWeight: "bold",
+                    top: "44%",
+                    fontSize: 17,
+                    textAlign: "center",
+                    backgroundColor: Colors.hud,
+                    width: "60%",
+                  }}
+                >
+                  Destroyers - {destroyerImages.length} Ships
+                </Text>
+              </View>
+            )}
           </Pressable>
 
-          {showDestroyerClass && (
+          {shipClass === "destroyer" && setShowDestroyerClass && (
             <View style={styles.imageRow}>
               {destroyerImages.map((image, index) => (
                 <View key={image.id} style={styles.imageContainer}>
-                  {/* <ToggleDone type="destroyer2" index={index} /> */}
+                  {/* <ToggleDone type="fighter1" index={index} /> */}
                   <View style={styles.toggleContainer}>
                     <EditButtonHP type="destroyer" index={index} />
                     <ToggleAttributeButton shipType="destroyer" index={index} />
+                    <View style={styles.hudContainer}>
+                      <Image
+                        style={styles.hudImage}
+                        source={require("../../assets/images/shipcont.png")}
+                      />
+                    </View>
                   </View>
                 </View>
               ))}
@@ -220,28 +275,56 @@ export default function Your_Fleet(type) {
 
           <Pressable
             onPress={handlePressCr}
-            style={({ pressed }) => [
-              styles.textSectionSpecial,
-              {
-                backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
-              },
-            ]}
+            style={({ pressed }) => [styles.textSectionSpecial]}
           >
-            <View style={styles.textSectionContainer}>
-              <Text style={styles.shipTextHeader}>
-                Cruisers - {cruiserImages.length} Ships
-              </Text>
-            </View>
+            {({ pressed }) => (
+              <View
+                style={{
+                  position: "relative",
+                  alignItems: "center",
+                  marginBottom: 10,
+                }}
+              >
+                <Image
+                  style={{
+                    width: 380,
+                    height: 100,
+                    tintColor: pressed ? Colors.gold : Colors.hud,
+                  }}
+                  source={require("../../assets/images/hudcont.png")}
+                />
+                <Text
+                  style={{
+                    position: "absolute",
+                    color: Colors.hudDarker,
+                    fontWeight: "bold",
+                    top: "44%",
+                    fontSize: 17,
+                    textAlign: "center",
+                    backgroundColor: Colors.hud,
+                    width: "60%",
+                  }}
+                >
+                  Cruisers - {cruiserImages.length} Ships
+                </Text>
+              </View>
+            )}
           </Pressable>
 
-          {showCruiserClass && (
+          {shipClass === "cruiser" && setShowCruiserClass && (
             <View style={styles.imageRow}>
               {cruiserImages.map((image, index) => (
                 <View key={image.id} style={styles.imageContainer}>
-                  {/*  <ToggleDone type="cruiser3" index={index} /> */}
+                  {/* <ToggleDone type="fighter1" index={index} /> */}
                   <View style={styles.toggleContainer}>
                     <EditButtonHP type="cruiser" index={index} />
                     <ToggleAttributeButton shipType="cruiser" index={index} />
+                    <View style={styles.hudContainer}>
+                      <Image
+                        style={[styles.hudImage,{width: 300, marginTop: 10}]}
+                        source={require("../../assets/images/shipcont.png")}
+                      />
+                    </View>
                   </View>
                 </View>
               ))}
@@ -250,28 +333,56 @@ export default function Your_Fleet(type) {
 
           <Pressable
             onPress={handlePressCa}
-            style={({ pressed }) => [
-              styles.textSectionSpecial,
-              {
-                backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
-              },
-            ]}
+            style={({ pressed }) => [styles.textSectionSpecial]}
           >
-            <View style={styles.textSectionContainer}>
-              <Text style={styles.shipTextHeader}>
-                Carriers - {carrierImages.length} Ships
-              </Text>
-            </View>
+            {({ pressed }) => (
+              <View
+                style={{
+                  position: "relative",
+                  alignItems: "center",
+                  marginBottom: 10,
+                }}
+              >
+                <Image
+                  style={{
+                    width: 380,
+                    height: 100,
+                    tintColor: pressed ? Colors.gold : Colors.hud,
+                  }}
+                  source={require("../../assets/images/hudcont.png")}
+                />
+                <Text
+                  style={{
+                    position: "absolute",
+                    color: Colors.hudDarker,
+                    fontWeight: "bold",
+                    top: "44%",
+                    fontSize: 17,
+                    textAlign: "center",
+                    backgroundColor: Colors.hud,
+                    width: "60%",
+                  }}
+                >
+                  Carriers - {carrierImages.length} Ships
+                </Text>
+              </View>
+            )}
           </Pressable>
 
-          {showCarrierClass && (
+          {shipClass === "carrier" && setShowCarrierClass && (
             <View style={styles.imageRow}>
               {carrierImages.map((image, index) => (
                 <View key={image.id} style={styles.imageContainer}>
-                  {/* <ToggleDone type="carrier4" index={index} /> */}
-                  <View style={styles.toggleContainer}>
+                  {/* <ToggleDone type="fighter1" index={index} /> */}
+                  <View style={[styles.toggleContainer, {marginBottom: "50%"}]}>
                     <EditButtonHP type="carrier" index={index} />
                     <ToggleAttributeButton shipType="carrier" index={index} />
+                    <View style={[styles.hudContainer, {paddingTop: 20,}]}>
+                      <Image
+                        style={[styles.hudImage,{left: "15%",width: 450, height: 400, marginTop: 10, transform: [{rotate: '270deg'}]}]}
+                        source={require("../../assets/images/shipcont.png")}
+                      />
+                    </View>
                   </View>
                 </View>
               ))}
@@ -280,31 +391,56 @@ export default function Your_Fleet(type) {
 
           <Pressable
             onPress={handlePressDr}
-            style={({ pressed }) => [
-              styles.textSectionSpecial,
-              {
-                backgroundColor: pressed ? Colors.dark_gray : Colors.dark_gray,
-              },
-            ]}
+            style={({ pressed }) => [styles.textSectionSpecial]}
           >
-            <View style={styles.textSectionContainer}>
-              <Text style={styles.shipTextHeader}>
-                Dreadnoughts - {dreadnoughtImages.length} Ships
-              </Text>
-            </View>
+            {({ pressed }) => (
+              <View
+                style={{
+                  position: "relative",
+                  alignItems: "center",
+                  marginBottom: 10,
+                }}
+              >
+                <Image
+                  style={{
+                    width: 380,
+                    height: 100,
+                    tintColor: pressed ? Colors.gold : Colors.hud,
+                  }}
+                  source={require("../../assets/images/hudcont.png")}
+                />
+                <Text
+                  style={{
+                    position: "absolute",
+                    color: Colors.hudDarker,
+                    fontWeight: "bold",
+                    top: "44%",
+                    fontSize: 17,
+                    textAlign: "center",
+                    backgroundColor: Colors.hud,
+                    width: "60%",
+                  }}
+                >
+                  Dreadnought - {dreadnoughtImages.length} Ships
+                </Text>
+              </View>
+            )}
           </Pressable>
 
-          {showDreadnoughtClass && (
+          {shipClass === "dreadnought" && setShowDreadnoughtClass && (
             <View style={styles.imageRow}>
               {dreadnoughtImages.map((image, index) => (
                 <View key={image.id} style={styles.imageContainer}>
-                  {/*  <ToggleDone type="dreadnought5" index={index} /> */}
-                  <View style={styles.toggleContainer}>
+                  {/* <ToggleDone type="fighter1" index={index} /> */}
+                  <View style={[styles.toggleContainer, {marginBottom: "50%"}]}>
                     <EditButtonHP type="dreadnought" index={index} />
-                    <ToggleAttributeButton
-                      shipType="dreadnought"
-                      index={index}
-                    />
+                    <ToggleAttributeButton shipType="dreadnought" index={index} />
+                    <View style={[styles.hudContainer, {paddingTop: 20,}]}>
+                      <Image
+                        style={[styles.hudImage,{left: "15%",width: 450, height: 400, marginTop: 10, transform: [{rotate: '270deg'}]}]}
+                        source={require("../../assets/images/shipcont.png")}
+                      />
+                    </View>
                   </View>
                 </View>
               ))}
@@ -347,8 +483,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-evenly",
-    borderColor: Colors.slate,
-    borderWidth: 2,
   },
   imageContainer: {
     flexDirection: "row",
@@ -374,7 +508,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 35,
   },
   resetbutton: {
     alignSelf: "center",
@@ -395,14 +529,29 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   hudImage: {
-    width: 275,
-    height: 260,
+    width: 270,
+    height: 200,
     resizeMode: "contain",
   },
   hudContainer: {
     position: "absolute",
-    top: -50,
-    right: -40,
+    top: -20,
+    right: -30,
     zIndex: -1,
+  },
+  text: {
+    color: Colors.white,
+    fontSize: 20,
+    textAlign: "center",
+    fontFamily: "aboreto",
+  },
+  image: {
+    width: 40,
+    height: 40,
+    resizeMode: "contain",
+    tintColor: Colors.white,
+    marginBottom: 20,
+    marginLeft: 20,
+    marginTop: 20,
   },
 });

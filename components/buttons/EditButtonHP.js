@@ -103,7 +103,7 @@ export default function EditButtonHP({ type, index, value, short }) {
           style={({ pressed }) => [
             styles.button,
             {
-              /* backgroundColor: pressed ? Colors.goldenrod : changeButtonColor(), */
+              backgroundColor: pressed ? Colors.goldenrod : changeButtonColor(),
               borderColor: pressed ? Colors.gold : changeBorderButtonColor(),
             },
           ]}
@@ -212,9 +212,9 @@ const styles = StyleSheet.create({
     width: 75,
     paddingVertical: 2,
     paddingHorizontal: 2,
-    borderTopLeftRadius: 20,
     borderWidth: 2,
     alignItems: "center",
+    backgroundColor: Colors.hudDarker,
   },
   modalTextInput: {
     backgroundColor: Colors.slate,
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   textStyle: {
-    color: Colors.white,
+    color: Colors.hud,
     fontSize: 10,
     fontFamily: "monospace",
   },

@@ -42,16 +42,6 @@ export default function Rules() {
               }}
             >
                 {/* <Text style={styles.textHeaderTop}>Movement Rules</Text> */}
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("Logout");
-                }}
-              >
-                <Image
-                  style={styles.gearImage}
-                  source={require("../../assets/icons/icons8-gear-64.png")}
-                />
-              </TouchableOpacity>
             </View>
           </View>
           

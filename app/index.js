@@ -1,10 +1,4 @@
-import {
-  Image,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Image, TouchableOpacity, Text, StyleSheet, View } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useEffect, useState } from "react";
@@ -18,26 +12,32 @@ import LogOutDeleteScreen from "./screens/LogOutDeleteScreen";
 import Player from "./screens/Player";
 import index from "./screens/Your_Fleet";
 import { Colors } from "../constants/Colors";
-import { useFonts } from "expo-font";
 import {
   StarBoundProvider,
   useStarBoundContext,
 } from "../components/Global/StarBoundProvider";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { getAuth } from 'firebase/auth';
-import { router } from 'expo-router';
-import { Link, Tabs } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';
+import { getAuth } from "firebase/auth";
+import { useNavigation } from "@react-navigation/native";
+import { LoadFonts, FONTS } from "../constants/fonts";
 
 /* const Drawer = createDrawerNavigator(); */
 const Tab = createBottomTabNavigator();
 
 export default function Index() {
-
-const[ isLoggedIn, setIsLoggedIn ] = useState(false);
-
   //custom tabBarButton
   const TabBarAdvancedButton = ({ focused, ...props }) => {
+    const fontsLoaded = LoadFonts();
+    useEffect(() => {
+        if (fontsLoaded) {
+          SplashScreen.hideAsync();
+        }
+      }, [fontsLoaded]);
+      
+      if (!fontsLoaded) {
+        console.log("Loading fonts failed");
+        return null; // Return `null` for React components, not `undefined`.
+      } 
     return (
       <View style={styles.container} pointerEvents="box-none">
         <TouchableOpacity style={styles.button} onPress={props.onPress}>
@@ -52,7 +52,11 @@ const[ isLoggedIn, setIsLoggedIn ] = useState(false);
             }}
           />
           <Image
-            source={ focused? require("../assets/icons/icons8-imperial-star-destroyer-48.png") : ""}
+            source={
+              focused
+                ? require("../assets/icons/icons8-imperial-star-destroyer-48.png")
+                : ""
+            }
             style={{
               height: 25,
               width: 25,
@@ -72,7 +76,7 @@ const[ isLoggedIn, setIsLoggedIn ] = useState(false);
               paddingTop: 5,
             }}
           >
-            Fleet
+            Player
           </Text>
         </TouchableOpacity>
       </View>
@@ -110,184 +114,188 @@ const[ isLoggedIn, setIsLoggedIn ] = useState(false);
     setIsLoading(false);
     /* console.log("Logged In", user); */
     if (!user) {
-      navigation.navigate('Login'); 
+      navigation.navigate("Login");
       console.log("Logged out");
     }
   });
 
-  const [fontsLoaded] = useFonts({
-    aboreto: require("../assets/fonts/Aboreto-Regular.ttf"),
-  });
-
-  useEffect(() => {
+/*   useEffect(() => {
     async function prepare() {
       await SplashScreen.preventAutoHideAsync();
     }
     prepare();
-  }, []);
-
-  if (!fontsLoaded) {
-    return undefined;
-  } else {
-    SplashScreen.hideAsync();
-  }
-
-
+  }, []); */
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.dark_gray }}>
-    <StarBoundProvider>
-      <Tab.Navigator
-        sceneContainerStyle={{ backgroundColor: "transparent" }}
-        initialRouteName="Player"
-        screenOptions={{
-          headerTintColor: Colors.white, //header text color
-          headerTitleStyle: {
-            fontFamily: "aboreto", //header text font family
-            backgroundColor: Colors.dark_gray, //header text background color
-            fontSize: 25,
-            fontWeight: "bold",
-            textAlign: "left",
-          },
-          headerStyle: {
-            backgroundColor: Colors.dark_gray, //header background color
-          },
-          headerTitleAlign: "center",
-          headerShown: true,
+      <StarBoundProvider>
+        <Tab.Navigator
+          sceneContainerStyle={{ backgroundColor: "transparent" }}
+          initialRouteName="Player"
+          screenOptions={{
+            headerTintColor: Colors.white, //header text color
+            headerTitleStyle: {
+              fontFamily: "aboreto", //header text font family
+              backgroundColor: Colors.dark_gray, //header text background color
+              fontSize: 25,
+              fontWeight: "bold",
+              textAlign: "left",
+            },
+            headerStyle: {
+              backgroundColor: Colors.dark_gray, //header background color
+            },
+            headerTitleAlign: "center",
+            headerShown: false,
 
-          //text in the tab nav
-          tabBarActiveTintColor: Colors.gold,
-          tabBarInactiveTintColor: Colors.white,
-          //modify the text below the icon
-          tabBarLabelStyle: { fontFamily: "monospace", fontSize: 8 },
+            //text in the tab nav
+            tabBarActiveTintColor: Colors.hud,
+            tabBarInactiveTintColor: Colors.white,
+            //modify the text below the icon
+            tabBarLabelStyle: { fontFamily: "monospace", fontSize: 8 },
 
-          //the nav tab container
-          tabBarStyle: {
-            backgroundColor: Colors.dark_gray,
-            height: 65,
-            borderRadius: 20,
-            borderTopWidth: 2,
-            position: "relative",
-            margin: 5,
-            borderWidth: 2,
-            borderColor: Colors.white,
-          },
-          tabBarItemStyle: {
-            paddingVertical: 1,
-            borderRadius: 40,
-          },
-        }}
-      >
-        <Tab.Screen
-          name="Stats"
-          component={ShipStats}
-          options={{
-            tabBarIcon: ({ focused, size }) => (
-              <Image
-                source={require("../assets/icons/icons8-stats-64.png")}
-                style={{
-                  height: 25,
-                  width: 25,
-                  tintColor: focused ? Colors.gold : Colors.white,
-                }}
-                resizeMode="contain"
-              />
-            ),
+            //the nav tab container
+            tabBarStyle: {
+              backgroundColor: Colors.dark_gray,
+              height: 65,
+              borderRadius: 20,
+              borderTopWidth: 2,
+              position: "relative",
+              margin: 5,
+              borderWidth: 2,
+              borderColor: Colors.hud,
+            },
+            tabBarItemStyle: {
+              paddingVertical: 1,
+              borderRadius: 40,
+            },
           }}
-        />
-        <Tab.Screen
-          name="Info"
-          component={Rules}
-          options={{
-            tabBarIcon: ({ focused, size }) => (
-              <Image
-                source={ focused? require("../assets/icons/icons8-book-50.png") : require("../assets/icons/icons8-bookclosed-50.png")}
-                style={{
-                  height: 25,
-                  width: 25,
-                  tintColor: focused ? Colors.gold : Colors.white,
-                }}
-                resizeMode="contain"
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Player"
-          component={Player}
-          options={{
-            tabBarButton: (props) => (
+        >
+          <Tab.Screen
+            name="Stats"
+            component={ShipStats}
+            options={{
+              tabBarIcon: ({ focused, size }) => (
+                <Image
+                  source={require("../assets/icons/icons8-stats-64.png")}
+                  style={{
+                    height: 25,
+                    width: 25,
+                    tintColor: focused ? Colors.hud : Colors.white,
+                  }}
+                  resizeMode="contain"
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Info"
+            component={Rules}
+            options={{
+              tabBarIcon: ({ focused, size }) => (
+                <Image
+                  source={
+                    focused
+                      ? require("../assets/icons/icons8-book-50.png")
+                      : require("../assets/icons/icons8-bookclosed-50.png")
+                  }
+                  style={{
+                    height: 25,
+                    width: 25,
+                    tintColor: focused ? Colors.hud : Colors.white,
+                  }}
+                  resizeMode="contain"
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Player"
+            component={Player}
+            options={{
+              tabBarButton: (props) => (
                 <TabBarAdvancedButton
-                focused={props.accessibilityState.selected}
+                  focused={props.accessibilityState.selected}
                   bgColor={"blue"}
                   {...props}
                 />
               ),
-            tabBarIcon: ({ focused, size }) => (
-              <Image
-                style={{
-                  height: 25,
-                  width: 25,
-                  tintColor: focused ? Colors.gold : Colors.white,
-                }}
-                resizeMode="contain"
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Points"
-          component={Fleet_Points}
-          options={{
-            tabBarIcon: ({ focused, size }) => (
-              <Image
-                source={require("../assets/icons/icons8-score-50.png")}
-                style={{
-                  height: 25,
-                  width: 25,
-                  tintColor: focused ? Colors.gold : Colors.white,
-                }}
-                resizeMode="contain"
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Rules"
-          component={Rules}
-          options={{
-            tabBarIcon: ({ focused, size }) => (
-              <Image
-              source={ focused? require("../assets/icons/icons8-rules-50.png") : require("../assets/icons/icons8-graduation-scroll-50.png")}
-                style={{
-                  height: 25,
-                  width: 25,
-                  tintColor: focused ? Colors.gold : Colors.white,
-                }}
-                resizeMode="contain"
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
+              tabBarIcon: ({ focused, size }) => (
+                <Image
+                  style={{
+                    height: 25,
+                    width: 25,
+                    tintColor: focused ? Colors.hud : Colors.white,
+                  }}
+                  resizeMode="contain"
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Points"
+            component={Fleet_Points}
+            options={{
+              tabBarIcon: ({ focused, size }) => (
+                <Image
+                  source={require("../assets/icons/icons8-score-50.png")}
+                  style={{
+                    height: 25,
+                    width: 25,
+                    tintColor: focused ? Colors.hud : Colors.white,
+                  }}
+                  resizeMode="contain"
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Rules"
+            component={Rules}
+            options={{
+              tabBarIcon: ({ focused, size }) => (
+                <Image
+                  source={
+                    focused
+                      ? require("../assets/icons/icons8-rules-50.png")
+                      : require("../assets/icons/icons8-graduation-scroll-50.png")
+                  }
+                  style={{
+                    height: 25,
+                    width: 25,
+                    tintColor: focused ? Colors.hud : Colors.white,
+                  }}
+                  resizeMode="contain"
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
             name="Login"
             component={Login}
-            options={{ tabBarItemStyle: { display: 'none' } }}
-            />
-            <Tab.Screen
+            options={{ tabBarItemStyle: { display: "none" } }}
+          />
+          <Tab.Screen
             name="Logout"
             component={LogOutDeleteScreen}
-            options={{ tabBarItemStyle: { display: 'none' }, tabBarStyle: { display: 'none' }, headerShown: false }}
-            screenOptions={{headerShown: false}}
-            />
-            <Tab.Screen
+            options={{
+              tabBarItemStyle: { display: "none" },
+              tabBarStyle: { display: "none" },
+              headerShown: false,
+            }}
+            screenOptions={{ headerShown: false }}
+          />
+          <Tab.Screen
             name="Fleet"
             component={index}
-            options={{ tabBarItemStyle: { display: 'none' }, tabBarStyle: { display: 'none' }, headerShown: false }}
-            screenOptions={{headerShown: false}}
-            />
-      </Tab.Navigator>
-    </StarBoundProvider>
+            options={{
+              tabBarItemStyle: { display: "none" },
+              tabBarStyle: { display: "none" },
+              headerShown: false,
+            }}
+            screenOptions={{ headerShown: false }}
+          />
+        </Tab.Navigator>
+      </StarBoundProvider>
     </SafeAreaView>
   );
 }

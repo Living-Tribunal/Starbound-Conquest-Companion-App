@@ -5,22 +5,24 @@
     "version": "1.1.0",
     "orientation": "portrait",
     "newArchEnabled": true,
-    "icon": "./assets/images/logo.png",
+    "icon": "./assets/images/sbcq.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/sbcq.png",
+      "image": "./assets/images/logo.png",
       "resizeMode": "cover",
       "backgroundColor": "#000000"
     },
     "ios": {
       "supportsTablet": true,
-      "usesAppleSignIn": true
+      "usesAppleSignIn": true,
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/sbcq.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff",
+        "googleServicesFile": "./google-services.json"
       },
       "package": "com.happybob59.StarBoundConquest"
     },
@@ -31,7 +33,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true
