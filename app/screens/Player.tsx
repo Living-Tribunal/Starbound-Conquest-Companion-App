@@ -12,14 +12,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LoadFonts, FONTS } from "@/constants/fonts";
 import * as SplashScreen from "expo-splash-screen";
 import { useFocusEffect } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
+import { FONTS } from "../../constants/fonts";
+
 
 export default function Player() {
   const navigation = useNavigation();
-  const fontsLoaded = LoadFonts();
 
   const {
     username,
@@ -36,6 +36,7 @@ export default function Player() {
     setDreadnoughtImages,
   } = useStarBoundContext();
 
+    
   useFocusEffect(
     useCallback(() => {
       const loadCounts = async () => {
@@ -123,17 +124,6 @@ export default function Player() {
     },
   };
 
-  useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    console.log("Loading fonts failed");
-    return null;
-  }
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.dark_gray }}>
       <ScrollView>
@@ -168,16 +158,17 @@ export default function Player() {
                     source={require("../../assets/images/hudcont.png")}
                   />
                   <Text
-                  numberOfLines={1}
+                    numberOfLines={1}
                     style={{
                       position: "absolute",
                       top: "53%",
                       left: "25%",
-                      transform: [{ translateX: -65 }, { translateY: -18 }],
+                      transform: [{ translateX: "-40%" }, { translateY: "-40%" }],
                       color: Colors.hud,
                       fontWeight: "bold",
                       fontSize: 20,
                       textAlign: "left",
+                      fontFamily: "monospace",
                     }}
                   >
                     {`${username || "Commander"}`}
@@ -197,7 +188,10 @@ export default function Player() {
                     source={require("../../assets/images/6966409.png")}
                     style={styles.image}
                   />
-                  <Text style={styles.typeText}>{type}</Text>
+                  <View style={{backgroundColor: Colors.hudDarker, width: "100%", height: "40%", justifyContent:"center", zIndex: 10,}}>
+                    <Text style={styles.typeText}>{type}</Text>  
+                  </View>
+                  
                   <Text style={styles.valueStat}>{value}</Text>
                 </TouchableOpacity>
               </View>
@@ -215,7 +209,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.dark_gray,
       },
   textSub: {
-    fontSize: 20,
+    fontSize: 30,
     color: Colors.white,
     fontFamily: FONTS.leagueRegular,
     textAlign: "center",
@@ -247,17 +241,22 @@ const styles = StyleSheet.create({
   },
   typeText: {
     fontSize: 16,
-    color: Colors.hud,
-    zIndex: 2,
-    padding: 5,
-    fontFamily: FONTS.leagueBold,
+    fontWeight: 'bold',
+    color: Colors.hudDarker,
+    zIndex: 1,
+    padding: 4,
+    fontFamily: 'leagueBold',
     letterSpacing: 2,
-    backgroundColor: Colors.hudDarker,
+    backgroundColor: Colors.hud,
+    elevation: 8,
     width: "100%",
+    borderWidth: 2,
+    borderColor: Colors.hudDarker,
+
     textAlign: "center",
   },
   valueStat: {
-    fontSize: 10,
+    fontSize: 12,
     color: Colors.white,
     zIndex: 2,
     padding: 5,

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "633304307229",
+    "project_id": "starbound-conquest-a1adc",
+    "storage_bucket": "starbound-conquest-a1adc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:633304307229:android:06727d1bf54e747ef2d8f4",
+        "android_client_info": {
+          "package_name": "com.happybob59.StarBoundConquest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "633304307229-acjrh8tpf2eddgdjcutludsg7vqf1pru.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4NWF7xXihGDLfIwJ_eAIFl48528XDvxI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "633304307229-acjrh8tpf2eddgdjcutludsg7vqf1pru.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

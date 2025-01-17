@@ -71,7 +71,7 @@ export default function EditButtonHP({ type, index, value, short }) {
     if (parseInt(hpText) === 0) {
       return Colors.deep_red;
     } else {
-      return Colors.blue_gray;
+      return "transparent";
     }
   };
 
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     borderWidth: 2,
     alignItems: "center",
-    backgroundColor: Colors.hudDarker,
+    borderRadius: 10
   },
   modalTextInput: {
     backgroundColor: Colors.slate,
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   textStyle: {
-    color: Colors.hud,
+    color: Colors.white,
     fontSize: 10,
     fontFamily: "monospace",
   },

@@ -142,7 +142,7 @@ export default function Your_Fleet({ type, route }) {
     <SafeAreaView style={[styles.mainContainer]}>
       <StatusBar />
       <View style={styles.container}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: -10 }}>
           <TouchableOpacity
             onPress={() => {
               onBackPress();
@@ -204,10 +204,10 @@ export default function Your_Fleet({ type, route }) {
                     <EditButtonHP type="fighter" index={index} />
                     <ToggleAttributeButton shipType="fighter" index={index} />
                     <View style={styles.hudContainer}>
-                      <Image
+                      {/* <Image
                         style={styles.hudImage}
                         source={require("../../assets/images/shipcont.png")}
-                      />
+                      /> */}
                     </View>
                   </View>
                 </View>
@@ -262,10 +262,10 @@ export default function Your_Fleet({ type, route }) {
                     <EditButtonHP type="destroyer" index={index} />
                     <ToggleAttributeButton shipType="destroyer" index={index} />
                     <View style={styles.hudContainer}>
-                      <Image
+                      {/* <Image
                         style={styles.hudImage}
                         source={require("../../assets/images/shipcont.png")}
-                      />
+                      /> */}
                     </View>
                   </View>
                 </View>
@@ -320,10 +320,10 @@ export default function Your_Fleet({ type, route }) {
                     <EditButtonHP type="cruiser" index={index} />
                     <ToggleAttributeButton shipType="cruiser" index={index} />
                     <View style={styles.hudContainer}>
-                      <Image
+                     {/*  <Image
                         style={[styles.hudImage,{width: 300, marginTop: 10}]}
                         source={require("../../assets/images/shipcont.png")}
-                      />
+                      /> */}
                     </View>
                   </View>
                 </View>
@@ -374,14 +374,14 @@ export default function Your_Fleet({ type, route }) {
               {carrierImages.map((image, index) => (
                 <View key={image.id} style={styles.imageContainer}>
                   {/* <ToggleDone type="fighter1" index={index} /> */}
-                  <View style={[styles.toggleContainer, {marginBottom: "50%"}]}>
+                  <View style={[styles.toggleContainer]}>
                     <EditButtonHP type="carrier" index={index} />
                     <ToggleAttributeButton shipType="carrier" index={index} />
                     <View style={[styles.hudContainer, {paddingTop: 20,}]}>
-                      <Image
+                     {/*  <Image
                         style={[styles.hudImage,{left: "15%",width: 450, height: 400, marginTop: 10, transform: [{rotate: '270deg'}]}]}
                         source={require("../../assets/images/shipcont.png")}
-                      />
+                      /> */}
                     </View>
                   </View>
                 </View>
@@ -432,14 +432,14 @@ export default function Your_Fleet({ type, route }) {
               {dreadnoughtImages.map((image, index) => (
                 <View key={image.id} style={styles.imageContainer}>
                   {/* <ToggleDone type="fighter1" index={index} /> */}
-                  <View style={[styles.toggleContainer, {marginBottom: "50%"}]}>
+                  <View style={[styles.toggleContainer]}>
                     <EditButtonHP type="dreadnought" index={index} />
                     <ToggleAttributeButton shipType="dreadnought" index={index} />
                     <View style={[styles.hudContainer, {paddingTop: 20,}]}>
-                      <Image
+                      {/* <Image
                         style={[styles.hudImage,{left: "15%",width: 450, height: 400, marginTop: 10, transform: [{rotate: '270deg'}]}]}
                         source={require("../../assets/images/shipcont.png")}
-                      />
+                      /> */}
                     </View>
                   </View>
                 </View>
@@ -483,11 +483,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-evenly",
+    borderWidth: 2,
+    borderColor: Colors.hudDarker,
+    marginLeft: 11,
+    marginRight: 8,
+    paddingBottom:10
   },
   imageContainer: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 5,
+    borderWidth: 2,
+    borderColor: Colors.hud,
+    marginTop: 5,
+    marginBottom: 5,
+    borderRadius: 10,
   },
   imageContainerHP: {
     flexDirection: "row",
@@ -508,7 +517,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 35,
+    padding:10,
+    marginBottom: 20,
   },
   resetbutton: {
     alignSelf: "center",
@@ -521,29 +531,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  resetText: {
-    color: Colors.white,
-    fontSize: 16,
-    fontFamily: "monospace",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
   hudImage: {
     width: 270,
     height: 200,
     resizeMode: "contain",
   },
-  hudContainer: {
+  /* hudContainer: {
     position: "absolute",
     top: -20,
     right: -30,
     zIndex: -1,
-  },
+    borderWidth:
+  }, */
   text: {
     color: Colors.white,
     fontSize: 20,
     textAlign: "center",
-    fontFamily: "aboreto",
+    fontFamily: "leagueRegular",
   },
   image: {
     width: 40,

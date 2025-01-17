@@ -25,19 +25,9 @@ import { LoadFonts, FONTS } from "../constants/fonts";
 const Tab = createBottomTabNavigator();
 
 export default function Index() {
+    const fontsLoaded = LoadFonts();
   //custom tabBarButton
   const TabBarAdvancedButton = ({ focused, ...props }) => {
-    const fontsLoaded = LoadFonts();
-    useEffect(() => {
-        if (fontsLoaded) {
-          SplashScreen.hideAsync();
-        }
-      }, [fontsLoaded]);
-      
-      if (!fontsLoaded) {
-        console.log("Loading fonts failed");
-        return null; // Return `null` for React components, not `undefined`.
-      } 
     return (
       <View style={styles.container} pointerEvents="box-none">
         <TouchableOpacity style={styles.button} onPress={props.onPress}>
@@ -125,6 +115,18 @@ export default function Index() {
     }
     prepare();
   }, []); */
+
+    useEffect(() => {
+      if (fontsLoaded) {
+          SplashScreen.hideAsync();
+        }
+    },[]);
+  
+    if (!fontsLoaded) {
+      console.log("No fonts loaded in index");
+      return null;
+    }
+  
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.dark_gray }}>

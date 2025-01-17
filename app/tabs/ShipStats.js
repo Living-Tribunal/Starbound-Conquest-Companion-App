@@ -18,22 +18,13 @@ import { ShipTypeIcons } from "../../constants/ImagePaths.js";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
 import { shipDiceMapping } from "../../components/buttons/Dice.js";
 import { SpecialOrders } from "../../constants/SpecialOrders.js";
-import { LoadFonts, FONTS } from "@/constants/fonts";
-import * as SplashScreen from "expo-splash-screen";
+import { FONTS } from "../../constants/fonts";
 
 export default function ShipStats() {
   const { showStat, handlePress, showAllStat } = ShowStat();
   const [areAllStatsShows, setAreAllStatsShows] = useState(false);
   const [pressed, setPressed] = useState(false);
   const [selectedShip, setSelectedShip] = useState("Fighter");
-  const fontsLoaded = LoadFonts();
-
-  if (!fontsLoaded) {
-      console.log("Loading fonts failed");
-      return undefined;
-    } else {
-      SplashScreen.hideAsync();
-    }
 
   const ShipData = ShipAttributes[selectedShip];
 
@@ -43,7 +34,7 @@ export default function ShipStats() {
   const handleShipSelectionPress = (shipName) => {
     setSelectedShip(shipName);
   };
-  /* console.log(selectedShip); */
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <StatusBar />
@@ -95,88 +86,175 @@ export default function ShipStats() {
               keyExtractor={(item) => item[0]}
             />
           </View>
-          {/* <Text style={styles.headerText}>-Ship Stats-</Text> */}
+          <Text style={styles.headerText}>-Ship Stats-</Text>
           <Text style={styles.shipTypeText}>{selectedShip}</Text>
-          <View style={{ width: "50%", alignSelf: "center" }}>
-            {areAllStatsShows ? (
-              <TouchableOpacity
-                style={[
-                  styles.showButton,
-                  {
-                    backgroundColor: Colors.gold,
-                    borderColor: Colors.goldenrod,
-                  },
-                ]}
-                onPress={() => {
-                  showAllStat(false);
-                  setAreAllStatsShows(false);
+          <View style={{ width: "50%", alignSelf: "center", marginBottom: 10 }}>
+            <TouchableOpacity
+              style={[
+                styles.showButton,
+                {
+                  marginVertical: 40,
+                },
+              ]}
+              onPress={() => {
+                const newShowAllStatsState = !areAllStatsShows; // Toggle the current state
+                showAllStat(newShowAllStatsState); // Update the showAllStat hook
+                setAreAllStatsShows(newShowAllStatsState); // Update local state
+                setPressed(newShowAllStatsState); // Update button text state
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: areAllStatsShows
+                    ? Colors.lightened_deep_red
+                    : Colors.green_toggle,
                 }}
               >
-                <Text style={[styles.showText, { color: Colors.goldenrod }]}>
-                  Hide All Stats
+                <Text
+                  style={[
+                    styles.showText,
+                    {
+                      color: areAllStatsShows
+                        ? Colors.lightened_deep_red
+                        : Colors.green_toggle,
+                      backgroundColor: areAllStatsShows
+                        ? Colors.deep_red
+                        : Colors.darker_green_toggle,
+                    },
+                  ]}
+                >
+                  {areAllStatsShows ? "Hide All Stats" : "Show All Stats"}
                 </Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={[
-                  styles.showButton,
-                  { backgroundColor: Colors.blue_gray },
-                ]}
-                onPress={() => {
-                  showAllStat(true);
-                  setAreAllStatsShows(true);
+              </View>
+
+              <Image
+                style={{
+                  resizeMode: "contain",
+                  position: "absolute",
+                  right: "25%",
+                  tintColor: areAllStatsShows
+                    ? Colors.lightened_deep_red
+                    : Colors.green_toggle,
+                  transform: [
+                    { translateX: 220 },
+                    { translateY: -100 },
+                    { scale: 0.5 },
+                    { scaleY: 0.8 }, // Adjust the value to scale the image
+                  ],
                 }}
-              >
-                <Text style={[styles.showText]}>Show All Stats</Text>
-              </TouchableOpacity>
-            )}
+                source={require("../../assets/images/showallstats.png")}
+              />
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
-            <View
-              style={[styles.statButton, { backgroundColor: Colors.blue_gray }]}
-            >
+            <View style={[styles.statButton]}>
               <TouchableOpacity
+                style={styles.touchButton}
                 onPress={() => {
                   handlePress("hitPoint");
                   setPressed((prev) => !prev);
                 }}
               >
-                <Text style={styles.statButtonText}>Hit Point</Text>
+                <View
+                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
+                >
+                  <Text style={styles.statButtonText}>Hit Point</Text>
+                </View>
+
+                <Image
+                  style={styles.statButtonImage}
+                  source={require("../../assets/images/stathud.png")}
+                />
               </TouchableOpacity>
             </View>
             {showStat.hitPoint && (
-              <View style={{}}>
+              <View style={styles.statTextUnder}>
+                <Image
+                  style={{
+                    transform: [
+                      { translateX: 0 },
+                      { translateY: 30 },
+                      { scale: 0.6 }, // Adjust the value to scale the image
+                    ],
+                  }}
+                  source={require("../../assets/images/top.png")}
+                />
                 <Text
                   style={{
                     textAlign: "center",
                     color: Colors.white,
                     fontFamily: "monospace",
+                    fontSize: 13,
+                    // Add margin to space it out from the images
                   }}
                 >
                   {ShipData.hp}
                 </Text>
+                <Image
+                  style={{
+                    transform: [
+                      { translateX: 0 },
+                      { translateY: -30 },
+                      { scale: 0.6 }, // Adjust the value to scale the image
+                    ],
+                  }}
+                  source={require("../../assets/images/bottom.png")}
+                />
               </View>
             )}
           </View>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity onPress={() => handlePress("toHit")}>
-                <Text style={[styles.statButtonText, {}]}>To Hit</Text>
+              <TouchableOpacity
+                style={styles.touchButton}
+                onPress={() => handlePress("toHit")}
+              >
+                <View
+                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
+                >
+                  <Text style={styles.statButtonText}>To Hit</Text>
+                </View>
+                <Image
+                  style={styles.statButtonImage}
+                  source={require("../../assets/images/stathud.png")}
+                />
               </TouchableOpacity>
             </View>
             {showStat.toHit && (
-              <View style={{}}>
+              <View style={styles.statTextUnder}>
+                <Image
+                  style={{
+                    transform: [
+                      { translateX: 0 },
+                      { translateY: 30 },
+                      { scale: 0.6 }, // Adjust the value to scale the image
+                    ],
+                  }}
+                  source={require("../../assets/images/top.png")}
+                />
                 <Text
                   style={{
                     textAlign: "center",
                     color: Colors.white,
                     fontFamily: "monospace",
+                    fontSize: 13,
+                    // Add margin to space it out from the images
                   }}
                 >
                   {ShipData.toHit}
                 </Text>
+                <Image
+                  style={{
+                    transform: [
+                      { translateX: 0 },
+                      { translateY: -30 },
+                      { scale: 0.6 }, // Adjust the value to scale the image
+                    ],
+                  }}
+                  source={require("../../assets/images/bottom.png")}
+                />
               </View>
             )}
           </View>
@@ -185,41 +263,107 @@ export default function ShipStats() {
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity onPress={() => handlePress("soak")}>
-                <Text style={styles.statButtonText}>Soak</Text>
+              <TouchableOpacity
+                style={styles.touchButton}
+                onPress={() => handlePress("soak")}
+              >
+                <View
+                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
+                >
+                  <Text style={styles.statButtonText}>Soak</Text>
+                </View>
+                <Image
+                  style={styles.statButtonImage}
+                  source={require("../../assets/images/stathud.png")}
+                />
               </TouchableOpacity>
             </View>
             {showStat.soak && (
-              <View style={{}}>
+              <View style={styles.statTextUnder}>
+                <Image
+                  style={{
+                    transform: [
+                      { translateX: 0 },
+                      { translateY: 30 },
+                      { scale: 0.6 }, // Adjust the value to scale the image
+                    ],
+                  }}
+                  source={require("../../assets/images/top.png")}
+                />
                 <Text
                   style={{
                     textAlign: "center",
                     color: Colors.white,
                     fontFamily: "monospace",
+                    fontSize: 13,
+                    // Add margin to space it out from the images
                   }}
                 >
                   {ShipData.soak}
                 </Text>
+                <Image
+                  style={{
+                    transform: [
+                      { translateX: 0 },
+                      { translateY: -30 },
+                      { scale: 0.6 }, // Adjust the value to scale the image
+                    ],
+                  }}
+                  source={require("../../assets/images/bottom.png")}
+                />
               </View>
             )}
           </View>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity onPress={() => handlePress("moveDistance")}>
-                <Text style={styles.statButtonText}>Move Distance</Text>
+              <TouchableOpacity
+                style={styles.touchButton}
+                onPress={() => handlePress("moveDistance")}
+              >
+                <View
+                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
+                >
+                  <Text style={styles.statButtonText}>Move Distance</Text>
+                </View>
+                <Image
+                  style={styles.statButtonImage}
+                  source={require("../../assets/images/stathud.png")}
+                />
               </TouchableOpacity>
             </View>
             {showStat.moveDistance && (
-              <View style={{}}>
+              <View style={styles.statTextUnder}>
+                <Image
+                  style={{
+                    transform: [
+                      { translateX: 0 },
+                      { translateY: 30 },
+                      { scale: 0.6 }, // Adjust the value to scale the image
+                    ],
+                  }}
+                  source={require("../../assets/images/top.png")}
+                />
                 <Text
                   style={{
                     textAlign: "center",
                     color: Colors.white,
                     fontFamily: "monospace",
+                    fontSize: 13,
+                    // Add margin to space it out from the images
                   }}
                 >
                   {ShipData.moveDistance}
                 </Text>
+                <Image
+                  style={{
+                    transform: [
+                      { translateX: 0 },
+                      { translateY: -30 },
+                      { scale: 0.6 }, // Adjust the value to scale the image
+                    ],
+                  }}
+                  source={require("../../assets/images/bottom.png")}
+                />
               </View>
             )}
           </View>
@@ -228,36 +372,94 @@ export default function ShipStats() {
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity onPress={() => handlePress("weaponRange")}>
-                <Text style={styles.statButtonText}>Weapon Range</Text>
+              <TouchableOpacity
+                style={styles.touchButton}
+                onPress={() => handlePress("weaponRange")}
+              >
+                <View
+                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
+                >
+                  <Text style={styles.statButtonText}>Weapon Range</Text>
+                </View>
+                <Image
+                  style={styles.statButtonImage}
+                  source={require("../../assets/images/stathud.png")}
+                />
               </TouchableOpacity>
             </View>
             {showStat.weaponRange && (
               <View style={{}}>
                 {Array.isArray(ShipData.weaponRange) ? (
                   ShipData.weaponRange.map((weaponRange, index) => (
+                    <View style={styles.statTextUnder}>
+                      <Image
+                        style={{
+                          transform: [
+                            { translateX: 0 },
+                            { translateY: 30 },
+                            { scale: 0.6 }, // Adjust the value to scale the image
+                          ],
+                        }}
+                        source={require("../../assets/images/top.png")}
+                      />
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          color: Colors.white,
+                          fontFamily: "monospace",
+                          fontSize: 13,
+                          marginHorizontal: 10, // Add margin to space it out from the images
+                        }}
+                      >
+                        {weaponRange}
+                      </Text>
+                      <Image
+                        style={{
+                          transform: [
+                            { translateX: 0 },
+                            { translateY: -30 },
+                            { scale: 0.6 }, // Adjust the value to scale the image
+                          ],
+                        }}
+                        source={require("../../assets/images/bottom.png")}
+                      />
+                    </View>
+                  ))
+                ) : (
+                  // Fallback if firingArc is a single value
+                  <View style={styles.statTextUnder}>
+                    <Image
+                      style={{
+                        transform: [
+                          { translateX: 0 },
+                          { translateY: 30 },
+                          { scale: 0.6 }, // Adjust the value to scale the image
+                        ],
+                      }}
+                      source={require("../../assets/images/top.png")}
+                    />
                     <Text
-                      key={index}
                       style={{
                         textAlign: "center",
                         color: Colors.white,
                         fontFamily: "monospace",
+                        fontSize: 13,
+                        // Add margin to space it out from the images
                       }}
                     >
-                      {weaponRange}
+                      {ShipData.weaponRange}
                     </Text>
-                  ))
-                ) : (
-                  // Fallback if firingArc is a single value
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      color: Colors.white,
-                      fontFamily: "monospace",
-                    }}
-                  >
-                    {ShipData.weaponRange}
-                  </Text>
+                    <Image
+                      style={{
+                        transform: [
+                          { translateX: 0 },
+                          { translateY: -30 },
+                          { scale: 0.6 }, // Adjust the value to scale the image
+                        ],
+                      }}
+                      source={require("../../assets/images/bottom.png")}
+                    />
+                  </View>
                 )}
               </View>
             )}
@@ -265,36 +467,94 @@ export default function ShipStats() {
 
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity onPress={() => handlePress("firingArc")}>
-                <Text style={styles.statButtonText}>Firing Arc</Text>
+              <TouchableOpacity
+                style={styles.touchButton}
+                onPress={() => handlePress("firingArc")}
+              >
+                <View
+                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
+                >
+                  <Text style={styles.statButtonText}>Firing Arc</Text>
+                </View>
+                <Image
+                  style={styles.statButtonImage}
+                  source={require("../../assets/images/stathud.png")}
+                />
               </TouchableOpacity>
             </View>
             {showStat.firingArc && (
               <View style={{}}>
                 {Array.isArray(ShipData.firingArc) ? (
                   ShipData.firingArc.map((firingArc, index) => (
+                    <View style={styles.statTextUnder}>
+                      <Image
+                        style={{
+                          transform: [
+                            { translateX: 0 },
+                            { translateY: 20 },
+                            { scale: 0.6 }, // Adjust the value to scale the image
+                          ],
+                        }}
+                        source={require("../../assets/images/top.png")}
+                      />
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          color: Colors.white,
+                          fontFamily: "monospace",
+                          fontSize: 13,
+                          // Add margin to space it out from the images
+                        }}
+                      >
+                        {firingArc}
+                      </Text>
+                      <Image
+                        style={{
+                          transform: [
+                            { translateX: 0 },
+                            { translateY: -20 },
+                            { scale: 0.6 }, // Adjust the value to scale the image
+                          ],
+                        }}
+                        source={require("../../assets/images/bottom.png")}
+                      />
+                    </View>
+                  ))
+                ) : (
+                  // Fallback if firingArc is a single value
+                  <View style={styles.statTextUnder}>
+                    <Image
+                      style={{
+                        transform: [
+                          { translateX: 0 },
+                          { translateY: 30 },
+                          { scale: 0.6 }, // Adjust the value to scale the image
+                        ],
+                      }}
+                      source={require("../../assets/images/top.png")}
+                    />
                     <Text
-                      key={index}
                       style={{
                         textAlign: "center",
                         color: Colors.white,
                         fontFamily: "monospace",
+                        fontSize: 13,
+                        // Add margin to space it out from the images
                       }}
                     >
-                      {firingArc}
+                      {ShipData.firingArc}
                     </Text>
-                  ))
-                ) : (
-                  // Fallback if firingArc is a single value
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      color: Colors.white,
-                      fontFamily: "monospace",
-                    }}
-                  >
-                    {ShipData.firingArc}
-                  </Text>
+                    <Image
+                      style={{
+                        transform: [
+                          { translateX: 0 },
+                          { translateY: -30 },
+                          { scale: 0.6 }, // Adjust the value to scale the image
+                        ],
+                      }}
+                      source={require("../../assets/images/bottom.png")}
+                    />
+                  </View>
                 )}
               </View>
             )}
@@ -304,24 +564,51 @@ export default function ShipStats() {
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity onPress={() => handlePress("weaponDamage")}>
-                <Text style={styles.statButtonText}>Weapon Damage</Text>
+              <TouchableOpacity
+                style={styles.touchButton}
+                onPress={() => handlePress("weaponDamage")}
+              >
+                <View
+                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
+                >
+                  <Text style={styles.statButtonText}>Weapon Damage</Text>
+                </View>
+                <Image
+                  style={styles.statButtonImage}
+                  source={require("../../assets/images/stathud.png")}
+                />
               </TouchableOpacity>
             </View>
             {showStat.weaponDamage && (
               <View style={{}}>
                 {selectedShipDice.map((DiceComponent, index) => (
-                  <View
-                    key={index}
-                    style={{
-                      alignSelf: "center",
-                      margin: 2,
-                      flexDirection: "row",
-                      gap: 20,
-                    }}
-                  >
-                    {DiceComponent}
-                    <View></View>
+                  <View style={styles.statTextUnder}>
+                    <Image
+                      style={{
+                        transform: [
+                          { translateX: 0 },
+                          { translateY: 30 },
+                          { scale: 0.6 }, // Adjust the value to scale the image
+                        ],
+                      }}
+                      source={require("../../assets/images/top.png")}
+                    />
+                    <View
+                      style={{
+                      }}
+                    >
+                      {DiceComponent}
+                    </View>
+                    <Image
+                      style={{
+                        transform: [
+                          { translateX: 0 },
+                          { translateY: -30 },
+                          { scale: 0.6 }, // Adjust the value to scale the image
+                        ],
+                      }}
+                      source={require("../../assets/images/bottom.png")}
+                    />
                   </View>
                 ))}
               </View>
@@ -329,36 +616,94 @@ export default function ShipStats() {
           </View>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity onPress={() => handlePress("weaponType")}>
-                <Text style={styles.statButtonText}>Weapon Type</Text>
+              <TouchableOpacity
+                style={styles.touchButton}
+                onPress={() => handlePress("weaponType")}
+              >
+                <View
+                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
+                >
+                  <Text style={styles.statButtonText}>Weapon Type</Text>
+                </View>
+                <Image
+                  style={styles.statButtonImage}
+                  source={require("../../assets/images/stathud.png")}
+                />
               </TouchableOpacity>
             </View>
             {showStat.weaponType && (
-              <View style={{}}>
+              <View>
                 {Array.isArray(ShipData.weaponType) ? (
                   ShipData.weaponType.map((weapon, index) => (
+                    <View style={styles.statTextUnder}>
+                      <Image
+                        style={{
+                          transform: [
+                            { translateX: 0 },
+                            { translateY: 30 },
+                            { scale: 0.6 }, // Adjust the value to scale the image
+                          ],
+                        }}
+                        source={require("../../assets/images/top.png")}
+                      />
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          color: Colors.white,
+                          fontFamily: "monospace",
+                          fontSize: 13,
+                          // Add margin to space it out from the images
+                        }}
+                      >
+                        {weapon}
+                      </Text>
+                      <Image
+                        style={{
+                          transform: [
+                            { translateX: 0 },
+                            { translateY: -30 },
+                            { scale: 0.6 }, // Adjust the value to scale the image
+                          ],
+                        }}
+                        source={require("../../assets/images/bottom.png")}
+                      />
+                    </View>
+                  ))
+                ) : (
+                  // Fallback if weaponType is a single value
+                  <View style={styles.statTextUnder}>
+                    <Image
+                      style={{
+                        transform: [
+                          { translateX: 0 },
+                          { translateY: 0 },
+                          { scale: 0.6 }, // Adjust the value to scale the image
+                        ],
+                      }}
+                      source={require("../../assets/images/top.png")}
+                    />
                     <Text
-                      key={index}
                       style={{
                         textAlign: "center",
                         color: Colors.white,
                         fontFamily: "monospace",
+                        fontSize: 13,
+                        // Add margin to space it out from the images
                       }}
                     >
-                      {weapon}
+                      {ShipData.weaponType}
                     </Text>
-                  ))
-                ) : (
-                  // Fallback if weaponType is a single value
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      color: Colors.white,
-                      fontFamily: "monospace",
-                    }}
-                  >
-                    {ShipData.weaponType}
-                  </Text>
+                    <Image
+                      style={{
+                        transform: [
+                          { translateX: 0 },
+                          { translateY: 0 },
+                          { scale: 0.6 }, // Adjust the value to scale the image
+                        ],
+                      }}
+                      source={require("../../assets/images/bottom.png")}
+                    />
+                  </View>
                 )}
               </View>
             )}
@@ -368,41 +713,109 @@ export default function ShipStats() {
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity onPress={() => handlePress("capacity")}>
-                <Text style={styles.statButtonText}>Capacity</Text>
+              <TouchableOpacity
+                style={styles.touchButton}
+                onPress={() => handlePress("capacity")}
+              >
+                <View
+                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
+                >
+                  <Text style={styles.statButtonText}>Capacity</Text>
+                </View>
+                <Image
+                  style={styles.statButtonImage}
+                  source={require("../../assets/images/stathud.png")}
+                />
               </TouchableOpacity>
             </View>
             {showStat.capacity && (
-              <View style={{}}>
-                <Text
-                  style={{
-                    textAlign: "center",
-                    color: Colors.white,
-                    fontFamily: "monospace",
-                  }}
-                >
-                  {ShipData.capacity}
-                </Text>
-              </View>
+                <View style={styles.statTextUnder}>
+                  <Image
+                    style={{
+                      transform: [
+                        { translateX: 0 },
+                        { translateY: 30 },
+                        { scale: 0.6 }, // Adjust the value to scale the image
+                      ],
+                    }}
+                    source={require("../../assets/images/top.png")}
+                  />
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: Colors.white,
+                      fontFamily: "monospace",
+                      fontSize: 13,
+                      // Add margin to space it out from the images
+                    }}
+                  >
+                    {ShipData.capacity}
+                  </Text>
+                  <Image
+                    style={{
+                      transform: [
+                        { translateX: 0 },
+                        { translateY: -30 },
+                        { scale: 0.6 }, // Adjust the value to scale the image
+                      ],
+                    }}
+                    source={require("../../assets/images/bottom.png")}
+                  />
+                </View>
             )}
           </View>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity onPress={() => handlePress("pointValue")}>
-                <Text style={styles.statButtonText}>Point Value</Text>
+              <TouchableOpacity
+                style={styles.touchButton}
+                onPress={() => handlePress("pointValue")}
+              >
+                <View
+                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
+                >
+                  <Text style={styles.statButtonText}>Point Value</Text>
+                </View>
+                <Image
+                  style={styles.statButtonImage}
+                  source={require("../../assets/images/stathud.png")}
+                />
               </TouchableOpacity>
             </View>
             {showStat.pointValue && (
-              <View style={{}}>
-                <Text
-                  style={{
-                    textAlign: "center",
-                    color: Colors.white,
-                    fontFamily: "monospace",
-                  }}
-                >
-                  {ShipData.pointValue}
-                </Text>
+              <View style={styles.statTextUnder}>
+                <View style={styles.statTextUnder}>
+                  <Image
+                    style={{
+                      transform: [
+                        { translateX: 0 },
+                        { translateY: 30 },
+                        { scale: 0.6 }, // Adjust the value to scale the image
+                      ],
+                    }}
+                    source={require("../../assets/images/top.png")}
+                  />
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: Colors.white,
+                      fontFamily: "monospace",
+                      fontSize: 13,
+                      // Add margin to space it out from the images
+                    }}
+                  >
+                    {ShipData.pointValue}
+                  </Text>
+                  <Image
+                    style={{
+                      transform: [
+                        { translateX: 0 },
+                        { translateY: -30 },
+                        { scale: 0.6 }, // Adjust the value to scale the image
+                      ],
+                    }}
+                    source={require("../../assets/images/bottom.png")}
+                  />
+                </View>
               </View>
             )}
           </View>
@@ -410,9 +823,43 @@ export default function ShipStats() {
 
         <View style={styles.buttonContainer}>
           <View style={{ width: "95%" }}>
-            <View style={[styles.statButton]}>
-              <TouchableOpacity onPress={() => handlePress("specialOrders")}>
-                <Text style={styles.statButtonText}>Special Orders</Text>
+            <View style={[styles.statButton, { marginBottom: 40, marginTop: 10 }]}>
+              <TouchableOpacity
+                style={{ backgroundColor: "transparent", width: "100%" }}
+                onPress={() => {
+                  handlePress("specialOrders");
+                  setPressed((prev) => !prev);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.statButtonText,
+                    {
+                      color: Colors.hudDarker,
+                      backgroundColor: Colors.hud,
+                      width: "50%",
+                      left: "13%",
+                      borderWidth: 4,
+                      borderColor: Colors.hudDarker,
+                    },
+                  ]}
+                >
+                  Special Orders
+                </Text>
+                <Image
+                  style={{
+                    resizeMode: "contain",
+                    position: "absolute",
+                    top: -115,
+                    right: "25%",
+                    transform: [
+                      { translateX: 245 },
+                      { translateY: 2 },
+                      { scale: 0.5 }, // Adjust the value to scale the image
+                    ],
+                  }}
+                  source={require("../../assets/images/hudstat1.png")}
+                />
               </TouchableOpacity>
             </View>
             {showStat.specialOrders && (
@@ -458,13 +905,11 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: Colors.dark_gray,
-    paddingBottom: 20,
   },
   headerText: {
     color: Colors.white,
     fontSize: 30,
     marginBottom: 10,
-    marginTop: 30,
     textAlign: "center",
     fontFamily: FONTS.leagueBold,
     borderBottomColor: Colors.white,
@@ -473,80 +918,12 @@ const styles = StyleSheet.create({
   shipTypeText: {
     color: Colors.white,
     fontSize: 30,
-    marginBottom: 10,
-    marginTop: 20,
+    marginBottom: 5,
+    marginTop: 5,
     textAlign: "center",
     fontFamily: FONTS.leagueRegular,
     borderBottomColor: Colors.white,
     borderTopColor: "transparent",
-  },
-  tableRow: {
-    flexDirection: "row",
-    borderBottomWidth: 2,
-    borderColor: Colors.misty_blue,
-  },
-  tableHeaderContainer: {
-    flex: 1,
-    backgroundColor: Colors.blue_gray,
-    justifyContent: "center",
-  },
-  tableHeader: {
-    color: Colors.dark_gray,
-    fontSize: 13,
-    fontFamily: "monospace",
-    fontWeight: "bold",
-    textAlign: "left",
-    padding: 5,
-  },
-  tableHeaderValues: {
-    color: Colors.slate,
-    fontSize: 13,
-    fontFamily: "monospace",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  tableCellContainer: {
-    flex: 1,
-    backgroundColor: Colors.dark_gray,
-    justifyContent: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-  },
-  tableCell: {
-    color: Colors.white,
-    fontSize: 10,
-    textAlign: "left",
-    fontFamily: "monospace",
-  },
-  shipTableStats: {
-    flexDirection: "row",
-    backgroundColor: Colors.blue_gray,
-    marginTop: 5,
-    borderTopColor: "transparent",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    marginHorizontal: 10,
-  },
-  shipTableStatsNumbers: {
-    marginHorizontal: 10,
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    backgroundColor: Colors.dark_gray,
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    marginTop: 2,
-    borderWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: Colors.slate,
-  },
-  shipTableStatsType: {
-    marginHorizontal: 10,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: Colors.dark_gray,
-    marginTop: 2,
   },
   image: {
     flex: 1,
@@ -556,39 +933,63 @@ const styles = StyleSheet.create({
   },
   statButton: {
     borderRadius: 5,
-    backgroundColor: Colors.blue_gray,
-    borderWidth: 2,
-    borderColor: Colors.slate,
-    marginBottom: 10,
-    marginTop: 10,
+    marginBottom: "1%",
+    marginTop: "%",
   },
   statButtonText: {
-    justifyContent: "center",
-    color: Colors.white,
+    color: Colors.hudDarker,
+    fontFamily: "monospace",
+    fontWeight: "bold",
     fontSize: 13,
     textAlign: "center",
-    fontFamily: "monospace",
+    alignSelf: "center",
+    backgroundColor: Colors.hud,
+    margin: "3%",
+    width: "100%",
+    elevation: 8,
   },
   buttonContainer: {
+    marginBottom: 45,
+    marginTop: 20,
     flexDirection: "row",
     justifyContent: "space-around",
   },
-  showButton: {
-    borderTopLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    backgroundColor: Colors.blue_gray,
-    borderWidth: 2,
-    borderColor: Colors.slate,
-    marginBottom: 10,
-    padding: 4,
-  },
+  showButton: {},
   showText: {
-    color: Colors.white,
     fontSize: 15,
     textAlign: "center",
+    fontWeight: "bold",
+    fontFamily: "monospace",
+    marginVertical: "5",
+    width: "100%",
+    elevation: 8,
   },
-  button: {
-    borderRadius: 5,
-    borderWidth: 2,
+  touchButton: {
+    position: "relative",
+  },
+  statButtonImage: {
+    resizeMode: "contain",
+    position: "absolute",
+    top: -34,
+    right: -7,
+    zIndex: -1,
+    tintColor: Colors.hudDarker,
+  },
+  statButtonSpecText: {
+    justifyContent: "center",
+    color: Colors.white,
+    fontSize: 20,
+    textAlign: "center",
+    fontFamily: "monospace",
+    bottom: 8,
+  },
+  statTextUnder: {
+    alignSelf: "center",
+    flexDirection: "column", // Aligns children horizontally (side by side)
+    justifyContent: "center", // Centers content horizontally
+    alignItems: "center", // Centers content vertically
+    width: "100%",
+    backgroundColors: 'red',
+    marginBottom: -60
   },
 });

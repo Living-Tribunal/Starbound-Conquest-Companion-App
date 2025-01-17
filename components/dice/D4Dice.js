@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   diceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 20
+    gap: 10
   },
   diceText: {
     fontSize: 14,
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   rollDiceBtnText: {
     color: Colors.white,
     fontSize: 10,
-    padding: 10,
+    padding: 5,
   },
   button: {
     alignItems: "center",

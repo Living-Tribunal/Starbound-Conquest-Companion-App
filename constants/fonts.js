@@ -13,6 +13,14 @@ const [fontsLoaded] = useFonts({
 [FONTS.leagueRegular]: require("../assets/fonts/LeagueSpartan-Regular.ttf")
   });
 
+
+  if (!fontsLoaded) {
+    console.log("Fonts are still loading...");
+  } else {
+    console.log("Fonts loaded successfully!");
+  }
+
+  
   return fontsLoaded;
 
 };

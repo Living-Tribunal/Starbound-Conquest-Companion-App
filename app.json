@@ -22,7 +22,6 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/sbcq.png",
         "backgroundColor": "#ffffff",
-        "googleServicesFile": "./google-services.json"
       },
       "package": "com.happybob59.StarBoundConquest"
     },

@@ -14,5 +14,6 @@ export const Colors = {
     darker_green_toggle: '#197510',
     hud: '#43d5fc',
     hudDarker: '#284B54',
+    statDarker: '#26C2ED',
   }
  
