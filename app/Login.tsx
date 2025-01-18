@@ -122,6 +122,7 @@ const Login = () => {
           <View style={{ marginBottom: 20 }}>
                 <TextInput
                 autoCapitalize="none"
+                autoCorrect={false}
                 placeholder="Email"
                 style={styles.inputField}
                 value={email}
@@ -130,6 +131,7 @@ const Login = () => {
           <View style={styles.showContainer}>  
             <TextInput
               autoCapitalize="none"
+              autoCorrect={false}
               placeholder="Password"
               style={styles.inputField}
               value={password}

@@ -14,6 +14,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
     const [carrierImages, setCarrierImages] = useState([]);
     const [dreadnoughtImages, setDreadnoughtImages] = useState([]);
 
+    const [text, setText] = useState('0');
+
     const [showFighterClass, setShowFighterClass] = useState(true);
     const [showDestroyerClass, setShowDestroyerClass] = useState(true);
     const [showCarrierClass, setShowCarrierClass] = useState(true);
@@ -49,7 +51,9 @@ return (
 
 
         isModalVisible, setIsModalVisible,
-        username, setUsername
+        username, setUsername,
+
+        text, setText,
         
         }}>
         {[children, shipType]}

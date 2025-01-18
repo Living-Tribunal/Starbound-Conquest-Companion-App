@@ -85,7 +85,7 @@ export default function LogOutDeleteScreen() {
         </View>
         <View style={{ flex: 5}}>
             <Text style={{color: "white"}}>Username</Text>
-            <TextInput maxLength={20} style={{backgroundColor: "white"}} onChangeText={username => setUsername(username)} placeholder="Enter a UserName"></TextInput>
+            <TextInput maxLength={12} style={{backgroundColor: "white"}} onChangeText={username => setUsername(username)} placeholder="Enter a UserName"></TextInput>
             <TouchableOpacity onPress={saveName} style={{backgroundColor: "orange"}}><Text>Poosh Me</Text></TouchableOpacity>
             <TouchableOpacity onPress={() => { deleteName()}} style={{backgroundColor: "orange"}}><Text>Delete Me</Text></TouchableOpacity>
             {username ? (

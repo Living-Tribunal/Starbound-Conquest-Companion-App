@@ -5,13 +5,14 @@ import {
   Text,
   View,
   StatusBar,
-  Pressable,
+  TouchableOpacity,
   ScrollView,
   Image,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import EditButton from "../../components/buttons/EditButton";
+import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 
 const SHIP_VALUES = {
   fighter: 1,
@@ -28,6 +29,8 @@ export default function Fleet_Points() {
   const [cruiserCount, setCruiserCount] = useState(0);
   const [destroyerCount, setDestroyerCount] = useState(0);
   const [fleetValue, setFleetValue] = useState(0);
+
+  const { text, username, setUsername } = useStarBoundContext();
 
   const handleAddShip = async (shipType, increment = 1) => {
     const newCount =
@@ -140,6 +143,22 @@ export default function Fleet_Points() {
     loadCounts();
   }, []);
 
+  useEffect(() => {
+    const getUserName = async () => {
+      try {
+        const username = await AsyncStorage.getItem("UserName");
+        if (username) {
+          setUsername(username); // Only set if a username exists
+        } else {
+          setUsername("Commander");
+        }
+      } catch (error) {
+        console.error("Failed to retrieve username:", error);
+      }
+    };
+    getUserName();
+  }, []);
+
   // Save combined data to AsyncStorage
   const saveFleetData = async (newCount, newFleetValue, shipType) => {
     try {
@@ -174,6 +193,11 @@ export default function Fleet_Points() {
             <EditButton />
             <Text style={styles.values}>Your Fleet Value:</Text>
             <Text style={styles.values}>{fleetValue}</Text>
+            {fleetValue > text && (
+                <Text style={styles.warningValues}>
+                    {username},Your fleet is over your limit! Consider removing some ships.
+                </Text>
+)}
           </View>
           <View style={styles.shipTableStats}>
             <Image
@@ -204,229 +228,209 @@ export default function Fleet_Points() {
             <Text style={styles.tableHeader}>{carrierCount}</Text>
             <Text style={styles.tableHeader}>{dreadnoughtCount}</Text>
           </View>
-          <View style={styles.pressableContainer}>
-            <Pressable
+          <View style={[styles.TouchableOpacityContainer]}>
+            <TouchableOpacity
               style={({ pressed }) => [
                 styles.button,
-                {
-                  backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
-                  borderColor: pressed ? Colors.gold : Colors.slate,
-                },
+                
               ]}
               onPress={() => handleAddShip("fighter")}
               onLongPress={() => handleRemoveShip("fighter")}
             >
-              <Text style={styles.pressableText}>Fighter +1</Text>
-            </Pressable>
-            <Pressable
+              <Text style={styles.TouchableOpacityText}>Fighter +1</Text>
+              <Image style={{width: 160, height: 80, position: 'relative'}} source={require("../../assets/images/cathud.png")} />
+            </TouchableOpacity>
+            <TouchableOpacity
               style={({ pressed }) => [
                 styles.button,
-                {
-                  backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
-                  borderColor: pressed ? Colors.gold : Colors.slate,
-                },
+                
               ]}
               onPress={() => handleAddShip("destroyer")}
               onLongPress={() => handleRemoveShip("destroyer")}
             >
-              <Text style={styles.pressableText}>Destroyer +1</Text>
-            </Pressable>
+              <Text style={styles.TouchableOpacityText}>Destroyer +1</Text>
+              <Image style={{width: 160, height: 80, position: 'relative'}} source={require("../../assets/images/cathud.png")} />
+            </TouchableOpacity>
           </View>
 
           {/*larger incerment buttons*/}
-          <View style={styles.pressableLargerContainer}>
-            <View style={styles.pressableLargerContainerLeft}>
-              <Pressable
-                style={({ pressed }) => [
-                    styles.buttonIncrements,
-                    {
-                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
-                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
-                    },
-                  ]}
+          <View style={styles.TouchableOpacityLargerContainer}>
+            <View style={styles.TouchableOpacityLargerContainerLeft}>
+              <TouchableOpacity
+              style={({ pressed }) => [
+                styles.buttonIncrements,
+                
+              ]}
                 onPress={() => handleAddShip("fighter", 5)}
                 onLongPress={() => handleRemoveShip("fighter", 5)}
               >
-                <Text style={styles.pressableTextIncrement}>+5</Text>
-              </Pressable>
-              <Pressable
+                <Text style={styles.TouchableOpacityTextIncrement}>+05</Text>
+                <Image style={{width: 60, height: 60, position: 'relative'}} source={require("../../assets/images/inchud.png")} />
+
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={({ pressed }) => [
                     styles.buttonIncrements,
-                    {
-                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
-                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
-                    },
+                    
                   ]}
                 onPress={() => handleAddShip("fighter", 10)}
                 onLongPress={() => handleRemoveShip("fighter", 10)}
               >
-                <Text style={styles.pressableTextIncrement}>+10</Text>
-              </Pressable>
+                <Text style={styles.TouchableOpacityTextIncrement}>+10</Text>
+                <Image style={{width: 60, height: 60, position: 'relative'}} source={require("../../assets/images/inchud.png")} />
+              </TouchableOpacity>
             </View>
-            <View style={styles.pressableLargerContainerRight}>
-              <Pressable
+            <View style={styles.TouchableOpacityLargerContainerRight}>
+              <TouchableOpacity
                 style={({ pressed }) => [
                     styles.buttonIncrements,
-                    {
-                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
-                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
-                    },
+                    
                   ]}
                 onPress={() => handleAddShip("destroyer", 5)}
                 onLongPress={() => handleRemoveShip("destroyer", 5)}
               >
-                <Text style={styles.pressableTextIncrement}>+5</Text>
-              </Pressable>
-              <Pressable
+                <Text style={styles.TouchableOpacityTextIncrement}>+05</Text>
+                <Image style={{width: 60, height: 60, position: 'relative'}} source={require("../../assets/images/inchud.png")} />
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={({ pressed }) => [
                     styles.buttonIncrements,
-                    {
-                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
-                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
-                    },
+                    
                   ]}
                 onPress={() => handleAddShip("destroyer", 10)}
                 onLongPress={() => handleRemoveShip("destroyer", 10)}
               >
-                <Text style={styles.pressableTextIncrement}>+10</Text>
-              </Pressable>
+                <Text style={styles.TouchableOpacityTextIncrement}>+10</Text>
+                <Image style={{width: 60, height: 60, position: 'relative'}} source={require("../../assets/images/inchud.png")} />
+              </TouchableOpacity>
             </View>
           </View>
 
-          <View style={styles.pressableContainer}>
-            <Pressable
+          <View style={styles.TouchableOpacityContainer}>
+            <TouchableOpacity
               style={({ pressed }) => [
                 styles.button,
-                {
-                  backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
-                  borderColor: pressed ? Colors.gold : Colors.slate,
-                },
+                
               ]}
               onPress={() => handleAddShip("cruiser")}
               onLongPress={() => handleRemoveShip("cruiser")}
             >
-              <Text style={styles.pressableText}>Cruiser +1</Text>
-            </Pressable>
-            <Pressable
+              <Text style={styles.TouchableOpacityText}>Cruiser +1</Text>
+              <Image style={{width: 160, height: 80, position: 'relative'}} source={require("../../assets/images/cathud.png")} />
+
+            </TouchableOpacity>
+            <TouchableOpacity
               style={({ pressed }) => [
                 styles.button,
-                {
-                  backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
-                  borderColor: pressed ? Colors.gold : Colors.slate,
-                },
+                
               ]}
               onPress={() => handleAddShip("carrier")}
               onLongPress={() => handleRemoveShip("carrier")}
             >
-              <Text style={styles.pressableText}>Carrier +1</Text>
-            </Pressable>
+              <Text style={styles.TouchableOpacityText}>Carrier +1</Text>
+              <Image style={{width: 160, height: 80, position: 'relative'}} source={require("../../assets/images/cathud.png")} />
+
+            </TouchableOpacity>
           </View>
 
           {/*larger incerment buttons*/}
-          <View style={styles.pressableLargerContainer}>
-            <View style={styles.pressableLargerContainerLeft}>
-              <Pressable
+          <View style={styles.TouchableOpacityLargerContainer}>
+            <View style={styles.TouchableOpacityLargerContainerLeft}>
+              <TouchableOpacity
                 style={({ pressed }) => [
                     styles.buttonIncrements,
-                    {
-                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
-                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
-                    },
+                    
                   ]}
                 onPress={() => handleAddShip("cruiser", 5)}
                 onLongPress={() => handleRemoveShip("cruiser", 5)}
               >
-                <Text style={styles.pressableTextIncrement}>+5</Text>
-              </Pressable>
-              <Pressable
+                <Text style={styles.TouchableOpacityTextIncrement}>+05</Text>
+                <Image style={{width: 60, height: 60, position: 'relative'}} source={require("../../assets/images/inchud.png")} />
+
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={({ pressed }) => [
                     styles.buttonIncrements,
-                    {
-                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
-                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
-                    },
+                    
                   ]}
                 onPress={() => handleAddShip("cruiser", 10)}
                 onLongPress={() => handleRemoveShip("cruiser", 10)}
               >
-                <Text style={styles.pressableTextIncrement}>+10</Text>
-              </Pressable>
+                <Text style={styles.TouchableOpacityTextIncrement}>+10</Text>
+                <Image style={{width: 60, height: 60, position: 'relative'}} source={require("../../assets/images/inchud.png")} />
+
+              </TouchableOpacity>
             </View>
-            <View style={styles.pressableLargerContainerRight}>
-              <Pressable
+            <View style={styles.TouchableOpacityLargerContainerRight}>
+              <TouchableOpacity
                 style={({ pressed }) => [
                     styles.buttonIncrements,
-                    {
-                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
-                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
-                    },
+                    
                   ]}
                 onPress={() => handleAddShip("carrier", 5)}
                 onLongPress={() => handleRemoveShip("carrier", 5)}
               >
-                <Text style={styles.pressableTextIncrement}>+5</Text>
-              </Pressable>
-              <Pressable
+                <Text style={styles.TouchableOpacityTextIncrement}>+05</Text>
+                <Image style={{width: 60, height: 60, position: 'relative'}} source={require("../../assets/images/inchud.png")} />
+
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={({ pressed }) => [
                     styles.buttonIncrements,
-                    {
-                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
-                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
-                    },
+                    
                   ]}
                 onPress={() => handleAddShip("carrier", 10)}
                 onLongPress={() => handleRemoveShip("carrier", 10)}
               >
-                <Text style={styles.pressableTextIncrement}>+10</Text>
-              </Pressable>
+                <Text style={styles.TouchableOpacityTextIncrement}>+10</Text>
+                <Image style={{width: 60, height: 60, position: 'relative'}} source={require("../../assets/images/inchud.png")} />
+
+              </TouchableOpacity>
             </View>
           </View>
 
-          <View style={styles.pressableContainer}>
-            <Pressable
+          <View style={styles.TouchableOpacityContainer}>
+            <TouchableOpacity
               style={({ pressed }) => [
                 styles.buttonIncrements,
-                    {
-                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
-                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
-                    },
-                  ]}
+                
+              ]}
               onPress={() => handleAddShip("dreadnought", 5)}
               onLongPress={() => handleRemoveShip("dreadnought", 5)}
             >
-              <Text style={styles.pressableTextIncrement}>+5</Text>
-            </Pressable>
-            <Pressable
+              <Text style={styles.TouchableOpacityTextIncrement}>+05</Text>
+              <Image style={{width: 60, height: 60, position: 'relative'}} source={require("../../assets/images/inchud.png")} />
+
+            </TouchableOpacity>
+            <TouchableOpacity
               style={({ pressed }) => [
                 styles.button,
-                {
-                  backgroundColor: pressed ? Colors.goldenrod : Colors.blue_gray,
-                  borderColor: pressed ? Colors.gold : Colors.slate,
-                },
+                
               ]}
               onPress={() => handleAddShip("dreadnought")}
               onLongPress={() => handleRemoveShip("dreadnought")}
             >
-              <Text style={styles.pressableText}>Dreadnought +1</Text>
-            </Pressable>
-            <Pressable
+              <Text style={styles.TouchableOpacityText}>Dreadnought +1</Text>
+              <Image style={{width: 160, height: 80, position: 'relative'}} source={require("../../assets/images/cathud.png")} />
+
+            </TouchableOpacity>
+            <TouchableOpacity
               style={({ pressed }) => [
                 styles.buttonIncrements,
-                    {
-                      backgroundColor: pressed ? Colors.slate_gray : Colors.dark_gray,
-                      borderColor: pressed ? Colors.slate : Colors.blue_gray,
-                    },
-                  ]}
+                
+              ]}
               onPress={() => handleAddShip("dreadnought", 10)}
               onLongPress={() => handleRemoveShip("dreadnought", 10)}
             >
-              <Text style={styles.pressableTextIncrement}>+10</Text>
-            </Pressable>
+              <Text style={styles.TouchableOpacityTextIncrement}>+10</Text>
+              <Image style={{width: 60, height: 60, position: 'relative'}} source={require("../../assets/images/inchud.png")} />
+
+            </TouchableOpacity>
           </View>
         </View>
 
-        <View style={styles.pressableContainer}>
-          <Pressable
+        <View style={styles.TouchableOpacityContainer}>
+          <TouchableOpacity
             onLongPress={() => clearStorage()}
             style={({ pressed }) => [
               styles.deleteButton,
@@ -449,7 +453,7 @@ export default function Fleet_Points() {
                 Delete Everything
               </Text>
             )}
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -490,10 +494,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 5,
     alignItems: "center",
-    borderTopLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    borderWidth: 2,
-    borderColor: Colors.slate,
+    position: "relative",
   },
   deleteButton: {
     width: 175,
@@ -505,23 +506,27 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
     borderWidth: 2,
   },
-  pressableContainer: {
-    alignItems: "center",
-    backgroundColor: Colors.dark_gray,
+  TouchableOpacityContainer: {
     marginTop: 10,
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "space-around",
     marginBottom: 10,
   },
-  pressableText: {
+  TouchableOpacityText: {
     color: Colors.white,
     fontSize: 10,
     fontFamily: "monospace",
+    alignSelf: "center",
+    position: "absolute",
+    marginTop: 30,
   },
-  pressableTextIncrement: {
+  TouchableOpacityTextIncrement: {
     color: Colors.white,
     fontSize: 8,
     fontFamily: "monospace",
+    position: "absolute",
+    marginLeft: 20,
+    marginTop: 20,
   },
   limitsValues: {
     flexDirection: "column",
@@ -569,21 +574,22 @@ const styles = StyleSheet.create({
     height: 35,
     alignSelf: "center",
   },
-  pressableLargerContainerLeft: {
+  TouchableOpacityLargerContainerLeft: {
+    flexDirection: "row",
+    marginBottom: 10,
+    marginTop: 10,
+    alignContent: "center",
+    justifyContent: "space-around",
+    flex: 1,
+  },
+  TouchableOpacityLargerContainerRight: {
     flexDirection: "row",
     marginBottom: 10,
     alignContent: "center",
     justifyContent: "space-around",
     flex: 1,
   },
-  pressableLargerContainerRight: {
-    flexDirection: "row",
-    marginBottom: 10,
-    alignContent: "center",
-    justifyContent: "space-around",
-    flex: 1,
-  },
-  pressableLargerContainer: {
+  TouchableOpacityLargerContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignContent: "center",
@@ -591,4 +597,11 @@ const styles = StyleSheet.create({
     marginTop: -10,
     marginBottom: 10,
   },
+  warningValues:{
+    color: Colors.lightened_deep_red,
+    fontSize: 16,
+    fontFamily: "monospace",
+    alignSelf: "center",
+    textAlign: "center",
+  }
 });

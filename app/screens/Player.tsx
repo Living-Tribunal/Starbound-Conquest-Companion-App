@@ -162,7 +162,7 @@ export default function Player() {
                     style={{
                       position: "absolute",
                       top: "53%",
-                      left: "25%",
+                      left: "40%",
                       transform: [{ translateX: "-40%" }, { translateY: "-40%" }],
                       color: Colors.hud,
                       fontWeight: "bold",

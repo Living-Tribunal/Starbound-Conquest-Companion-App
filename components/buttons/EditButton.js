@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
     fleetContainer: {
         flexDirection: "row",
         justifyContent: "space-evenly",
+        alignItems: "center",
         marginTop: 10,
         gap: 70,
         },

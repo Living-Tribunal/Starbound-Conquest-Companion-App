@@ -27,6 +27,7 @@ export default function ShipStats() {
   const [selectedShip, setSelectedShip] = useState("Fighter");
 
   const ShipData = ShipAttributes[selectedShip];
+  const ShipIcon = ShipTypeIcons[selectedShip];
 
   const selectedShipDice = shipDiceMapping[selectedShip];
   const selectedShipSpecialOrders = SpecialOrders[selectedShip];
@@ -41,53 +42,71 @@ export default function ShipStats() {
       <ScrollView nestedScrollEnabled style>
         <View style={styles.image}>
           <View style={{}}>
-            <Text style={styles.headerText}>Ship Classes</Text>
+            <Text style={styles.headerText}>-Ship Stats-</Text>
             <FlatList
+              keyExtractor={(item, index) => item.id || index.toString()}
               horizontal
               showsHorizontalScrollIndicator={false}
               data={Object.entries(ShipTypeIcons)}
               renderItem={({ item }) => {
                 const isSelected = selectedShip === item[0];
                 return (
-                  <Pressable
-                    onPress={() => handleShipSelectionPress(item[0])}
-                    style={{
-                      borderTopLeftRadius: 20,
-                      borderBottomRightRadius: 20,
-                      margin: 5,
-                      alignItems: "center",
-                      borderColor: isSelected ? Colors.gold : Colors.blue_gray,
-                      borderWidth: isSelected ? 2 : 1,
-                    }}
-                  >
-                    <Image
-                      source={item[1]}
+                  <View style={{ marginBottom: -40 }}>
+                    <Pressable
+                      onPress={() => handleShipSelectionPress(item[0])}
                       style={{
-                        width: isSelected ? 45 : 35,
-                        height: 45,
+                        width: 200,
                         margin: 5,
-                        tintColor: isSelected ? Colors.gold : Colors.misty_blue,
-                      }}
-                      resizeMode="contain"
-                    />
-                    <Text
-                      style={{
-                        fontSize: isSelected ? 14 : 12,
-                        fontFamily: "monospace",
-                        color: isSelected ? Colors.gold : Colors.misty_blue,
-                        margin: 5,
+                        alignItems: "center",
+                        marginBottom: 100,
                       }}
                     >
-                      {item[0]}
-                    </Text>
-                  </Pressable>
+                      <Image
+                        style={{
+                          tintColor: isSelected ? Colors.hud : Colors.hudDarker,
+                          width: 180,
+                          height: 80,
+                          position: "absolute",
+                        }}
+                        source={require("../../assets/images/cathud.png")}
+                      />
+                      <Text
+                        style={{
+                          marginTop: 23,
+                          fontSize: 13,
+                          fontFamily: "monospace",
+                          backgroundColor: isSelected
+                            ? Colors.hud
+                            : Colors.hudDarker,
+                          color: isSelected ? Colors.hudDarker : Colors.hud,
+                          margin: 5,
+                          width: 135,
+                          textAlign: "center",
+                          fontWeight: "bold",
+                          borderWidth: 3,
+                          borderColor: isSelected
+                            ? Colors.hudDarker
+                            : Colors.hud,
+                          elevation: 8,
+                          fontFamily: "leagueBold",
+                        }}
+                      >
+                        {item[0]}
+                      </Text>
+                    </Pressable>
+                  </View>
                 );
               }}
-              keyExtractor={(item) => item[0]}
             />
           </View>
-          <Text style={styles.headerText}>-Ship Stats-</Text>
-          <Text style={styles.shipTypeText}>{selectedShip}</Text>
+          <View style={{marginHorizontal: 10, height: 1,backgroundColor: Colors.hudDarker, top: 5, marginBottom: 25  }}><Text></Text></View>
+
+          {/* <View style={{marginHorizontal: 10, height: 1,backgroundColor: Colors.hudDarker, top: 5 }}><Text></Text></View>
+            <Text style={styles.shipTypeText}>
+              {selectedShip}
+            </Text>
+          <View style={{marginHorizontal: 10, height: 1,backgroundColor: Colors.hudDarker, top: 5 }}><Text></Text></View> */}
+
           <View style={{ width: "50%", alignSelf: "center", marginBottom: 10 }}>
             <TouchableOpacity
               style={[
@@ -106,20 +125,18 @@ export default function ShipStats() {
               <View
                 style={{
                   backgroundColor: areAllStatsShows
-                    ? Colors.lightened_deep_red
-                    : Colors.green_toggle,
+                    ? Colors.hud
+                    : Colors.hudDarker,
                 }}
               >
                 <Text
                   style={[
                     styles.showText,
                     {
-                      color: areAllStatsShows
-                        ? Colors.lightened_deep_red
-                        : Colors.green_toggle,
+                      color: areAllStatsShows ? Colors.hud : Colors.hudDarker,
                       backgroundColor: areAllStatsShows
-                        ? Colors.deep_red
-                        : Colors.darker_green_toggle,
+                        ? Colors.hudDarker
+                        : Colors.hud,
                     },
                   ]}
                 >
@@ -132,9 +149,7 @@ export default function ShipStats() {
                   resizeMode: "contain",
                   position: "absolute",
                   right: "25%",
-                  tintColor: areAllStatsShows
-                    ? Colors.lightened_deep_red
-                    : Colors.green_toggle,
+                  tintColor: areAllStatsShows ? Colors.hudDarker : Colors.hud,
                   transform: [
                     { translateX: 220 },
                     { translateY: -100 },
@@ -171,37 +186,19 @@ export default function ShipStats() {
             </View>
             {showStat.hitPoint && (
               <View style={styles.statTextUnder}>
-                <Image
-                  style={{
-                    transform: [
-                      { translateX: 0 },
-                      { translateY: 30 },
-                      { scale: 0.6 }, // Adjust the value to scale the image
-                    ],
-                  }}
-                  source={require("../../assets/images/top.png")}
-                />
+                
                 <Text
                   style={{
                     textAlign: "center",
                     color: Colors.white,
                     fontFamily: "monospace",
                     fontSize: 13,
-                    // Add margin to space it out from the images
-                  }}
+                    marginTop: 2,
+                    }}
                 >
                   {ShipData.hp}
                 </Text>
-                <Image
-                  style={{
-                    transform: [
-                      { translateX: 0 },
-                      { translateY: -30 },
-                      { scale: 0.6 }, // Adjust the value to scale the image
-                    ],
-                  }}
-                  source={require("../../assets/images/bottom.png")}
-                />
+                
               </View>
             )}
           </View>
@@ -224,37 +221,19 @@ export default function ShipStats() {
             </View>
             {showStat.toHit && (
               <View style={styles.statTextUnder}>
-                <Image
-                  style={{
-                    transform: [
-                      { translateX: 0 },
-                      { translateY: 30 },
-                      { scale: 0.6 }, // Adjust the value to scale the image
-                    ],
-                  }}
-                  source={require("../../assets/images/top.png")}
-                />
+                
                 <Text
                   style={{
                     textAlign: "center",
                     color: Colors.white,
                     fontFamily: "monospace",
                     fontSize: 13,
-                    // Add margin to space it out from the images
-                  }}
+                    marginTop: 2,
+                    }}
                 >
                   {ShipData.toHit}
                 </Text>
-                <Image
-                  style={{
-                    transform: [
-                      { translateX: 0 },
-                      { translateY: -30 },
-                      { scale: 0.6 }, // Adjust the value to scale the image
-                    ],
-                  }}
-                  source={require("../../assets/images/bottom.png")}
-                />
+                
               </View>
             )}
           </View>
@@ -280,37 +259,19 @@ export default function ShipStats() {
             </View>
             {showStat.soak && (
               <View style={styles.statTextUnder}>
-                <Image
-                  style={{
-                    transform: [
-                      { translateX: 0 },
-                      { translateY: 30 },
-                      { scale: 0.6 }, // Adjust the value to scale the image
-                    ],
-                  }}
-                  source={require("../../assets/images/top.png")}
-                />
+                
                 <Text
                   style={{
                     textAlign: "center",
                     color: Colors.white,
                     fontFamily: "monospace",
                     fontSize: 13,
-                    // Add margin to space it out from the images
-                  }}
+                    marginTop: 2,
+                    }}
                 >
                   {ShipData.soak}
                 </Text>
-                <Image
-                  style={{
-                    transform: [
-                      { translateX: 0 },
-                      { translateY: -30 },
-                      { scale: 0.6 }, // Adjust the value to scale the image
-                    ],
-                  }}
-                  source={require("../../assets/images/bottom.png")}
-                />
+                
               </View>
             )}
           </View>
@@ -333,37 +294,18 @@ export default function ShipStats() {
             </View>
             {showStat.moveDistance && (
               <View style={styles.statTextUnder}>
-                <Image
-                  style={{
-                    transform: [
-                      { translateX: 0 },
-                      { translateY: 30 },
-                      { scale: 0.6 }, // Adjust the value to scale the image
-                    ],
-                  }}
-                  source={require("../../assets/images/top.png")}
-                />
+                
                 <Text
                   style={{
                     textAlign: "center",
                     color: Colors.white,
                     fontFamily: "monospace",
                     fontSize: 13,
-                    // Add margin to space it out from the images
-                  }}
+                    marginTop: 2,
+                    }}
                 >
                   {ShipData.moveDistance}
                 </Text>
-                <Image
-                  style={{
-                    transform: [
-                      { translateX: 0 },
-                      { translateY: -30 },
-                      { scale: 0.6 }, // Adjust the value to scale the image
-                    ],
-                  }}
-                  source={require("../../assets/images/bottom.png")}
-                />
               </View>
             )}
           </View>
@@ -391,74 +333,34 @@ export default function ShipStats() {
               <View style={{}}>
                 {Array.isArray(ShipData.weaponRange) ? (
                   ShipData.weaponRange.map((weaponRange, index) => (
-                    <View style={styles.statTextUnder}>
-                      <Image
-                        style={{
-                          transform: [
-                            { translateX: 0 },
-                            { translateY: 30 },
-                            { scale: 0.6 }, // Adjust the value to scale the image
-                          ],
-                        }}
-                        source={require("../../assets/images/top.png")}
-                      />
+                    <View key={index} style={styles.statTextUnder}>
                       <Text
                         style={{
                           textAlign: "center",
                           color: Colors.white,
                           fontFamily: "monospace",
                           fontSize: 13,
-                          marginHorizontal: 10, // Add margin to space it out from the images
+                          marginTop: 2, // Add margin to space it out from the images
                         }}
                       >
                         {weaponRange}
                       </Text>
-                      <Image
-                        style={{
-                          transform: [
-                            { translateX: 0 },
-                            { translateY: -30 },
-                            { scale: 0.6 }, // Adjust the value to scale the image
-                          ],
-                        }}
-                        source={require("../../assets/images/bottom.png")}
-                      />
                     </View>
                   ))
                 ) : (
                   // Fallback if firingArc is a single value
                   <View style={styles.statTextUnder}>
-                    <Image
-                      style={{
-                        transform: [
-                          { translateX: 0 },
-                          { translateY: 30 },
-                          { scale: 0.6 }, // Adjust the value to scale the image
-                        ],
-                      }}
-                      source={require("../../assets/images/top.png")}
-                    />
                     <Text
                       style={{
                         textAlign: "center",
                         color: Colors.white,
                         fontFamily: "monospace",
                         fontSize: 13,
-                        // Add margin to space it out from the images
-                      }}
+                        marginTop: 2,
+                            }}
                     >
                       {ShipData.weaponRange}
                     </Text>
-                    <Image
-                      style={{
-                        transform: [
-                          { translateX: 0 },
-                          { translateY: -30 },
-                          { scale: 0.6 }, // Adjust the value to scale the image
-                        ],
-                      }}
-                      source={require("../../assets/images/bottom.png")}
-                    />
                   </View>
                 )}
               </View>
@@ -486,74 +388,34 @@ export default function ShipStats() {
               <View style={{}}>
                 {Array.isArray(ShipData.firingArc) ? (
                   ShipData.firingArc.map((firingArc, index) => (
-                    <View style={styles.statTextUnder}>
-                      <Image
-                        style={{
-                          transform: [
-                            { translateX: 0 },
-                            { translateY: 20 },
-                            { scale: 0.6 }, // Adjust the value to scale the image
-                          ],
-                        }}
-                        source={require("../../assets/images/top.png")}
-                      />
+                    <View key={index} style={styles.statTextUnder}>
                       <Text
                         style={{
                           textAlign: "center",
                           color: Colors.white,
                           fontFamily: "monospace",
                           fontSize: 13,
-                          // Add margin to space it out from the images
-                        }}
+                          marginTop: 2,
+                                }}
                       >
                         {firingArc}
                       </Text>
-                      <Image
-                        style={{
-                          transform: [
-                            { translateX: 0 },
-                            { translateY: -20 },
-                            { scale: 0.6 }, // Adjust the value to scale the image
-                          ],
-                        }}
-                        source={require("../../assets/images/bottom.png")}
-                      />
                     </View>
                   ))
                 ) : (
                   // Fallback if firingArc is a single value
                   <View style={styles.statTextUnder}>
-                    <Image
-                      style={{
-                        transform: [
-                          { translateX: 0 },
-                          { translateY: 30 },
-                          { scale: 0.6 }, // Adjust the value to scale the image
-                        ],
-                      }}
-                      source={require("../../assets/images/top.png")}
-                    />
                     <Text
                       style={{
                         textAlign: "center",
                         color: Colors.white,
                         fontFamily: "monospace",
                         fontSize: 13,
-                        // Add margin to space it out from the images
-                      }}
+                        marginTop: 2,
+                            }}
                     >
                       {ShipData.firingArc}
                     </Text>
-                    <Image
-                      style={{
-                        transform: [
-                          { translateX: 0 },
-                          { translateY: -30 },
-                          { scale: 0.6 }, // Adjust the value to scale the image
-                        ],
-                      }}
-                      source={require("../../assets/images/bottom.png")}
-                    />
                   </View>
                 )}
               </View>
@@ -563,7 +425,7 @@ export default function ShipStats() {
 
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
-            <View style={[styles.statButton]}>
+          <View style={[styles.statButton]}>
               <TouchableOpacity
                 style={styles.touchButton}
                 onPress={() => handlePress("weaponDamage")}
@@ -579,40 +441,12 @@ export default function ShipStats() {
                 />
               </TouchableOpacity>
             </View>
-            {showStat.weaponDamage && (
-              <View style={{}}>
-                {selectedShipDice.map((DiceComponent, index) => (
-                  <View style={styles.statTextUnder}>
-                    <Image
-                      style={{
-                        transform: [
-                          { translateX: 0 },
-                          { translateY: 30 },
-                          { scale: 0.6 }, // Adjust the value to scale the image
-                        ],
-                      }}
-                      source={require("../../assets/images/top.png")}
-                    />
-                    <View
-                      style={{
-                      }}
-                    >
-                      {DiceComponent}
-                    </View>
-                    <Image
-                      style={{
-                        transform: [
-                          { translateX: 0 },
-                          { translateY: -30 },
-                          { scale: 0.6 }, // Adjust the value to scale the image
-                        ],
-                      }}
-                      source={require("../../assets/images/bottom.png")}
-                    />
-                  </View>
-                ))}
+            {showStat.weaponDamage &&
+              selectedShipDice.map((DiceComponent, index) => (
+                <View key={index} style={[styles.statTextUnder, {alignItems:'center'}]}>
+                {DiceComponent}
               </View>
-            )}
+              ))}
           </View>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
@@ -635,74 +469,36 @@ export default function ShipStats() {
               <View>
                 {Array.isArray(ShipData.weaponType) ? (
                   ShipData.weaponType.map((weapon, index) => (
-                    <View style={styles.statTextUnder}>
-                      <Image
-                        style={{
-                          transform: [
-                            { translateX: 0 },
-                            { translateY: 30 },
-                            { scale: 0.6 }, // Adjust the value to scale the image
-                          ],
-                        }}
-                        source={require("../../assets/images/top.png")}
-                      />
+                    <View key={index} style={styles.statTextUnder}>
                       <Text
                         style={{
                           textAlign: "center",
                           color: Colors.white,
                           fontFamily: "monospace",
                           fontSize: 13,
-                          // Add margin to space it out from the images
-                        }}
+                          marginTop: 2,
+                                }}
                       >
                         {weapon}
                       </Text>
-                      <Image
-                        style={{
-                          transform: [
-                            { translateX: 0 },
-                            { translateY: -30 },
-                            { scale: 0.6 }, // Adjust the value to scale the image
-                          ],
-                        }}
-                        source={require("../../assets/images/bottom.png")}
-                      />
+                      
                     </View>
                   ))
                 ) : (
                   // Fallback if weaponType is a single value
                   <View style={styles.statTextUnder}>
-                    <Image
-                      style={{
-                        transform: [
-                          { translateX: 0 },
-                          { translateY: 0 },
-                          { scale: 0.6 }, // Adjust the value to scale the image
-                        ],
-                      }}
-                      source={require("../../assets/images/top.png")}
-                    />
+                    
                     <Text
                       style={{
                         textAlign: "center",
                         color: Colors.white,
                         fontFamily: "monospace",
                         fontSize: 13,
-                        // Add margin to space it out from the images
-                      }}
+                        marginTop: 20,
+                            }}
                     >
                       {ShipData.weaponType}
                     </Text>
-                    <Image
-                      style={{
-                        transform: [
-                          { translateX: 0 },
-                          { translateY: 0 },
-                          { scale: 0.6 }, // Adjust the value to scale the image
-                        ],
-                      }}
-                      source={require("../../assets/images/bottom.png")}
-                    />
                   </View>
                 )}
               </View>
@@ -729,47 +525,26 @@ export default function ShipStats() {
               </TouchableOpacity>
             </View>
             {showStat.capacity && (
-                <View style={styles.statTextUnder}>
-                  <Image
-                    style={{
-                      transform: [
-                        { translateX: 0 },
-                        { translateY: 30 },
-                        { scale: 0.6 }, // Adjust the value to scale the image
-                      ],
+              <View style={styles.statTextUnder}>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: Colors.white,
+                    fontFamily: "monospace",
+                    fontSize: 13,
+                    marginTop: 2,
                     }}
-                    source={require("../../assets/images/top.png")}
-                  />
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      color: Colors.white,
-                      fontFamily: "monospace",
-                      fontSize: 13,
-                      // Add margin to space it out from the images
-                    }}
-                  >
-                    {ShipData.capacity}
-                  </Text>
-                  <Image
-                    style={{
-                      transform: [
-                        { translateX: 0 },
-                        { translateY: -30 },
-                        { scale: 0.6 }, // Adjust the value to scale the image
-                      ],
-                    }}
-                    source={require("../../assets/images/bottom.png")}
-                  />
-                </View>
+                >
+                  {ShipData.capacity}
+                </Text>
+              </View>
             )}
           </View>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
               <TouchableOpacity
                 style={styles.touchButton}
-                onPress={() => handlePress("pointValue")}
-              >
+                onPress={() => handlePress("pointValue")}>
                 <View
                   style={{ width: "100%", backgroundColor: Colors.hudDarker }}
                 >
@@ -783,47 +558,26 @@ export default function ShipStats() {
             </View>
             {showStat.pointValue && (
               <View style={styles.statTextUnder}>
-                <View style={styles.statTextUnder}>
-                  <Image
-                    style={{
-                      transform: [
-                        { translateX: 0 },
-                        { translateY: 30 },
-                        { scale: 0.6 }, // Adjust the value to scale the image
-                      ],
-                    }}
-                    source={require("../../assets/images/top.png")}
-                  />
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      color: Colors.white,
-                      fontFamily: "monospace",
-                      fontSize: 13,
-                      // Add margin to space it out from the images
-                    }}
-                  >
-                    {ShipData.pointValue}
-                  </Text>
-                  <Image
-                    style={{
-                      transform: [
-                        { translateX: 0 },
-                        { translateY: -30 },
-                        { scale: 0.6 }, // Adjust the value to scale the image
-                      ],
-                    }}
-                    source={require("../../assets/images/bottom.png")}
-                  />
-                </View>
-              </View>
+              <Text
+                style={{
+                  textAlign: "center",
+                  color: Colors.white,
+                  fontFamily: "monospace",
+                  fontSize: 13,
+                  marginTop: 2,
+                }}
+              >
+                {ShipData.pointValue}
+              </Text>
+            </View>
             )}
           </View>
         </View>
-
         <View style={styles.buttonContainer}>
           <View style={{ width: "95%" }}>
-            <View style={[styles.statButton, { marginBottom: 40, marginTop: 10 }]}>
+            <View
+              style={[styles.statButton, { marginBottom: 40, marginTop: 30 }]}
+            >
               <TouchableOpacity
                 style={{ backgroundColor: "transparent", width: "100%" }}
                 onPress={() => {
@@ -909,7 +663,7 @@ const styles = StyleSheet.create({
   headerText: {
     color: Colors.white,
     fontSize: 30,
-    marginBottom: 10,
+    marginBottom: 5,
     textAlign: "center",
     fontFamily: FONTS.leagueBold,
     borderBottomColor: Colors.white,
@@ -933,8 +687,6 @@ const styles = StyleSheet.create({
   },
   statButton: {
     borderRadius: 5,
-    marginBottom: "1%",
-    marginTop: "%",
   },
   statButtonText: {
     color: Colors.hudDarker,
@@ -949,8 +701,8 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   buttonContainer: {
-    marginBottom: 45,
-    marginTop: 20,
+    marginBottom: 50,
+    marginTop: 15,
     flexDirection: "row",
     justifyContent: "space-around",
   },
@@ -985,11 +737,10 @@ const styles = StyleSheet.create({
   },
   statTextUnder: {
     alignSelf: "center",
-    flexDirection: "column", // Aligns children horizontally (side by side)
-    justifyContent: "center", // Centers content horizontally
-    alignItems: "center", // Centers content vertically
+    top: 25,
+    margin: 5,
+    backgroundColor: "#5c5c5c62",
     width: "100%",
-    backgroundColors: 'red',
-    marginBottom: -60
+
   },
 });
