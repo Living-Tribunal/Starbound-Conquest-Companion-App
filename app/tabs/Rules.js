@@ -29,23 +29,41 @@ export default function Rules() {
     <SafeAreaView style={[styles.mainContainer]}>
       <GestureHandlerRootView>
         <StatusBar />
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
+        paddingBottom: tabBarHeight + 300,
+      }}
+      keyboardShouldPersistTaps="handled"
+    >
           <View style={styles.container}>
             <View
               style={{
                 flex: 1,
                 justifyContent: "flex-end",
-                alignItems:"center",
+                alignItems: "center",
                 top: 10,
                 right: 10,
-                 flexDirection: 'row',
+                flexDirection: "row",
               }}
             >
-                {/* <Text style={styles.textHeaderTop}>Movement Rules</Text> */}
+              <Text style={styles.subHeaderText}>
+                Welcome to Starbound Conquest! Below, you'll find all the
+                essential rules you need to master the game and embark on your
+                journey to victory. For a deeper dive into the unique strategies
+                and actions you can take, tap the 'Special Orders' button to
+                explore all the available Special Orders and elevate your
+                gameplay.
+              </Text>
             </View>
           </View>
-          
-
+          <View style={{position: "relative", height: '7%', marginVertical: 10}}>
+            <Text style={styles.textHeader}>Movement Rules</Text>
+            <Image
+              style={{ position: "absolute", resizeMode: 'contain', width: "100%", height: "100%" }}
+              source={require("../../assets/images/rulesheader-01.png")}
+            />
+          </View>
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
               <Text style={styles.textSection}>Movement Basics:</Text>
@@ -245,7 +263,13 @@ export default function Rules() {
               </View>
             )}
           </View>
-          <Text style={styles.textHeader}>Combat System</Text>
+          <View style={{position: "relative", height: '7%', marginVertical: 10}}>
+            <Text style={styles.textHeader}>Combat Rules</Text>
+            <Image
+              style={{ position: "absolute", resizeMode: 'contain', width: "100%", height: "100%" }}
+              source={require("../../assets/images/rulesheader-01.png")}
+            />
+          </View>
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
               <Text style={styles.textSection}>Hit Roll:</Text>
@@ -337,8 +361,14 @@ export default function Rules() {
               </Text>
             </View>
           </View>
-          <View style={styles.rulesSection}>
+          <View style={{position: "relative", height: '7%', marginVertical: 10}}>
             <Text style={styles.textHeader}>Firing Mechanics</Text>
+            <Image
+              style={{ position: "absolute", resizeMode: 'contain', width: "100%", height: "100%" }}
+              source={require("../../assets/images/rulesheader-01.png")}
+            />
+          </View>
+          <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
               <Text style={styles.textSection}>Range Measurement</Text>
             </View>
@@ -391,6 +421,13 @@ export default function Rules() {
                 target. If an obstacle is present, the shot is blocked.
               </Text>
             </View>
+          </View>
+          <View style={{position: "relative", height: '7%', marginVertical: 10}}>
+            <Text style={styles.textHeader}>Weapon Types</Text>
+            <Image
+              style={{ position: "absolute", resizeMode: 'contain', width: "100%", height: "100%" }}
+              source={require("../../assets/images/rulesheader-01.png")}
+            />
           </View>
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
@@ -505,9 +542,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   mainContainer: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: Colors.dark_gray,
-    paddingBottom: 20,
   },
   text: {
     color: Colors.misty_blue,
@@ -519,13 +555,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   textSection: {
-    fontFamily: "monospace",
-    color: Colors.dark_gray,
+    fontFamily: "leagueRegular",
+    color: Colors.hud,
     textAlign: "center",
-    fontSize: 16,
-    backgroundColor: Colors.slate,
+    fontSize: 20,
+    backgroundColor: Colors.hudDarker,
+    borderWidth: 2,
+    borderColor: Colors.hud,
+    borderRadius: 10,
     fontWeight: "bold",
-    marginBottom: 5,
+    marginBottom: 10,
+    marginTop: 10,
     padding: 5,
   },
   textSectionSpecial: {
@@ -552,11 +592,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   textHeader: {
-    color: Colors.white,
-    fontSize: 20,
+    color: Colors.hud,
+    fontSize: 25,
     textAlign: "center",
     fontFamily: "aboreto",
-    marginTop: 20,
+    marginTop: 75,
   },
   textHeaderTop: {
     color: Colors.white,
@@ -567,8 +607,6 @@ const styles = StyleSheet.create({
   textBodyContainer: {
     flex: 1,
     backgroundColor: Colors.dark_gray,
-    paddingTop: 10,
-    paddingBottom: 10,
   },
   exampleContainer: {
     flex: 1,
@@ -605,5 +643,16 @@ const styles = StyleSheet.create({
   gearImage: {
     width: 35,
     height: 35,
+  },
+  subHeaderText: {
+    fontFamily: "monospace",
+    color: Colors.white,
+    fontSize: 9,
+    marginBottom: 5,
+    marginTop: 5,
+    textAlign: "center",
+    backgroundColor: Colors.underTextGray,
+    borderRadius: 5,
+    padding: 5,
   },
 });

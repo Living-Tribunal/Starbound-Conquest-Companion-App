@@ -40,6 +40,7 @@ export default function ShipStats() {
     <SafeAreaView style={styles.mainContainer}>
       <StatusBar />
       <ScrollView nestedScrollEnabled style>
+      <Text style={styles.subHeaderText}>Tap one of the ship classes to show its stats.</Text>
         <View style={styles.image}>
           <View style={{}}>
             <Text style={styles.headerText}>-Ship Stats-</Text>
@@ -99,13 +100,16 @@ export default function ShipStats() {
               }}
             />
           </View>
-          <View style={{marginHorizontal: 10, height: 1,backgroundColor: Colors.hudDarker, top: 5, marginBottom: 25  }}><Text></Text></View>
 
-          {/* <View style={{marginHorizontal: 10, height: 1,backgroundColor: Colors.hudDarker, top: 5 }}><Text></Text></View>
+          <View style={{marginHorizontal: 10, height: 1,backgroundColor: Colors.hudDarker, top: 5}}><Text></Text></View>
+            <View style={{flexDirection: 'row', alignItems:"center", justifyContent:"center"}} >
             <Text style={styles.shipTypeText}>
-              {selectedShip}
+              {selectedShip} -
             </Text>
-          <View style={{marginHorizontal: 10, height: 1,backgroundColor: Colors.hudDarker, top: 5 }}><Text></Text></View> */}
+            <Image style={styles.icon} source={ShipIcon} />
+
+            </View>
+          <View style={{marginHorizontal: 10, height: 1,backgroundColor: Colors.hudDarker, top: 5 }}><Text></Text></View>
 
           <View style={{ width: "50%", alignSelf: "center", marginBottom: 10 }}>
             <TouchableOpacity
@@ -682,6 +686,14 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
   },
+  icon:{
+    width: 60,
+    height: 60,
+    resizeMode: "contain",
+    marginVertical: 10,
+    marginLeft: "1%",
+    tintColor: Colors.hud,
+  },
   diceItem: {
     alignItems: "center",
   },
@@ -706,7 +718,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
   },
-  showButton: {},
   showText: {
     fontSize: 15,
     textAlign: "center",
@@ -739,8 +750,21 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     top: 25,
     margin: 5,
-    backgroundColor: "#5c5c5c62",
+    backgroundColor: Colors.underTextGray,
     width: "100%",
+    borderRadius: 2
 
   },
+  subHeaderText:{
+    fontFamily: "monospace",
+    color: Colors.white,
+    fontSize: 9,
+    marginBottom: 5,
+    marginTop: 5,
+    textAlign: "center",
+    backgroundColor: Colors.underTextGray,
+    borderRadius: 5,
+    padding: 5,
+    margin: 5
+  }
 });

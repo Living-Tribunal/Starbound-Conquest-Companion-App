@@ -190,38 +190,71 @@ export default function Fleet_Points() {
       <ScrollView>
         <View style={styles.container}>
           <View style={styles.limitsValues}>
+          <Text style={styles.subHeaderText}>Use this screen to assemble your fleet. Tap the buttons to add units in increments of +1, +5, or +10. Long press a button to subtract the same amount. Be sure to stay within the limit set in the Fleet Limit.</Text>
+
             <EditButton />
             <Text style={styles.values}>Your Fleet Value:</Text>
             <Text style={styles.values}>{fleetValue}</Text>
             {fleetValue > text && (
                 <Text style={styles.warningValues}>
-                    {username},Your fleet is over your limit! Consider removing some ships.
+                    {username}, Your fleet is over the limit! Consider removing some ships.
                 </Text>
-)}
+            )}
           </View>
           <View style={styles.shipTableStats}>
-            <Image
-              style={styles.Image}
-              source={require("../../assets/icons/rookie_64.png")}
-            />
-            <Image
-              style={styles.Image}
-              source={require("../../assets/icons/destroyer_64.png")}
-            />
-            <Image
-              style={styles.Image}
-              source={require("../../assets/icons/cruiser_64.png")}
-            />
-            <Image
-              style={styles.Image}
-              source={require("../../assets/icons/superCapital_64.png")}
-            />
-            <Image
-              style={styles.Image}
-              source={require("../../assets/icons/titan_64.png")}
-            />
+            <View style={{position: 'relative'}}>
+                <Image
+                style={styles.Image}
+                source={require("../../assets/icons/fighter-01.png")}
+                />
+                <Image
+                style={styles.ImageContainer}
+                source={require("../../assets/images/classhud.png")}
+                />
+            </View>
+            <View style={{position: 'relative'}}>
+                <Image
+                style={styles.Image}
+                source={require("../../assets/icons/destroyer-01.png")}
+                />
+                <Image
+                style={styles.ImageContainer}
+                source={require("../../assets/images/classhud.png")}
+                />
+            </View>
+            <View style={{position: 'relative'}}>
+                <Image
+                style={[styles.Image]}
+                source={require("../../assets/icons/cruiser-01.png")}
+                />
+                <Image
+                style={styles.ImageContainer}
+                source={require("../../assets/images/classhud.png")}
+                />
+            </View>
+            <View style={{position: 'relative'}}>
+                <Image
+                style={styles.Image}
+                source={require("../../assets/icons/carrier-01.png")}
+                />
+                <Image
+                style={styles.ImageContainer}
+                source={require("../../assets/images/classhud.png")}
+                />
+            </View>
+            <View style={{position: 'relative'}}>
+                <Image
+                style={styles.Image}
+                source={require("../../assets/icons/dreadnought-01.png")}
+                />
+                <Image
+                style={styles.ImageContainer}
+                source={require("../../assets/images/classhud.png")}
+                />
+            </View>
           </View>
           <View style={styles.shipTableStatsNumbers}>
+            
             <Text style={styles.tableHeader}>{fighterCount}</Text>
             <Text style={styles.tableHeader}>{destroyerCount}</Text>
             <Text style={styles.tableHeader}>{cruiserCount}</Text>
@@ -543,26 +576,28 @@ const styles = StyleSheet.create({
   shipTableStats: {
     flexDirection: "row",
     justifyContent: "space-around",
-    backgroundColor: Colors.blue_gray,
     paddingVertical: 10,
     paddingHorizontal: 5,
-    marginTop: 10,
+    marginTop: 5,
     marginHorizontal: 10,
+    marginBottom: 35,
   },
   shipTableStatsNumbers: {
     marginHorizontal: 10,
     flexDirection: "row",
     justifyContent: "space-around",
-    backgroundColor: Colors.dark_gray,
     paddingVertical: 10,
     paddingHorizontal: 5,
-    marginTop: 2,
+    marginTop: 10,
+    position: "relative",
+    backgroundColor: Colors.hudDarker,
+    borderRadius: 5,
     borderWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: Colors.slate,
+    borderColor: Colors.hud,
+
   },
   tableHeader: {
-    color: Colors.misty_blue,
+    color: Colors.hud,
     fontSize: 12,
     textAlign: "center",
     fontFamily: "monospace",
@@ -570,9 +605,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   Image: {
-    width: 35,
-    height: 35,
+    width: 30,
+    height: 30,
     alignSelf: "center",
+    position: "absolute",
+    marginTop: 5,
+    tintColor: Colors.hud,
+    resizeMode: 'contain',
+  },
+  ImageContainer:{
+    width: 60,
+    height: 45,
+    alignSelf: "center",
+    position: "absolute",
   },
   TouchableOpacityLargerContainerLeft: {
     flexDirection: "row",
@@ -598,10 +643,25 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   warningValues:{
-    color: Colors.lightened_deep_red,
-    fontSize: 16,
+    color: Colors.hudDarker,
+    backgroundColor: Colors.hud,
+    fontSize: 13,
     fontFamily: "monospace",
     alignSelf: "center",
     textAlign: "center",
+    borderRadius: 5,
+    fontWeight: "bold",
+    marginTop: 10
+  },
+  subHeaderText:{
+    fontFamily: "monospace",
+    color: Colors.white,
+    fontSize: 9,
+    marginBottom: 5,
+    marginTop: 5,
+    textAlign: "center",
+    backgroundColor: Colors.underTextGray,
+    borderRadius: 5,
+    padding: 5,
   }
 });

@@ -7,6 +7,7 @@ export const Colors = {
     dark_gray: '#202020',
     deep_red: '#8B0000',
     lightened_deep_red: '#B22222',
+    lighter_red: '#E62E2EFF',
     goldenrod: '#B8860B',
     gold: '#FFD700',
     lightened_gold: '#FFEA70',
@@ -15,5 +16,6 @@ export const Colors = {
     hud: '#43d5fc',
     hudDarker: '#284B54',
     statDarker: '#26C2ED',
+    underTextGray: '#5C5C5C62',
   }
  
