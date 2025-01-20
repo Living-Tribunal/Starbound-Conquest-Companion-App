@@ -27,7 +27,6 @@ export default function ShipStats() {
   const [selectedShip, setSelectedShip] = useState("Fighter");
 
   const ShipData = ShipAttributes[selectedShip];
-  const ShipIcon = ShipTypeIcons[selectedShip];
 
   const selectedShipDice = shipDiceMapping[selectedShip];
   const selectedShipSpecialOrders = SpecialOrders[selectedShip];

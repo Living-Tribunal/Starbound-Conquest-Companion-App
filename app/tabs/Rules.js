@@ -6,10 +6,12 @@ import {
   Image,
   Pressable,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 import React, { useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
+import { weapons } from "../../constants/weapons.js";
 import {
   GestureHandlerRootView,
   ScrollView,
@@ -30,12 +32,12 @@ export default function Rules() {
       <GestureHandlerRootView>
         <StatusBar />
         <ScrollView
-      contentContainerStyle={{
-        flexGrow: 1,
-        paddingBottom: tabBarHeight + 300,
-      }}
-      keyboardShouldPersistTaps="handled"
-    >
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingBottom: tabBarHeight + 300,
+          }}
+          keyboardShouldPersistTaps="handled"
+        >
           <View style={styles.container}>
             <View
               style={{
@@ -57,16 +59,20 @@ export default function Rules() {
               </Text>
             </View>
           </View>
-          <View style={{position: "relative", height: '7%', marginVertical: 10}}>
+          <View style={styles.imageContainer}>
             <Text style={styles.textHeader}>Movement Rules</Text>
             <Image
-              style={{ position: "absolute", resizeMode: 'contain', width: "100%", height: "100%" }}
+              style={styles.textContainer}
               source={require("../../assets/images/rulesheader-01.png")}
             />
           </View>
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
               <Text style={styles.textSection}>Movement Basics:</Text>
+              <Image
+                style={styles.textContainer2}
+                source={require("../../assets/images/hud2.png")}
+              />
             </View>
             <View style={styles.textBodyContainer}>
               <Text style={styles.textBody}>
@@ -263,16 +269,20 @@ export default function Rules() {
               </View>
             )}
           </View>
-          <View style={{position: "relative", height: '7%', marginVertical: 10}}>
+          <View style={styles.imageContainer}>
             <Text style={styles.textHeader}>Combat Rules</Text>
             <Image
-              style={{ position: "absolute", resizeMode: 'contain', width: "100%", height: "100%" }}
+              style={styles.textContainer}
               source={require("../../assets/images/rulesheader-01.png")}
             />
           </View>
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
               <Text style={styles.textSection}>Hit Roll:</Text>
+              <Image
+                style={styles.textContainer2}
+                source={require("../../assets/images/hud2.png")}
+              />
             </View>
             <View style={styles.textBodyContainer}>
               <Text style={styles.textBody}>
@@ -318,6 +328,10 @@ export default function Rules() {
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
               <Text style={styles.textSection}>Damage Roll:</Text>
+              <Image
+                style={styles.textContainer2}
+                source={require("../../assets/images/hud2.png")}
+              />
             </View>
             <View style={styles.textBodyContainer}>
               <Text style={styles.textBody}>
@@ -361,16 +375,20 @@ export default function Rules() {
               </Text>
             </View>
           </View>
-          <View style={{position: "relative", height: '7%', marginVertical: 10}}>
+          <View style={styles.imageContainer}>
             <Text style={styles.textHeader}>Firing Mechanics</Text>
             <Image
-              style={{ position: "absolute", resizeMode: 'contain', width: "100%", height: "100%" }}
+              style={styles.textContainer}
               source={require("../../assets/images/rulesheader-01.png")}
             />
           </View>
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
               <Text style={styles.textSection}>Range Measurement</Text>
+              <Image
+                style={styles.textContainer2}
+                source={require("../../assets/images/hud2.png")}
+              />
             </View>
             <View style={styles.textBodyContainer}>
               <Text style={styles.textBody}>
@@ -422,107 +440,33 @@ export default function Rules() {
               </Text>
             </View>
           </View>
-          <View style={{position: "relative", height: '7%', marginVertical: 10}}>
+          <View style={styles.imageContainer}>
             <Text style={styles.textHeader}>Weapon Types</Text>
             <Image
-              style={{ position: "absolute", resizeMode: 'contain', width: "100%", height: "100%" }}
+              style={styles.textContainer}
               source={require("../../assets/images/rulesheader-01.png")}
             />
           </View>
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
-              <Text style={styles.textSection}>Weapon Ranges and Arcs</Text>
+              <Text style={[styles.textSection, { fontSize: 15 }]}>
+                Weapon Ranges and Arcs
+              </Text>
+              <Image
+                style={styles.textContainer2}
+                source={require("../../assets/images/hud2.png")}
+              />
             </View>
           </View>
-          <View style={styles.rulesSection}>
-            <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableCellHeader}>Light Cannon</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <View style={styles.tableHeaderContainer}>
-                <Text style={styles.tableHeader}>30ft</Text>
-              </View>
-              <View style={styles.tableHeaderContainer}>
-                <Text style={styles.tableHeader}>Forward(90°)</Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.rulesSection}>
-            <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableCellHeader}>Medium Cannon</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <View style={styles.tableHeaderContainer}>
-                <Text style={styles.tableHeader}>30ft</Text>
-              </View>
-              <View style={styles.tableHeaderContainer}>
-                <Text style={styles.tableHeader}>Forward(90°)</Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.rulesSection}>
-            <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableCellHeader}>Heavy Cannon</Text>
-            </View>
-
-            <View style={styles.tableRow}>
-              <View style={styles.tableHeaderContainer}>
-                <Text style={styles.tableHeader}>30ft</Text>
-              </View>
-              <View style={styles.tableHeaderContainer}>
-                <Text style={styles.tableHeader}>Forward(90°)</Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.rulesSection}>
-            <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableCellHeader}>Plasma Cannon</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <View style={styles.tableHeaderContainer}>
-                <Text style={styles.tableHeader}>60ft</Text>
-              </View>
-              <View style={styles.tableHeaderContainer}>
-                <Text style={styles.tableHeader}>Portside/Starboard(90°)</Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.rulesSection}>
-            <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableCellHeader}>350mm Railgun</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <View style={styles.tableHeaderContainer}>
-                <Text style={styles.tableHeader}>30ft-120ft</Text>
-              </View>
-              <View style={styles.tableHeaderContainer}>
-                <Text style={styles.tableHeader}>Forward/Aft(90°)</Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.rulesSection}>
-            <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableCellHeader}>Missile Battery</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <View style={styles.tableHeaderContainer}>
-                <Text style={styles.tableHeader}>15ft-60ft</Text>
-              </View>
-              <View style={styles.tableHeaderContainer}>
-                <Text style={styles.tableHeader}>All(360°)</Text>
-              </View>
-            </View>
-            <View style={styles.tableHeaderContainer}>
-              <Text style={styles.tableCellHeader}>Ion Particle Branch</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <View style={styles.tableHeaderContainer}>
-                <Text style={styles.tableHeader}>30ft-60ft</Text>
-              </View>
-              <View style={styles.tableHeaderContainer}>
-                <Text style={styles.tableHeader}>Forward(90°)</Text>
-              </View>
-            </View>
+          <View style={styles.imageRow}>
+            {Object.entries(weapons).map(([key, type], index) => (
+              <View key={key} style={styles.imageContainer}>
+                  <View style={styles.hudContainer}></View>
+                    <Text style={styles.weaponName}>{key}</Text>
+                    <Text style={styles.weaponName}>Range: {type.range}</Text>
+                    <Text style={styles.weaponName}>Arc: {type.firingarc}</Text>
+                </View>
+            ))}
           </View>
         </ScrollView>
       </GestureHandlerRootView>
@@ -534,12 +478,12 @@ const styles = StyleSheet.create({
   headerContainer: {
     alignItems: "center",
     height: 100,
-    backgroundColor: Colors.dark_gray,
+    backgroundColor: Colors.hud,
   },
   container: {
     flex: 1,
     backgroundColor: Colors.dark_gray,
-    paddingBottom: 20,
+    paddingBottom: 10,
   },
   mainContainer: {
     flexGrow: 1,
@@ -559,10 +503,6 @@ const styles = StyleSheet.create({
     color: Colors.hud,
     textAlign: "center",
     fontSize: 20,
-    backgroundColor: Colors.hudDarker,
-    borderWidth: 2,
-    borderColor: Colors.hud,
-    borderRadius: 10,
     fontWeight: "bold",
     marginBottom: 10,
     marginTop: 10,
@@ -593,10 +533,10 @@ const styles = StyleSheet.create({
   },
   textHeader: {
     color: Colors.hud,
-    fontSize: 25,
+    fontSize: 20,
     textAlign: "center",
     fontFamily: "aboreto",
-    marginTop: 75,
+    marginTop: 45,
   },
   textHeaderTop: {
     color: Colors.white,
@@ -655,4 +595,25 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 5,
   },
+  textContainer: {
+    position: "absolute",
+    resizeMode: "contain",
+    width: "100%",
+    height: "70%",
+  },
+  imageContainer: {
+    position: "relative",
+    height: "7%",
+    top: 30,
+  },
+  textContainer2: {
+    position: "absolute",
+    resizeMode: "contain",
+    width: "100%",
+    height: "100%",
+  },
+  weaponName:{
+    fontSize: 10,
+    color: Colors.white
+  }
 });

@@ -13,6 +13,7 @@ import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import EditButton from "../../components/buttons/EditButton";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 const SHIP_VALUES = {
   fighter: 1,
@@ -29,6 +30,8 @@ export default function Fleet_Points() {
   const [cruiserCount, setCruiserCount] = useState(0);
   const [destroyerCount, setDestroyerCount] = useState(0);
   const [fleetValue, setFleetValue] = useState(0);
+
+  const tabBarHeight = useBottomTabBarHeight();
 
   const { text, username, setUsername } = useStarBoundContext();
 
@@ -171,7 +174,7 @@ export default function Fleet_Points() {
 
   const clearStorage = async () => {
     try {
-      await AsyncStorage.clear();
+      /* await AsyncStorage.clear(); */
       setFighterCount(0);
       setDestroyerCount(0);
       setCruiserCount(0);
@@ -187,7 +190,13 @@ export default function Fleet_Points() {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <StatusBar />
-      <ScrollView>
+      <ScrollView
+            contentContainerStyle={{
+              flexGrow: 1,
+              paddingBottom: tabBarHeight,
+            }}
+            keyboardShouldPersistTaps="handled"
+          >
         <View style={styles.container}>
           <View style={styles.limitsValues}>
           <Text style={styles.subHeaderText}>Use this screen to assemble your fleet. Tap the buttons to add units in increments of +1, +5, or +10. Long press a button to subtract the same amount. Be sure to stay within the limit set in the Fleet Limit.</Text>
@@ -292,7 +301,6 @@ export default function Fleet_Points() {
               <TouchableOpacity
               style={({ pressed }) => [
                 styles.buttonIncrements,
-                
               ]}
                 onPress={() => handleAddShip("fighter", 5)}
                 onLongPress={() => handleRemoveShip("fighter", 5)}
@@ -465,27 +473,22 @@ export default function Fleet_Points() {
         <View style={styles.TouchableOpacityContainer}>
           <TouchableOpacity
             onLongPress={() => clearStorage()}
-            style={({ pressed }) => [
-              styles.deleteButton,
-              {
-                backgroundColor: pressed ? Colors.gold : Colors.deep_red,
-                borderColor: pressed
-                  ? Colors.lightened_gold
-                  : Colors.lightened_deep_red,
-              },
-            ]}
+            style={styles.deleteButton}
           >
-            {({ pressed }) => (
               <Text
                 style={{
-                  color: pressed ? Colors.dark_gray : Colors.white,
+                  color: Colors.white,
                   fontFamily: "monospace",
-                  fontSize: 10,
+                  fontSize: 15,
+                  textAlign: "center",
+                  padding: 10,
+                  top: 35,
+                  zIndex: 100
                 }}
               >
-                Delete Everything
+                Delete
               </Text>
-            )}
+              <Image style={{width: 130, height: 90, position: 'absolute'}} source={require("../../assets/images/delete.png")} />
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -530,14 +533,8 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   deleteButton: {
-    width: 175,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    marginBottom: 10,
+    width: 100,
     alignItems: "center",
-    borderTopLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    borderWidth: 2,
   },
   TouchableOpacityContainer: {
     marginTop: 10,
