@@ -469,8 +469,9 @@ export default function Fleet_Points() {
             </TouchableOpacity>
           </View>
         </View>
-
+        <Text style={[styles.subHeaderText, {borderWidth: 1, borderColor: Colors.lighter_red, backgroundColor: Colors.deep_red}]}>Long press to delete everything, and I mean everything. Use with caution.</Text>
         <View style={styles.TouchableOpacityContainer}>
+        
           <TouchableOpacity
             onLongPress={() => clearStorage()}
             style={styles.deleteButton}

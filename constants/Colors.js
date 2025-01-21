@@ -17,5 +17,6 @@ export const Colors = {
     hudDarker: '#284B54',
     statDarker: '#26C2ED',
     underTextGray: '#5C5C5C62',
+    statDarke50r: '#26C2ED77',
   }
  

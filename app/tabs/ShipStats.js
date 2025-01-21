@@ -30,6 +30,7 @@ export default function ShipStats() {
 
   const selectedShipDice = shipDiceMapping[selectedShip];
   const selectedShipSpecialOrders = SpecialOrders[selectedShip];
+  const ShipIcon = ShipTypeIcons[selectedShip];
 
   const handleShipSelectionPress = (shipName) => {
     setSelectedShip(shipName);
@@ -735,7 +736,7 @@ const styles = StyleSheet.create({
     top: -34,
     right: -7,
     zIndex: -1,
-    tintColor: Colors.hudDarker,
+    tintColor: Colors.statDarke50r,
   },
   statButtonSpecText: {
     justifyContent: "center",

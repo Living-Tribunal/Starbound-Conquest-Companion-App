@@ -10,6 +10,7 @@ import Fleet_Points from "./tabs/Fleet_Points";
 import Login from "./Login";
 import LogOutDeleteScreen from "./screens/LogOutDeleteScreen";
 import Player from "./screens/Player";
+import SpecialOrders  from "./screens/SpecialOrders";
 import index from "./screens/Your_Fleet";
 import { Colors } from "../constants/Colors";
 import {
@@ -158,8 +159,8 @@ export default function Index() {
             //the nav tab container
             tabBarStyle: {
               backgroundColor: Colors.dark_gray,
-              height: 65,
-              borderRadius: 20,
+              height: 60,
+              borderRadius: 5,
               borderTopWidth: 2,
               position: "relative",
               margin: 5,
@@ -289,6 +290,16 @@ export default function Index() {
           <Tab.Screen
             name="Fleet"
             component={index}
+            options={{
+              tabBarItemStyle: { display: "none" },
+              tabBarStyle: { display: "none" },
+              headerShown: false,
+            }}
+            screenOptions={{ headerShown: false }}
+          />
+          <Tab.Screen
+            name="SpecialOrders"
+            component={SpecialOrders}
             options={{
               tabBarItemStyle: { display: "none" },
               tabBarStyle: { display: "none" },
