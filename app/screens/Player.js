@@ -12,14 +12,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { SafeAreaView } from "react-native-safe-area-context";
-import * as SplashScreen from "expo-splash-screen";
 import { useFocusEffect } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { FONTS } from "../../constants/fonts";
-
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { ShipImageLength } from "../../constants/ShipImageLength";
 
 export default function Player() {
   const navigation = useNavigation();
+
+  const tabBarHeight = useBottomTabBarHeight();
 
   const {
     username,
@@ -36,7 +38,14 @@ export default function Player() {
     setDreadnoughtImages,
   } = useStarBoundContext();
 
-    
+  const ship = ShipImageLength(
+    fighterImages,
+    destroyerImages,
+    cruiserImages,
+    carrierImages,
+    dreadnoughtImages
+  );
+
   useFocusEffect(
     useCallback(() => {
       const loadCounts = async () => {
@@ -101,41 +110,43 @@ export default function Player() {
     getUserName();
   }, []);
 
-  const ship = {
-    fighter: {
-      type: "Fighters",
-      value: `${fighterImages.length} Ships`,
-    },
-    destroyer: {
-      type: "Destroyers",
-      value: `${destroyerImages.length} Ships`,
-    },
-    cruiser: {
-      type: "Cruisers",
-      value: `${cruiserImages.length} Ships`,
-    },
-    carrier: {
-      type: "Carriers",
-      value: `${carrierImages.length} Ships`,
-    },
-    dreadnought: {
-      type: "Dreadnoughts",
-      value: `${dreadnoughtImages.length} Ships`,
-    },
-  };
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.dark_gray }}>
-      <ScrollView>
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: tabBarHeight,
+        }}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.container}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "flex-end",
+              alignItems: "center",
+              top: 5,
+              bottom: 20,
+              flexDirection: "row",
+            }}
+          >
+            <Text style={styles.subHeaderText}>
+              Welcome to Starbound Conquest! Prepare to command your fleet and
+              conquer the stars. Below, you'll find the username entry field to
+              begin your journey and the fleet overview, offering a quick
+              snapshot of your fleet's status. Use the buttons to navigate to
+              screens where you can manage your ships' stats, toggle their
+              turns, and issue orders.
+            </Text>
+          </View>
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-evenly",
+              top: 20,
             }}
           >
-            {/* <Text style={styles.text}>{`Welcome, ${username || "Commander"}`}</Text> */}
             <Pressable
               onPress={() => {
                 navigation.navigate("Logout");
@@ -143,32 +154,30 @@ export default function Player() {
               style={({ pressed }) => [styles.textSectionSpecial]}
             >
               {({ pressed }) => (
-                <View
-                  style={{
-                    position: "relative",
-                  }}
-                >
+                <View style={{ position: "relative" }}>
+                  {/* HUD Image */}
                   <Image
                     style={{
                       tintColor: pressed ? Colors.gold : Colors.hud,
-                      width: 370,
-                      height: 100,
+                      width: 350,
+                      height: 110,
                       resizeMode: "contain",
                     }}
-                    source={require("../../assets/images/hudcont.png")}
+                    source={require("../../assets/images/namecont.png")}
                   />
+                  {/* Text inside HUD */}
                   <Text
                     numberOfLines={1}
                     style={{
                       position: "absolute",
-                      top: "53%",
-                      left: "40%",
-                      transform: [{ translateX: "-40%" }, { translateY: "-40%" }],
-                      color: Colors.hud,
+                      color: Colors.hud, // Adjust color as per HUD theme
                       fontWeight: "bold",
                       fontSize: 20,
-                      textAlign: "left",
+                      textAlign: "center",
                       fontFamily: "monospace",
+                      width: "100%", // Ensure text stays centered
+                      top: "35%", // Adjust based on image size
+                      transform: [{ translateY: -15 }], // Center vertically
                     }}
                   >
                     {`${username || "Commander"}`}
@@ -182,16 +191,28 @@ export default function Player() {
           <View style={styles.shipContainer}>
             {Object.entries(ship).map(([shipClass, { type, value }], index) => (
               <View style={styles.shipItem} key={shipClass}>
-                <TouchableOpacity style={styles.touchable} onPress={() => {navigation.navigate("Fleet", { shipClass });
-              }}>
+                <TouchableOpacity
+                  style={styles.touchable}
+                  onPress={() => {
+                    navigation.navigate("Fleet", { shipClass });
+                  }}
+                >
                   <Image
                     source={require("../../assets/images/6966409.png")}
                     style={styles.image}
                   />
-                  <View style={{backgroundColor: Colors.hudDarker, width: "100%", height: "40%", justifyContent:"center", zIndex: 10,}}>
-                    <Text style={styles.typeText}>{type}</Text>  
+                  <View
+                    style={{
+                      backgroundColor: Colors.hudDarker,
+                      width: "100%",
+                      height: "40%",
+                      justifyContent: "center",
+                      zIndex: 10,
+                    }}
+                  >
+                    <Text style={styles.typeText}>{type}</Text>
                   </View>
-                  
+
                   <Text style={styles.valueStat}>{value}</Text>
                 </TouchableOpacity>
               </View>
@@ -204,10 +225,10 @@ export default function Player() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.dark_gray,
-      },
+  container: {
+    flex: 1,
+    backgroundColor: Colors.dark_gray,
+  },
   textSub: {
     fontSize: 30,
     color: Colors.white,
@@ -224,7 +245,7 @@ const styles = StyleSheet.create({
   shipItem: {
     width: "50%",
     marginBottom: 10,
-    padding: 5
+    padding: 5,
   },
   touchable: {
     justifyContent: "center",
@@ -241,11 +262,11 @@ const styles = StyleSheet.create({
   },
   typeText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: Colors.hudDarker,
     zIndex: 1,
     padding: 4,
-    fontFamily: 'leagueBold',
+    fontFamily: "leagueBold",
     letterSpacing: 2,
     backgroundColor: Colors.hud,
     elevation: 8,
@@ -265,5 +286,15 @@ const styles = StyleSheet.create({
   gearImage: {
     width: 25,
     height: 25,
+  },
+  subHeaderText: {
+    fontFamily: "monospace",
+    color: Colors.white,
+    fontSize: 9,
+    textAlign: "center",
+    backgroundColor: Colors.underTextGray,
+    borderRadius: 5,
+    padding: 5,
+    margin: 5,
   },
 });

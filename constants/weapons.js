@@ -15,17 +15,17 @@ export const weapons = {
         range: "15ft-60ft",
         firingarc: "All(360)"
     },
-    "Ion Particle Beam": {
-        range: "30ft-60ft",
-        firingarc: "Forward(90°)"
+    "Plasma Cannon": {
+        range: "60ft",
+        firingarc: "Port/Starboard(90°)"
     },
     "350mm Railgun": {
         range: "30ft-120ft",
         firingarc: "Forward/Aft(90°)"
     },
-    "Plasma Cannon": {
-        range: "60ft",
-        firingarc: "Port/Starboard(90°)"
+    "Ion Particle Beam": {
+        range: "30ft-60ft",
+        firingarc: "Forward(90°)"
     },
 
 };

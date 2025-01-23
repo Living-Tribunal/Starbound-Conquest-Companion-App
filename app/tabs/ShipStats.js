@@ -17,7 +17,6 @@ import ShowStat from "../../hooks/ShowStat.js";
 import { ShipTypeIcons } from "../../constants/ImagePaths.js";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
 import { shipDiceMapping } from "../../components/buttons/Dice.js";
-import { SpecialOrders } from "../../constants/SpecialOrders.js";
 import { FONTS } from "../../constants/fonts";
 
 export default function ShipStats() {
@@ -29,7 +28,6 @@ export default function ShipStats() {
   const ShipData = ShipAttributes[selectedShip];
 
   const selectedShipDice = shipDiceMapping[selectedShip];
-  const selectedShipSpecialOrders = SpecialOrders[selectedShip];
   const ShipIcon = ShipTypeIcons[selectedShip];
 
   const handleShipSelectionPress = (shipName) => {
@@ -623,8 +621,7 @@ export default function ShipStats() {
             {showStat.specialOrders && (
               <>
                 <View style={{}}>
-                  {Array.isArray(ShipData.specialOrders) ? (
-                    ShipData.specialOrders.map((orders, index) => (
+                {ShipData.specialOrders.map((specialOrders, index) => (
                       <View key={index}>
                         <Text
                           style={{
@@ -635,16 +632,10 @@ export default function ShipStats() {
                             fontFamily: "monospace",
                           }}
                         >
-                          {orders}
+                          {specialOrders}
                         </Text>
                       </View>
-                    ))
-                  ) : (
-                    // Fallback if weaponType is a single value
-                    <Text style={{ textAlign: "center", color: Colors.white }}>
-                      {ShipData.specialOrders}
-                    </Text>
-                  )}
+                  ))}
                 </View>
               </>
             )}

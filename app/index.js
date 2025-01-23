@@ -12,6 +12,7 @@ import LogOutDeleteScreen from "./screens/LogOutDeleteScreen";
 import Player from "./screens/Player";
 import SpecialOrders  from "./screens/SpecialOrders";
 import index from "./screens/Your_Fleet";
+import WeaponTypes from "./screens/WeaponTypes";
 import { Colors } from "../constants/Colors";
 import {
   StarBoundProvider,
@@ -21,6 +22,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getAuth } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { LoadFonts, FONTS } from "../constants/fonts";
+import Toast from 'react-native-toast-message';
 
 /* const Drawer = createDrawerNavigator(); */
 const Tab = createBottomTabNavigator();
@@ -37,7 +39,7 @@ export default function Index() {
             style={{
               height: 65,
               width: 60,
-              tintColor: focused ? Colors.gold : Colors.white, // Change color when focused
+              tintColor: focused ? Colors.gold : Colors.hud, // Change color when focused
               backgroundColor: Colors.dark_gray,
               borderRadius: 55,
             }}
@@ -63,7 +65,7 @@ export default function Index() {
             style={{
               fontFamily: "monospace",
               fontSize: 10,
-              color: focused ? Colors.gold : Colors.white, // Change color when focused
+              color: focused ? Colors.gold : Colors.hud, // Change color when focused
               paddingTop: 5,
             }}
           >
@@ -307,7 +309,18 @@ export default function Index() {
             }}
             screenOptions={{ headerShown: false }}
           />
+          <Tab.Screen
+            name="WeaponTypes"
+            component={WeaponTypes}
+            options={{
+              tabBarItemStyle: { display: "none" },
+              tabBarStyle: { display: "none" },
+              headerShown: false,
+            }}
+            screenOptions={{ headerShown: false }}
+          />
         </Tab.Navigator>
+        <Toast />
       </StarBoundProvider>
     </SafeAreaView>
   );

@@ -174,13 +174,14 @@ export default function Fleet_Points() {
 
   const clearStorage = async () => {
     try {
-      /* await AsyncStorage.clear(); */
+      await AsyncStorage.clear();
       setFighterCount(0);
       setDestroyerCount(0);
       setCruiserCount(0);
       setCarrierCount(0);
       setDreadnoughtCount(0);
       setFleetValue(0);
+      saveFleetData(newCount, shipType)
       console.log("Storage cleared");
     } catch (e) {
       console.error("Error clearing storage:", e);
@@ -193,7 +194,7 @@ export default function Fleet_Points() {
       <ScrollView
             contentContainerStyle={{
               flexGrow: 1,
-              paddingBottom: tabBarHeight,
+              paddingBottom: tabBarHeight + 20,
             }}
             keyboardShouldPersistTaps="handled"
           >
@@ -505,7 +506,6 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: Colors.dark_gray,
-    paddingBottom: 20
   },
   headerText: {
     color: Colors.white,

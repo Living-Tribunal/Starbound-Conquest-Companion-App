@@ -47,17 +47,15 @@ export default function Rules() {
                 alignItems: "center",
                 top: 5,
                 bottom: 20,
-                right: 10,
                 flexDirection: "row",
               }}
             >
               <Text style={styles.subHeaderText}>
-                Welcome to Starbound Conquest! Below, you'll find all the
-                essential rules you need to master the game and embark on your
-                journey to victory. For a deeper dive into the unique strategies
-                and actions you can take, tap the 'Special Orders' button to
-                explore all the available Special Orders and elevate your
-                gameplay.
+                Below, you'll find all the essential rules you need to master
+                the game and embark on your journey to victory. For a deeper
+                dive into the unique strategies and actions you can take, tap
+                the 'Special Orders' button to explore all the available Special
+                Orders and elevate your gameplay.
               </Text>
             </View>
           </View>
@@ -69,7 +67,10 @@ export default function Rules() {
               style={styles.TouchableOpacityStyleButton}
             >
               <Image
-                style={[styles.textContainer2, {tintColor:Colors.darker_green_toggle}]}
+                style={[
+                  styles.textContainer2,
+                  { tintColor: Colors.darker_green_toggle },
+                ]}
                 source={require("../../assets/images/hud2.png")}
               />
               <Text style={[styles.textSection2]}>Special Orders</Text>
@@ -78,7 +79,7 @@ export default function Rules() {
 
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
-            <Image
+              <Image
                 style={styles.textContainer2}
                 source={require("../../assets/images/hud2.png")}
               />
@@ -107,7 +108,7 @@ export default function Rules() {
           </View> */}
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
-            <Image
+              <Image
                 style={styles.textContainer2}
                 source={require("../../assets/images/hud2.png")}
               />
@@ -131,10 +132,9 @@ export default function Rules() {
             </View>
           </View>
 
-
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
-            <Image
+              <Image
                 style={styles.textContainer2}
                 source={require("../../assets/images/hud2.png")}
               />
@@ -217,7 +217,7 @@ export default function Rules() {
             </View>*/}
             <View style={styles.rulesSection}>
               <View style={styles.textSectionContainer}>
-              <Image
+                <Image
                   style={styles.textContainer2}
                   source={require("../../assets/images/hud2.png")}
                 />
@@ -226,19 +226,38 @@ export default function Rules() {
                 </Text>
               </View>
             </View>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                top: 5,
+                bottom: 5,
+                flexDirection: "row",
+              }}
+            >
+              <Text style={styles.subHeaderText}>
+                Tap a weapon type for more information.
+              </Text>
+            </View>
             <View style={styles.imageRow}>
               {Object.entries(weapons).map(([key, type], index) => (
-                <View key={key} style={styles.imageContainer}>
-                  <View style={styles.mainTypeContainer}>
-                    <Text style={styles.weaponName}>{key}</Text>
-                    <Text style={styles.weaponName}>{type.range}</Text>
-                    <Text style={styles.weaponName}>{type.firingarc}</Text>
-                    <Image
-                      style={styles.typeContainer}
-                      source={require("../../assets/images/typecont.png")}
-                    />
+                <TouchableOpacity
+                key={key}
+                onPress={() => {
+                    navigation.navigate("WeaponTypes", {type, key});
+                  }}
+                >
+                    <View style={styles.mainTypeContainer}>
+                      {/* Weapon Name */}
+                      <Text style={styles.weaponName}>{key}</Text>
+                      {/* Background Image */}
+                      <Image
+                        style={styles.typeContainer}
+                        source={require("../../assets/images/typecont.png")}
+                      />
                   </View>
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
           </View>
@@ -338,8 +357,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.underTextGray,
     borderRadius: 5,
     padding: 5,
-    marginBottom: 5,
-    marginTop: 5,
+    margin: 5,
   },
   textContainer: {
     position: "absolute",
@@ -361,14 +379,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     resizeMode: "contain",
     alignSelf: "center",
-    width: 150,
-    height: 120,
+    width: 145,
+    height: 100,
   },
   weaponName: {
-    fontSize: 10,
+    fontSize: 9,
+    fontFamily: "monospace",
     color: Colors.white,
     textAlign: "center",
-    top: 25,
   },
   Section: {
     margin: 5,
@@ -378,15 +396,10 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-evenly",
     alignContent: "center",
-    padding: 10,
-    marginBottom: 10,
-    paddingHorizontal: 20,
   },
   mainTypeContainer: {
-    margin: 5,
-    marginHorizontal: 5,
-    padding: 5,
-    alignItems: "center",
+    marginTop: 20,
+    padding: 40,
   },
   rulerCatHeader: {
     fontWeight: "bold",

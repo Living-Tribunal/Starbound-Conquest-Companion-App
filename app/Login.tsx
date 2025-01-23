@@ -21,7 +21,8 @@ import {
 } from "firebase/auth";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
-import { useStarBoundContext } from "../components/Global/StarBoundProvider";
+import { FONTS } from "../constants/fonts";
+
 
 const Login = () => {
     /* const {username} = useStarBoundContext();
@@ -141,7 +142,7 @@ const Login = () => {
             <View style={{right: 50}}>
             <TouchableOpacity
                   onPress={toggleShowPassword}>
-                    <Image source={ showPassword? require("../assets/icons/icons8-hide-30.png") : require("../assets/icons/icons8-show-30.png") }/>
+                    <Image style={styles.toggleEye} source={ showPassword? require("../assets/icons/icons8-hide-30.png") : require("../assets/icons/icons8-show-30.png") }/>
                 </TouchableOpacity>    
             </View>
             
@@ -176,9 +177,10 @@ const Login = () => {
             onPress={isPressed ? signUp : signIn}
             style={styles.loginButton}
           >
-            <Text style={styles.btnPrimaryText}>
+            <Text style={[styles.btnPrimaryText, {color: isPressed? Colors.lightened_gold:Colors.green_toggle, fontFamily: "monospace"}]}>
               {isPressed ? "Sign Up" : "Login"}
             </Text>
+            <Image style={[styles.loginImage,{tintColor: isPressed? Colors.gold:Colors.green_toggle}]} source={require("../assets/images/hud2.png")} />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -190,26 +192,24 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 25,
     alignSelf: "center",
-    fontWeight: "bold",
-    color: Colors.white,
+    color: Colors.hud,
+    fontFamily: FONTS.leagueBold,
   },
   inputField: {
     width: "100%",
     marginVertical: 4,
     height: 50,
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 12,
+    borderColor: Colors.hud,
+    borderRadius: 2,
     padding: 10,
-    backgroundColor: "#fff",
-  },
-  btnPrimary: {
-    backgroundColor: "#007bff",
-    marginVertical: 4,
+    backgroundColor: Colors.hudDarker,
+    color: Colors.hud
   },
   btnPrimaryText: {
-    color: "#fff",
-    fontSize: 16,
+    color: Colors.hud,
+    fontSize: 20,
+    fontFamily: FONTS.leagueBold,
   },
   container: {
     flex: 1,
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   logo: {
     height: 320,
     width: 320,
-    resizeMode: "contain", // Keeps the logo's aspect ratio intact
+    resizeMode: "contain",
   },
   inputContainer: {
     marginBottom: 16,
@@ -231,17 +231,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 16,
     marginBottom: 4,
-    color: Colors.slate,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: Colors.slate,
-    padding: 10,
-    borderRadius: 4,
-    color: Colors.dark_gray,
-    backgroundColor: Colors.white,
-    borderTopLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    color: Colors.hud,
   },
   loginButton: {
     padding: 12,
@@ -249,12 +239,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderTopLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    marginBottom: 16,
-    borderColor: Colors.slate,
-    backgroundColor: Colors.slate,
   },
   toggleButton: {},
   loginText: {
@@ -263,6 +247,17 @@ const styles = StyleSheet.create({
   showContainer: {
     flexDirection: 'row',
     alignItems: "center",
+  },
+  toggleEye:{
+    tintColor: Colors.hud
+  },
+  loginImage: {
+    position: "absolute",
+    resizeMode: "contain",
+    alignSelf: "center",
+    width: 300,
+    height: 65,
+    zIndex: -100
   }
 });
 
