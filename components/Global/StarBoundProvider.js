@@ -16,6 +16,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
 
     const [text, setText] = useState('0');
 
+    const[faction, setFaction] = useState('');
+
     const [showFighterClass, setShowFighterClass] = useState(true);
     const [showDestroyerClass, setShowDestroyerClass] = useState(true);
     const [showCarrierClass, setShowCarrierClass] = useState(true);
@@ -54,6 +56,8 @@ return (
         username, setUsername,
 
         text, setText,
+
+        faction, setFaction
         
         }}>
         {[children, shipType]}

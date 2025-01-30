@@ -36,6 +36,8 @@ export default function Player() {
     setCarrierImages,
     dreadnoughtImages,
     setDreadnoughtImages,
+    faction,
+    setFaction
   } = useStarBoundContext();
 
   const ship = ShipImageLength(
@@ -110,6 +112,22 @@ export default function Player() {
     getUserName();
   }, []);
 
+  useEffect(() => {
+    const getFaction = async () => {
+      try {
+        const faction = await AsyncStorage.getItem("Faction");
+        if (faction) {
+          setFaction(faction); // Only set if a username exists
+        } else {
+          setFaction("0");
+        }
+      } catch (error) {
+        console.error("Failed to retrieve username:", error);
+      }
+    };
+    getFaction();
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.dark_gray }}>
       <ScrollView
@@ -160,10 +178,10 @@ export default function Player() {
                     style={{
                       tintColor: pressed ? Colors.gold : Colors.hud,
                       width: 350,
-                      height: 110,
+                      height: 150,
                       resizeMode: "contain",
                     }}
-                    source={require("../../assets/images/namecont.png")}
+                    source={require("../../assets/images/titlehud.png")}
                   />
                   {/* Text inside HUD */}
                   <Text
@@ -176,11 +194,27 @@ export default function Player() {
                       textAlign: "center",
                       fontFamily: "monospace",
                       width: "100%", // Ensure text stays centered
-                      top: "35%", // Adjust based on image size
+                      top: "27%", // Adjust based on image size
                       transform: [{ translateY: -15 }], // Center vertically
                     }}
                   >
-                    {`${username || "Commander"}`}
+                    {username || "Commander"}
+                  </Text>
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      position: "absolute",
+                      color: Colors.hud, // Adjust color as per HUD theme
+                      fontWeight: "bold",
+                      fontSize: 20,
+                      textAlign: "center",
+                      fontFamily: "monospace",
+                      width: "100%", // Ensure text stays centered
+                      top: "70%", // Adjust based on image size
+                      transform: [{ translateY: -15 }], // Center vertically
+                    }}
+                  >
+                    {faction}
                   </Text>
                 </View>
               )}
@@ -235,7 +269,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.leagueRegular,
     textAlign: "center",
     marginBottom: 20,
-    marginTop: 10,
+    marginTop: 30,
   },
   shipContainer: {
     flexDirection: "row",

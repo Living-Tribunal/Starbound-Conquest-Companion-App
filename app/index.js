@@ -13,6 +13,7 @@ import Player from "./screens/Player";
 import SpecialOrders  from "./screens/SpecialOrders";
 import index from "./screens/Your_Fleet";
 import WeaponTypes from "./screens/WeaponTypes";
+import GameLore from "./screens/GameLore";
 import { Colors } from "../constants/Colors";
 import {
   StarBoundProvider,
@@ -194,7 +195,7 @@ export default function Index() {
           />
           <Tab.Screen
             name="Info"
-            component={Rules}
+            component={GameLore}
             options={{
               tabBarIcon: ({ focused, size }) => (
                 <Image
@@ -318,7 +319,16 @@ export default function Index() {
               headerShown: false,
             }}
             screenOptions={{ headerShown: false }}
-          />
+          /><Tab.Screen
+          name="GameLore"
+          component={GameLore}
+          options={{
+            tabBarItemStyle: { display: "none" },
+            tabBarStyle: { display: "none" },
+            headerShown: false,
+          }}
+          screenOptions={{ headerShown: false }}
+        />
         </Tab.Navigator>
         <Toast />
       </StarBoundProvider>

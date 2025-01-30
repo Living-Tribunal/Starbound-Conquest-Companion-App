@@ -7,7 +7,7 @@ import {
   Pressable,
   TouchableOpacity,
   TextInput,
-  Button,
+  ScrollView
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Colors } from "@/constants/Colors";
@@ -19,15 +19,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { FONTS } from "@/constants/fonts";
 import Toast from "react-native-toast-message";
+import DropdownComponent from "../../components/dropdown/DropdownComponent";
 
 export default function LogOutDeleteScreen() {
-  const { username, setUsername } = useStarBoundContext();
-  const [text, setText] = useState("");
+  const { username, setUsername, faction, setFaction } = useStarBoundContext();
+  const [isFocus, setIsFocus] = useState(false);
+
   const showToast = () => {
     Toast.show({
       type: "success",
       text1: "StarBound Conquest",
-      text2: "Your Username Has Been Set As: " + `${username}`,
+      text2: "Your Username and Faction Have Been Saved",
     });
   };
 
@@ -44,10 +46,34 @@ export default function LogOutDeleteScreen() {
     }
   };
 
+  const saveFaction = async () => {
+    if (faction) { // Ensure faction is not null or undefined
+      try {
+        await AsyncStorage.setItem("Faction", faction);
+        /* console.log(faction, "was saved"); */
+      } catch (e) {
+        console.error("Error saving faction:", e);
+      }
+    } else {
+      console.warn("Faction is null or undefined, not saving.");
+    }
+  };
+
+  const getFaction = async () => {
+    try {
+      const facetionName = await AsyncStorage.getItem("Faction");
+      setFaction(facetionName);
+      /* console.log(facetionName, "was fetched"); */
+    } catch (e) {
+      console.error("Error getting name:", e);
+    }
+  };
+
   const getName = async () => {
     try {
       const name = await AsyncStorage.getItem("UserName");
       setUsername(name);
+      console.log(name, "was fetched");
     } catch (e) {
       console.error("Error getting name:", e);
     }
@@ -62,6 +88,7 @@ export default function LogOutDeleteScreen() {
 
   useEffect(() => {
     getName();
+    getFaction();
   }, []);
 
   const deleteName = async () => {
@@ -77,8 +104,21 @@ export default function LogOutDeleteScreen() {
     setUsername(" ");
   };
 
+  const renderLabel = () => {
+    if (isFocus) {
+      console.log(isFocus);
+      return (
+        <Text style={[styles.label, isFocus && { color: Colors.hud }]}>
+          Enter a Username
+        </Text>
+      );
+    }
+    return null;
+  };
+
   return (
-    <SafeAreaView style={[styles.mainContainer]}>
+    <SafeAreaView  style={[styles.mainContainer]}>
+        <ScrollView contentContainerStyle={{flex: 1}} keyboardShouldPersistTaps="never" >
       <View style={styles.container}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <TouchableOpacity onPress={() => navigation.navigate("Player")}>
@@ -95,38 +135,46 @@ export default function LogOutDeleteScreen() {
               flex: 1,
               justifyContent: "flex-end",
               alignItems: "center",
-              top: 5,
-              bottom: 20,
+              bottom: 10,
               flexDirection: "row",
             }}
           >
             <Text style={styles.subHeaderText}>
-              Enter your username here and tap "Save" to update it. You can also
-              remove your username if needed. Additionally, you have the option
-              to log out or permanently delete your account. Please note that
-              once your account is deleted, it cannot be recovered.{" "}
+            Enter your username below and tap 'Save' to update it. You can also remove your username if necessary. Don’t forget to select your faction. Additionally, you have the option to log out or permanently delete your account. Please note that once deleted, your account cannot be recovered.
             </Text>
           </View>
         </View>
         <View
           style={{ flex: 5, justifyContent: "center", alignItems: "center" }}
         >
-          <Text style={{ color: Colors.hud, marginBottom: 10 }}>
-            Choose Your Username
-          </Text>
-          <TextInput
-            maxLength={12}
-            style={styles.textInput}
-            onChangeText={(username) => setUsername(username)}
-            placeholder="Enter a UserName"
-          />
+          {/*  <Text style={{ color: Colors.hud, marginBottom: 10 }}>
+          Enter a Username
+          </Text> */}
+          <View style={{ width: "80%", position: "relative" }}>
+            {renderLabel()}
+            <TextInput
+              maxLength={12}
+              style={styles.textInput}
+              onChangeText={(text) => {
+                setUsername(text.trimStart());
+              }}
+              placeholder={!isFocus ? 'Enter a Username' : ''}
+              value={username}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+            />
+          </View>
+          <View style={{ width: "100%" }}>
+            <DropdownComponent />
+          </View>
+
           <View style={styles.heroModalContainerButtons}>
             <TouchableOpacity
               style={styles.button}
               onPress={() => {
                 saveName();
+                saveFaction();
                 showToast();
-                emptyInput("");
               }}
             >
               <Image
@@ -212,6 +260,7 @@ export default function LogOutDeleteScreen() {
           </TouchableOpacity>
         </View>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -276,7 +325,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   textInput: {
-    height: 40,
+    height: 50,
     borderColor: Colors.hud,
     borderWidth: 1,
     marginBottom: 10,
@@ -286,7 +335,6 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     backgroundColor: Colors.hudDarker,
     paddingHorizontal: 10,
-    width: "80%",
   },
   button: {
     width: 75,
@@ -311,5 +359,21 @@ const styles = StyleSheet.create({
   deleteButton: {
     width: 100,
     alignItems: "center",
+  },
+  label: {
+    position: "absolute",
+    backgroundColor: Colors.dark_gray,
+    left: 10,
+    top: -15,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+    borderWidth: 1,
+    borderRadius: 3,
+    borderColor: Colors.hud,
+    color: Colors.hud,
+    borderWidth: 1,
+    borderRadius: 3,
+    paddingHorizontal: 8,
   },
 });

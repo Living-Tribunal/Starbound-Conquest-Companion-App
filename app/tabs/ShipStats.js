@@ -8,40 +8,79 @@ import {
   FlatList,
   Pressable,
   StatusBar,
-  ToastAndroid,
 } from "react-native";
 import { Colors } from "../../constants/Colors.js";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ShowStat from "../../hooks/ShowStat.js";
 import { ShipTypeIcons } from "../../constants/ImagePaths.js";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
 import { shipDiceMapping } from "../../components/buttons/Dice.js";
+import { FactionImages } from "../../constants/FactionImages.js";
 import { FONTS } from "../../constants/fonts";
+import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 
 export default function ShipStats() {
   const { showStat, handlePress, showAllStat } = ShowStat();
   const [areAllStatsShows, setAreAllStatsShows] = useState(false);
-  const [pressed, setPressed] = useState(false);
+  const [pressed, setPressed] = useState(true);
   const [selectedShip, setSelectedShip] = useState("Fighter");
+  const [selectedFaction, setSelectedFaction] = useState("");
+
+  const { faction } = useStarBoundContext();
 
   const ShipData = ShipAttributes[selectedShip];
 
   const selectedShipDice = shipDiceMapping[selectedShip];
-  const ShipIcon = ShipTypeIcons[selectedShip];
+  const factionData = FactionImages[selectedFaction];
+  const shipData = factionData ? factionData[selectedShip] : null;
+
+  const classImage = shipData ? shipData.classImage : null;
+  const className = shipData ? shipData.className : "Unknown";
 
   const handleShipSelectionPress = (shipName) => {
     setSelectedShip(shipName);
   };
 
+  useEffect(() => {
+    setSelectedFaction(faction);
+    console.log(faction);
+  }, [faction]);
+
+  const factionRotation = {
+    "The Zyrrians": "0deg",
+    "Nova Raiders": "90deg",
+    "Voidborn Marauders": "90deg",
+    "Star Reapers": "0deg",
+    "Praxleon Empire": "90deg",
+    "Synthon Syndicate": "0deg",
+    "The Union": "0deg",
+  };
+
+  const factionScale = {
+    "The Zyrrians": 2.1,
+    "Nova Raiders": 3,
+    "Voidborn Marauders": 3,
+    "Star Reapers": 2,
+    "Praxleon Empire": 2.5,
+    "Synthon Syndicate": 2,
+    "The Union": 2,
+  };
+
+  const rotation = factionRotation[faction] || "180deg";
+  const scale = factionScale[faction] || "1";
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <StatusBar />
       <ScrollView nestedScrollEnabled style>
-      <Text style={styles.subHeaderText}>Tap one of the ship classes to show its stats.</Text>
+        <Text style={styles.subHeaderText}>
+          Tap one of the ship classes to show its stats.
+        </Text>
         <View style={styles.image}>
           <View style={{}}>
             <Text style={styles.headerText}>-Ship Stats-</Text>
+            <Text style={styles.headerText}>{faction}</Text>
             <FlatList
               keyExtractor={(item, index) => item.id || index.toString()}
               horizontal
@@ -98,25 +137,13 @@ export default function ShipStats() {
               }}
             />
           </View>
-
-          <View style={{marginHorizontal: 10, height: 1,backgroundColor: Colors.hudDarker, top: 5}}><Text></Text></View>
-            <View style={{flexDirection: 'row', alignItems:"center", justifyContent:"center"}} >
-            <Text style={styles.shipTypeText}>
-              {selectedShip} -
-            </Text>
-            <Image style={styles.icon} source={ShipIcon} />
-
-            </View>
-          <View style={{marginHorizontal: 10, height: 1,backgroundColor: Colors.hudDarker, top: 5 }}><Text></Text></View>
-
-          <View style={{ width: "50%", alignSelf: "center", marginBottom: 10 }}>
+          <View
+            style={{
+              alignItems: "center",
+            }}
+          >
             <TouchableOpacity
-              style={[
-                styles.showButton,
-                {
-                  marginVertical: 40,
-                },
-              ]}
+              style={styles.showButton}
               onPress={() => {
                 const newShowAllStatsState = !areAllStatsShows; // Toggle the current state
                 showAllStat(newShowAllStatsState); // Update the showAllStat hook
@@ -124,71 +151,29 @@ export default function ShipStats() {
                 setPressed(newShowAllStatsState); // Update button text state
               }}
             >
-              <View
-                style={{
-                  backgroundColor: areAllStatsShows
-                    ? Colors.hud
-                    : Colors.hudDarker,
-                }}
-              >
-                <Text
-                  style={[
-                    styles.showText,
-                    {
-                      color: areAllStatsShows ? Colors.hud : Colors.hudDarker,
-                      backgroundColor: areAllStatsShows
-                        ? Colors.hudDarker
-                        : Colors.hud,
-                    },
-                  ]}
-                >
-                  {areAllStatsShows ? "Hide All Stats" : "Show All Stats"}
-                </Text>
-              </View>
-
               <Image
-                style={{
-                  resizeMode: "contain",
-                  position: "absolute",
-                  right: "25%",
-                  tintColor: areAllStatsShows ? Colors.hudDarker : Colors.hud,
-                  transform: [
-                    { translateX: 220 },
-                    { translateY: -100 },
-                    { scale: 0.5 },
-                    { scaleY: 0.8 }, // Adjust the value to scale the image
-                  ],
-                }}
-                source={require("../../assets/images/showallstats.png")}
+                resizeMode={"center"}
+                style={[
+                  styles.icon,
+                  { transform: [{ rotate: rotation }, { scale: scale }] },
+                ]}
+                source={classImage}
               />
+              {/* <Text>{className}</Text>*/}
             </TouchableOpacity>
           </View>
         </View>
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity
-                style={styles.touchButton}
-                onPress={() => {
-                  handlePress("hitPoint");
-                  setPressed((prev) => !prev);
-                }}
+              <View
+                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
               >
-                <View
-                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-                >
-                  <Text style={styles.statButtonText}>Hit Point</Text>
-                </View>
-
-                <Image
-                  style={styles.statButtonImage}
-                  source={require("../../assets/images/stathud.png")}
-                />
-              </TouchableOpacity>
+                <Text style={styles.statButtonText}>Hit Point</Text>
+              </View>
             </View>
             {showStat.hitPoint && (
               <View style={styles.statTextUnder}>
-                
                 <Text
                   style={{
                     textAlign: "center",
@@ -196,34 +181,23 @@ export default function ShipStats() {
                     fontFamily: "monospace",
                     fontSize: 13,
                     marginTop: 2,
-                    }}
+                  }}
                 >
                   {ShipData.hp}
                 </Text>
-                
               </View>
             )}
           </View>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity
-                style={styles.touchButton}
-                onPress={() => handlePress("toHit")}
+              <View
+                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
               >
-                <View
-                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-                >
-                  <Text style={styles.statButtonText}>To Hit</Text>
-                </View>
-                <Image
-                  style={styles.statButtonImage}
-                  source={require("../../assets/images/stathud.png")}
-                />
-              </TouchableOpacity>
+                <Text style={styles.statButtonText}>To Hit</Text>
+              </View>
             </View>
             {showStat.toHit && (
               <View style={styles.statTextUnder}>
-                
                 <Text
                   style={{
                     textAlign: "center",
@@ -231,11 +205,10 @@ export default function ShipStats() {
                     fontFamily: "monospace",
                     fontSize: 13,
                     marginTop: 2,
-                    }}
+                  }}
                 >
                   {ShipData.toHit}
                 </Text>
-                
               </View>
             )}
           </View>
@@ -244,24 +217,14 @@ export default function ShipStats() {
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity
-                style={styles.touchButton}
-                onPress={() => handlePress("soak")}
+              <View
+                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
               >
-                <View
-                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-                >
-                  <Text style={styles.statButtonText}>Soak</Text>
-                </View>
-                <Image
-                  style={styles.statButtonImage}
-                  source={require("../../assets/images/stathud.png")}
-                />
-              </TouchableOpacity>
+                <Text style={styles.statButtonText}>Soak</Text>
+              </View>
             </View>
             {showStat.soak && (
               <View style={styles.statTextUnder}>
-                
                 <Text
                   style={{
                     textAlign: "center",
@@ -269,34 +232,23 @@ export default function ShipStats() {
                     fontFamily: "monospace",
                     fontSize: 13,
                     marginTop: 2,
-                    }}
+                  }}
                 >
                   {ShipData.soak}
                 </Text>
-                
               </View>
             )}
           </View>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity
-                style={styles.touchButton}
-                onPress={() => handlePress("moveDistance")}
+              <View
+                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
               >
-                <View
-                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-                >
-                  <Text style={styles.statButtonText}>Move Distance</Text>
-                </View>
-                <Image
-                  style={styles.statButtonImage}
-                  source={require("../../assets/images/stathud.png")}
-                />
-              </TouchableOpacity>
+                <Text style={styles.statButtonText}>Move Distance</Text>
+              </View>
             </View>
             {showStat.moveDistance && (
               <View style={styles.statTextUnder}>
-                
                 <Text
                   style={{
                     textAlign: "center",
@@ -304,7 +256,7 @@ export default function ShipStats() {
                     fontFamily: "monospace",
                     fontSize: 13,
                     marginTop: 2,
-                    }}
+                  }}
                 >
                   {ShipData.moveDistance}
                 </Text>
@@ -316,20 +268,11 @@ export default function ShipStats() {
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity
-                style={styles.touchButton}
-                onPress={() => handlePress("weaponRange")}
+              <View
+                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
               >
-                <View
-                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-                >
-                  <Text style={styles.statButtonText}>Weapon Range</Text>
-                </View>
-                <Image
-                  style={styles.statButtonImage}
-                  source={require("../../assets/images/stathud.png")}
-                />
-              </TouchableOpacity>
+                <Text style={styles.statButtonText}>Weapon Range</Text>
+              </View>
             </View>
             {showStat.weaponRange && (
               <View style={{}}>
@@ -359,7 +302,7 @@ export default function ShipStats() {
                         fontFamily: "monospace",
                         fontSize: 13,
                         marginTop: 2,
-                            }}
+                      }}
                     >
                       {ShipData.weaponRange}
                     </Text>
@@ -371,20 +314,11 @@ export default function ShipStats() {
 
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity
-                style={styles.touchButton}
-                onPress={() => handlePress("firingArc")}
+              <View
+                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
               >
-                <View
-                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-                >
-                  <Text style={styles.statButtonText}>Firing Arc</Text>
-                </View>
-                <Image
-                  style={styles.statButtonImage}
-                  source={require("../../assets/images/stathud.png")}
-                />
-              </TouchableOpacity>
+                <Text style={styles.statButtonText}>Firing Arc</Text>
+              </View>
             </View>
             {showStat.firingArc && (
               <View style={{}}>
@@ -398,7 +332,7 @@ export default function ShipStats() {
                           fontFamily: "monospace",
                           fontSize: 13,
                           marginTop: 2,
-                                }}
+                        }}
                       >
                         {firingArc}
                       </Text>
@@ -414,7 +348,7 @@ export default function ShipStats() {
                         fontFamily: "monospace",
                         fontSize: 13,
                         marginTop: 2,
-                            }}
+                      }}
                     >
                       {ShipData.firingArc}
                     </Text>
@@ -427,45 +361,30 @@ export default function ShipStats() {
 
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
-          <View style={[styles.statButton]}>
-              <TouchableOpacity
-                style={styles.touchButton}
-                onPress={() => handlePress("weaponDamage")}
+            <View style={[styles.statButton]}>
+              <View
+                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
               >
-                <View
-                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-                >
-                  <Text style={styles.statButtonText}>Weapon Damage</Text>
-                </View>
-                <Image
-                  style={styles.statButtonImage}
-                  source={require("../../assets/images/stathud.png")}
-                />
-              </TouchableOpacity>
+                <Text style={styles.statButtonText}>Weapon Damage</Text>
+              </View>
             </View>
             {showStat.weaponDamage &&
               selectedShipDice.map((DiceComponent, index) => (
-                <View key={index} style={[styles.statTextUnder, {alignItems:'center'}]}>
-                {DiceComponent}
-              </View>
+                <View
+                  key={index}
+                  style={[styles.statTextUnder, { alignItems: "center" }]}
+                >
+                  {DiceComponent}
+                </View>
               ))}
           </View>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity
-                style={styles.touchButton}
-                onPress={() => handlePress("weaponType")}
+              <View
+                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
               >
-                <View
-                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-                >
-                  <Text style={styles.statButtonText}>Weapon Type</Text>
-                </View>
-                <Image
-                  style={styles.statButtonImage}
-                  source={require("../../assets/images/stathud.png")}
-                />
-              </TouchableOpacity>
+                <Text style={styles.statButtonText}>Weapon Type</Text>
+              </View>
             </View>
             {showStat.weaponType && (
               <View>
@@ -479,17 +398,14 @@ export default function ShipStats() {
                           fontFamily: "monospace",
                           fontSize: 13,
                           marginTop: 2,
-                                }}
+                        }}
                       >
                         {weapon}
                       </Text>
-                      
                     </View>
                   ))
                 ) : (
-                  // Fallback if weaponType is a single value
                   <View style={styles.statTextUnder}>
-                    
                     <Text
                       style={{
                         textAlign: "center",
@@ -497,7 +413,7 @@ export default function ShipStats() {
                         fontFamily: "monospace",
                         fontSize: 13,
                         marginTop: 20,
-                            }}
+                      }}
                     >
                       {ShipData.weaponType}
                     </Text>
@@ -511,20 +427,11 @@ export default function ShipStats() {
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity
-                style={styles.touchButton}
-                onPress={() => handlePress("capacity")}
+              <View
+                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
               >
-                <View
-                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-                >
-                  <Text style={styles.statButtonText}>Capacity</Text>
-                </View>
-                <Image
-                  style={styles.statButtonImage}
-                  source={require("../../assets/images/stathud.png")}
-                />
-              </TouchableOpacity>
+                <Text style={styles.statButtonText}>Capacity</Text>
+              </View>
             </View>
             {showStat.capacity && (
               <View style={styles.statTextUnder}>
@@ -535,7 +442,7 @@ export default function ShipStats() {
                     fontFamily: "monospace",
                     fontSize: 13,
                     marginTop: 2,
-                    }}
+                  }}
                 >
                   {ShipData.capacity}
                 </Text>
@@ -544,34 +451,26 @@ export default function ShipStats() {
           </View>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity
-                style={styles.touchButton}
-                onPress={() => handlePress("pointValue")}>
-                <View
-                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-                >
-                  <Text style={styles.statButtonText}>Point Value</Text>
-                </View>
-                <Image
-                  style={styles.statButtonImage}
-                  source={require("../../assets/images/stathud.png")}
-                />
-              </TouchableOpacity>
+              <View
+                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
+              >
+                <Text style={styles.statButtonText}>Point Value</Text>
+              </View>
             </View>
             {showStat.pointValue && (
               <View style={styles.statTextUnder}>
-              <Text
-                style={{
-                  textAlign: "center",
-                  color: Colors.white,
-                  fontFamily: "monospace",
-                  fontSize: 13,
-                  marginTop: 2,
-                }}
-              >
-                {ShipData.pointValue}
-              </Text>
-            </View>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: Colors.white,
+                    fontFamily: "monospace",
+                    fontSize: 13,
+                    marginTop: 2,
+                  }}
+                >
+                  {ShipData.pointValue}
+                </Text>
+              </View>
             )}
           </View>
         </View>
@@ -621,20 +520,20 @@ export default function ShipStats() {
             {showStat.specialOrders && (
               <>
                 <View style={{}}>
-                {ShipData.specialOrders.map((specialOrders, index) => (
-                      <View key={index}>
-                        <Text
-                          style={{
-                            textAlign: "center",
-                            color: Colors.white,
-                            marginRight: 5,
-                            paddingBottom: 10,
-                            fontFamily: "monospace",
-                          }}
-                        >
-                          {specialOrders}
-                        </Text>
-                      </View>
+                  {ShipData.specialOrders.map((specialOrders, index) => (
+                    <View key={index}>
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          color: Colors.white,
+                          marginRight: 5,
+                          paddingBottom: 10,
+                          fontFamily: "monospace",
+                        }}
+                      >
+                        {specialOrders}
+                      </Text>
+                    </View>
                   ))}
                 </View>
               </>
@@ -677,22 +576,18 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
   },
-  icon:{
-    width: 60,
-    height: 60,
-    resizeMode: "contain",
-    marginVertical: 10,
-    marginLeft: "1%",
-    tintColor: Colors.hud,
-  },
-  diceItem: {
-    alignItems: "center",
+  icon: {
+    flex: 1,
+    aspectRatio: 1,
+    transform: [{ scale: 2 }, { rotate: "0deg" }],
+    margin: 20,
   },
   statButton: {
     borderRadius: 5,
   },
   statButtonText: {
     color: Colors.hudDarker,
+    borderRadius: 5,
     fontFamily: "monospace",
     fontWeight: "bold",
     fontSize: 13,
@@ -704,8 +599,8 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   buttonContainer: {
-    marginBottom: 50,
-    marginTop: 15,
+    marginBottom: 15,
+    marginTop: 10,
     flexDirection: "row",
     justifyContent: "space-around",
   },
@@ -743,10 +638,9 @@ const styles = StyleSheet.create({
     margin: 5,
     backgroundColor: Colors.underTextGray,
     width: "100%",
-    borderRadius: 2
-
+    borderRadius: 2,
   },
-  subHeaderText:{
+  subHeaderText: {
     fontFamily: "monospace",
     color: Colors.white,
     fontSize: 9,
@@ -756,6 +650,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.underTextGray,
     borderRadius: 5,
     padding: 5,
-    margin: 5
-  }
+    margin: 5,
+  },
+  showButton: { height: 150, justifyContent: "center", marginVertical: 30 },
 });

@@ -6,7 +6,7 @@ export const ImagePaths = {
     }
 
 export const ShipTypeIcons ={
-    Fighter: require("../assets/icons/fighter-01.png"),
+    Fighter: require("../assets/images/shiptype.png"),
     Destroyer: require("../assets/icons/destroyer-01.png"),
     Cruiser: require("../assets/icons/cruiser-01.png"),
     Carrier: require("../assets/icons/carrier-01.png"),
