@@ -7,9 +7,11 @@ import {
   Text,
   TextInput,
   Image,
+  TouchableOpacity,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
+import Toast from 'react-native-toast-message';
 
 export default function EditButtonHP({ type, index, value, short }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -19,12 +21,20 @@ export default function EditButtonHP({ type, index, value, short }) {
   const statKeyHP = `${type}-${index}-${value}-${short}-hp`;
   const statKeyID = `${type}-${index}-${value}-${short}id`;
 
+  const showToast = () => {
+      Toast.show({
+        type: "success",
+        text1: "StarBound Conquest",
+        text2: "Ships Stats Have Been Adjusted.",
+      });
+    };
+
   const shipImages = {
-    fighter: require("../../assets/icons/rookie_64.png"),
-    destroyer: require("../../assets/icons/destroyer_64.png"),
-    cruiser: require("../../assets/icons/cruiser_64.png"),
-    carrier: require("../../assets/icons/superCapital_64.png"),
-    dreadnought: require("../../assets/icons/titan_64.png"),
+    fighter: require("../../assets/icons/fighter-01.png"),
+    destroyer: require("../../assets/icons/destroyer-01.png"),
+    cruiser: require("../../assets/icons/cruiser-01.png"),
+    carrier: require("../../assets/icons/carrier-01.png"),
+    dreadnought: require("../../assets/icons/dreadnought-01.png"),
   };
   const shipHPValues = {
     fighter: 1,
@@ -101,26 +111,36 @@ export default function EditButtonHP({ type, index, value, short }) {
             changeButtonColor();
           }}
           style={({ pressed }) => [
-            styles.button,
+            styles.outsideButton,
             {
               backgroundColor: pressed ? Colors.goldenrod : changeButtonColor(),
               borderColor: pressed ? Colors.gold : changeBorderButtonColor(),
             },
           ]}
         >
-          <Image
-            source={imageSource}
-            style={{
-              width: 25,
-              height: 25,
-            }}
-          />
-          <Text style={styles.textStyle}>
-            {shortValue}-ID: {idText || "0"}
-          </Text>
-          <Text style={styles.textStyle}>HP: {hpText || hpValue}</Text>
+          {({ pressed }) => (
+            <>
+              <Image
+                source={imageSource}
+                style={{
+                  width: 40,
+                  height: 40,
+                  margin: 5,
+                  tintColor: pressed ? Colors.gold : changeBorderButtonColor(), // Change tintColor based on 'pressed'
+                  resizeMode: "contain",
+                }}
+              />
+
+              <Text style={styles.textStyle}>
+                {shortValue}-ID: {idText || "0"}
+              </Text>
+              <Text style={styles.textStyle}>HP: {hpText || hpValue}</Text>
+            </>
+          )}
         </Pressable>
       </View>
+
+      {/* MODAL */}
       <Modal
         transparent={true}
         visible={isModalVisible}
@@ -149,17 +169,10 @@ export default function EditButtonHP({ type, index, value, short }) {
             />
           </View>
           <View style={styles.heroModalContainerButtons}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                {
-                  backgroundColor: pressed
-                    ? Colors.goldenrod
-                    : Colors.blue_gray,
-                  borderColor: pressed ? Colors.gold : Colors.slate,
-                },
-              ]}
+            <TouchableOpacity
+              style={styles.button}
               onPress={() => {
+                showToast();
                 setIsModalVisible(false);
                 save();
               }}
@@ -169,19 +182,16 @@ export default function EditButtonHP({ type, index, value, short }) {
                 style={{
                   width: 25,
                   height: 25,
+                  marginTop: 5,
                 }}
               />
-            </Pressable>
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                {
-                  backgroundColor: pressed ? Colors.deep_red : Colors.blue_gray,
-                  borderColor: pressed
-                    ? Colors.lightened_deep_red
-                    : Colors.slate,
-                },
-              ]}
+              <Image
+                style={{ width: 60, height: 60, position: "absolute" }}
+                source={require("../../assets/images/edithud.png")}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
               onLongPress={() => {
                 setHpText(hpValue);
                 setIdText("0");
@@ -194,9 +204,14 @@ export default function EditButtonHP({ type, index, value, short }) {
                 style={{
                   width: 25,
                   height: 25,
+                  marginTop: 5,
                 }}
               />
-            </Pressable>
+              <Image
+                style={{ width: 60, height: 60, position: "absolute" }}
+                source={require("../../assets/images/edithud.png")}
+              />
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -207,14 +222,21 @@ export default function EditButtonHP({ type, index, value, short }) {
 const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 10,
+    height: "70%",
   },
   button: {
-    width: 75,
+    width: 100,
+    paddingVertical: 10,
+    alignItems: "center",
+    borderRadius: 5,
+  },
+  outsideButton: {
     paddingVertical: 2,
     paddingHorizontal: 2,
     borderWidth: 2,
     alignItems: "center",
-    borderRadius: 10
+    borderRadius: 5,
+    justifyContent: "center",
   },
   modalTextInput: {
     backgroundColor: Colors.slate,
@@ -239,6 +261,8 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: 10,
     fontFamily: "monospace",
+    fontWeight: "bold",
+    marginBottom: 5,
   },
   textModalStyle: {
     color: Colors.white,
@@ -246,13 +270,6 @@ const styles = StyleSheet.create({
     fontFamily: "monospace",
     justifyContent: "center",
     textAlign: "center",
-  },
-  textModalStyleHeader: {
-    color: Colors.white,
-    fontSize: 26,
-    fontFamily: "monospace",
-    textAlign: "center",
-    marginBottom: 100,
   },
   heroModalContainerButtons: {
     flexDirection: "row",
@@ -262,6 +279,6 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   fleetContainer: {
-    padding: 2,
+    justifyContent: "center",
   },
 });

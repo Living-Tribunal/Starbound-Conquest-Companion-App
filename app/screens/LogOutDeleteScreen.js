@@ -17,9 +17,9 @@ import { getAuth } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
-import { FONTS } from "@/constants/fonts";
 import Toast from "react-native-toast-message";
 import DropdownComponent from "../../components/dropdown/DropdownComponent";
+import ImagePicker from "../../components/picker/ImagePicker.js"
 
 export default function LogOutDeleteScreen() {
   const { username, setUsername, faction, setFaction } = useStarBoundContext();
@@ -147,9 +147,9 @@ export default function LogOutDeleteScreen() {
         <View
           style={{ flex: 5, justifyContent: "center", alignItems: "center" }}
         >
-          {/*  <Text style={{ color: Colors.hud, marginBottom: 10 }}>
-          Enter a Username
-          </Text> */}
+          <Text style={{ color: Colors.hud, marginBottom: 10 }}>
+          <ImagePicker />
+          </Text>
           <View style={{ width: "80%", position: "relative" }}>
             {renderLabel()}
             <TextInput

@@ -37,7 +37,7 @@ export default function Player() {
     dreadnoughtImages,
     setDreadnoughtImages,
     faction,
-    setFaction,
+    setFaction
   } = useStarBoundContext();
 
   const ship = ShipImageLength(
@@ -184,12 +184,15 @@ export default function Player() {
                     source={require("../../assets/images/titlehud.png")}
                   />
                   {/* Text inside HUD */}
-                  <Text numberOfLines={1} style={styles.playerText}>
+                  <Text
+                    numberOfLines={1}
+                    style={styles.playerText}
+                  >
                     {username || "Commander"}
                   </Text>
                   <Text
                     numberOfLines={1}
-                    style={[styles.playerText, { top: "70%" }]}
+                    style={[styles.playerText, {top: "70%"}]}
                   >
                     {faction}
                   </Text>
@@ -308,15 +311,15 @@ const styles = StyleSheet.create({
     padding: 5,
     margin: 5,
   },
-  playerText: {
+  playerText:{
     position: "absolute",
-    color: Colors.hud, // Adjust color as per HUD theme
-    fontWeight: "bold",
-    fontSize: 20,
-    textAlign: "center",
-    fontFamily: "monospace",
-    width: "100%", // Ensure text stays centered
-    top: "27%", // Adjust based on image size
-    transform: [{ translateY: -15 }], // Center vertically
-  },
+                      color: Colors.hud, // Adjust color as per HUD theme
+                      fontWeight: "bold",
+                      fontSize: 20,
+                      textAlign: "center",
+                      fontFamily: "monospace",
+                      width: "100%", // Ensure text stays centered
+                      top: "27%", // Adjust based on image size
+                      transform: [{ translateY: -15 }], // Center vertically
+  }
 });

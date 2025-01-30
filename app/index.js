@@ -14,6 +14,7 @@ import SpecialOrders  from "./screens/SpecialOrders";
 import index from "./screens/Your_Fleet";
 import WeaponTypes from "./screens/WeaponTypes";
 import GameLore from "./screens/GameLore";
+import ShipEditScreen from "./screens/ShipEditScreen";
 import { Colors } from "../constants/Colors";
 import {
   StarBoundProvider,
@@ -112,13 +113,6 @@ export default function Index() {
       console.log("Logged out");
     }
   });
-
-/*   useEffect(() => {
-    async function prepare() {
-      await SplashScreen.preventAutoHideAsync();
-    }
-    prepare();
-  }, []); */
 
     useEffect(() => {
       if (fontsLoaded) {
@@ -319,7 +313,8 @@ export default function Index() {
               headerShown: false,
             }}
             screenOptions={{ headerShown: false }}
-          /><Tab.Screen
+          />
+          <Tab.Screen
           name="GameLore"
           component={GameLore}
           options={{
@@ -329,6 +324,16 @@ export default function Index() {
           }}
           screenOptions={{ headerShown: false }}
         />
+        <Tab.Screen
+            name="Edit Ship"
+            component={ShipEditScreen}
+            options={{
+              tabBarItemStyle: { display: "none" },
+              tabBarStyle: { display: "none" },
+              headerShown: false,
+            }}
+            screenOptions={{ headerShown: false }}
+          />
         </Tab.Navigator>
         <Toast />
       </StarBoundProvider>

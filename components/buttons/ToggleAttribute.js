@@ -39,8 +39,7 @@ export default function ToggleAtributeButton({ shipType, index }) {
       await AsyncStorage.setItem(
         `${key}-${toggleIndex}`,
         JSON.stringify(valueToSave),
-/*         console.log("INITIAL STATES: ","Key: ",key,"||", "Toggled Type: ", toggleType," |", "Index: ", index, "||", "Saved Value:", valueToSave)
- */      );
+);
     } catch (err) {
       alert(err);
     }
@@ -70,20 +69,17 @@ export default function ToggleAtributeButton({ shipType, index }) {
       setToggleCapacity(savedCapacityStates);
       setToggleDoneState(savedDoneStates);
 
-/*       console.log("LOADED STATE: ", "Type of ship:", shipType, "||", "Ships Index:", index, "||", "Loaded Order State:", savedOrders, "||", "Loaded Turn Done State:", savedDoneStates, "||",  "Loaded Ship Capacity:", savedCapacityStates);
- */
+
     } catch (err) {
       alert(err);
     }
   };
 
   const handleLongPress = () => {
-  // Reset state arrays to their initial state
   setToggleOrders(Array(SHIP_TOGGLES[shipType]).fill(false));
   setToggleCapacity(Array(SHIP_CAPACITY[shipType]).fill(false));
   setToggleDoneState(Array(SHIP_TOGGLES_DONE[shipType]).fill(false));
 
-  // Clear AsyncStorage for the associated keys
   const clearAsyncStorage = async () => {
     try {
       for (let i = 0; i < SHIP_TOGGLES[shipType]; i++) {
@@ -95,8 +91,7 @@ export default function ToggleAtributeButton({ shipType, index }) {
       for (let i = 0; i < SHIP_TOGGLES_DONE[shipType]; i++) {
         await AsyncStorage.removeItem(`${doneKey}-${i}`);
       }
-/*       console.log("All states reset and AsyncStorage cleared!");
- */    } catch (err) {
+   } catch (err) {
       alert("Failed to clear storage: " + err);
     }
   };
@@ -106,28 +101,20 @@ export default function ToggleAtributeButton({ shipType, index }) {
 
   const handleToggleDone = (toggleIndex) =>{
     setToggleDoneState((prevToggleDoneState) =>{
-        // Create a new array to avoid direct mutation
         const updatedToggleDoneStates = [...prevToggleDoneState ];
-        // Toggle the specific index
         updatedToggleDoneStates[toggleIndex] =!updatedToggleDoneStates[toggleIndex];
-        // Call save to persist the change
         save(toggleIndex, updatedToggleDoneStates[toggleIndex], 'done');
-/*         console.log("SAVED STATES: ", "Ship Type:", shipType, "||", "Ship Type Index:", index, "||", "Toggled Order State:", updatedToggleDoneStates,"||","Toggled Index:", toggleIndex);
- */        // Return the updated state
         return updatedToggleDoneStates;
     })
   }
 
   const handlePress = (toggleIndex) => {
-/*     console.log("handlePress called for toggleIndex:", toggleIndex);
- */    setToggleOrders((prevToggleOrders) => {
+    setToggleOrders((prevToggleOrders) => {
       const updatedToggleOrders = [...prevToggleOrders];
-/*       console.log("Previous Toggled Orders:", prevToggleOrders);
- */      updatedToggleOrders[toggleIndex] = !updatedToggleOrders[toggleIndex];
+      updatedToggleOrders[toggleIndex] = !updatedToggleOrders[toggleIndex];
 
       save(toggleIndex, updatedToggleOrders[toggleIndex], "order");
-/*       console.log("SAVED STATES: ", "Ship Type:", shipType, "||", "Ship Type Index:", index, "||", "Toggled Order State:", updatedToggleOrders);
- */
+
       return updatedToggleOrders;
     });
   };
@@ -137,8 +124,7 @@ export default function ToggleAtributeButton({ shipType, index }) {
       updatedCapacityToggleStates[toggleIndex] = !updatedCapacityToggleStates[toggleIndex];
 
       save(toggleIndex, updatedCapacityToggleStates[toggleIndex], "capacity");
-/*       console.log("SAVED STATES: ", "Ship Type:", shipType, "||", "Ship Type Index:", index, "||", "Toggled Order State:", updatedCapacityToggleStates);
- */
+
       return updatedCapacityToggleStates;
     });
   };
@@ -146,8 +132,6 @@ export default function ToggleAtributeButton({ shipType, index }) {
   useEffect(() => {
     load();
   }, []);
-
-  /* console.log(orderKey, capacityKey, doneKey) */
 
   return (
     <View style={styles.buttonContainer}>
@@ -235,12 +219,9 @@ export default function ToggleAtributeButton({ shipType, index }) {
                           style={({ pressed }) => [
                             styles.buttonFighters,
                             {
-                              backgroundColor: toggleCapacity[toggleIndex]
-                                ? Colors.goldenrod
-                                : Colors.blue_gray,
                               borderColor: toggleCapacity[toggleIndex]
                                 ? Colors.gold
-                                : Colors.misty_blue,
+                                : Colors.hud,
                             },
                           ]}
                         >
@@ -261,10 +242,8 @@ export default function ToggleAtributeButton({ shipType, index }) {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    marginTop: 5,
   },
   ordersContainer: {
-    marginTop: 10,
     marginLeft: 10,
     justifyContent: "center",
   },

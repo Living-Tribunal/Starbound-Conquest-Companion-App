@@ -25,7 +25,7 @@ export default function ShipStats() {
   const [areAllStatsShows, setAreAllStatsShows] = useState(false);
   const [pressed, setPressed] = useState(true);
   const [selectedShip, setSelectedShip] = useState("Fighter");
-  const [selectedFaction, setSelectedFaction] = useState("");
+  const [selectedFaction, setSelectedFaction] = useState("Nova Raiders");
 
   const { faction } = useStarBoundContext();
 
@@ -75,7 +75,7 @@ export default function ShipStats() {
       <StatusBar />
       <ScrollView nestedScrollEnabled style>
         <Text style={styles.subHeaderText}>
-          Tap one of the ship classes to show its stats.
+          Tap one of the ship classes, then it's image to show its stats.
         </Text>
         <View style={styles.image}>
           <View style={{}}>

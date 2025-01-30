@@ -6,10 +6,9 @@ import {
   StyleSheet,
   Pressable,
   StatusBar,
+  Image,
   TouchableOpacity,
   FlatList,
-  Dimensions,
-  Image
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -24,6 +23,7 @@ import { FactionImages } from "../../constants/FactionImages.js";
 export default function Your_Fleet({ type, route }) {
   const navigation = useNavigation();
   const { shipClass } = route.params;
+  console.log("sending class:"  + shipClass);
 
   const [selectedFaction, setSelectedFaction] = useState("");
   const [selectedShip, setSelectedShip] = useState("");
@@ -32,6 +32,7 @@ export default function Your_Fleet({ type, route }) {
   const shipData = factionData ? factionData[selectedShip] : null;
 
   const classImage = shipData ? shipData.classImage : null;
+  console.log("CI:" + classImage, "FD:" + factionData, "SD:" + shipData);
 
   const {
     fighterImages,
@@ -111,37 +112,9 @@ export default function Your_Fleet({ type, route }) {
     setShowCruiserClass(false);
     setShowFighterClass(false);
     setShowDreadnoughtClass(false);
+    setSelectedShip("");
     navigation.navigate("Player");
   };
-
-  useEffect(() => {
-    if (shipClass) {
-      switch (shipClass) {
-        case "fighter":
-          setShowFighterClass(true);
-          setSelectedShip("Fighter");
-          break;
-        case "destroyer":
-          setShowDestroyerClass(true);
-          setSelectedShip("Destroyer");
-          break;
-        case "carrier":
-          setShowCarrierClass(true);
-          setSelectedShip("Carrier");
-          break;
-        case "cruiser":
-          setShowCruiserClass(true);
-          setSelectedShip("Cruiser");
-          break;
-        case "dreadnought":
-          setShowDreadnoughtClass(true);
-          setSelectedShip("Dreadnought");
-          break;
-        default:
-          break;
-      }
-    }
-  }, [shipClass]);
 
   return (
     <SafeAreaView style={[styles.mainContainer]}>
@@ -178,7 +151,7 @@ export default function Your_Fleet({ type, route }) {
               Fighters - {fighterImages.length} Ships
             </Text>
           </View>
-          {shipClass === "fighter" && (
+          {shipClass === "fighter" &&  (
             <View style={styles.imageRow}>
               <FlatList
                 keyExtractor={(item, index) => item.id || index.toString()}
@@ -192,8 +165,11 @@ export default function Your_Fleet({ type, route }) {
                       <EditButtonHP type="fighter" index={index} />
                       <ToggleAttributeButton shipType="fighter" index={index} />
                       <View style={styles.hudContainer}>
-                        <Image style={styles.icon} source={classImage} />
-                      </View>
+                    <Image
+                          style={styles.icon}
+                          source={classImage}
+                        />
+                    </View>
                     </View>
                   </View>
                 )}
@@ -225,10 +201,8 @@ export default function Your_Fleet({ type, route }) {
                       <EditButtonHP type="destroyer" index={index} />
                       <ToggleAttributeButton
                         shipType="destroyer"
-                        index={index}/>
-                      <View style={styles.hudContainer}>
-                        <Image style={styles.icon} source={classImage} />
-                      </View>
+                        index={index}
+                      />
                     </View>
                   </View>
                 )}
@@ -259,9 +233,6 @@ export default function Your_Fleet({ type, route }) {
                     <View style={styles.toggleContainer}>
                       <EditButtonHP type="cruiser" index={index} />
                       <ToggleAttributeButton shipType="cruiser" index={index} />
-                      <View style={styles.hudContainer}>
-                        <Image style={styles.icon} source={classImage} />
-                      </View>
                     </View>
                   </View>
                 )}
@@ -292,9 +263,6 @@ export default function Your_Fleet({ type, route }) {
                     <View style={styles.toggleContainer}>
                       <EditButtonHP type="carrier" index={index} />
                       <ToggleAttributeButton shipType="carrier" index={index} />
-                      <View style={styles.hudContainer}>
-                        <Image style={styles.icon} source={classImage} />
-                      </View>
                     </View>
                   </View>
                 )}
@@ -326,10 +294,8 @@ export default function Your_Fleet({ type, route }) {
                       <EditButtonHP type="dreadnought" index={index} />
                       <ToggleAttributeButton
                         shipType="dreadnought"
-                        index={index}/>
-                    </View>
-                    <View style={styles.hudContainer}>
-                      <Image style={styles.icon} source={classImage} />
+                        index={index}
+                      />
                     </View>
                   </View>
                 )}
@@ -341,7 +307,6 @@ export default function Your_Fleet({ type, route }) {
     </SafeAreaView>
   );
 }
-const { height, width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
@@ -376,14 +341,15 @@ const styles = StyleSheet.create({
     marginRight: 8,
     height: "60%",
   },
-  imageContainer: {
+  imageContainer: {},
+  imageContainerHP: {
     flexDirection: "row",
-    alignItems: "center",
-    padding: 0,
+    alignItems: "space-evenly",
   },
   toggleContainer: {
     flexDirection: "row",
-    alignSelf: "center",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 10,
   },
   textContainer: {
@@ -394,7 +360,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     backgroundColor: Colors.hud,
     width: "60%",
-    borderRadius: 10,
+    borderRadius: 10
   },
   text: {
     color: Colors.white,
@@ -412,11 +378,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   icon: {
-    width: width * 0.2,
-    height: height * 0.2,
-    resizeMode: "center",
-  },
-  hudContainer: {
-    justifyContent: "center",
+    resizeMode: "contain",
+    aspectRatio: 0.25,
   },
 });
