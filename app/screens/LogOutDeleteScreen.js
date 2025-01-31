@@ -82,7 +82,7 @@ export default function LogOutDeleteScreen() {
 
   const getProfile = async () => {
     try {
-      const profilePicture = await AsyncStorage.getItem("");
+      const profilePicture = await AsyncStorage.getItem("ProfilePicture");
       setProfile(profilePicture);
       /* console.log(profilePicture, "was fetched"); */
     } catch (e) {
@@ -141,7 +141,7 @@ export default function LogOutDeleteScreen() {
 
   const renderLabel = () => {
     if (isFocus) {
-      console.log(isFocus);
+     /*  console.log(isFocus); */
       return (
         <Text style={[styles.label, isFocus && { color: Colors.hud }]}>
           Enter a Username
@@ -151,7 +151,7 @@ export default function LogOutDeleteScreen() {
     return null;
   };
 
-  console.log("profile picture is in Logout Screen:", profile);
+/*   console.log("profile picture is in Logout Screen:", profile); */
 
   return (
     <SafeAreaView style={[styles.mainContainer]}>

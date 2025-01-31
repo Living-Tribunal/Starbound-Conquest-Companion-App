@@ -9,11 +9,11 @@ import Rules from "./tabs/Rules";
 import Fleet_Points from "./tabs/Fleet_Points";
 import Login from "./Login";
 import LogOutDeleteScreen from "./screens/LogOutDeleteScreen";
-import Player from "./screens/Player";
+import Player from "./tabs/Player";
 import SpecialOrders  from "./screens/SpecialOrders";
 import index from "./screens/Your_Fleet";
 import WeaponTypes from "./screens/WeaponTypes";
-import GameLore from "./screens/GameLore";
+import GameLore from "./tabs/GameLore";
 import ShipEditScreen from "./screens/ShipEditScreen";
 import { Colors } from "../constants/Colors";
 import {

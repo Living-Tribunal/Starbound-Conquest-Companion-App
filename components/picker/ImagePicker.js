@@ -5,7 +5,7 @@ import { Colors } from "@/constants/Colors";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 
 export default function ImagePickerExample() {
-  const {profile, setProfile } = useStarBoundContext();
+  const { profile, setProfile } = useStarBoundContext();
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -16,10 +16,9 @@ export default function ImagePickerExample() {
       quality: 1,
     });
 
-    console.log(result);
 
     if (!result.canceled) {
-        setProfile(result.assets[0].uri);
+      setProfile(result.assets[0].uri);
     }
   };
 
@@ -28,7 +27,12 @@ export default function ImagePickerExample() {
       <TouchableOpacity style={styles.button} onPress={pickImage}>
         <Text style={styles.text}>Pick An Image For Your Profile Picture</Text>
       </TouchableOpacity>
-      {profile && <Image source={{ uri: profile }} style={styles.image} />}
+      <Image
+        style={styles.image}
+        source={
+          profile ? { uri: profile } : require("../../assets/images/ships.jpg")
+        }
+      />
     </View>
   );
 }
@@ -54,7 +58,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: Colors.hud,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
     fontSize: 12,
     padding: 5,
     textAlign: "center",

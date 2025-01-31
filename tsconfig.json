@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "keep for later/Battleship.js", "components/ships/Carrier.js", "components/ships/Destroyer.js", "components/ships/Dreadnought.js", "Fighter.js", "keep for later/Frigate.js", "assets/App.js", "components/ships/Cruiser.js", "components/Home.js", "keep for later/Heavy_Cruiser.js", "constants/Colors.js", "index.js", "app/index.js", "app/screens/Player.js"  ]
+, "keep for later/Battleship.js", "components/ships/Carrier.js", "components/ships/Destroyer.js", "components/ships/Dreadnought.js", "Fighter.js", "keep for later/Frigate.js", "assets/App.js", "components/ships/Cruiser.js", "components/Home.js", "keep for later/Heavy_Cruiser.js", "constants/Colors.js", "index.js", "app/index.js", "app/tabs/Player.js"  ]
 }

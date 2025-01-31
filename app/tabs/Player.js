@@ -39,7 +39,7 @@ export default function Player() {
     faction,
     setFaction,
     profile,
-    setProfile
+    setProfile,
   } = useStarBoundContext();
 
   const ship = ShipImageLength(
@@ -104,9 +104,8 @@ export default function Player() {
         const profile = await AsyncStorage.getItem("ProfilePicture");
         if (profile) {
           setProfile(profile);
-          console.log("ProfilePicturre fetched: " + profile);
         } else {
-            setProfile("");
+          setProfile("");
         }
       } catch (error) {
         console.error("Failed to retrieve username:", error);
@@ -169,11 +168,11 @@ export default function Player() {
           >
             <Text style={styles.subHeaderText}>
               Welcome to Starbound Conquest! Prepare to command your fleet and
-              conquer the stars. Below, you'll find the username entry field to
-              begin your journey and the fleet overview, offering a quick
-              snapshot of your fleet's status. Use the buttons to navigate to
-              screens where you can manage your ships' stats, toggle their
-              turns, and issue orders.
+              conquer the stars. Below, you'll find a quick snapshot of your
+              fleet's status. Use the buttons to navigate to screens where you
+              can manage your ships' stats, toggle their turns, and issue
+              orders. Also tap on the username to change your Faction, Username
+              and Profie Picture.
             </Text>
           </View>
           <View
@@ -191,31 +190,40 @@ export default function Player() {
               style={({ pressed }) => [styles.textSectionSpecial]}
             >
               {({ pressed }) => (
-                <View style={{ position: "relative" }}>
-                  {/* HUD Image */}
-                  <View style={{alignItems:"center"}}>
+                <View style={{ alignItems: "center" }}>
                   <Image
-                        style={{ width: 100, height: 100 }}
-                        source={profile ? { uri: profile } : require("../../assets/images/ships.jpg")}
-                        />
-                  </View>
-                  
+                    style={styles.profile}
+                    source={
+                      profile
+                        ? { uri: profile }
+                        : require("../../assets/images/ships.jpg")
+                    }
+                  />
                   <Image
                     style={{
                       tintColor: pressed ? Colors.gold : Colors.hud,
                       width: 350,
-                      height: 150,
+                      height: 200,
                       resizeMode: "contain",
                     }}
                     source={require("../../assets/images/titlehud.png")}
                   />
                   {/* Text inside HUD */}
-                  <Text numberOfLines={1} style={styles.playerText}>
+                  <Text
+                    numberOfLines={1}
+                    style={[
+                      styles.playerText,
+                      { fontFamily: "leagueBold", fontSize: 30 },
+                    ]}
+                  >
                     {username || "Commander"}
                   </Text>
                   <Text
                     numberOfLines={1}
-                    style={[styles.playerText, { top: "70%" }]}
+                    style={[
+                      styles.playerText,
+                      { top: "85%", fontStyle: "italic" },
+                    ]}
                   >
                     {faction}
                   </Text>
@@ -342,7 +350,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "monospace",
     width: "100%", // Ensure text stays centered
-    top: "27%", // Adjust based on image size
+    top: "70%", // Adjust based on image size
     transform: [{ translateY: -15 }], // Center vertically
+  },
+  profile: {
+    width: 250,
+    height: 250,
+    borderRadius: 10,
   },
 });
