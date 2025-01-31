@@ -7,7 +7,7 @@ import {
   Pressable,
   TouchableOpacity,
   TextInput,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Colors } from "@/constants/Colors";
@@ -19,17 +19,18 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import Toast from "react-native-toast-message";
 import DropdownComponent from "../../components/dropdown/DropdownComponent";
-import ImagePicker from "../../components/picker/ImagePicker.js"
+import ImagePicker from "../../components/picker/ImagePicker.js";
 
 export default function LogOutDeleteScreen() {
-  const { username, setUsername, faction, setFaction } = useStarBoundContext();
+  const { username, setUsername, faction, setFaction, profile, setProfile } =
+    useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
 
   const showToast = () => {
     Toast.show({
       type: "success",
       text1: "StarBound Conquest",
-      text2: "Your Username and Faction Have Been Saved",
+      text2: "Your Username, Faction, and Profile Picture Saved",
     });
   };
 
@@ -46,8 +47,18 @@ export default function LogOutDeleteScreen() {
     }
   };
 
+  const saveProfile = async () => {
+    try {
+      await AsyncStorage.setItem("ProfilePicture", profile);
+      /* console.log(profile, "was saved"); */
+    } catch (e) {
+      console.error("Error saving name:", e);
+    }
+  };
+
   const saveFaction = async () => {
-    if (faction) { // Ensure faction is not null or undefined
+    if (faction) {
+      // Ensure faction is not null or undefined
       try {
         await AsyncStorage.setItem("Faction", faction);
         /* console.log(faction, "was saved"); */
@@ -69,14 +80,25 @@ export default function LogOutDeleteScreen() {
     }
   };
 
+  const getProfile = async () => {
+    try {
+      const profilePicture = await AsyncStorage.getItem("");
+      setProfile(profilePicture);
+      /* console.log(profilePicture, "was fetched"); */
+    } catch (e) {
+      console.error("Error getting name:", e);
+    }
+  };
+
   const getName = async () => {
     try {
       const name = await AsyncStorage.getItem("UserName");
       setUsername(name);
-      console.log(name, "was fetched");
+      /* console.log(name, "was fetched"); */
     } catch (e) {
       console.error("Error getting name:", e);
     }
+    ProfilePicture;
   };
   const deleteAsync = async () => {
     try {
@@ -89,6 +111,7 @@ export default function LogOutDeleteScreen() {
   useEffect(() => {
     getName();
     getFaction();
+    getProfile();
   }, []);
 
   const deleteName = async () => {
@@ -99,9 +122,21 @@ export default function LogOutDeleteScreen() {
       console.error("Error deleting name:", e);
     }
   };
-
-  const emptyInput = () => {
-    setUsername(" ");
+  const deleteFaction = async () => {
+    try {
+      await AsyncStorage.removeItem("Faction");
+      setFaction("Nova Raiders");
+    } catch (e) {
+      console.error("Error deleting name:", e);
+    }
+  };
+  const deleteProfilePicture = async () => {
+    try {
+      await AsyncStorage.removeItem("ProfilePicture");
+      setProfile("");
+    } catch (e) {
+      console.error("Error deleting name:", e);
+    }
   };
 
   const renderLabel = () => {
@@ -116,150 +151,165 @@ export default function LogOutDeleteScreen() {
     return null;
   };
 
+  console.log("profile picture is in Logout Screen:", profile);
+
   return (
-    <SafeAreaView  style={[styles.mainContainer]}>
-        <ScrollView contentContainerStyle={{flex: 1}} keyboardShouldPersistTaps="never" >
-      <View style={styles.container}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <TouchableOpacity onPress={() => navigation.navigate("Player")}>
-            <Image
-              style={styles.image}
-              source={require("../../assets/icons/icons8-back-arrow-50.png")}
-            />
-          </TouchableOpacity>
-          <Text style={[styles.text, { left: 40 }]}>Settings</Text>
-        </View>
-        <View style={{ flex: 1, alignItems: "center" }}>
+    <SafeAreaView style={[styles.mainContainer]}>
+      <ScrollView
+        contentContainerStyle={{ flex: 1 }}
+        keyboardShouldPersistTaps="never"
+      >
+        <View style={styles.container}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity onPress={() => navigation.navigate("Player")}>
+              <Image
+                style={styles.image}
+                source={require("../../assets/icons/icons8-back-arrow-50.png")}
+              />
+            </TouchableOpacity>
+            <Text style={[styles.text, { left: 40 }]}>Settings</Text>
+          </View>
+          <View style={{ flex: 1, alignItems: "center" }}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "flex-end",
+                alignItems: "center",
+                bottom: 10,
+                flexDirection: "row",
+              }}
+            >
+              <Text style={styles.subHeaderText}>
+                Enter your username below and tap 'Save' to update it. You can
+                also remove your username if necessary. Don’t forget to select
+                your faction. Additionally, you have the option to log out or
+                permanently delete your account. Please note that once deleted,
+                your account cannot be recovered.
+              </Text>
+            </View>
+          </View>
           <View
-            style={{
-              flex: 1,
-              justifyContent: "flex-end",
-              alignItems: "center",
-              bottom: 10,
-              flexDirection: "row",
-            }}
+            style={{ flex: 5, justifyContent: "center", alignItems: "center" }}
           >
-            <Text style={styles.subHeaderText}>
-            Enter your username below and tap 'Save' to update it. You can also remove your username if necessary. Don’t forget to select your faction. Additionally, you have the option to log out or permanently delete your account. Please note that once deleted, your account cannot be recovered.
-            </Text>
-          </View>
-        </View>
-        <View
-          style={{ flex: 5, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text style={{ color: Colors.hud, marginBottom: 10 }}>
-          <ImagePicker />
-          </Text>
-          <View style={{ width: "80%", position: "relative" }}>
-            {renderLabel()}
-            <TextInput
-              maxLength={12}
-              style={styles.textInput}
-              onChangeText={(text) => {
-                setUsername(text.trimStart());
-              }}
-              placeholder={!isFocus ? 'Enter a Username' : ''}
-              value={username}
-              onFocus={() => setIsFocus(true)}
-              onBlur={() => setIsFocus(false)}
-            />
-          </View>
-          <View style={{ width: "100%" }}>
-            <DropdownComponent />
-          </View>
+            <ImagePicker />
+            <View style={{ width: "80%", position: "relative" }}>
+              {renderLabel()}
+              <TextInput
+                maxLength={12}
+                style={styles.textInput}
+                onChangeText={(text) => {
+                  setUsername(text.trimStart());
+                }}
+                placeholder={!isFocus ? "Enter a Username" : ""}
+                value={username}
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
+              />
+            </View>
+            <View style={{ width: "100%" }}>
+              <DropdownComponent />
+            </View>
 
-          <View style={styles.heroModalContainerButtons}>
+            <View style={styles.heroModalContainerButtons}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  saveName();
+                  saveFaction();
+                  showToast();
+                  saveProfile();
+                }}
+              >
+                <Image
+                  source={require("../../assets/icons/icons8-save-50.png")}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    marginTop: 5,
+                  }}
+                />
+                <Image
+                  style={{ width: 60, height: 60, position: "absolute" }}
+                  source={require("../../assets/images/edithud.png")}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onLongPress={() => {
+                  deleteFaction();
+                  deleteName();
+                  deleteProfilePicture();
+                }}
+              >
+                <Image
+                  source={require("../../assets/icons/delete50.png")}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    marginTop: 5,
+                  }}
+                />
+                <Image
+                  style={{ width: 60, height: 60, position: "absolute" }}
+                  source={require("../../assets/images/edithud.png")}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.TouchableOpacityContainer}>
             <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                saveName();
-                saveFaction();
-                showToast();
-              }}
+              onPress={() => FIREBASE_AUTH.signOut()}
+              style={styles.deleteButton}
             >
-              <Image
-                source={require("../../assets/icons/icons8-save-50.png")}
+              <Text
                 style={{
-                  width: 25,
-                  height: 25,
-                  marginTop: 5,
+                  color: Colors.white,
+                  fontFamily: "monospace",
+                  fontSize: 15,
+                  textAlign: "center",
+                  padding: 10,
+                  top: 30,
+                  zIndex: 100,
                 }}
-              />
+              >
+                Logout
+              </Text>
               <Image
-                style={{ width: 60, height: 60, position: "absolute" }}
-                source={require("../../assets/images/edithud.png")}
+                style={{
+                  width: 160,
+                  height: 100,
+                  position: "absolute",
+                }}
+                source={require("../../assets/images/logout.png")}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onLongPress={deleteName}>
-              <Image
-                source={require("../../assets/icons/delete50.png")}
+
+            <TouchableOpacity
+              onLongPress={() => {
+                FIREBASE_AUTH.currentUser?.delete(), deleteAsync();
+              }}
+              style={styles.deleteButton}
+            >
+              <Text
                 style={{
-                  width: 25,
-                  height: 25,
-                  marginTop: 5,
+                  color: Colors.white,
+                  fontFamily: "monospace",
+                  fontSize: 15,
+                  textAlign: "center",
+                  padding: 10,
+                  top: 35,
+                  zIndex: 100,
                 }}
-              />
+              >
+                Delete
+              </Text>
               <Image
-                style={{ width: 60, height: 60, position: "absolute" }}
-                source={require("../../assets/images/edithud.png")}
+                style={{ width: 130, height: 90, position: "absolute" }}
+                source={require("../../assets/images/delete.png")}
               />
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.TouchableOpacityContainer}>
-          <TouchableOpacity
-            onPress={() => FIREBASE_AUTH.signOut()}
-            style={styles.deleteButton}
-          >
-            <Text
-              style={{
-                color: Colors.white,
-                fontFamily: "monospace",
-                fontSize: 15,
-                textAlign: "center",
-                padding: 10,
-                top: 30,
-                zIndex: 100,
-              }}
-            >
-              Logout
-            </Text>
-            <Image
-              style={{
-                width: 160,
-                height: 100,
-                position: "absolute",
-              }}
-              source={require("../../assets/images/logout.png")}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onLongPress={() => {
-              FIREBASE_AUTH.currentUser?.delete(), deleteAsync();
-            }}
-            style={styles.deleteButton}
-          >
-            <Text
-              style={{
-                color: Colors.white,
-                fontFamily: "monospace",
-                fontSize: 15,
-                textAlign: "center",
-                padding: 10,
-                top: 35,
-                zIndex: 100,
-              }}
-            >
-              Delete
-            </Text>
-            <Image
-              style={{ width: 130, height: 90, position: "absolute" }}
-              source={require("../../assets/images/delete.png")}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
       </ScrollView>
     </SafeAreaView>
   );

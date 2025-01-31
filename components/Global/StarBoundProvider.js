@@ -14,6 +14,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
     const [carrierImages, setCarrierImages] = useState([]);
     const [dreadnoughtImages, setDreadnoughtImages] = useState([]);
 
+    const [profile, setProfile] = useState(null);
+
     const [text, setText] = useState('0');
 
     const[faction, setFaction] = useState('');
@@ -57,7 +59,9 @@ return (
 
         text, setText,
 
-        faction, setFaction
+        faction, setFaction,
+
+        profile, setProfile
         
         }}>
         {[children, shipType]}

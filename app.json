@@ -3,7 +3,7 @@
     "name": "StarBoundConquest",
     "slug": "StarBoundConquest",
     "version": "1.1.0",
-    "orientation": "portrait, landscape",
+    "orientation": "portrait",
     "newArchEnabled": true,
     "icon": "./assets/images/sbcq.png",
     "scheme": "myapp",
@@ -21,7 +21,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/sbcq.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "transparent"
       },
       "package": "com.happybob59.StarBoundConquest"
     },

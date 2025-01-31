@@ -38,6 +38,8 @@ export default function Player() {
     setDreadnoughtImages,
     faction,
     setFaction,
+    profile,
+    setProfile
   } = useStarBoundContext();
 
   const ship = ShipImageLength(
@@ -95,6 +97,23 @@ export default function Player() {
       loadCounts();
     }, [])
   );
+
+  useEffect(() => {
+    const getProfilePicture = async () => {
+      try {
+        const profile = await AsyncStorage.getItem("ProfilePicture");
+        if (profile) {
+          setProfile(profile);
+          console.log("ProfilePicturre fetched: " + profile);
+        } else {
+            setProfile("");
+        }
+      } catch (error) {
+        console.error("Failed to retrieve username:", error);
+      }
+    };
+    getProfilePicture();
+  }, []);
 
   useEffect(() => {
     const getUserName = async () => {
@@ -174,6 +193,13 @@ export default function Player() {
               {({ pressed }) => (
                 <View style={{ position: "relative" }}>
                   {/* HUD Image */}
+                  <View style={{alignItems:"center"}}>
+                  <Image
+                        style={{ width: 100, height: 100 }}
+                        source={profile ? { uri: profile } : require("../../assets/images/ships.jpg")}
+                        />
+                  </View>
+                  
                   <Image
                     style={{
                       tintColor: pressed ? Colors.gold : Colors.hud,
