@@ -26,11 +26,14 @@
     "@react-navigation/drawer": "^7.0.0",
     "@react-navigation/native": "^7.0.0",
     "@shopify/react-native-skia": "1.5.0",
+    "@tanstack/react-query": "^5.66.0",
+    "axios": "^1.7.9",
     "expo": "~52.0.26",
     "expo-blur": "~14.0.3",
     "expo-constants": "~17.0.3",
     "expo-dev-client": "~5.0.10",
     "expo-font": "~13.0.2",
+    "expo-image-picker": "~16.0.4",
     "expo-linking": "~7.0.4",
     "expo-router": "~4.0.17",
     "expo-splash-screen": "~0.29.21",
@@ -49,8 +52,7 @@
     "react-native-svg": "15.8.0",
     "react-native-toast-message": "^2.2.1",
     "react-native-web": "^0.19.13",
-    "recyclerlistview": "^4.2.1",
-    "expo-image-picker": "~16.0.4"
+    "recyclerlistview": "^4.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

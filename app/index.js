@@ -10,11 +10,12 @@ import Fleet_Points from "./tabs/Fleet_Points";
 import Login from "./Login";
 import LogOutDeleteScreen from "./screens/LogOutDeleteScreen";
 import Player from "./tabs/Player";
-import SpecialOrders  from "./screens/SpecialOrders";
+import SpecialOrders from "./screens/SpecialOrders";
 import index from "./screens/Your_Fleet";
 import WeaponTypes from "./screens/WeaponTypes";
 import GameLore from "./tabs/GameLore";
 import ShipEditScreen from "./screens/ShipEditScreen";
+import API from "./tabs/API";
 import { Colors } from "../constants/Colors";
 import {
   StarBoundProvider,
@@ -24,13 +25,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getAuth } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { LoadFonts, FONTS } from "../constants/fonts";
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
 
 /* const Drawer = createDrawerNavigator(); */
 const Tab = createBottomTabNavigator();
 
 export default function Index() {
-    const fontsLoaded = LoadFonts();
+  const fontsLoaded = LoadFonts();
   //custom tabBarButton
   const TabBarAdvancedButton = ({ focused, ...props }) => {
     return (
@@ -114,17 +115,16 @@ export default function Index() {
     }
   });
 
-    useEffect(() => {
-      if (fontsLoaded) {
-          SplashScreen.hideAsync();
-        }
-    },[]);
-  
-    if (!fontsLoaded) {
-      console.log("No fonts loaded in index");
-      return null;
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
     }
-  
+  }, []);
+
+  if (!fontsLoaded) {
+    console.log("No fonts loaded in index");
+    return null;
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.dark_gray }}>
@@ -173,6 +173,23 @@ export default function Index() {
           <Tab.Screen
             name="Stats"
             component={ShipStats}
+            options={{
+              tabBarIcon: ({ focused, size }) => (
+                <Image
+                  source={require("../assets/icons/icons8-stats-64.png")}
+                  style={{
+                    height: 25,
+                    width: 25,
+                    tintColor: focused ? Colors.hud : Colors.white,
+                  }}
+                  resizeMode="contain"
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="API"
+            component={API}
             options={{
               tabBarIcon: ({ focused, size }) => (
                 <Image
@@ -315,16 +332,16 @@ export default function Index() {
             screenOptions={{ headerShown: false }}
           />
           <Tab.Screen
-          name="GameLore"
-          component={GameLore}
-          options={{
-            tabBarItemStyle: { display: "none" },
-            tabBarStyle: { display: "none" },
-            headerShown: false,
-          }}
-          screenOptions={{ headerShown: false }}
-        />
-        <Tab.Screen
+            name="GameLore"
+            component={GameLore}
+            options={{
+              tabBarItemStyle: { display: "none" },
+              tabBarStyle: { display: "none" },
+              headerShown: false,
+            }}
+            screenOptions={{ headerShown: false }}
+          />
+          <Tab.Screen
             name="Edit Ship"
             component={ShipEditScreen}
             options={{

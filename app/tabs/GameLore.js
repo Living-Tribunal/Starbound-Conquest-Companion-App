@@ -29,7 +29,12 @@ export default function GameLore() {
                 <TouchableOpacity
                   style={styles.touchable}
                   onPress={() => {
-                    navigation.navigate("Edit Ship", { factionName: name, factionImage: data.image, description: data.description, });
+                    navigation.navigate("Edit Ship", { 
+                        factionName: name, 
+                        factionImage: data.image, 
+                        description: data.description,
+                        ship: data.ship,
+                      });
                   }}
                 >
                   <Image source={data.image} style={styles.image} />
@@ -65,9 +70,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 250,
+    height: 250,
     resizeMode: "contain",
+    borderRadius: 5
   },
   infoContainer: {
     backgroundColor: Colors.hudDarker,
@@ -76,6 +82,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 5,
+    borderRadius: 5
   },
   typeText: {
     color: Colors.white,
