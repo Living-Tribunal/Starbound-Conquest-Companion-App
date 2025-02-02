@@ -6,6 +6,7 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  FlatList,
   Pressable,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -17,11 +18,26 @@ import { useNavigation } from "@react-navigation/native";
 import { FONTS } from "../../constants/fonts";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { ShipImageLength } from "../../constants/ShipImageLength";
-
+import API from "./API";
+import ShipFlatlist from "../../components/shipdata/ShipFlatlist";
 export default function Player() {
   const navigation = useNavigation();
 
   const tabBarHeight = useBottomTabBarHeight();
+
+  /*   const auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+        const email = user.email;
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/auth.user
+      const uid = user.uid;
+      // ...
+    } else {
+      // User is signed out
+      // ...
+    }
+  }); */
 
   const {
     username,
@@ -40,17 +56,20 @@ export default function Player() {
     setFaction,
     profile,
     setProfile,
+    data,
+    setData,
   } = useStarBoundContext();
 
-  const ship = ShipImageLength(
+
+/*   const ship = ShipImageLength(
     fighterImages,
     destroyerImages,
     cruiserImages,
     carrierImages,
     dreadnoughtImages
-  );
+  ); */
 
-  useFocusEffect(
+ /*  useFocusEffect(
     useCallback(() => {
       const loadCounts = async () => {
         try {
@@ -97,7 +116,7 @@ export default function Player() {
       loadCounts();
     }, [])
   );
-
+ */
   useEffect(() => {
     const getProfilePicture = async () => {
       try {
@@ -119,7 +138,7 @@ export default function Player() {
       try {
         const username = await AsyncStorage.getItem("UserName");
         if (username) {
-          setUsername(username); // Only set if a username exists
+          setUsername(username);
         } else {
           setUsername("Commander");
         }
@@ -145,6 +164,8 @@ export default function Player() {
     };
     getFaction();
   }, []);
+
+  console.log(JSON.stringify(data) + "is in player");
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.dark_gray }}>
@@ -174,6 +195,9 @@ export default function Player() {
               orders. Also tap on the username to change your Faction, Username
               and Profie Picture.
             </Text>
+          </View>
+          <View style={{ alignItems: "center", marginTop: 10 }}>
+            <API />
           </View>
           <View
             style={{
@@ -232,37 +256,17 @@ export default function Player() {
             </Pressable>
           </View>
           <Text style={styles.textSub}>Fleet Overview</Text>
-
-          <View style={styles.shipContainer}>
-            {Object.entries(ship).map(([shipClass, { type, value }], index) => (
-              <View style={styles.shipItem} key={shipClass}>
-                <TouchableOpacity
-                  style={styles.touchable}
-                  onPress={() => {
-                    navigation.navigate("Fleet", { shipClass });
-                  }}
-                >
-                  <Image
-                    source={require("../../assets/images/6966409.png")}
-                    style={styles.image}
-                  />
-                  <View
-                    style={{
-                      backgroundColor: Colors.hudDarker,
-                      width: "100%",
-                      height: "40%",
-                      justifyContent: "center",
-                      zIndex: 10,
-                    }}
-                  >
-                    <Text style={styles.typeText}>{type}</Text>
-                  </View>
-
-                  <Text style={styles.valueStat}>{value}</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
+          <Text style={styles.textUnder}>Fighters</Text>
+          <ShipFlatlist type="Fighter" fleetClass="fleetFighter" />
+          <Text style={styles.textUnder}>Destroyers</Text>
+          <ShipFlatlist type="Destroyer" fleetClass="fleetDestroyer" />
+          <Text style={styles.textUnder}>Cruisers</Text>
+          <ShipFlatlist type="Cruiser" fleetClass="fleetCruiser" />
+          <Text style={styles.textUnder}>Carriers</Text>
+          <ShipFlatlist type="Carrier" fleetClass="fleetCarrier" />
+          <Text style={styles.textUnder}>Dreadnoughts</Text>
+          <ShipFlatlist type="Dreadnought" fleetClass="fleetDreadnought" />
+          
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -277,7 +281,14 @@ const styles = StyleSheet.create({
   textSub: {
     fontSize: 30,
     color: Colors.white,
-    fontFamily: FONTS.leagueRegular,
+    fontFamily: FONTS.leagueBold,
+    textAlign: "center",
+    marginBottom: 20,
+    marginTop: 30,
+  },textUnder:{
+    fontSize: 20,
+    color: Colors.white,
+    fontFamily: "monospace",
     textAlign: "center",
     marginBottom: 20,
     marginTop: 30,
@@ -306,15 +317,12 @@ const styles = StyleSheet.create({
     tintColor: Colors.hud,
   },
   typeText: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: "bold",
     color: Colors.hudDarker,
-    zIndex: 1,
     padding: 4,
     fontFamily: "leagueBold",
-    letterSpacing: 2,
     backgroundColor: Colors.hud,
-    elevation: 8,
     width: "100%",
     borderWidth: 2,
     borderColor: Colors.hudDarker,

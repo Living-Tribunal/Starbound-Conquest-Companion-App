@@ -15,7 +15,6 @@ import index from "./screens/Your_Fleet";
 import WeaponTypes from "./screens/WeaponTypes";
 import GameLore from "./tabs/GameLore";
 import ShipEditScreen from "./screens/ShipEditScreen";
-import API from "./tabs/API";
 import { Colors } from "../constants/Colors";
 import {
   StarBoundProvider,
@@ -173,23 +172,6 @@ export default function Index() {
           <Tab.Screen
             name="Stats"
             component={ShipStats}
-            options={{
-              tabBarIcon: ({ focused, size }) => (
-                <Image
-                  source={require("../assets/icons/icons8-stats-64.png")}
-                  style={{
-                    height: 25,
-                    width: 25,
-                    tintColor: focused ? Colors.hud : Colors.white,
-                  }}
-                  resizeMode="contain"
-                />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="API"
-            component={API}
             options={{
               tabBarIcon: ({ focused, size }) => (
                 <Image

@@ -1,70 +1,71 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Button, Image } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useState, useEffect, useCallback } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useStarBoundContext } from "@/components/Global/StarBoundProvider";
 
 export default function API() {
-  const shipsURL = "https://starboundconquest.com/load-ship-data";
+  const [email, setEmail] = useState(null);
+  const [username, setUsername] = useState(null);
+  const { data, setData } = useStarBoundContext();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState([]);
+  const auth = getAuth();
 
-  const getShips = () => {
-    setIsLoading(true);
-    fetch(shipsURL)
-      .then((response) => response.json())
-      .then((json) => setData(json.ships))
-      .catch((error) => console.error("Error:", error))
-      .finally(() => setIsLoading(false));
-  };
+  // Get authenticated user's email
+  useEffect(() => {
+    const userInformation = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setEmail(user.email);
+        setUsername(user.email);
+        console.log("User email:", user.email);
 
-  return (
-    <View>
-        <Button title="Get Ship Data" 
-    onPress={getShips} color="green" />
-      {isLoading ? (
-        <ActivityIndicator />
-      ) : (
-        <FlatList
-          data={data}
-          keyExtractor={({ id }, index) => id}
-          renderItem={({ item }) => {
-            return (
-              <View style={styles.item}>
-                <Text style={styles.title}>
-                  {item.shipId}, {item.type}, {item.user}
-                </Text>
-                {item.image ? (
-                <Image source={{ uri: item.image }} style={styles.image} />
-              ) : (
-                <Text>No Image Available</Text>
-              )}
-              </View>
-            );
-          }}
-        />
-      )}
-    </View>
-  );
+        // Load saved fleet data
+        const savedData = await AsyncStorage.getItem(`fleetData_${user.email}`);
+        if (savedData) {
+          setData(JSON.parse(savedData)); // Set cached data
+        }
+
+        // Fetch fresh data
+        getUserFleetData();
+      } else {
+        setEmail(null);
+        setUsername(null);
+        setData([]); // Clear data on logout
+      }
+    });
+
+    return () => userInformation();
+  }, []);
+
+  // Fetch fleet data and store in AsyncStorage
+  const getUserFleetData = useCallback(async () => {
+    if (!username) return;
+
+    const userShipsURL = `https://starboundconquest.com/user-ships/${username}`;
+
+    try {
+      const response = await fetch(userShipsURL);
+      const json = await response.json();
+
+      if (JSON.stringify(json.ships) !== JSON.stringify(data)) {
+        setData(json.ships);
+
+        // Store in AsyncStorage
+        await AsyncStorage.setItem(`fleetData_${username}`, JSON.stringify(json.ships));
+      }
+    } catch (error) {
+      console.error("Error fetching user fleet data:", error);
+    } 
+  }, [username, data]);
+
+  // Fetch periodically (every 5 seconds)
+  useEffect(() => {
+    if (!username) return;
+
+    const intervalCall = setInterval(getUserFleetData, 5000); // Fetch every 5 seconds
+
+    return () => clearInterval(intervalCall); // Cleanup interval
+  }, [username, data]);
+
+  return null; // Your UI components here
 }
 
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      paddingTop: 20,
-    },
-    item: {
-      padding: 10,
-      backgroundColor: "#f9c23c",
-      marginVertical: 8,
-      marginHorizontal: 16,
-    },
-    title: {
-      fontSize: 24,
-    },
-    image: {
-        width: 200,  // Adjust to preferred size
-        height: 150,
-        resizeMode: "cover",
-        marginTop: 10,
-        borderRadius: 8,
-      },
-  });
