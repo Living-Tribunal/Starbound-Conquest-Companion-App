@@ -13,7 +13,7 @@ import React, { useState, useEffect } from "react";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { FIREBASE_AUTH } from "@/FirebaseConfig";
-import { getAuth } from "firebase/auth";
+import { getAuth, updateProfile, deleteUser  } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
@@ -30,8 +30,30 @@ export default function LogOutDeleteScreen() {
     Toast.show({
       type: "success",
       text1: "StarBound Conquest",
-      text2: "Your Username, Faction, and Profile Picture Saved",
+      text2: "Username, Faction, and Profile Picture were Saved",
     });
+  };
+
+  const showErrorToast = () => {
+    Toast.show({
+      type: "error",
+      text1: "StarBound Conquest",
+      text2: "Check Your Fields.",
+    });
+  };
+
+  const checkForUsernamePhotoFaction = () => {
+    if (!username || !faction || !profile) { // Check for empty fields
+      showErrorToast(); // Show error if any field is empty
+      return false;
+    } else {
+      showToast();
+      saveName();
+      saveFaction();
+      saveProfile();
+      saveUsername();
+      return true;
+    }
   };
 
   const navigation = useNavigation();
@@ -47,10 +69,38 @@ export default function LogOutDeleteScreen() {
     }
   };
 
+  const deleteAuthUser = async () => {
+    deleteUser(user)
+      .then(() => {
+        // User deleted.
+      })
+      .catch((error) => {
+        // An error ocurred
+        // ...
+      });
+  };
+
+  const saveUsername = async () => {
+    if (!auth.currentUser) {
+      console.warn("No user is authenticated.");
+      return;
+    }
+  
+    try {
+      await updateProfile(auth.currentUser, {
+        displayName: username,
+        photoURL: profile,
+      });
+      console.log(profile, username, "were saved to Auth");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
+
   const saveProfile = async () => {
     try {
       await AsyncStorage.setItem("ProfilePicture", profile);
-      /* console.log(profile, "was saved"); */
+      console.log(profile, "was saved");
     } catch (e) {
       console.error("Error saving name:", e);
     }
@@ -72,11 +122,10 @@ export default function LogOutDeleteScreen() {
 
   const getFaction = async () => {
     try {
-      const facetionName = await AsyncStorage.getItem("Faction");
-      setFaction(facetionName);
-      /* console.log(facetionName, "was fetched"); */
+      const factionName = await AsyncStorage.getItem("Faction");
+      setFaction(factionName || "Nova Raiders"); // Default fallback value
     } catch (e) {
-      console.error("Error getting name:", e);
+      console.error("Error getting faction:", e);
     }
   };
 
@@ -94,12 +143,13 @@ export default function LogOutDeleteScreen() {
     try {
       const name = await AsyncStorage.getItem("UserName");
       setUsername(name);
-      /* console.log(name, "was fetched"); */
+      console.log(name, "was fetched");
     } catch (e) {
       console.error("Error getting name:", e);
     }
     ProfilePicture;
   };
+
   const deleteAsync = async () => {
     try {
       await AsyncStorage.clear();
@@ -117,31 +167,45 @@ export default function LogOutDeleteScreen() {
   const deleteName = async () => {
     try {
       await AsyncStorage.removeItem("UserName");
-      setUsername("");
+      setUsername(""); // Reset state
     } catch (e) {
       console.error("Error deleting name:", e);
     }
   };
+  
   const deleteFaction = async () => {
     try {
       await AsyncStorage.removeItem("Faction");
-      setFaction("Nova Raiders");
+      setFaction("Nova Raiders"); // Default fallback
     } catch (e) {
-      console.error("Error deleting name:", e);
+      console.error("Error deleting faction:", e);
     }
   };
+  
   const deleteProfilePicture = async () => {
     try {
       await AsyncStorage.removeItem("ProfilePicture");
-      setProfile("");
+      setProfile(""); // Reset profile state
     } catch (e) {
-      console.error("Error deleting name:", e);
+      console.error("Error deleting profile picture:", e);
+    }
+  };
+
+  const handleAccountDeletion = async () => {
+    try {
+      if (FIREBASE_AUTH.currentUser) {
+        await FIREBASE_AUTH.currentUser.delete();
+      }
+      await deleteAsync();
+      console.log("Account deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting account:", error);
     }
   };
 
   const renderLabel = () => {
     if (isFocus) {
-     /*  console.log(isFocus); */
+      /*  console.log(isFocus); */
       return (
         <Text style={[styles.label, isFocus && { color: Colors.hud }]}>
           Enter a Username
@@ -151,7 +215,7 @@ export default function LogOutDeleteScreen() {
     return null;
   };
 
-/*   console.log("profile picture is in Logout Screen:", profile); */
+  console.log("profile picture is in Logout Screen:", profile);
 
   return (
     <SafeAreaView style={[styles.mainContainer]}>
@@ -180,11 +244,11 @@ export default function LogOutDeleteScreen() {
               }}
             >
               <Text style={styles.subHeaderText}>
-                Enter your username below and tap 'Save' to update it. You can
-                also remove your username if necessary. Don’t forget to select
-                your faction. Additionally, you have the option to log out or
-                permanently delete your account. Please note that once deleted,
-                your account cannot be recovered.
+                Enter or update your username below and tap 'Save' to update it.
+                You can also remove your username if necessary. Don’t forget to
+                select your profile picture. Additionally, you have the option
+                to log out or permanently delete your account. Please note that
+                once deleted, your account cannot be recovered.
               </Text>
             </View>
           </View>
@@ -214,10 +278,7 @@ export default function LogOutDeleteScreen() {
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
-                  saveName();
-                  saveFaction();
-                  showToast();
-                  saveProfile();
+                    checkForUsernamePhotoFaction();
                 }}
               >
                 <Image
@@ -239,6 +300,7 @@ export default function LogOutDeleteScreen() {
                   deleteFaction();
                   deleteName();
                   deleteProfilePicture();
+                  deleteAuthUser();
                 }}
               >
                 <Image
@@ -284,12 +346,8 @@ export default function LogOutDeleteScreen() {
               />
             </TouchableOpacity>
 
-            <TouchableOpacity
-              onLongPress={() => {
-                FIREBASE_AUTH.currentUser?.delete(), deleteAsync();
-              }}
-              style={styles.deleteButton}
-            >
+            <TouchableOpacity onLongPress={handleAccountDeletion} style={styles.deleteButton}>
+
               <Text
                 style={{
                   color: Colors.white,

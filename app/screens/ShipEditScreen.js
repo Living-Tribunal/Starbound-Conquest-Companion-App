@@ -12,15 +12,24 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import { FONTS } from "@/constants/fonts";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 export default function ShipEditScreen() {
   const route = useRoute();
   const { factionName, factionImage, description, ship } = route.params || {};
   const navigation = useNavigation();
+  const tabBarHeight = useBottomTabBarHeight();
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <ScrollView style={{ flexGrow: 1 }}>
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: tabBarHeight + 100,
+          backgroundColor: Colors.dark_gray,
+        }}
+        keyboardShouldPersistTaps="handled"
+      >
         <View
           style={{
             flexDirection: "row",
@@ -48,11 +57,11 @@ export default function ShipEditScreen() {
             <View>
               <Image
                 source={factionImage}
-                style={{ width: 200, height: 200, borderRadius: 5, }}
+                style={{ width: 200, height: 200, borderRadius: 5 }}
               />
             </View>
             <View>
-            <View style={styles.textSectionContainer}>
+              <View style={styles.textSectionContainer}>
                 <Image
                   style={styles.textContainer2}
                   source={require("../../assets/images/hud2.png")}

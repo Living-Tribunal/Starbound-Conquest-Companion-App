@@ -106,7 +106,7 @@ export default function Fleet_Points() {
     }
   };
 
-  useEffect(() => {
+  /* useEffect(() => {
     const loadCounts = async () => {
       try {
         const savedFighterCount = await AsyncStorage.getItem("fighterCount");
@@ -144,7 +144,7 @@ export default function Fleet_Points() {
     };
 
     loadCounts();
-  }, []);
+  }, []); */
 
   useEffect(() => {
     const getUserName = async () => {
@@ -162,7 +162,7 @@ export default function Fleet_Points() {
     getUserName();
   }, []);
 
-  // Save combined data to AsyncStorage
+/*   // Save combined data to AsyncStorage
   const saveFleetData = async (newCount, newFleetValue, shipType) => {
     try {
       await AsyncStorage.setItem(`${shipType}Count`, JSON.stringify(newCount));
@@ -170,7 +170,7 @@ export default function Fleet_Points() {
     } catch (e) {
       console.error("Failed to save fleet data:", e);
     }
-  };
+  }; */
 
   const clearStorage = async () => {
     try {

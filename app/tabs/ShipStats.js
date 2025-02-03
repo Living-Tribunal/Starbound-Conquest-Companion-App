@@ -19,6 +19,7 @@ import { shipDiceMapping } from "../../components/buttons/Dice.js";
 import { FactionImages } from "../../constants/FactionImages.js";
 import { FONTS } from "../../constants/fonts";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 export default function ShipStats() {
   const { showStat, handlePress, showAllStat } = ShowStat();
@@ -26,6 +27,8 @@ export default function ShipStats() {
   const [pressed, setPressed] = useState(true);
   const [selectedShip, setSelectedShip] = useState("Fighter");
   const [selectedFaction, setSelectedFaction] = useState("Nova Raiders");
+
+  const tabBarHeight = useBottomTabBarHeight();
 
   const { faction } = useStarBoundContext();
 
@@ -73,7 +76,10 @@ export default function ShipStats() {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <StatusBar />
-      <ScrollView nestedScrollEnabled style>
+      <ScrollView nestedScrollEnabled contentContainerStyle={{
+              flexGrow: 1,
+              paddingBottom: tabBarHeight,
+            }}>
         <Text style={styles.subHeaderText}>
           Tap one of the ship classes, then it's image to show its stats.
         </Text>
@@ -477,7 +483,7 @@ export default function ShipStats() {
         <View style={styles.buttonContainer}>
           <View style={{ width: "95%" }}>
             <View
-              style={[styles.statButton, { marginBottom: 40, marginTop: 30 }]}
+              style={[styles.statButton, { marginBottom: 40, marginTop: 40 }]}
             >
               <TouchableOpacity
                 style={{ backgroundColor: "transparent", width: "100%" }}

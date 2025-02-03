@@ -57,7 +57,7 @@ export default function Your_Fleet({ type, route }) {
     console.log(faction);
   }, [faction]);
 
-  useFocusEffect(
+/*   useFocusEffect(
     useCallback(() => {
       const loadCounts = async () => {
         try {
@@ -77,9 +77,9 @@ export default function Your_Fleet({ type, route }) {
             dreadnoughtCount: parseInt(savedDreadnoughtCount) || 0,
             cruiserCount: parseInt(savedCruiserCount) || 0,
             destroyerCount: parseInt(savedDestroyerCount) || 0,
-          };
+          }; */
 
-          setFighterImages(
+          /* setFighterImages(
             Array.from({ length: counts.fighterCount }, (_, i) => ({ id: i }))
           );
           setDestroyerImages(
@@ -113,7 +113,7 @@ export default function Your_Fleet({ type, route }) {
     setShowDreadnoughtClass(false);
     navigation.navigate("Player");
   };
-
+ */
   useEffect(() => {
     if (shipClass) {
       switch (shipClass) {

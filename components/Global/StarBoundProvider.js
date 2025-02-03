@@ -63,7 +63,9 @@ return (
         faction, setFaction,
 
         profile, setProfile,
-        data, setData
+        
+        data, setData,
+        
         
         }}>
         {[children, shipType]}

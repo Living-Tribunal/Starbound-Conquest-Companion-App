@@ -1,92 +1,88 @@
 import {
-  View,
-  Text,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  ActivityIndicator,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  SafeAreaView,
-} from "react-native";
-import React, { useState, useEffect } from "react";
-import { useLocalSearchParams } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { FIREBASE_AUTH } from "../FirebaseConfig";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { router } from "expo-router";
-import { Colors } from "@/constants/Colors";
-import { FONTS } from "../constants/fonts";
+    View,
+    Text,
+    StyleSheet,
+    KeyboardAvoidingView,
+    Platform,
+    ActivityIndicator,
+    Image,
+    TextInput,
+    TouchableOpacity,
+    Alert,
+    SafeAreaView,
+  } from "react-native";
+  import React, { useState, useEffect } from "react";
+  import { useLocalSearchParams } from "expo-router";
+  import AsyncStorage from "@react-native-async-storage/async-storage";
+  import { FIREBASE_AUTH } from "../FirebaseConfig";
+  import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    updateProfile,
+  } from "firebase/auth";
+  import { router } from "expo-router";
+  import { Colors } from "@/constants/Colors";
+  import { FONTS } from "../constants/fonts";
+  
+  const Login = () => {
+    const { type } = useLocalSearchParams();
+    const [loading, setLoading] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [username, setUsername] = useState("");
+    const [isPressed, setIsPressed] = useState(false);
+    const [getUsername, setGetUsername] = useState<string | null>(null);
 
-
-const Login = () => {
-    /* const {username} = useStarBoundContext();
-    console.log(username); */
-  const { type } = useLocalSearchParams();
-  const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isPressed, setIsPressed] = useState(false);
-  const [getUsername, setGetUsername ] = useState<any | null>(null);
-  const auth = FIREBASE_AUTH;
-
-   // State variable to track password visibility
-   const [showPassword, setShowPassword] = useState(false);
-
-   // Function to toggle the password visibility state
-   const toggleShowPassword = () => {
-       setShowPassword(!showPassword);
-   };
-
-
-  useEffect(() => {
-    const getUserName = async () => {
+    const auth = FIREBASE_AUTH;
+    const [showPassword, setShowPassword] = useState(false);
+  
+    const toggleShowPassword = () => {
+      setShowPassword(!showPassword);
+    };
+  
+    useEffect(() => {
+      const getUserName = async () => {
         try {
-            const username = await AsyncStorage.getItem("UserName");
-            if (username) {
-                setGetUsername(username); // Only set if a username exists
-              } else {
-                setGetUsername("Commander");
-          }
+          const storedUsername = await AsyncStorage.getItem("UserName");
+          setGetUsername(storedUsername || "Commander");
         } catch (error) {
-          // Error retrieving data
+          console.error("Failed to retrieve username:", error);
         }
       };
       getUserName();
-  },[]);
-
-  const signIn = async () => {
-    setLoading(true);
-    try {
-      const user = await signInWithEmailAndPassword(auth, email, password);
-      if (user) router.replace("/");
-    } catch (error: any) {
-      console.log(error);
-      alert(
-        "Sign in failed. Have you registered for an account?" + error.message
-      );
-    }
-    setLoading(false);
-  };
-
-  const signUp = async () => {
-    setLoading(true);
-    try {
-      const user = await createUserWithEmailAndPassword(auth, email, password);
-      if (user) router.replace("/");
-    } catch (error: any) {
-      console.log(error);
-      alert(
-        "Sign up failed, please enter an email and password." + error.message
-      );
-    }
-    setLoading(false);
-  };
+    }, []);
+  
+    const signIn = async () => {
+      setLoading(true);
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        const storedUsername = user.displayName || "Commander";
+        await AsyncStorage.setItem("UserName", storedUsername);
+        router.replace("/");
+      } catch (error) {
+        Alert.alert("Sign In Failed. Check your login and try again.");
+      }
+      setLoading(false);
+    };
+  
+    const signUp = async () => {
+      if (!email || !password || !username) {
+        Alert.alert("Sign Up Error", "Please enter a username, email, and password.");
+        return;
+      }
+      setLoading(true);
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        await updateProfile(user, { displayName: username });
+        await AsyncStorage.setItem("UserName", username);
+        router.replace("/");
+      } catch (error) {
+        Alert.alert("Sign Up Failed");
+      }
+      setLoading(false);
+    };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -120,7 +116,7 @@ const Login = () => {
             </Text>
           </View>
 
-          <View style={{ marginBottom: 20 }}>
+          <View style={{ marginBottom: 20,}}>
                 <TextInput
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -145,8 +141,22 @@ const Login = () => {
                     <Image style={styles.toggleEye} source={ showPassword? require("../assets/icons/icons8-hide-30.png") : require("../assets/icons/icons8-show-30.png") }/>
                 </TouchableOpacity>    
             </View>
-            
             </View>
+            {isPressed && (
+            <>
+            <View>
+
+              <TextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                placeholder="Username"
+                style={styles.inputField}
+                value={username}
+                onChangeText={setUsername}
+              />
+              </View>
+              </>
+            )}
           </View>
           <View
             style={{
@@ -174,7 +184,9 @@ const Login = () => {
             </TouchableOpacity>
           </View>
           <TouchableOpacity
-            onPress={isPressed ? signUp : signIn}
+            onPress={() => {
+                isPressed ? signUp() : signIn();  // Call signUp or signIn
+              }}
             style={styles.loginButton}
           >
             <Text style={[styles.btnPrimaryText, {color: isPressed? Colors.lightened_gold:Colors.green_toggle, fontFamily: "monospace"}]}>
@@ -221,8 +233,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   logo: {
-    height: 320,
-    width: 320,
+    height: 220,
+    width: 220,
     resizeMode: "contain",
   },
   inputContainer: {
@@ -258,7 +270,20 @@ const styles = StyleSheet.create({
     width: 300,
     height: 65,
     zIndex: -100
-  }
+  },
+  label: {
+    position: "absolute",
+    backgroundColor: Colors.dark_gray,
+    left: 10,
+    top: -15,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+    borderWidth: 1,
+    borderRadius: 3,
+    borderColor: Colors.hud,
+    color: Colors.hud,
+  },
 });
 
 export default Login;

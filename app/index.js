@@ -15,6 +15,7 @@ import index from "./screens/Your_Fleet";
 import WeaponTypes from "./screens/WeaponTypes";
 import GameLore from "./tabs/GameLore";
 import ShipEditScreen from "./screens/ShipEditScreen";
+import ShipInfo from "./screens/ShipInfo";
 import { Colors } from "../constants/Colors";
 import {
   StarBoundProvider,
@@ -326,6 +327,16 @@ export default function Index() {
           <Tab.Screen
             name="Edit Ship"
             component={ShipEditScreen}
+            options={{
+              tabBarItemStyle: { display: "none" },
+              tabBarStyle: { display: "none" },
+              headerShown: false,
+            }}
+            screenOptions={{ headerShown: false }}
+          />
+          <Tab.Screen
+            name="Ship Info"
+            component={ShipInfo}
             options={{
               tabBarItemStyle: { display: "none" },
               tabBarStyle: { display: "none" },
