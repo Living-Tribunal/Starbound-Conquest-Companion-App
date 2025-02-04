@@ -8,9 +8,9 @@ import ShipStats from "./tabs/ShipStats";
 import Rules from "./tabs/Rules";
 import Fleet_Points from "./tabs/Fleet_Points";
 import Login from "./Login";
-import LogOutDeleteScreen from "./screens/LogOutDeleteScreen";
+import Settings from "./tabs/Settings";
 import Player from "./tabs/Player";
-import SpecialOrders from "./screens/SpecialOrders";
+import SpecialOrdersScreen from "./screens/SpecialOrdersScreen";
 import index from "./screens/Your_Fleet";
 import WeaponTypes from "./screens/WeaponTypes";
 import GameLore from "./tabs/GameLore";
@@ -215,29 +215,11 @@ export default function Index() {
               tabBarButton: (props) => (
                 <TabBarAdvancedButton
                   focused={props.accessibilityState.selected}
-                  bgColor={"blue"}
                   {...props}
                 />
               ),
               tabBarIcon: ({ focused, size }) => (
                 <Image
-                  style={{
-                    height: 25,
-                    width: 25,
-                    tintColor: focused ? Colors.hud : Colors.white,
-                  }}
-                  resizeMode="contain"
-                />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Points"
-            component={Fleet_Points}
-            options={{
-              tabBarIcon: ({ focused, size }) => (
-                <Image
-                  source={require("../assets/icons/icons8-score-50.png")}
                   style={{
                     height: 25,
                     width: 25,
@@ -270,19 +252,26 @@ export default function Index() {
             }}
           />
           <Tab.Screen
+            name="Settings"
+            component={Settings}
+            options={{
+              tabBarIcon: ({ focused, size }) => (
+                <Image
+                  source={require("../assets/icons/icons8-gear-50.png")}
+                  style={{
+                    height: 25,
+                    width: 25,
+                    tintColor: focused ? Colors.hud : Colors.white,
+                  }}
+                  resizeMode="contain"
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
             name="Login"
             component={Login}
             options={{ tabBarItemStyle: { display: "none" } }}
-          />
-          <Tab.Screen
-            name="Logout"
-            component={LogOutDeleteScreen}
-            options={{
-              tabBarItemStyle: { display: "none" },
-              tabBarStyle: { display: "none" },
-              headerShown: false,
-            }}
-            screenOptions={{ headerShown: false }}
           />
           <Tab.Screen
             name="Fleet"
@@ -295,8 +284,8 @@ export default function Index() {
             screenOptions={{ headerShown: false }}
           />
           <Tab.Screen
-            name="SpecialOrders"
-            component={SpecialOrders}
+            name="SpecialOrdersScreen"
+            component={SpecialOrdersScreen}
             options={{
               tabBarItemStyle: { display: "none" },
               tabBarStyle: { display: "none" },

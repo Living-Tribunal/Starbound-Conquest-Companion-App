@@ -11,7 +11,7 @@ import {
 import React, { useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { weapons } from "../../constants/weapons.js";
+import { weapons } from "./constants/weapons.js";
 import {
   GestureHandlerRootView,
   ScrollView,

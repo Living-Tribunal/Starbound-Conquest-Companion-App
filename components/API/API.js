@@ -56,13 +56,13 @@ export default function API() {
   }, [data]);
 
   // Fetch periodically (every 5 seconds)
-  useEffect(() => {
+  /* useEffect(() => {
     if (!email) return;
 
     const intervalCall = setInterval(() => getUserFleetData(email), 5000); // Fetch every 5 seconds
 
     return () => clearInterval(intervalCall); // Cleanup interval
-  }, [email, data]);
+  }, [email, data]); */
 
   return null; // Your UI components here
 }

@@ -16,12 +16,12 @@ import { FIREBASE_AUTH } from "@/FirebaseConfig";
 import { getAuth, updateProfile, deleteUser  } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
+import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
 import Toast from "react-native-toast-message";
-import DropdownComponent from "../../components/dropdown/DropdownComponent";
+import DropdownComponent from "../../components/dropdown/DropdownComponent.js";
 import ImagePicker from "../../components/picker/ImagePicker.js";
 
-export default function LogOutDeleteScreen() {
+export default function Settings() {
   const { username, setUsername, faction, setFaction, profile, setProfile } =
     useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
@@ -224,7 +224,7 @@ export default function LogOutDeleteScreen() {
         keyboardShouldPersistTaps="never"
       >
         <View style={styles.container}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity onPress={() => navigation.navigate("Player")}>
               <Image
                 style={styles.image}
@@ -232,15 +232,13 @@ export default function LogOutDeleteScreen() {
               />
             </TouchableOpacity>
             <Text style={[styles.text, { left: 40 }]}>Settings</Text>
-          </View>
+          </View> */}
           <View style={{ flex: 1, alignItems: "center" }}>
             <View
               style={{
-                flex: 1,
-                justifyContent: "flex-end",
                 alignItems: "center",
-                bottom: 10,
                 flexDirection: "row",
+                height: "100%",
               }}
             >
               <Text style={styles.subHeaderText}>
@@ -253,7 +251,7 @@ export default function LogOutDeleteScreen() {
             </View>
           </View>
           <View
-            style={{ flex: 5, justifyContent: "center", alignItems: "center" }}
+            style={{ flex: 5, justifyContent: "center", alignItems: "center", bottom: -15 }}
           >
             <ImagePicker />
             <View style={{ width: "80%", position: "relative" }}>
@@ -430,7 +428,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     backgroundColor: Colors.underTextGray,
     borderRadius: 5,
-    padding: 5,
   },
   textInput: {
     height: 50,

@@ -82,7 +82,6 @@ export default function Player() {
                 <API />
               </View>
               <TouchableOpacity
-                onPress={() => navigation.navigate("Logout")}
                 style={styles.profileContainer}
               >
                 <Image

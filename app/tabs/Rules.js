@@ -4,13 +4,11 @@ import {
   View,
   StatusBar,
   Image,
-  Pressable,
   TouchableOpacity,
-  FlatList,
 } from "react-native";
 import React, { useState } from "react";
 import { Colors } from "@/constants/Colors";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { weapons } from "../../constants/weapons.js";
 import {
   GestureHandlerRootView,
@@ -23,10 +21,6 @@ export default function Rules() {
   const [showText, setShowText] = useState(false);
   const tabBarHeight = useBottomTabBarHeight();
   const navigation = useNavigation();
-
-  const handlePress = () => {
-    setShowText(!showText);
-  };
 
   return (
     <SafeAreaView style={[styles.mainContainer]}>
@@ -62,7 +56,7 @@ export default function Rules() {
           <View style={{ alignItems: "center" }}>
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate("SpecialOrders");
+                navigation.navigate("SpecialOrdersScreen");
               }}
               style={styles.TouchableOpacityStyleButton}
             >
@@ -99,13 +93,6 @@ export default function Rules() {
             </View>
           </View>
 
-          {/* ////combat actions */}
-          {/* <View style={styles.imageContainer}>
-            <Image
-              style={styles.textContainer}
-              source={require("../../assets/images/rulesheader-01.png")}
-            />
-          </View> */}
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
               <Image
@@ -163,13 +150,6 @@ export default function Rules() {
 
           {/*  ///Firings */}
           <View style={[styles.Section]}>
-            {/* <View style={styles.imageContainer}>
-               <Text style={styles.textHeader}>Firing Mechanics</Text> 
-              <Image
-                style={styles.textContainer}
-                source={require("../../assets/images/rulesheader-01.png")}
-              />
-            </View>*/}
             <View style={styles.rulesSection}>
               <View style={styles.textSectionContainer}>
                 <Image
@@ -208,13 +188,6 @@ export default function Rules() {
 
           {/* ///weapon types */}
           <View style={[styles.Section]}>
-            {/*  <View style={styles.imageContainer}>
-               <Text style={styles.textHeader}>Weapon Types</Text> 
-              <Image
-                style={styles.textContainer}
-                source={require("../../assets/images/rulesheader-01.png")}
-              />
-            </View>*/}
             <View style={styles.rulesSection}>
               <View style={styles.textSectionContainer}>
                 <Image
