@@ -50,7 +50,7 @@ Cruiser:{
     ],
     weaponType: [
         "Heavy Cannon",
-        "Plasma Cannon"],
+        "Plasma Cannon",],
     firingArc: [
         "Forward(90°)",
         "Port/Starboard(90°)"],

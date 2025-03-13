@@ -12,11 +12,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import API from "../../components/API/API";
 import ShipFlatlist from "../../components/shipdata/ShipFlatlist";
-
+import { useNavigation } from "@react-navigation/native";
 
 export default function Player() {
   const navigation = useNavigation();
@@ -30,23 +29,43 @@ export default function Player() {
     cruiserImages,
     carrierImages,
     dreadnoughtImages,
-    faction,
-    setFaction,
     profile,
     setProfile,
+    data,
+    gameValue,
+    setGameValue,
   } = useStarBoundContext();
+
+  const valueWarning = () => {
+    if (totalFleetValue > gameValue) {
+      return (
+        <Text style={styles.valueWarning}>
+          Warning: You are over your game value limit.
+        </Text>
+      );
+    }
+  };
+
+  const totalFleetValue = data
+    ? data.reduce((sum, ship) => sum + (ship.pointValue || 0), 0)
+    : 0;
+
+  const factionName = data
+    ? [...new Set(data.map((ship) => ship.factionName))]
+    : [];
+
+  /* console.log(JSON.stringify(data)); */
 
   useEffect(() => {
     const getUserData = async () => {
       try {
         const storedUsername = await AsyncStorage.getItem("UserName");
-        const storedFaction = await AsyncStorage.getItem("Faction");
+        const gameMaxValue = await AsyncStorage.getItem("GameValue");
         const storedProfile = await AsyncStorage.getItem("ProfilePicture");
-        console.log("stored username in Player: " + storedUsername);
 
         setUsername(storedUsername || "Commander");
-        setFaction(storedFaction || "Nova Raiders");
         setProfile(storedProfile || "");
+        setGameValue(gameMaxValue || 0);
       } catch (error) {
         console.error("Failed to retrieve user data:", error);
       }
@@ -60,11 +79,17 @@ export default function Player() {
     { type: "Destroyer", fleetClass: "fleetDestroyer", ships: destroyerImages },
     { type: "Cruiser", fleetClass: "fleetCruiser", ships: cruiserImages },
     { type: "Carrier", fleetClass: "fleetCarrier", ships: carrierImages },
-    { type: "Dreadnought", fleetClass: "fleetDreadnought", ships: dreadnoughtImages },
+    {
+      type: "Dreadnought",
+      fleetClass: "fleetDreadnought",
+      ships: dreadnoughtImages,
+    },
   ];
 
+  /* console.log(JSON.stringify(totalFleetValue) + " In Player"); */
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.dark_gray }}>
+    <SafeAreaView style={{ backgroundColor: Colors.dark_gray }}>
       <FlatList
         data={fleetData}
         keyExtractor={(item) => item.type}
@@ -72,18 +97,17 @@ export default function Player() {
           <>
             <View style={styles.container}>
               <Text style={styles.subHeaderText}>
-              Welcome to Starbound Conquest! Prepare to command your fleet and
-              conquer the stars. Below, you'll find a quick snapshot of your
-              fleet's status. Use the buttons to navigate to screens where you
-              can manage your ships' stats, toggle their turns, and issue
-              orders. Also tap on the username to change your Faction, Username and Profie Picture.
+                Welcome to Starbound Conquest! Prepare to command your fleet and
+                conquer the stars. Below, you'll find a quick snapshot of your
+                fleet's status. Use the buttons to navigate to screens where you
+                can manage your ships' stats, toggle their turns, and issue
+                orders. Also tap on the username to change your Faction,
+                Username and Profie Picture.
               </Text>
               <View style={{ alignItems: "center", marginTop: 10 }}>
                 <API />
               </View>
-              <TouchableOpacity
-                style={styles.profileContainer}
-              >
+              <TouchableOpacity style={styles.profileContainer}>
                 <Image
                   style={styles.profile}
                   source={
@@ -93,16 +117,26 @@ export default function Player() {
                   }
                 />
                 <Text style={styles.playerText}>{username}</Text>
-                <Text style={styles.factionText}>{faction}</Text>
+                <Text style={styles.factionText}>{factionName}</Text>
               </TouchableOpacity>
               <Text style={styles.textSub}>Fleet Overview</Text>
+              <View style={styles.valueContainer}>
+                {valueWarning()}
+                <Text style={styles.textValue}>
+                  Total Fleet Value: {totalFleetValue}/{gameValue}
+                </Text>
+              </View>
             </View>
           </>
         }
         renderItem={({ item }) => (
           <View style={styles.shipContainer}>
             <Text style={styles.textUnder}>{item.type}</Text>
-            <ShipFlatlist type={item.type} fleetClass={item.fleetClass} ships={item.ships} />
+            <ShipFlatlist
+              type={item.type}
+              fleetClass={item.fleetClass}
+              ships={item.ships}
+            />
           </View>
         )}
         contentContainerStyle={{ paddingBottom: tabBarHeight }}
@@ -121,7 +155,7 @@ const styles = StyleSheet.create({
     fontFamily: "leagueBold",
     textAlign: "center",
     marginBottom: 20,
-    marginTop: 30,
+    marginTop: 20,
   },
   textUnder: {
     fontSize: 20,
@@ -129,7 +163,7 @@ const styles = StyleSheet.create({
     fontFamily: "monospace",
     textAlign: "center",
     marginBottom: 20,
-    marginTop: 30,
+    marginTop: 10,
   },
   profileContainer: {
     alignItems: "center",
@@ -170,5 +204,29 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 5,
     margin: 5,
+  },
+  textValue: {
+    fontSize: 15,
+    color: Colors.hud,
+    fontFamily: "leagueBold",
+    textAlign: "center",
+    marginBottom: 5,
+    marginTop: 5,
+  },
+  valueContainer: {
+    backgroundColor: Colors.hudDarker,
+    alignSelf: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    padding: 10,
+  },
+  valueWarning: {
+    fontSize: 12,
+    color: Colors.lighter_red,
+    fontFamily: "leagueBold",
+    textAlign: "center",
   },
 });

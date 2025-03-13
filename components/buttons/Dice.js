@@ -1,16 +1,30 @@
+import Dice from "../dice/D4Dice.js";
 
-import D4Dice from "../dice/D4Dice.js";
-import D6Dice from "../dice/D6Dice.js";
-import D8Dice from "../dice/D8Dice.js";
-import D10Dice from "../dice/D10Dice.js";
-import D12Dice from "../dice/D12Dice.js";
-
- const shipDiceMapping = {
-    Fighter: [<D4Dice />],
-    Destroyer: [<D6Dice />],
-    Carrier: [<D8Dice />, <D6Dice />],
-    Cruiser: [<D8Dice />, <D10Dice />],
-    Dreadnought: [<D8Dice />, <D10Dice />, <D12Dice />],
-  }
+const shipDiceMapping = {
+  Fighter: [
+    <Dice text="Roll to Hit" number1={1} number2={20} />,
+    <Dice text="Light Cannon" number1={1} number2={4} />,
+  ],
+  Destroyer: [
+    <Dice text="Roll to Hit" number1={1} number2={20} />,
+    <Dice text="Medium Cannon" number1={1} number2={6} />,
+  ],
+  Cruiser: [
+    <Dice text="Roll to Hit" number1={1} number2={20} />,
+    <Dice text="Heavy Cannon" number1={1} number2={8} />,
+    <Dice text="Plasma Cannon" number1={1} number2={10} />,
+  ],
+  Carrier: [
+    <Dice text="Roll to Hit" number1={1} number2={20} />,
+    <Dice text="350mm Railgun" number1={1} number2={8} />,
+    <Dice text="Missile Battery" number1={1} number2={6} />,
+  ],
+  Dreadnought: [
+    <Dice text="Roll to Hit" number1={1} number2={20} />,
+    <Dice text="Ion Particle Beam" number1={1} number2={12} />,
+    <Dice text="Plasma Cannon" number1={1} number2={10} />,
+    <Dice text="350mm Railgun" number1={1} number2={8} />,
+  ],
+};
 
 export { shipDiceMapping };

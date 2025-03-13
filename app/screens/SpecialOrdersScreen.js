@@ -12,7 +12,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { SpecialOrders } from "@/constants/SpecialOrders.js";
 import { useNavigation } from "@react-navigation/native";
 import { FONTS } from "@/constants/fonts";
-import { goBack } from "expo-router/build/global-state/routing";
 
 export default function SpecialOrdersScreen() {
   const navigation = useNavigation();

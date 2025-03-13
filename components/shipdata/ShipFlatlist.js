@@ -28,29 +28,48 @@ export default function ShipFlatList({ type, fleetClass }) {
         <FlatList
           data={fleetData}
           nestedScrollEnabled={true}
-          numColumns={2}
+          numColumns={4}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("Ship Info", { ship: item})
-              }
+              onPress={() => navigation.navigate("Stats", { ship: item })}
             >
-              <View style={{alignSelf:"center", width: "80%", marginBottom: 8, flex: 1, alignItems: "center",padding: 2, borderRadius: 5, borderWidth: 1, borderColor: Colors.hud}}>
+              <View
+                style={{
+                  alignSelf: "center",
+                  width: "80%",
+                  flex: 1,
+                  alignItems: "center",
+                  padding: 2,
+                  borderRadius: 5,
+                  borderWidth: 1,
+                  borderColor: Colors.hud,
+                }}
+              >
                 {/* <Text style={styles.typeText}>
                   {item.shipId
                 </Text> */}
-                <View style={{ marginBottom: 50, position: "relative", width: 200, height: 80, alignItems:"center"}}>
+                <View
+                  style={{
+                    marginBottom: 50,
+                    position: "relative",
+                    width: 90,
+                    height: 40,
+                    alignItems: "center",
+                  }}
+                >
                   <Image
+                    resizeMode="contain"
                     source={require("../../assets/images/fleethud-01.png")}
-                    style={{ width: 150, height: 40 }}
+                    style={{ width: 80, height: 20 }}
                   />
                   <Text
                     style={{
                       position: "absolute",
-                      top: 12,
+                      top: 5,
                       color: "white",
-                      textAlign:"center"
+                      textAlign: "center",
+                      fontSize: 8,
                     }}
                   >
                     {item.shipId}
@@ -59,8 +78,8 @@ export default function ShipFlatList({ type, fleetClass }) {
                     resizeMode="contain"
                     source={{ uri: item.image }}
                     style={{
-                      width: 70,
-                      height: 70,
+                      width: 60,
+                      height: 60,
                       alignSelf: "center",
                       marginTop: 5,
                     }}
@@ -78,27 +97,6 @@ export default function ShipFlatList({ type, fleetClass }) {
 }
 
 const styles = StyleSheet.create({
-  textUnder: {
-    fontSize: 20,
-    color: Colors.white,
-    fontFamily: "monospace",
-    textAlign: "center",
-    marginBottom: 20,
-    marginTop: 30,
-  },
-  typeText: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: Colors.hudDarker,
-    padding: 4,
-    fontFamily: "leagueBold",
-    backgroundColor: Colors.hud,
-    width: "100%",
-    borderWidth: 2,
-    borderColor: Colors.hudDarker,
-    borderRadius: 5,
-    textAlign: "center",
-  },
   noData: {
     fontSize: 16,
     color: Colors.hudDarker,

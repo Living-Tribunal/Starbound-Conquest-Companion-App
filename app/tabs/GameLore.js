@@ -11,13 +11,20 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { Colors } from "@/constants/Colors";
 import FactionAvatars from "../../constants/FactionAvatars.js";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 export default function GameLore() {
   const navigation = useNavigation(); // Fix navigation issue
+  const tabBarHeight = useBottomTabBarHeight();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.dark_gray }}>
-      <ScrollView>
+      <ScrollView
+      contentContainerStyle={{
+                flexGrow: 1,
+                paddingBottom: tabBarHeight,
+                backgroundColor: Colors.dark_gray,
+              }}>
         <View style={styles.container}>
           <Text style={styles.subHeaderText}>
             Explore the factions of Starbound Conquest below. Tap an image to
@@ -29,7 +36,7 @@ export default function GameLore() {
                 <TouchableOpacity
                   style={styles.touchable}
                   onPress={() => {
-                    navigation.navigate("Edit Ship", { 
+                    navigation.navigate("Faction Info", { 
                         factionName: name, 
                         factionImage: data.image, 
                         description: data.description,

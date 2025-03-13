@@ -37,7 +37,7 @@ export default function ShipEditScreen() {
             backgroundColor: Colors.dark_gray,
           }}
         >
-          <TouchableOpacity onPress={() => navigation.navigate("Info")}>
+          <TouchableOpacity onPress={() => navigation.navigate("Factions")}>
             <Image
               style={styles.image}
               source={require("../../assets/icons/icons8-back-arrow-50.png")}

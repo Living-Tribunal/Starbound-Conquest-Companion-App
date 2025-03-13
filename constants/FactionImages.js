@@ -133,23 +133,23 @@ export const FactionImages = {
   },
   "The Union": {
     Fighter: {
-      classImage: require("../assets/images/ssp_dew.png"),
+      classImage: require("../assets/images/neutrino_causality.png"),
       className: "Cody",
     },
     Destroyer: {
-      classImage: require("../assets/images/ssp_superdestoryer.png"),
+      classImage: require("../assets/images/neutrino_lathe.png"),
       className: "Victoria",
     },
     Cruiser: {
-      classImage: require("../assets/images/ssp_undergroundfire.png"),
+      classImage: require("../assets/images/neutrino_nirvash.png"),
       className: "King",
     },
     Carrier: {
-      classImage: require("../assets/images/ssp_hanba.png"),
+      classImage: require("../assets/images/neutrino_nausicaa.png"),
       className: "Hawke",
     },
     Dreadnought: {
-      classImage: require("../assets/images/ssp_karni.png"),
+      classImage: require("../assets/images/neutrino_unsung.png"),
       className: "Alastair",
     },
   },

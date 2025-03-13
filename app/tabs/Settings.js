@@ -13,24 +13,34 @@ import React, { useState, useEffect } from "react";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { FIREBASE_AUTH } from "@/FirebaseConfig";
-import { getAuth, updateProfile, deleteUser  } from "firebase/auth";
+import { getAuth, updateProfile, deleteUser } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
 import Toast from "react-native-toast-message";
-import DropdownComponent from "../../components/dropdown/DropdownComponent.js";
 import ImagePicker from "../../components/picker/ImagePicker.js";
 
 export default function Settings() {
-  const { username, setUsername, faction, setFaction, profile, setProfile } =
-    useStarBoundContext();
+  const {
+    username,
+    setUsername,
+    faction,
+    setFaction,
+    profile,
+    setProfile,
+    email,
+    serverConnected,
+    gameValue,
+    setGameValue,
+  } = useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
+  const [isFocusValue, setIsFocusValue] = useState(false);
 
   const showToast = () => {
     Toast.show({
       type: "success",
       text1: "StarBound Conquest",
-      text2: "Username, Faction, and Profile Picture were Saved",
+      text2: "Username, Game Value, and Profile Picture Were Saved",
     });
   };
 
@@ -38,25 +48,25 @@ export default function Settings() {
     Toast.show({
       type: "error",
       text1: "StarBound Conquest",
-      text2: "Check Your Fields.",
+      text2: "Check Your Fields. Make Sure You Have Chosen a Profile Picture.",
     });
   };
 
   const checkForUsernamePhotoFaction = () => {
-    if (!username || !faction || !profile) { // Check for empty fields
+    if (!username || !profile) {
+      // Check for empty fields
       showErrorToast(); // Show error if any field is empty
       return false;
     } else {
       showToast();
       saveName();
-      saveFaction();
       saveProfile();
       saveUsername();
+      saveGameValue();
       return true;
     }
   };
 
-  const navigation = useNavigation();
   const auth = getAuth();
   const user = auth.currentUser;
 
@@ -66,6 +76,24 @@ export default function Settings() {
       setUsername(username);
     } catch (e) {
       console.error("Error saving name:", e);
+    }
+  };
+
+  const dataWarning = () => {
+    if (!serverConnected) {
+      return (
+        <View style={{ marginBottom: 5, marginTop: 5, flexDirection: "row" }}>
+          <Text style={styles.TextStatus}>Server Status: </Text>
+          <Text style={styles.statusOffline}>Disconnected</Text>
+        </View>
+      );
+    } else {
+      return (
+        <View style={{ marginBottom: 5, marginTop: 5, flexDirection: "row" }}>
+          <Text style={styles.TextStatus}>Server Status: </Text>
+          <Text style={styles.statusOnline}>Connected</Text>
+        </View>
+      );
     }
   };
 
@@ -85,7 +113,7 @@ export default function Settings() {
       console.warn("No user is authenticated.");
       return;
     }
-  
+
     try {
       await updateProfile(auth.currentUser, {
         displayName: username,
@@ -106,24 +134,20 @@ export default function Settings() {
     }
   };
 
-  const saveFaction = async () => {
-    if (faction) {
-      // Ensure faction is not null or undefined
-      try {
-        await AsyncStorage.setItem("Faction", faction);
-        /* console.log(faction, "was saved"); */
-      } catch (e) {
-        console.error("Error saving faction:", e);
-      }
-    } else {
-      console.warn("Faction is null or undefined, not saving.");
+  const saveGameValue = async () => {
+    // Ensure faction is not null or undefined
+    try {
+      await AsyncStorage.setItem("GameValue", gameValue);
+      console.log(gameValue, "was saved");
+    } catch (e) {
+      console.error("Error saving faction:", e);
     }
   };
 
-  const getFaction = async () => {
+  const getGameValue = async () => {
     try {
-      const factionName = await AsyncStorage.getItem("Faction");
-      setFaction(factionName || "Nova Raiders"); // Default fallback value
+      const gameMaxValue = await AsyncStorage.getItem("GameValue");
+      setGameValue(gameMaxValue || 0);
     } catch (e) {
       console.error("Error getting faction:", e);
     }
@@ -133,7 +157,6 @@ export default function Settings() {
     try {
       const profilePicture = await AsyncStorage.getItem("ProfilePicture");
       setProfile(profilePicture);
-      /* console.log(profilePicture, "was fetched"); */
     } catch (e) {
       console.error("Error getting name:", e);
     }
@@ -143,7 +166,6 @@ export default function Settings() {
     try {
       const name = await AsyncStorage.getItem("UserName");
       setUsername(name);
-      console.log(name, "was fetched");
     } catch (e) {
       console.error("Error getting name:", e);
     }
@@ -160,7 +182,7 @@ export default function Settings() {
 
   useEffect(() => {
     getName();
-    getFaction();
+    getGameValue();
     getProfile();
   }, []);
 
@@ -172,7 +194,7 @@ export default function Settings() {
       console.error("Error deleting name:", e);
     }
   };
-  
+
   const deleteFaction = async () => {
     try {
       await AsyncStorage.removeItem("Faction");
@@ -181,7 +203,7 @@ export default function Settings() {
       console.error("Error deleting faction:", e);
     }
   };
-  
+
   const deleteProfilePicture = async () => {
     try {
       await AsyncStorage.removeItem("ProfilePicture");
@@ -215,27 +237,28 @@ export default function Settings() {
     return null;
   };
 
-  console.log("profile picture is in Logout Screen:", profile);
+  const renderLabelGameValue = () => {
+    if (isFocusValue) {
+      /*  console.log(isFocus); */
+      return (
+        <Text style={[styles.label, isFocusValue && { color: Colors.hud }]}>
+          Enter Max Value
+        </Text>
+      );
+    }
+    return null;
+  };
+
+  /* console.log("profile picture is in Logout Screen:", profile); */
 
   return (
     <SafeAreaView style={[styles.mainContainer]}>
-      <ScrollView
-        contentContainerStyle={{ flex: 1 }}
-        keyboardShouldPersistTaps="never"
-      >
+      <ScrollView keyboardShouldPersistTaps="never">
         <View style={styles.container}>
-          {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity onPress={() => navigation.navigate("Player")}>
-              <Image
-                style={styles.image}
-                source={require("../../assets/icons/icons8-back-arrow-50.png")}
-              />
-            </TouchableOpacity>
-            <Text style={[styles.text, { left: 40 }]}>Settings</Text>
-          </View> */}
           <View style={{ flex: 1, alignItems: "center" }}>
             <View
               style={{
+                flex: 1,
                 alignItems: "center",
                 flexDirection: "row",
                 height: "100%",
@@ -251,32 +274,51 @@ export default function Settings() {
             </View>
           </View>
           <View
-            style={{ flex: 5, justifyContent: "center", alignItems: "center", bottom: -15 }}
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
+            {dataWarning()}
+            <Text style={styles.text1}>Logged In Email: {email}</Text>
             <ImagePicker />
-            <View style={{ width: "80%", position: "relative" }}>
-              {renderLabel()}
-              <TextInput
-                maxLength={12}
-                style={styles.textInput}
-                onChangeText={(text) => {
-                  setUsername(text.trimStart());
-                }}
-                placeholder={!isFocus ? "Enter a Username" : ""}
-                value={username}
-                onFocus={() => setIsFocus(true)}
-                onBlur={() => setIsFocus(false)}
-              />
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <View style={{ width: "45%", position: "relative" }}>
+                {renderLabel()}
+                <TextInput
+                  maxLength={12}
+                  style={styles.textInput}
+                  onChangeText={(text) => {
+                    setUsername(text.trimStart());
+                  }}
+                  placeholder={!isFocus ? "Username" : ""}
+                  value={username}
+                  onFocus={() => setIsFocus(true)}
+                  onBlur={() => setIsFocus(false)}
+                />
+              </View>
+              <View style={{ width: "45%", position: "relative" }}>
+                {renderLabelGameValue()}
+                <TextInput
+                  maxLength={12}
+                  keyboardType="numeric"
+                  style={styles.textInput}
+                  onChangeText={(text) => {
+                    setGameValue(text.trimStart());
+                  }}
+                  placeholder={!isFocusValue ? "Max Value" : ""}
+                  value={gameValue}
+                  onFocus={() => setIsFocusValue(true)}
+                  onBlur={() => setIsFocusValue(false)}
+                />
+              </View>
             </View>
-            <View style={{ width: "100%" }}>
+            {/* <View style={{ width: "100%" }}>
               <DropdownComponent />
-            </View>
+            </View> */}
 
             <View style={styles.heroModalContainerButtons}>
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
-                    checkForUsernamePhotoFaction();
+                  checkForUsernamePhotoFaction();
                 }}
               >
                 <Image
@@ -344,8 +386,10 @@ export default function Settings() {
               />
             </TouchableOpacity>
 
-            <TouchableOpacity onLongPress={handleAccountDeletion} style={styles.deleteButton}>
-
+            <TouchableOpacity
+              onLongPress={handleAccountDeletion}
+              style={styles.deleteButton}
+            >
               <Text
                 style={{
                   color: Colors.white,
@@ -480,5 +524,61 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 3,
     paddingHorizontal: 8,
+  },
+  text1: {
+    color: Colors.hud,
+    fontFamily: "monospace",
+    fontSize: 12,
+    padding: 5,
+    textAlign: "center",
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    backgroundColor: Colors.hudDarker,
+    marginBottom: 20,
+  },
+  statusOnline: {
+    fontSize: 12,
+    color: Colors.hud,
+    fontFamily: "monospace",
+    textAlign: "center",
+    fontWeight: "bold",
+    borderRadius: 5,
+    borderWidth: 1,
+    color: Colors.darker_green_toggle,
+    borderColor: Colors.darker_green_toggle,
+    backgroundColor: Colors.green_toggle,
+    padding: 3,
+    textAlign: "center",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+  },
+  statusOffline: {
+    fontSize: 12,
+    color: Colors.deep_red,
+    backgroundColor: Colors.lightened_deep_red,
+    fontWeight: "bold",
+    fontFamily: "monospace",
+    textAlign: "center",
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: Colors.deep_red,
+    padding: 3,
+    textAlign: "center",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+  },
+  TextStatus: {
+    fontSize: 12,
+    color: Colors.hud,
+    fontFamily: "monospace",
+    textAlign: "center",
+    marginBottom: 5,
+    paddingHorizontal: 5,
+    paddingVertical: 3,
   },
 });

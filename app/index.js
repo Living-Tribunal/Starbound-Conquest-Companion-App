@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useEffect, useState } from "react";
 import "react-native-gesture-handler";
 import "react-native-gesture-handler";
-import ShipStats from "./tabs/ShipStats";
+import ShipStats from "./screens/ShipStats";
 import Rules from "./tabs/Rules";
 import Fleet_Points from "./tabs/Fleet_Points";
 import Login from "./Login";
@@ -14,7 +14,7 @@ import SpecialOrdersScreen from "./screens/SpecialOrdersScreen";
 import index from "./screens/Your_Fleet";
 import WeaponTypes from "./screens/WeaponTypes";
 import GameLore from "./tabs/GameLore";
-import ShipEditScreen from "./screens/ShipEditScreen";
+import FactionInfoScreen from "./screens/FactionInfoScreen";
 import ShipInfo from "./screens/ShipInfo";
 import { Colors } from "../constants/Colors";
 import {
@@ -33,7 +33,7 @@ const Tab = createBottomTabNavigator();
 export default function Index() {
   const fontsLoaded = LoadFonts();
   //custom tabBarButton
-  const TabBarAdvancedButton = ({ focused, ...props }) => {
+  /* const TabBarAdvancedButton = ({ focused, ...props }) => {
     return (
       <View style={styles.container} pointerEvents="box-none">
         <TouchableOpacity style={styles.button} onPress={props.onPress}>
@@ -101,7 +101,7 @@ export default function Index() {
       fontSize: 16,
       color: "#F6F7EB",
     },
-  });
+  }); */
 
   const [isLoading, setIsLoading] = React.useState(true);
   const navigation = useNavigation();
@@ -171,12 +171,16 @@ export default function Index() {
           }}
         >
           <Tab.Screen
-            name="Stats"
-            component={ShipStats}
+            name="Player"
+            component={Player}
             options={{
               tabBarIcon: ({ focused, size }) => (
                 <Image
-                  source={require("../assets/icons/icons8-stats-64.png")}
+                  source={
+                    focused
+                      ? require("../assets/icons/icons8-imperial-star-destroyer-48.png")
+                      : require("../assets/icons/icons8-imperial-star-destroyer-48.png")
+                  }
                   style={{
                     height: 25,
                     width: 25,
@@ -188,7 +192,7 @@ export default function Index() {
             }}
           />
           <Tab.Screen
-            name="Info"
+            name="Factions"
             component={GameLore}
             options={{
               tabBarIcon: ({ focused, size }) => (
@@ -208,7 +212,7 @@ export default function Index() {
               ),
             }}
           />
-          <Tab.Screen
+          {/* <Tab.Screen
             name="Player"
             component={Player}
             options={{
@@ -229,7 +233,7 @@ export default function Index() {
                 />
               ),
             }}
-          />
+          /> */}
           <Tab.Screen
             name="Rules"
             component={Rules}
@@ -314,8 +318,8 @@ export default function Index() {
             screenOptions={{ headerShown: false }}
           />
           <Tab.Screen
-            name="Edit Ship"
-            component={ShipEditScreen}
+            name="Faction Info"
+            component={FactionInfoScreen}
             options={{
               tabBarItemStyle: { display: "none" },
               tabBarStyle: { display: "none" },
@@ -324,8 +328,8 @@ export default function Index() {
             screenOptions={{ headerShown: false }}
           />
           <Tab.Screen
-            name="Ship Info"
-            component={ShipInfo}
+            name="Stats"
+            component={ShipStats}
             options={{
               tabBarItemStyle: { display: "none" },
               tabBarStyle: { display: "none" },

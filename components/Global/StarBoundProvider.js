@@ -1,76 +1,113 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from "react";
 import {
-    SHIP_CAPACITY,
-    SHIP_TOGGLES,
-    SHIP_TOGGLES_DONE,
-  } from "@/constants/Ships";
+  SHIP_CAPACITY,
+  SHIP_TOGGLES,
+  SHIP_TOGGLES_DONE,
+} from "@/constants/Ships";
 
 const StarBoundContext = createContext();
 
 export const StarBoundProvider = ({ children, shipType }) => {
-    const [fighterImages, setFighterImages] = useState([]);
-    const [destroyerImages, setDestroyerImages] = useState([]);
-    const [cruiserImages, setCruiserImages] = useState([]);
-    const [carrierImages, setCarrierImages] = useState([]);
-    const [dreadnoughtImages, setDreadnoughtImages] = useState([]);
+  const [fighterImages, setFighterImages] = useState([]);
+  const [destroyerImages, setDestroyerImages] = useState([]);
+  const [cruiserImages, setCruiserImages] = useState([]);
+  const [carrierImages, setCarrierImages] = useState([]);
+  const [dreadnoughtImages, setDreadnoughtImages] = useState([]);
+  const [serverConnected, setServerConnected] = useState(true);
+  const [gameValue, setGameValue] = useState(0);
+  const [selectedShip, setSelectedShip] = useState(null);
 
-    const [profile, setProfile] = useState(null);
-    const [data, setData] = useState([]);
+  const [profile, setProfile] = useState(null);
+  const [data, setData] = useState([]);
 
-    const [text, setText] = useState('0');
+  const [email, setEmail] = useState(null);
 
-    const[faction, setFaction] = useState('');
+  const [text, setText] = useState("0");
 
-    const [showFighterClass, setShowFighterClass] = useState(true);
-    const [showDestroyerClass, setShowDestroyerClass] = useState(true);
-    const [showCarrierClass, setShowCarrierClass] = useState(true);
-    const [showCruiserClass, setShowCruiserClass] = useState(true);
-    const [showDreadnoughtClass, setShowDreadnoughtClass] = useState(true);
-    const [username, setUsername] = useState('');
+  const [faction, setFaction] = useState("");
 
-    const [isModalVisible, setIsModalVisible] = useState(false);
+  const [showFighterClass, setShowFighterClass] = useState(true);
+  const [showDestroyerClass, setShowDestroyerClass] = useState(true);
+  const [showCarrierClass, setShowCarrierClass] = useState(true);
+  const [showCruiserClass, setShowCruiserClass] = useState(true);
+  const [showDreadnoughtClass, setShowDreadnoughtClass] = useState(true);
+  const [username, setUsername] = useState("");
 
-    const [toggleOrders, setToggleOrders] = useState(Array(SHIP_TOGGLES[shipType]).fill(false));
-    
-    const [toggleCapacity, setToggleCapacity] = useState(Array(SHIP_CAPACITY[shipType]).fill(false));
-    
-    const [toggleDoneState, setToggleDoneState] = useState(Array(SHIP_TOGGLES_DONE[shipType]).fill(false));
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
-return (
-    <StarBoundContext.Provider value={{ 
-        fighterImages, setFighterImages,
-        destroyerImages, setDestroyerImages, 
-        cruiserImages, setCruiserImages,
-        carrierImages, setCarrierImages,
-        dreadnoughtImages, setDreadnoughtImages,
+  const [toggleOrders, setToggleOrders] = useState(
+    Array(SHIP_TOGGLES[shipType]).fill(false)
+  );
 
-        showFighterClass, setShowFighterClass,
-        showDestroyerClass, setShowDestroyerClass,
-        showCarrierClass, setShowCarrierClass,
-        showCruiserClass, setShowCruiserClass,
-        showDreadnoughtClass, setShowDreadnoughtClass,
+  const [toggleCapacity, setToggleCapacity] = useState(
+    Array(SHIP_CAPACITY[shipType]).fill(false)
+  );
 
-        toggleOrders, setToggleOrders,
-        toggleCapacity, setToggleCapacity,
-        toggleDoneState, setToggleDoneState,
+  const [toggleDoneState, setToggleDoneState] = useState(
+    Array(SHIP_TOGGLES_DONE[shipType]).fill(false)
+  );
 
+  return (
+    <StarBoundContext.Provider
+      value={{
+        fighterImages,
+        setFighterImages,
+        destroyerImages,
+        setDestroyerImages,
+        cruiserImages,
+        setCruiserImages,
+        carrierImages,
+        setCarrierImages,
+        dreadnoughtImages,
+        setDreadnoughtImages,
 
-        isModalVisible, setIsModalVisible,
-        username, setUsername,
+        showFighterClass,
+        setShowFighterClass,
+        showDestroyerClass,
+        setShowDestroyerClass,
+        showCarrierClass,
+        setShowCarrierClass,
+        showCruiserClass,
+        setShowCruiserClass,
+        showDreadnoughtClass,
+        setShowDreadnoughtClass,
 
-        text, setText,
+        toggleOrders,
+        setToggleOrders,
+        toggleCapacity,
+        setToggleCapacity,
+        toggleDoneState,
+        setToggleDoneState,
 
-        faction, setFaction,
+        isModalVisible,
+        setIsModalVisible,
+        username,
+        setUsername,
 
-        profile, setProfile,
-        
-        data, setData,
-        
-        
-        }}>
-        {[children, shipType]}
+        text,
+        setText,
+
+        faction,
+        setFaction,
+
+        profile,
+        setProfile,
+
+        data,
+        setData,
+        email,
+        setEmail,
+        serverConnected,
+        setServerConnected,
+        gameValue,
+        setGameValue,
+        selectedShip,
+        setSelectedShip,
+      }}
+    >
+      {[children, shipType]}
     </StarBoundContext.Provider>
- );
+  );
 };
 
 export const useStarBoundContext = () => useContext(StarBoundContext);

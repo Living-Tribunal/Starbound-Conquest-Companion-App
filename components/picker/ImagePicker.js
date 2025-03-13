@@ -16,7 +16,6 @@ export default function ImagePickerExample() {
       quality: 1,
     });
 
-
     if (!result.canceled) {
       setProfile(result.assets[0].uri);
     }
@@ -25,7 +24,7 @@ export default function ImagePickerExample() {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={pickImage}>
-        <Text style={styles.text}>Pick An Image For Your Profile Picture</Text>
+        <Text style={styles.text}>Choose Your Profile Picture</Text>
       </TouchableOpacity>
       <Image
         style={styles.image}
@@ -42,27 +41,28 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 5,
+    marginTop: 10,
   },
   image: {
     width: 200,
     height: 200,
   },
   button: {
-    backgroundColor: Colors.hudDarker,
+    backgroundColor: Colors.hud,
     borderWidth: 1,
-    borderColor: Colors.hud,
-    borderRadius: 2,
+    borderColor: Colors.hudDarker,
+    borderRadius: 10,
     padding: 5,
     marginBottom: 5,
     width: "80%",
   },
   text: {
-    color: Colors.hud,
+    color: Colors.hudDarker,
     fontFamily: "monospace",
     fontSize: 12,
     padding: 5,
     textAlign: "center",
-    borderRadius: 5,
-    marginBottom: 5,
+    fontWeight: "bold",
   },
 });

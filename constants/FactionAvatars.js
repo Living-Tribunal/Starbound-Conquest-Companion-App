@@ -130,19 +130,19 @@ const FactionAvatars ={
         description: "The Union faction prides itself on being the law and order that holds back the galaxy’s barbarism. They see themselves as the protectors of humanity’s utopia, fighting fiercely to defend it. The Union has little tolerance for those who live outside their envisioned order. Aethorite, the lifeblood that keeps their city planets running, is considered a resource only fit for their use. They believe it should be taken from those deemed outcasts, unworthy of living within civilization. To align with the Union Faction is to choose wisdom, culture, and military might. To oppose them is to invite destruction upon yourself.",
         ship:{
             Fighter: {
-                classImage: require("../assets/images/ssp_dew.png"),
+                classImage: require("../assets/images/neutrino_causality.png"),
               },
               Destroyer: {
-                classImage: require("../assets/images/ssp_superdestoryer.png"),
+                classImage: require("../assets/images/neutrino_lathe.png"),
               },
               Cruiser: {
-                classImage: require("../assets/images/ssp_undergroundfire.png"),
+                classImage: require("../assets/images/neutrino_nirvash.png"),
               },
               Carrier: {
-                classImage: require("../assets/images/ssp_hanba.png"),
+                classImage: require("../assets/images/neutrino_nausicaa.png"),
               },
               Dreadnought: {
-                classImage: require("../assets/images/ssp_karni.png"),
+                classImage: require("../assets/images/neutrino_unsung.png"),
               },
         }
     },
