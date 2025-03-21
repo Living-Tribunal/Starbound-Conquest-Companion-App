@@ -61,7 +61,11 @@ export default function ShipFlatList({ type, fleetClass }) {
                   <Image
                     resizeMode="contain"
                     source={require("../../assets/images/fleethud-01.png")}
-                    style={{ width: 80, height: 20 }}
+                    style={{
+                      width: 80,
+                      height: 20,
+                      tintColor: item.isToggled ? "orange" : Colors.hud,
+                    }}
                   />
                   <Text
                     style={{

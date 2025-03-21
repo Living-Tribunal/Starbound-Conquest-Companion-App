@@ -15,7 +15,7 @@ import index from "./screens/Your_Fleet";
 import WeaponTypes from "./screens/WeaponTypes";
 import GameLore from "./tabs/GameLore";
 import FactionInfoScreen from "./screens/FactionInfoScreen";
-import ShipInfo from "./screens/ShipInfo";
+import DiceRoller from "./tabs/Dice";
 import { Colors } from "../constants/Colors";
 import {
   StarBoundProvider,
@@ -178,7 +178,7 @@ export default function Index() {
                 <Image
                   source={
                     focused
-                      ? require("../assets/icons/icons8-imperial-star-destroyer-48.png")
+                      ? require("../assets/icons/icons8-darth-vader-50.png")
                       : require("../assets/icons/icons8-imperial-star-destroyer-48.png")
                   }
                   style={{
@@ -212,28 +212,6 @@ export default function Index() {
               ),
             }}
           />
-          {/* <Tab.Screen
-            name="Player"
-            component={Player}
-            options={{
-              tabBarButton: (props) => (
-                <TabBarAdvancedButton
-                  focused={props.accessibilityState.selected}
-                  {...props}
-                />
-              ),
-              tabBarIcon: ({ focused, size }) => (
-                <Image
-                  style={{
-                    height: 25,
-                    width: 25,
-                    tintColor: focused ? Colors.hud : Colors.white,
-                  }}
-                  resizeMode="contain"
-                />
-              ),
-            }}
-          /> */}
           <Tab.Screen
             name="Rules"
             component={Rules}
@@ -256,12 +234,37 @@ export default function Index() {
             }}
           />
           <Tab.Screen
+            name="Dice"
+            component={DiceRoller}
+            options={{
+              tabBarIcon: ({ focused, size }) => (
+                <Image
+                  source={
+                    focused
+                      ? require("../assets/icons/icons8-dice-80.png")
+                      : require("../assets/icons/icons8-dice-cubes-64.png")
+                  }
+                  style={{
+                    height: 25,
+                    width: 25,
+                    tintColor: focused ? Colors.hud : Colors.white,
+                  }}
+                  resizeMode="contain"
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
             name="Settings"
             component={Settings}
             options={{
               tabBarIcon: ({ focused, size }) => (
                 <Image
-                  source={require("../assets/icons/icons8-gear-50.png")}
+                  source={
+                    focused
+                      ? require("../assets/icons/icons8-gear-50-1.png")
+                      : require("../assets/icons/icons8-gear-50.png")
+                  }
                   style={{
                     height: 25,
                     width: 25,

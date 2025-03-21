@@ -12,48 +12,32 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { SpecialOrders } from "@/constants/SpecialOrders.js";
 import { useNavigation } from "@react-navigation/native";
 import { FONTS } from "@/constants/fonts";
+import HeaderComponent from "../../components/header/HeaderComponent.js";
 
 export default function SpecialOrdersScreen() {
-  const navigation = useNavigation();
-
-  const goBack = () => {
-    navigation.navigate("Rules");
-  };
-
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          marginBottom: -10,
-        }}
-      >
-        <TouchableOpacity
-          onPress={() => {
-            goBack();
-          }}
-        >
-          <Image
-            style={styles.image}
-            source={require("../../assets/icons/icons8-back-arrow-50.png")}
-          />
-        </TouchableOpacity>
-        <Text style={[styles.headerText, { left: 40 }]}>Your Fleet</Text>
-      </View>
+      <HeaderComponent text="Special Orders" NavToWhere={"Rules"} />
       <FlatList
         data={Object.entries(SpecialOrders)}
         keyExtractor={([key]) => key} // Use the object key as the unique identifier
         renderItem={({ item }) => {
           const [key, value] = item; // Destructure key and value
           return (
-            <View style={{margin: 10, borderRadius: 8, elevation: 8, shadowColor:Colors.underTextGray, shadowRadius: 10}}>
-                <View style={styles.rulesSection}>
+            <View
+              style={{
+                margin: 10,
+                borderRadius: 8,
+                elevation: 8,
+                shadowColor: Colors.underTextGray,
+                shadowRadius: 10,
+              }}
+            >
+              <View style={styles.rulesSection}>
                 <Text style={styles.headerSOText}>{value.name}</Text>
                 <Text style={styles.text}>{value.text}</Text>
-                </View>    
+              </View>
             </View>
-            
           );
         }}
       />

@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "633304307229-v2egglri54smm4bg949p0ipfa5vnmgbq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.happybob59.StarBoundConquest",
+            "certificate_hash": "bd180faea46600dfecb9218bad840f7bc0bea715"
+          }
+        },
+        {
           "client_id": "633304307229-acjrh8tpf2eddgdjcutludsg7vqf1pru.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "633304307229-acjrh8tpf2eddgdjcutludsg7vqf1pru.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "633304307229-h6a010n0m7n0b8fklji1o22nki5mk3b9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.happybob59.StarBoundConquest"
+              }
             }
           ]
         }

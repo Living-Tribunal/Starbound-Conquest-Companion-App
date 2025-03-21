@@ -107,7 +107,7 @@ export default function Player() {
               <View style={{ alignItems: "center", marginTop: 10 }}>
                 <API />
               </View>
-              <TouchableOpacity style={styles.profileContainer}>
+              <TouchableOpacity disabled style={styles.profileContainer}>
                 <Image
                   style={styles.profile}
                   source={
@@ -155,15 +155,15 @@ const styles = StyleSheet.create({
     fontFamily: "leagueBold",
     textAlign: "center",
     marginBottom: 20,
-    marginTop: 20,
+    marginTop: 25,
   },
   textUnder: {
     fontSize: 20,
     color: Colors.white,
     fontFamily: "monospace",
     textAlign: "center",
-    marginBottom: 20,
-    marginTop: 10,
+    marginBottom: 5,
+    marginTop: 20,
   },
   profileContainer: {
     alignItems: "center",

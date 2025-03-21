@@ -13,14 +13,13 @@ import { Colors } from "../../constants/Colors.js";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import ShowStat from "../../hooks/ShowStat.js";
-import { ShipTypeIcons } from "../../constants/ImagePaths.js";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
 import { shipDiceMapping } from "../../components/buttons/Dice.js";
-import { FactionImages } from "../../constants/FactionImages.js";
 import { FONTS } from "../../constants/fonts.js";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
+import HeaderComponent from "@/components/header/HeaderComponent.js";
 
 export default function ShipStats({ route }) {
   const { ship } = route.params || {};
@@ -69,6 +68,7 @@ export default function ShipStats({ route }) {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <StatusBar />
+      <HeaderComponent text="Ship Stats" NavToWhere={"Player"} />
       <ScrollView
         nestedScrollEnabled
         contentContainerStyle={{
@@ -76,25 +76,6 @@ export default function ShipStats({ route }) {
           paddingBottom: tabBarHeight,
         }}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: -10,
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              goBack();
-            }}
-          >
-            <Image
-              style={styles.image1}
-              source={require("../../assets/icons/icons8-back-arrow-50.png")}
-            />
-          </TouchableOpacity>
-          <Text style={[styles.headerText, { left: 40 }]}>Ship Stats</Text>
-        </View>
         <Text style={styles.subHeaderText}>
           Below, you will find the stats of your selected ship.
         </Text>
@@ -111,6 +92,7 @@ export default function ShipStats({ route }) {
             }}
           >
             <TouchableOpacity
+              disabled
               style={styles.showButton}
               onPress={() => {
                 const newShowAllStatsState = !areAllStatsShows; // Toggle the current state
@@ -223,7 +205,7 @@ export default function ShipStats({ route }) {
         </View>
 
         <View style={styles.buttonContainer}>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, marginHorizontal: 10 }}>
             <View style={[styles.statButton]}>
               <View
                 style={{ width: "100%", backgroundColor: Colors.hudDarker }}
@@ -235,7 +217,10 @@ export default function ShipStats({ route }) {
               selectedShipDice.map((DiceComponent, index) => (
                 <View
                   key={index}
-                  style={[styles.statTextUnder, { alignItems: "center" }]}
+                  style={[
+                    styles.statTextUnder,
+                    { alignItems: "center", backgroundColor: Colors.dark_gray },
+                  ]}
                 >
                   {DiceComponent}
                 </View>
@@ -294,6 +279,7 @@ export default function ShipStats({ route }) {
               style={[styles.statButton, { marginBottom: 40, marginTop: 50 }]}
             >
               <TouchableOpacity
+                disabled
                 style={{ backgroundColor: "transparent", width: "100%" }}
                 onPress={() => {
                   handlePress("specialOrders");

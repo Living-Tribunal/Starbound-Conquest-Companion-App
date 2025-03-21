@@ -16,10 +16,10 @@ import { FONTS } from "@/constants/fonts";
 export default function ShipInfo({ route }) {
   const navigation = useNavigation();
   const { ship } = route.params || {};
-  console.log(
+  /*   console.log(
     JSON.stringify(ship) +
       " That came from player through ship flatlist into shipinfo"
-  );
+  ); */
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.dark_gray }}>

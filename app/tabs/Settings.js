@@ -44,6 +44,18 @@ export default function Settings() {
     });
   };
 
+  const toastNotification = () => {
+    Toast.show({
+      type: "error",
+      text1: "StarBound Conquest",
+      text2: "If you are sure LongPress the button to delete.",
+      duration: 3000,
+      text1Style1: { fontFamily: "monospace", fontSize: 40 },
+      text2Style1: { fontFamily: "monospace", fontSize: 15 },
+      autoHide: true,
+    });
+  };
+
   const showErrorToast = () => {
     Toast.show({
       type: "error",
@@ -336,6 +348,7 @@ export default function Settings() {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.button}
+                onPress={toastNotification}
                 onLongPress={() => {
                   deleteFaction();
                   deleteName();
@@ -389,6 +402,7 @@ export default function Settings() {
             <TouchableOpacity
               onLongPress={handleAccountDeletion}
               style={styles.deleteButton}
+              onPress={toastNotification}
             >
               <Text
                 style={{

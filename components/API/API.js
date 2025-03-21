@@ -19,16 +19,16 @@ export default function API() {
   useEffect(() => {
     const userInformation = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        setEmail(user.email);
+        setEmail(user.uid);
 
         // Load saved fleet data
-        const savedData = await AsyncStorage.getItem(`fleetData_${user.email}`);
+        const savedData = await AsyncStorage.getItem(`fleetData_${user.uid}`);
         if (savedData) {
           setData(JSON.parse(savedData)); // Set cached data
         }
 
         // Fetch fresh data
-        getUserFleetData(user.email);
+        getUserFleetData(user.uid);
       } else {
         setEmail(null);
         setData([]); // Clear data on logout
@@ -40,11 +40,11 @@ export default function API() {
 
   // Fetch fleet data and store in AsyncStorage
   const getUserFleetData = useCallback(
-    async (userEmail) => {
-      if (!userEmail) return;
+    async (userID) => {
+      if (!userID) return;
 
-      const userShipsURL = `https://starboundconquest.com/user-ships/${userEmail}`;
-      /* console.log("Your email in the API:", userEmail); */
+      const userShipsURL = `https://starboundconquest.com/user-ships/${userID}`;
+      /* console.log("Your email in the API:", userID); */
 
       try {
         const response = await fetch(userShipsURL);
@@ -55,7 +55,7 @@ export default function API() {
 
           // Store in AsyncStorage
           await AsyncStorage.setItem(
-            `fleetData_${userEmail}`,
+            `fleetData_${userID}`,
             JSON.stringify(json.ships)
           );
         }
@@ -72,7 +72,7 @@ export default function API() {
   useEffect(() => {
     if (!email) return;
 
-    const intervalCall = setInterval(() => getUserFleetData(email), 10000); // Fetch every 5 seconds
+    const intervalCall = setInterval(() => getUserFleetData(email), 500000); // Fetch every 5 seconds
 
     return () => clearInterval(intervalCall); // Cleanup interval
   }, [email, data]);

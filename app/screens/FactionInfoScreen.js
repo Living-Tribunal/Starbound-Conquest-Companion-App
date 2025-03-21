@@ -13,6 +13,8 @@ import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import { FONTS } from "@/constants/fonts";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import HeaderComponent from "@/components/header/HeaderComponent";
+import { Header } from "react-native/Libraries/NewAppScreen";
 
 export default function ShipEditScreen() {
   const route = useRoute();
@@ -22,6 +24,7 @@ export default function ShipEditScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
+      <HeaderComponent text="Factions" NavToWhere={"Factions"} />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -30,21 +33,6 @@ export default function ShipEditScreen() {
         }}
         keyboardShouldPersistTaps="handled"
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            backgroundColor: Colors.dark_gray,
-          }}
-        >
-          <TouchableOpacity onPress={() => navigation.navigate("Factions")}>
-            <Image
-              style={styles.image}
-              source={require("../../assets/icons/icons8-back-arrow-50.png")}
-            />
-          </TouchableOpacity>
-          <Text style={[styles.text, { left: 40 }]}>Factions</Text>
-        </View>
         <View style={{ backgroundColor: Colors.dark_gray }}>
           <View
             style={{
@@ -111,6 +99,10 @@ export default function ShipEditScreen() {
   );
 }
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.dark_gray,
+  },
   text: {
     color: Colors.white,
     fontSize: 25,
