@@ -72,7 +72,7 @@ export default function API() {
   useEffect(() => {
     if (!email) return;
 
-    const intervalCall = setInterval(() => getUserFleetData(email), 500000); // Fetch every 5 seconds
+    const intervalCall = setInterval(() => getUserFleetData(email), 5000); // Fetch every 5 seconds
 
     return () => clearInterval(intervalCall); // Cleanup interval
   }, [email, data]);

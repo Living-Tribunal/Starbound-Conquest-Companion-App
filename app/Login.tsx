@@ -51,7 +51,7 @@ const Login = () => {
       const signInResult = await GoogleSignin.signIn();
       console.log("SignIn Result:", signInResult);
 
-      let idToken = signInResult.data.idToken;
+      let idToken = signInResult.data?.idToken;
 
       if (!idToken) {
         console.error("No ID Token found");
@@ -101,7 +101,7 @@ const Login = () => {
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(
-        auth,
+        FIREBASE_AUTH,
         email,
         password
       );
@@ -126,7 +126,7 @@ const Login = () => {
     setLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(
-        auth,
+        FIREBASE_AUTH,
         email,
         password
       );
