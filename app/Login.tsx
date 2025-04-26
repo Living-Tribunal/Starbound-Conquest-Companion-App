@@ -42,7 +42,7 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  async function onGoogleButtonPress() {
+  /*  async function onGoogleButtonPress() {
     try {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
@@ -79,7 +79,7 @@ const Login = () => {
       console.error("Google Sign-In Error:", error);
       Alert.alert("Google Sign-In Failed");
     }
-  }
+  } */
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -271,7 +271,7 @@ const Login = () => {
               source={require("../assets/images/hud2.png")}
             />
           </TouchableOpacity>
-          <View
+          {/* <View
             style={{
               alignItems: "center",
               justifyContent: "center",
@@ -286,7 +286,7 @@ const Login = () => {
                 source={require("../assets/icons/google.png")}
               />
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -385,8 +385,8 @@ const styles = StyleSheet.create({
   googleImage: {
     resizeMode: "contain",
     alignSelf: "center",
-    width: 160,
-    height: 33,
+    width: 200,
+    height: 60,
     zIndex: -100,
   },
 });

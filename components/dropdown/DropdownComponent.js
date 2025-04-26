@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import { Colors } from '@/constants/Colors';
+import React, { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { Dropdown } from "react-native-element-dropdown";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { Colors } from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
-import { GameFactions } from '@/constants/GameFactions';
+import { GameFactions } from "@/constants/GameFactions";
 
 const DropdownComponent = () => {
   const { faction, setFaction } = useStarBoundContext();
@@ -22,6 +22,8 @@ const DropdownComponent = () => {
     return null;
   };
 
+  console.log("faction:", faction);
+
   return (
     <View style={styles.container}>
       {renderLabel()}
@@ -36,12 +38,14 @@ const DropdownComponent = () => {
         maxHeight={350}
         labelField="value"
         valueField="value"
-        placeholder={!isFocus ? 'Choose a Faction' : '...'}
+        placeholder={!isFocus ? "Choose a Faction" : "..."}
         searchPlaceholder="Search..."
         value={faction}
         onFocus={() => setIsFocus(true)}
-        onBlur={() => {setIsFocus(false);} }
-        onChange={item => {
+        onBlur={() => {
+          setIsFocus(false);
+        }}
+        onChange={(item) => {
           setFaction(item.value);
           setIsFocus(false);
         }}
@@ -77,7 +81,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   label: {
-    position: 'absolute',
+    position: "absolute",
     backgroundColor: Colors.dark_gray,
     left: 22,
     top: 1,
@@ -98,7 +102,7 @@ const styles = StyleSheet.create({
   selectedTextStyle: {
     fontSize: 16,
     color: Colors.hud,
-    backgroundColor: Colors.hudDarker
+    backgroundColor: Colors.hudDarker,
   },
   iconStyle: {
     width: 20,

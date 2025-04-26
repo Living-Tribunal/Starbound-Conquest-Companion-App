@@ -32,6 +32,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [showCruiserClass, setShowCruiserClass] = useState(true);
   const [showDreadnoughtClass, setShowDreadnoughtClass] = useState(true);
   const [username, setUsername] = useState("");
+  const [toggleToDelete, setToggleToDelete] = useState(false);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -103,6 +104,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setGameValue,
         selectedShip,
         setSelectedShip,
+        toggleToDelete,
+        setToggleToDelete,
       }}
     >
       {[children, shipType]}

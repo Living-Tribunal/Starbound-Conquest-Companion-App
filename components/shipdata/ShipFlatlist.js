@@ -1,4 +1,4 @@
-/*  */ import React from "react";
+/*  */ import React, { useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,11 +7,17 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
+import { Alert } from "react-native";
+import { doc, deleteDoc } from "firebase/firestore";
+import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import { Colors } from "@/constants/Colors";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { useNavigation } from "@react-navigation/native";
+import { getFleetData } from "../../components/API/API";
+
 export default function ShipFlatList({ type, fleetClass }) {
-  const { data } = useStarBoundContext();
+  const { data, setData, toggleToDelete } = useStarBoundContext();
+  const user = FIREBASE_AUTH.currentUser;
   const navigation = useNavigation();
 
   const fleetData = Array.isArray(data)
@@ -21,6 +27,36 @@ export default function ShipFlatList({ type, fleetClass }) {
   /*   console.log("----------------------");
   console.log(`${type} count:`, fleetData.length);
   console.log("----------------------"); */
+
+  const deleteShip = async (ship) => {
+    if (!user?.uid) {
+      console.error("User not found");
+      return;
+    }
+
+    try {
+      const deleteShipReference = doc(
+        FIREBASE_DB,
+        "users",
+        user.uid,
+        "ships",
+        ship.id
+      );
+      await deleteDoc(deleteShipReference);
+      await getFleetData({ data, setData });
+
+      // Refresh locally without needing to refetch from Firestore
+      //const updatedShips = ship.filter((b) => b.docId !== ship.docId);
+
+      Alert.alert(`${ship.id} Deleted`, "Ship has been deleted.", [
+        { text: "OK" },
+      ]);
+
+      console.log(`Deleted Ship: ${ship.id}`);
+    } catch (e) {
+      console.error("Error deleting document: ", e);
+    }
+  };
 
   return (
     <View style={{ alignItems: "center" }}>
@@ -32,7 +68,15 @@ export default function ShipFlatList({ type, fleetClass }) {
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() => navigation.navigate("Stats", { ship: item })}
+              onPress={() => {
+                if (toggleToDelete) {
+                  deleteShip(item);
+                  console.log("Deleted Ship:", item.id);
+                } else {
+                  navigation.navigate("Stats", { ship: item });
+                  console.log("Navigated to Stats:", item.id);
+                }
+              }}
             >
               <View
                 style={{
@@ -44,6 +88,7 @@ export default function ShipFlatList({ type, fleetClass }) {
                   borderRadius: 5,
                   borderWidth: 1,
                   borderColor: Colors.hud,
+                  marginVertical: 5,
                 }}
               >
                 {/* <Text style={styles.typeText}>

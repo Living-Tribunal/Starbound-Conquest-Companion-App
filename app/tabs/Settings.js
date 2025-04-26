@@ -8,19 +8,29 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  Alert,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
+import DropdownComponent from "../../components/dropdown/DropdownComponent";
 import { FIREBASE_AUTH } from "@/FirebaseConfig";
 import { getAuth, updateProfile, deleteUser } from "firebase/auth";
-import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
 import Toast from "react-native-toast-message";
 import ImagePicker from "../../components/picker/ImagePicker.js";
+import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 export default function Settings() {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  GoogleSignin.configure({
+    webClientId:
+      "633304307229-acjrh8tpf2eddgdjcutludsg7vqf1pru.apps.googleusercontent.com",
+  });
+
   const {
     username,
     setUsername,
@@ -40,7 +50,7 @@ export default function Settings() {
     Toast.show({
       type: "success",
       text1: "StarBound Conquest",
-      text2: "Username, Game Value, and Profile Picture Were Saved",
+      text2: "Saved!",
     });
   };
 
@@ -60,7 +70,7 @@ export default function Settings() {
     Toast.show({
       type: "error",
       text1: "StarBound Conquest",
-      text2: "Check Your Fields. Make Sure You Have Chosen a Profile Picture.",
+      text2: "Check Your Fields!",
     });
   };
 
@@ -75,12 +85,10 @@ export default function Settings() {
       saveProfile();
       saveUsername();
       saveGameValue();
+      saveFaction();
       return true;
     }
   };
-
-  const auth = getAuth();
-  const user = auth.currentUser;
 
   const saveName = async () => {
     try {
@@ -109,7 +117,7 @@ export default function Settings() {
     }
   };
 
-  const deleteAuthUser = async () => {
+  /*   const deleteAuthUser = async () => {
     deleteUser(user)
       .then(() => {
         // User deleted.
@@ -118,7 +126,7 @@ export default function Settings() {
         // An error ocurred
         // ...
       });
-  };
+  }; */
 
   const saveUsername = async () => {
     if (!auth.currentUser) {
@@ -146,6 +154,15 @@ export default function Settings() {
     }
   };
 
+  const saveFaction = async () => {
+    try {
+      await AsyncStorage.setItem("Faction", faction);
+      console.log(faction, "was saved");
+    } catch (e) {
+      console.error("Error saving faction:", e);
+    }
+  };
+
   const saveGameValue = async () => {
     // Ensure faction is not null or undefined
     try {
@@ -160,6 +177,14 @@ export default function Settings() {
     try {
       const gameMaxValue = await AsyncStorage.getItem("GameValue");
       setGameValue(gameMaxValue || 0);
+    } catch (e) {
+      console.error("Error getting faction:", e);
+    }
+  };
+  const getFaction = async () => {
+    try {
+      const faction = await AsyncStorage.getItem("Faction");
+      setFaction(faction);
     } catch (e) {
       console.error("Error getting faction:", e);
     }
@@ -196,6 +221,7 @@ export default function Settings() {
     getName();
     getGameValue();
     getProfile();
+    getFaction();
   }, []);
 
   const deleteName = async () => {
@@ -223,6 +249,49 @@ export default function Settings() {
     } catch (e) {
       console.error("Error deleting profile picture:", e);
     }
+  };
+
+  async function onGoogleButtonPress() {
+    try {
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+
+      const signInResult = await GoogleSignin.signIn();
+      console.log("SignIn Result:", signInResult);
+
+      let idToken = signInResult.data?.idToken;
+
+      if (!idToken) {
+        console.error("No ID Token found");
+        throw new Error("No ID Token found");
+      }
+
+      // Create credential with the modular SDK
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+
+      // Use your existing FIREBASE_AUTH from config
+      return signInWithCredential(FIREBASE_AUTH, googleCredential);
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+      Alert.alert("Google Sign-In Failed");
+    }
+  }
+
+  const handleAccountDeletion2 = async () => {
+    Alert.alert(
+      "Warning",
+      "Before you can delete your account, please reauthenticate your account before proceeding with deletion. Remember, this cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        { text: "Delete", onPress: () => handleAccountDeletion() },
+        { text: "Reauthenticate", onPress: () => onGoogleButtonPress() },
+      ]
+    );
   };
 
   const handleAccountDeletion = async () => {
@@ -291,11 +360,15 @@ export default function Settings() {
             {dataWarning()}
             <Text style={styles.text1}>Logged In Email: {email}</Text>
             <ImagePicker />
+            <View width="100%">
+              <DropdownComponent />
+            </View>
+
             <View style={{ flexDirection: "row", gap: 10 }}>
               <View style={{ width: "45%", position: "relative" }}>
                 {renderLabel()}
                 <TextInput
-                  maxLength={12}
+                  maxLength={18}
                   style={styles.textInput}
                   onChangeText={(text) => {
                     setUsername(text.trimStart());
@@ -353,7 +426,7 @@ export default function Settings() {
                   deleteFaction();
                   deleteName();
                   deleteProfilePicture();
-                  deleteAuthUser();
+                  /*  deleteAuthUser(); */
                 }}
               >
                 <Image
@@ -400,7 +473,7 @@ export default function Settings() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onLongPress={handleAccountDeletion}
+              onLongPress={handleAccountDeletion2}
               style={styles.deleteButton}
               onPress={toastNotification}
             >

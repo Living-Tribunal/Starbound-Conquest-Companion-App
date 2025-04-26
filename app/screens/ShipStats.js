@@ -33,16 +33,18 @@ export default function ShipStats({ route }) {
 
   const tabBarHeight = useBottomTabBarHeight();
 
-  const { faction } = useStarBoundContext();
+  const { faction, data } = useStarBoundContext();
 
   const ShipData = ShipAttributes[ship.type];
 
   const selectedShipDice = shipDiceMapping[ship.type];
 
   console.log(
-    JSON.stringify(ship) +
+    JSON.stringify(ship, null, 2) +
       " That came from player through ship flatlist into shipinfo"
   );
+
+  console.log("In ship stats:" + JSON.stringify(data, null, 2));
 
   const goBack = () => {
     navigation.navigate("Player");
@@ -52,18 +54,6 @@ export default function ShipStats({ route }) {
     setSelectedFaction(faction);
     console.log(faction);
   }, [faction]);
-
-  const factionScale = {
-    "The Zyrrians": 1,
-    "Nova Raiders": 1,
-    "Voidborn Marauders": 1,
-    "Star Reapers": 1,
-    "Praxleon Empire": 1,
-    "Synthon Syndicate": 1,
-    "The Union": 1,
-  };
-
-  const scale = factionScale[ship.factionName] || "1";
 
   return (
     <SafeAreaView style={styles.mainContainer}>
