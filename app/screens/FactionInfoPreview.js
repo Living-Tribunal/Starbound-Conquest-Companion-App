@@ -21,10 +21,7 @@ export default function FactionInfoPreview() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <HeaderComponent
-        text="Factions"
-        NavToWhere={("Login", { pressed: pressed })}
-      />
+      <HeaderComponent text="Factions" NavToWhere={"Login"} />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -44,7 +41,7 @@ export default function FactionInfoPreview() {
             </View>
             <View>
               <Image
-                source={factionImage}
+                source={{ uri: factionImage }}
                 style={{ width: 200, height: 200, borderRadius: 5 }}
               />
             </View>
@@ -60,7 +57,6 @@ export default function FactionInfoPreview() {
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-evenly",
-                  height: "20%",
                 }}
               >
                 <FlatList

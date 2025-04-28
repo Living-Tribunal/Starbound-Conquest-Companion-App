@@ -44,7 +44,7 @@ export default function ShipEditScreen() {
             </View>
             <View>
               <Image
-                source={factionImage}
+                source={{ uri: factionImage }}
                 style={{ width: 200, height: 200, borderRadius: 5 }}
               />
             </View>

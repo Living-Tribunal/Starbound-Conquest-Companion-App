@@ -51,7 +51,7 @@ const Login = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [authInProgress, setAuthInProgress] = useState(false);
-  const { faction, setFaction } = useStarBoundContext();
+  const { faction, setFaction, profile, setProfile } = useStarBoundContext();
 
   /*   useEffect(() => {
     const unsubscribe = FIREBASE_AUTH.onAuthStateChanged((user) => {
@@ -145,6 +145,9 @@ const Login = () => {
     setAuthInProgress(false);
   };
 
+  console.log("Faction selected:", faction);
+  console.log("Faction image URL:", FactionAvatars[faction]?.image);
+
   const signUp = async () => {
     if (!email || password !== confirmPassword || !username) {
       Toast.show({
@@ -179,8 +182,15 @@ const Login = () => {
             email: user.email,
             displayName: user.displayName,
             id: user.uid,
+            photoURL: FactionAvatars[faction]?.image,
           });
           console.log("User document written with ID:", user.uid);
+          await AsyncStorage.setItem(
+            "ProfilePicture",
+            FactionAvatars[faction]?.image
+          );
+          setProfile(FactionAvatars[faction]?.image);
+          console.log("Profile:", FactionAvatars[faction]?.image);
         } catch (e) {
           console.error("Error adding document:", e);
         }
@@ -189,7 +199,7 @@ const Login = () => {
       sendEmailVerification(user).then(() => {
         Alert.alert(
           "Verification Email Sent",
-          "Please check your inbox and verify youe email.",
+          "Please check your inbox and verify your email.",
           [
             {
               text: "OK",
@@ -240,8 +250,6 @@ const Login = () => {
       </SafeAreaView>
     );
   }
-
-  console.log("Faction Image:", FactionAvatars[faction].image);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -349,7 +357,7 @@ const Login = () => {
                         }}
                       >
                         <Image
-                          source={FactionAvatars[faction].image}
+                          source={{ uri: FactionAvatars[faction].image }}
                           style={styles.image}
                         />
                       </TouchableOpacity>
@@ -549,6 +557,7 @@ const styles = StyleSheet.create({
     height: 150,
     resizeMode: "contain",
     borderRadius: 5,
+    marginTop: 10,
   },
   infoContainer: {
     backgroundColor: Colors.hudDarker,
