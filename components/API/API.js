@@ -10,7 +10,7 @@ export const getFleetData = async ({ data, setData }) => {
       const shipReference = collection(FIREBASE_DB, "users", user.uid, "ships");
       const querySnapshot = await getDocs(shipReference);
       const ships = querySnapshot.docs.map((doc) => doc.data());
-      console.log("Ships: ", JSON.stringify(ships, null, 2));
+      //console.log("Ships: ", JSON.stringify(ships, null, 2));
       setData(ships);
       if (JSON.stringify(ships) !== JSON.stringify(data)) {
         // Store in AsyncStorage
@@ -19,9 +19,9 @@ export const getFleetData = async ({ data, setData }) => {
           JSON.stringify(ships)
         );
       }
-      console.log("Saved to AsyncStorage: ", JSON.stringify(ships, null, 2));
+      // console.log("Saved to AsyncStorage: ", JSON.stringify(ships, null, 2));
       const totalShips = await getCountFromServer(shipReference);
-      console.log("Total ships: ", totalShips.data().count);
+      // console.log("Total ships: ", totalShips.data().count);
     } catch (e) {
       console.error("Error fetching fleet data: ", e);
     }

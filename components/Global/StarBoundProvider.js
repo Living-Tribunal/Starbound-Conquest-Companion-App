@@ -16,6 +16,9 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [serverConnected, setServerConnected] = useState(true);
   const [gameValue, setGameValue] = useState(0);
   const [selectedShip, setSelectedShip] = useState(null);
+  const [turnTaken, setTurnTaken] = useState(0);
+  const [hitPoints, setHitPoints] = useState(0);
+  const [hitPointsColor, setHitPointsColor] = useState({});
 
   const [profile, setProfile] = useState(null);
   const [data, setData] = useState([]);
@@ -33,6 +36,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [showDreadnoughtClass, setShowDreadnoughtClass] = useState(true);
   const [username, setUsername] = useState("");
   const [toggleToDelete, setToggleToDelete] = useState(false);
+  const [setDeleting, setSetDeleting] = useState(false);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -72,6 +76,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setShowCruiserClass,
         showDreadnoughtClass,
         setShowDreadnoughtClass,
+        turnTaken,
+        setTurnTaken,
 
         toggleOrders,
         setToggleOrders,
@@ -106,6 +112,12 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setSelectedShip,
         toggleToDelete,
         setToggleToDelete,
+        setDeleting,
+        setSetDeleting,
+        hitPoints,
+        setHitPoints,
+        hitPointsColor,
+        setHitPointsColor,
       }}
     >
       {[children, shipType]}

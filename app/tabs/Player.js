@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -15,27 +15,32 @@ import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import ShipFlatlist from "../../components/shipdata/ShipFlatlist";
-import { useNavigation } from "@react-navigation/native";
 import { getFleetData } from "../../components/API/API";
-import { collection, doc, addDoc, setDoc } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
-
+import { shipObject } from "../../constants/shipObjects";
+import Toast from "react-native-toast-message";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  doc,
+  addDoc,
+  setDoc,
+} from "firebase/firestore";
+import { useFocusEffect } from "expo-router";
 export default function Player() {
-  const navigation = useNavigation();
   const user = FIREBASE_AUTH.currentUser;
   const tabBarHeight = useBottomTabBarHeight();
   const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isShowWarning, setIsShowWarning] = useState(false);
+  const [shipCounts, setShipCounts] = useState({});
 
   const {
     username,
     setUsername,
-    fighterImages,
-    destroyerImages,
-    cruiserImages,
-    carrierImages,
-    dreadnoughtImages,
     profile,
     faction,
     setFaction,
@@ -46,6 +51,8 @@ export default function Player() {
     setGameValue,
     toggleToDelete,
     setToggleToDelete,
+    setDeleting,
+    setSetDeleting,
   } = useStarBoundContext();
 
   const onCancelWarning = () => {
@@ -69,66 +76,76 @@ export default function Player() {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      getFleetDataButton();
+    }, [])
+  );
+
   const getFleetDataButton = async () => {
     setLoading(true);
-    console.log("getFleetDataButton1");
+    //console.log("getFleetDataButton1");
     await getFleetData({ data, setData });
-    console.log("getFleetDataButton2");
+    //console.log("getFleetDataButton2");
     setLoading(false);
   };
 
-  const addShipToFleet = async (item) => {
+  function generateShortId() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let id = "";
+    for (let i = 0; i < 4; i++) {
+      id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return id;
+  }
+
+  const addShipToFleet = async (shipData, count = 1) => {
+    //console.log("Button Pressed: ", JSON.stringify(shipData, null, 2));
+    //console.log("Players Faction: ", faction);
+
+    if (!user) {
+      // console.error("User not authenticated");
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      const docRef = await addDoc(
-        collection(FIREBASE_DB, "users", user.uid, "ships"),
-        {
-          prevX: 394.99999999999983,
-          user: "DMUBOsrB04e2ovwwrGl29OZLGgf2",
-          width: 218,
-          shipId: "DR-ID: 47",
-          image:
-            "https://starboundconquest.com/images/NovaRaiders/loa_alastair.png",
-          globalAlpha: 1,
-          pointValue: 240,
-          x: 394.99999999999983,
-          id: "1745634176047",
-          type: "Dreadnought",
-          factionName: "Nova Raiders",
-          orders:
-            "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
-          damageThreshold: 4,
-          highlighted: false,
-          firingArc:
-            "Forward(90°) \nPortside(90°)/Starboard(90°) \nForward(90°)/Aft(90°)",
-          moveDistance: "30ft",
-          height: 371,
-          prevY: 621.6666666666667,
-          y: 621.6666666666667,
-          maxHP: 30,
-          weaponDamage: "1d12\n1d10\n1d8",
-          ordersUsed: 0,
-          rotation_angle: 0,
-          hp: 30,
-          username: "Living",
-          threatLevel: 8,
-          isToggled: false,
-          weaponType: "Ion Partical Beam \nPlasma Cannon \n350mm Railgun",
+      for (let i = 0; i < count; i++) {
+        const newShipId =
+          Date.now().toString() + "_" + Math.floor(Math.random() * 10000);
+
+        const ShipId = generateShortId();
+
+        const shipToSave = {
+          ...shipData,
+          id: newShipId,
+          shipId: ShipId,
+          user: user.uid,
+          username: username || "Commander",
+          factionName: faction,
           isSelected: false,
-          weaponRange: "30ft-60ft \n60ft \n30ft-120ft",
-        }
-      );
+          highlighted: false,
+          isToggled: false,
+          ordersUsed: 0,
+        };
+        // Add to Firestore
+        const docRef = await addDoc(
+          collection(FIREBASE_DB, "users", user.uid, "ships"),
+          shipToSave
+        );
 
-      // After adding, update it to include the doc ID
-      await setDoc(docRef, { id: docRef.id }, { merge: true });
-
-      console.log("Ship added with ID:", docRef.id);
+        console.log("Ship added with ID:", docRef.id);
+        // After adding, update it to include the doc ID
+        await setDoc(docRef, { id: docRef.id }, { merge: true });
+      }
     } catch (e) {
       console.error("Error adding document: ", e);
+    } finally {
+      await getFleetData({ data, setData });
+      setIsLoading(false);
     }
-    getFleetDataButton();
   };
-
-  console.log("faction:", faction);
 
   const totalFleetValue = data
     ? data.reduce((sum, ship) => sum + (ship.pointValue || 0), 0)
@@ -138,12 +155,7 @@ export default function Player() {
     ? [...new Set(data.map((ship) => ship.factionName))]
     : [];
  */
-  const onLongPressToReset = () => {
-    setToggleToDelete(false);
-    console.log("Toggled:", toggleToDelete);
-  };
-
-  /* console.log(JSON.stringify(data)); */
+  //console.log(JSON.stringify(data, null, data));
 
   useEffect(() => {
     const getUserData = async () => {
@@ -165,17 +177,56 @@ export default function Player() {
     getUserData();
   }, []);
 
-  const fleetData = [
-    { type: "Fighter", fleetClass: "fleetFighter", ships: fighterImages },
-    { type: "Destroyer", fleetClass: "fleetDestroyer", ships: destroyerImages },
-    { type: "Cruiser", fleetClass: "fleetCruiser", ships: cruiserImages },
-    { type: "Carrier", fleetClass: "fleetCarrier", ships: carrierImages },
-    {
-      type: "Dreadnought",
-      fleetClass: "fleetDreadnought",
-      ships: dreadnoughtImages,
-    },
-  ];
+  const incrementShipCount = (type) => {
+    setShipCounts((prev) => ({
+      ...prev,
+      [type]: (prev[type] || 1) + 1,
+    }));
+  };
+
+  const decrementShipCount = (type) => {
+    setShipCounts((prev) => ({
+      ...prev,
+      [type]: Math.max(1, (prev[type] || 1) - 1),
+    }));
+  };
+
+  const createShipForFleet = () => {
+    if (!faction || faction === "Choose a Faction") return [];
+
+    const factionData = shipObject[faction];
+    if (!factionData) return [];
+
+    return [
+      {
+        type: "Fighter",
+        fleetClass: "fleetFighter",
+        ships: [factionData.fighter],
+      },
+      {
+        type: "Destroyer",
+        fleetClass: "fleetDestroyer",
+        ships: [factionData.destroyer],
+      },
+      {
+        type: "Cruiser",
+        fleetClass: "fleetCruiser",
+        ships: [factionData.cruiser],
+      },
+      {
+        type: "Carrier",
+        fleetClass: "fleetCarrier",
+        ships: [factionData.carrier],
+      },
+      {
+        type: "Dreadnought",
+        fleetClass: "fleetDreadnought",
+        ships: [factionData.dreadnought],
+      },
+    ];
+  };
+
+  const fleetData = createShipForFleet(faction);
 
   if (loading) {
     return (
@@ -189,7 +240,60 @@ export default function Player() {
     );
   }
 
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Image
+          style={{ width: "80%", height: "22%" }}
+          source={require("../../assets/images/SC_logo1.png")}
+        />
+        <Text style={styles.textLoading}>Adding ships to your Fleet</Text>
+      </View>
+    );
+  }
+
   /* console.log(JSON.stringify(totalFleetValue) + " In Player"); */
+
+  const endYourTurn = async () => {
+    if (!user) return;
+    try {
+      const shipRef = collection(FIREBASE_DB, "users", user.uid, "ships");
+      const q = query(shipRef, where("isToggled", "==", true));
+      const snapshot = await getDocs(q);
+      const resetPromises = snapshot.docs.map(async (shipDoc) => {
+        const shipDocRef = doc(
+          FIREBASE_DB,
+          "users",
+          user.uid,
+          "ships",
+          shipDoc.id
+        );
+        await updateDoc(shipDocRef, {
+          isToggled: false,
+        });
+      });
+      await Promise.all(resetPromises);
+      await getFleetData({ data, setData });
+      Toast.show({
+        type: "success", // 'success' | 'error' | 'info'
+        text1: "Starbound Conquest",
+        text2: "Your turn has ended.",
+        position: "top", // optional, 'top' | 'bottom'
+      });
+    } catch (e) {
+      console.error("Error updating document: ", e);
+    }
+  };
+
+  const endYourTurnPressed = () => {
+    Toast.show({
+      type: "error", // 'success' | 'error' | 'info'
+      text1: "Starbound Conquest",
+      text2: "Long press to end your turn.",
+      position: "top", // optional, 'top' | 'bottom'
+      visibilityTime: 2000, // 2 seconds
+    });
+  };
 
   if (isShowWarning) {
     return (
@@ -203,6 +307,7 @@ export default function Player() {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-around",
+            gap: 40,
           }}
         >
           <TouchableOpacity style={styles.button} onPress={onCancelWarning}>
@@ -249,7 +354,7 @@ export default function Player() {
   }
 
   return (
-    <SafeAreaView style={{ backgroundColor: Colors.dark_gray }}>
+    <SafeAreaView style={{ backgroundColor: Colors.dark_gray, flex: 1 }}>
       <FlatList
         data={fleetData}
         keyExtractor={(item, index) =>
@@ -263,19 +368,32 @@ export default function Player() {
                 conquer the stars. Below, you'll find a quick snapshot of your
                 fleet's status. Use the buttons to navigate to screens where you
                 can manage your ships' stats, toggle their turns, and issue
-                orders. Also tap on the username to change your Faction,
+                orders. Also tap on the settings to change your Faction,
                 Username and Profie Picture.
               </Text>
+              {toggleToDelete && (
+                <View>
+                  <Text
+                    style={[
+                      styles.valueWarning,
+                      { fontSize: 17, padding: 5, marginTop: 10 },
+                    ]}
+                  >
+                    Delete Mode Has Been Enabled
+                  </Text>
+                </View>
+              )}
               <TouchableOpacity
-                onPress={getFleetDataButton}
+                disabled
                 style={[
                   styles.profileContainer,
-                  { borderWidth: 1, borderColor: Colors.hud },
+                  {
+                    shadowColor: toggleToDelete
+                      ? Colors.lighter_red
+                      : Colors.hud,
+                  },
                 ]}
               >
-                <Text style={styles.textValue}>Call in your fleet</Text>
-              </TouchableOpacity>
-              <TouchableOpacity disabled style={[styles.profileContainer]}>
                 <Image
                   style={styles.profile}
                   source={
@@ -284,71 +402,150 @@ export default function Player() {
                       : require("../../assets/images/ships.jpg")
                   }
                 />
-                <Text style={styles.playerText}>{username}</Text>
-                <Text style={styles.factionText}>{faction}</Text>
-              </TouchableOpacity>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 10,
-                }}
-              >
-                <Text style={styles.textSub}>Fleet Overview</Text>
-                <TouchableOpacity
-                  style={styles.button}
-                  onLongPress={onLongPressToReset}
-                  onPress={() => {
-                    setIsShowWarning(true);
-                  }}
-                >
-                  <Image
-                    source={require("../../assets/icons/icons8-save-50.png")}
-                    style={{
-                      width: 25,
-                      height: 25,
-                      marginTop: 5,
-                    }}
-                  />
-                  <Image
-                    style={{ width: 60, height: 60, position: "absolute" }}
-                    source={require("../../assets/images/edithud.png")}
-                  />
-                </TouchableOpacity>
-              </View>
-              {toggleToDelete && (
-                <View>
-                  <Text
-                    style={[styles.valueWarning, { fontSize: 15, padding: 5 }]}
-                  >
-                    Delete Mode Has Been Enabled
-                  </Text>
-                </View>
-              )}
-              <View
-                style={[
-                  styles.valueContainer,
-                  {
-                    borderColor: toggleToDelete
-                      ? Colors.lighter_red
-                      : Colors.hud,
-                    backgroundColor: toggleToDelete
-                      ? Colors.deep_red
-                      : Colors.hudDarker,
-                  },
-                ]}
-              >
-                {valueWarning()}
                 <Text
                   style={[
-                    styles.textValue,
+                    styles.playerText,
                     { color: toggleToDelete ? Colors.lighter_red : Colors.hud },
                   ]}
                 >
-                  Total Fleet Value: {totalFleetValue}/{gameValue}
+                  {username}
                 </Text>
-              </View>
+                <Text
+                  style={[
+                    styles.factionText,
+                    { color: toggleToDelete ? Colors.lighter_red : Colors.hud },
+                  ]}
+                >
+                  {faction}
+                </Text>
+              </TouchableOpacity>
+              {faction !== "Choose a Faction" && (
+                <View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 20,
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.textSub,
+                        {
+                          color: toggleToDelete
+                            ? Colors.lighter_red
+                            : Colors.white,
+                        },
+                      ]}
+                    >
+                      Fleet Overview
+                    </Text>
+                  </View>
+
+                  <View
+                    style={[
+                      styles.valueContainer,
+                      {
+                        borderColor: toggleToDelete
+                          ? Colors.lighter_red
+                          : Colors.hud,
+                        backgroundColor: toggleToDelete
+                          ? Colors.deep_red
+                          : Colors.hudDarker,
+                      },
+                    ]}
+                  >
+                    {valueWarning()}
+                    <Text
+                      style={[
+                        styles.textValue,
+                        {
+                          color: toggleToDelete
+                            ? Colors.lighter_red
+                            : Colors.hud,
+                        },
+                      ]}
+                    >
+                      Total Fleet Value: {totalFleetValue}/{gameValue}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 10,
+                    }}
+                  >
+                    <TouchableOpacity
+                      disabled={toggleToDelete}
+                      onPress={endYourTurnPressed}
+                      onLongPress={endYourTurn}
+                      style={[
+                        styles.editContainer,
+                        {
+                          borderWidth: 1,
+                          width: "35%",
+                          shadowColor: toggleToDelete
+                            ? Colors.lighter_red
+                            : Colors.lighter_red,
+                          borderColor: toggleToDelete
+                            ? Colors.lighter_red
+                            : Colors.lighter_red,
+                          backgroundColor: Colors.deep_red,
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.textValue,
+                          {
+                            color: toggleToDelete
+                              ? Colors.lighter_red
+                              : Colors.lighter_red,
+                            fontSize: 12,
+                          },
+                        ]}
+                      >
+                        End your turn
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.editContainer,
+                        {
+                          borderWidth: 1,
+                          width: "35%",
+                          borderColor: toggleToDelete
+                            ? Colors.lighter_red
+                            : Colors.green_toggle,
+                          backgroundColor: toggleToDelete
+                            ? Colors.deep_red
+                            : Colors.darker_green_toggle,
+                        },
+                      ]}
+                      onPress={() => {
+                        setIsShowWarning(true);
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.textValue,
+                          {
+                            color: toggleToDelete
+                              ? Colors.lighter_red
+                              : Colors.green_toggle,
+                            fontSize: 12,
+                          },
+                        ]}
+                      >
+                        Delete a ship
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
             </View>
           </>
         }
@@ -370,8 +567,46 @@ export default function Player() {
               >
                 {item.type}
               </Text>
+              {/* //minus button */}
               <TouchableOpacity
-                onPress={() => addShipToFleet(item)}
+                disabled={toggleToDelete}
+                onPress={() => decrementShipCount(item.type)}
+                style={styles.button}
+              >
+                <Image
+                  source={require("../../assets/icons/icons8-minus-100.png")}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    marginTop: 5,
+                    tintColor: toggleToDelete ? Colors.lighter_red : Colors.hud,
+                  }}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                disabled={toggleToDelete}
+                onPress={() =>
+                  addShipToFleet(item.ships[0], shipCounts[item.type] || 1)
+                }
+                style={styles.button}
+              >
+                <Text style={styles.addButtonText}>
+                  {shipCounts[item.type] || 1}
+                </Text>
+                <Image
+                  style={{
+                    width: 50,
+                    height: 50,
+                    position: "absolute",
+                    tintColor: toggleToDelete ? Colors.lighter_red : Colors.hud,
+                  }}
+                  source={require("../../assets/images/edithud.png")}
+                />
+              </TouchableOpacity>
+              {/* //add button */}
+              <TouchableOpacity
+                disabled={toggleToDelete}
+                onPress={() => incrementShipCount(item.type)}
                 style={styles.button}
               >
                 <Image
@@ -380,12 +615,8 @@ export default function Player() {
                     width: 25,
                     height: 25,
                     marginTop: 5,
-                    tintColor: Colors.hud,
+                    tintColor: toggleToDelete ? Colors.lighter_red : Colors.hud,
                   }}
-                />
-                <Image
-                  style={{ width: 60, height: 60, position: "absolute" }}
-                  source={require("../../assets/images/edithud.png")}
                 />
               </TouchableOpacity>
             </View>
@@ -409,6 +640,15 @@ export default function Player() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.dark_gray,
+  },
+  addButtonText: {
+    color: Colors.white,
+    fontSize: 15,
+    fontWeight: "bold",
+    textAlign: "center",
+    fontFamily: "monospace",
+    numberOfLines: 2,
+    width: 50,
   },
   shipContainer: {
     flexDirection: "column",
@@ -446,7 +686,14 @@ const styles = StyleSheet.create({
     width: "80%",
     padding: 10,
     alignSelf: "center",
-    elevation: 8,
+    borderRadius: 10,
+    justifyContent: "center",
+    shadowColor: Colors.hud,
+  },
+  editContainer: {
+    alignItems: "center",
+    marginTop: 20,
+    alignSelf: "center",
     borderRadius: 10,
     justifyContent: "center",
     shadowColor: Colors.hud,
@@ -455,7 +702,6 @@ const styles = StyleSheet.create({
     width: 250,
     height: 250,
     borderRadius: 10,
-    elevation: 5,
     shadowColor: Colors.dark_gray,
   },
   playerText: {
@@ -510,7 +756,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark_gray,
   },
   button: {
-    width: 75,
+    width: 35,
     paddingVertical: 10,
     paddingHorizontal: 10,
     alignItems: "center",

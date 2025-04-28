@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   FlatList,
   Pressable,
+  Modal,
   StatusBar,
+  TextInput,
 } from "react-native";
 import { Colors } from "../../constants/Colors.js";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,13 +21,17 @@ import { FONTS } from "../../constants/fonts.js";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
+import { doc, updateDoc } from "firebase/firestore";
+import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import HeaderComponent from "@/components/header/HeaderComponent.js";
 
 export default function ShipStats({ route }) {
-  const { ship } = route.params || {};
+  const user = FIREBASE_AUTH.currentUser;
+  const { shipId } = route.params || {};
   const { showStat, handlePress, showAllStat } = ShowStat();
   const [areAllStatsShows, setAreAllStatsShows] = useState(true);
   const [pressed, setPressed] = useState(true);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedShip, setSelectedShip] = useState(ship?.type || "");
   const navigation = useNavigation();
 
@@ -33,27 +39,113 @@ export default function ShipStats({ route }) {
 
   const tabBarHeight = useBottomTabBarHeight();
 
-  const { faction, data } = useStarBoundContext();
-
+  const {
+    faction,
+    data,
+    setData,
+    turnTaken,
+    setTurnTaken,
+    hitPoints,
+    setHitPoints,
+    hitPointsColor,
+    setHitPointsColor,
+  } = useStarBoundContext();
+  const ship = data.find((s) => s.id === shipId);
   const ShipData = ShipAttributes[ship.type];
-
   const selectedShipDice = shipDiceMapping[ship.type];
-
-  console.log(
-    JSON.stringify(ship, null, 2) +
-      " That came from player through ship flatlist into shipinfo"
-  );
-
-  console.log("In ship stats:" + JSON.stringify(data, null, 2));
-
-  const goBack = () => {
-    navigation.navigate("Player");
-  };
 
   useEffect(() => {
     setSelectedFaction(faction);
     console.log(faction);
   }, [faction]);
+
+  if (!ship) {
+    return (
+      <SafeAreaView style={styles.mainContainer}>
+        <Text
+          style={{ color: Colors.white, textAlign: "center", marginTop: 50 }}
+        >
+          Loading ship data...
+        </Text>
+      </SafeAreaView>
+    );
+  }
+
+  useEffect(() => {
+    if (!ship) return;
+    const shipHealth = (ship.hp / ship.maxHP) * 100;
+
+    let newColor = "red";
+    if (shipHealth === 100) newColor = "green";
+    else if (shipHealth >= 75) newColor = "yellow";
+    else if (shipHealth >= 50) newColor = "orange";
+
+    setHitPointsColor((prevColors) => ({
+      ...prevColors,
+      [ship.id]: newColor,
+    }));
+  }, [ship.hp, ship.maxHP]);
+
+  /*  console.log(
+    JSON.stringify(ship, null, 2) +
+      " That came from player through ship flatlist into shipStats"
+  );
+ */
+  //console.log("In ship stats:" + JSON.stringify(data, null, 2));
+
+  const toggleTurn = () => {
+    setData((prevData) =>
+      prevData.map((s) =>
+        s.id === shipId ? { ...s, isToggled: !s.isToggled } : s
+      )
+    );
+  };
+
+  const toggleHasTakenTurn = async () => {
+    if (!ship || !user) return;
+    try {
+      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", shipId);
+      await updateDoc(shipRef, {
+        isToggled: !ship.isToggled,
+      });
+      console.log("Updated ship:", ship.isToggled);
+      toggleTurn();
+    } catch (e) {
+      console.error("Error updating document: ", e);
+    }
+  };
+
+  const adjustHP = () => {
+    //prev data is the ships array of all currnt ships
+    setData((prevData) =>
+      //map through the array and update the ship with the new hp
+      prevData.map((s) =>
+        //if the ship id matches the one we are updating, update the hp if not return the ship
+        s.id === shipId
+          ? { ...s, hp: Math.max(0, Math.min(Number(hitPoints), s.maxHP)) }
+          : s
+      )
+    );
+  };
+
+  const adjustShipsHitPoints = async () => {
+    if (!ship || !user) return;
+    try {
+      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", shipId);
+      const newHP = Math.max(0, Math.min(Number(hitPoints), ship.maxHP));
+      await updateDoc(shipRef, {
+        hp: newHP,
+      });
+      console.log("Updated ship HP:", hitPoints);
+      adjustHP();
+    } catch (e) {
+      console.error("Error updating HP in Firestore:", e);
+    }
+  };
+
+  const openHPModal = () => {
+    setIsModalVisible(true);
+  };
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -85,10 +177,10 @@ export default function ShipStats({ route }) {
               disabled
               style={styles.showButton}
               onPress={() => {
-                const newShowAllStatsState = !areAllStatsShows; // Toggle the current state
-                showAllStat(newShowAllStatsState); // Update the showAllStat hook
-                setAreAllStatsShows(newShowAllStatsState); // Update local state
-                setPressed(newShowAllStatsState); // Update button text state
+                const newShowAllStatsState = !areAllStatsShows;
+                showAllStat(newShowAllStatsState);
+                setAreAllStatsShows(newShowAllStatsState);
+                setPressed(newShowAllStatsState);
               }}
             >
               <Image
@@ -100,27 +192,57 @@ export default function ShipStats({ route }) {
             </TouchableOpacity>
           </View>
         </View>
+        <View>
+          <TouchableOpacity>
+            <Text style={styles.headerText}>Edit Ship: {ship.ordersUsed}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              {
+                backgroundColor: ship.isToggled ? Colors.hudDarker : Colors.hud,
+                borderColor: ship.isToggled ? Colors.hud : Colors.hud,
+              },
+            ]}
+            onPress={toggleHasTakenTurn}
+          >
+            <Text
+              style={[
+                styles.headerText,
+                {
+                  fontSize: 18,
+                  color: ship.isToggled ? Colors.hud : Colors.hudDarker,
+                },
+              ]}
+            >
+              {ship.type}{" "}
+              {ship.isToggled ? "has ended its turn" : "is ready to engage"}
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <View
-                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-              >
-                <Text style={styles.statButtonText}>Hit Point</Text>
-              </View>
-            </View>
-            <View style={styles.statTextUnder}>
-              <Text
-                style={{
-                  textAlign: "center",
-                  color: Colors.white,
-                  fontFamily: "monospace",
-                  fontSize: 12,
-                  marginTop: 2,
-                }}
-              >
-                {ship.hp}/{ship.maxHP}
-              </Text>
+              <TouchableOpacity onPress={openHPModal}>
+                <View
+                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
+                >
+                  <Text style={styles.statButtonText}>Hit Point</Text>
+                </View>
+                <View style={styles.statTextUnder}>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: Colors.hud,
+                      fontFamily: "monospace",
+                      fontSize: 12,
+                      marginTop: 2,
+                    }}
+                  >
+                    {ship.hp}/{ship.maxHP}
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={{ width: "45%" }}>
@@ -146,7 +268,6 @@ export default function ShipStats({ route }) {
             </View>
           </View>
         </View>
-
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
@@ -193,7 +314,6 @@ export default function ShipStats({ route }) {
             </View>
           </View>
         </View>
-
         <View style={styles.buttonContainer}>
           <View style={{ flex: 1, marginHorizontal: 10 }}>
             <View style={[styles.statButton]}>
@@ -328,6 +448,66 @@ export default function ShipStats({ route }) {
             </>
           </View>
         </View>
+        {isModalVisible && (
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isModalVisible}
+            onRequestClose={() => {
+              setIsModalVisible(false);
+            }}
+          >
+            <TouchableOpacity
+              activeOpacity={1}
+              onPressOut={() => setIsModalVisible(false)}
+              style={{
+                flex: 1,
+                backgroundColor: "rgba(0,0,0,0.5)",
+                justifyContent: "flex-end",
+              }}
+            >
+              <TouchableOpacity
+                activeOpacity={1}
+                style={{
+                  height: "25%",
+                  backgroundColor: Colors.hudDarker,
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                  padding: 20,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {/* Modal Content */}
+                <Text style={styles.textHeader}>Adjust Hit Points</Text>
+                <TextInput
+                  style={styles.textInput}
+                  onChangeText={(text) => setHitPoints(text)}
+                  value={hitPoints}
+                  keyboardType="numeric"
+                  placeholder="Hit Points"
+                  maxLength={3}
+                  autoFocus={true}
+                  returnKeyType="done"
+                  keyboardAppearance="dark"
+                />
+                <TouchableOpacity
+                  style={[styles.button, { borderColor: Colors.hudDarker }]}
+                  onPress={() => {
+                    adjustShipsHitPoints();
+                    setIsModalVisible(false);
+                  }}
+                >
+                  <Text
+                    style={[styles.textHeader, { color: Colors.hudDarker }]}
+                  >
+                    Save Hit Points
+                  </Text>
+                </TouchableOpacity>
+              </TouchableOpacity>
+            </TouchableOpacity>
+          </Modal>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -337,6 +517,16 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.dark_gray,
     flex: 1,
+  },
+  textInput: {
+    width: "80%",
+    height: 50,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    borderRadius: 5,
+    padding: 10,
+    margin: 10,
+    color: Colors.hud,
   },
   mainContainer: {
     flex: 1,
@@ -410,7 +600,6 @@ const styles = StyleSheet.create({
     fontFamily: "monospace",
     marginVertical: "5",
     width: "100%",
-    elevation: 8,
   },
   touchButton: {
     position: "relative",
@@ -459,5 +648,20 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginLeft: 20,
     marginTop: 20,
+  },
+  button: {
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    margin: 10,
+    borderRadius: 5,
+    backgroundColor: Colors.hud,
+  },
+  textHeader: {
+    color: Colors.white,
+    fontSize: 15,
+    marginBottom: 5,
+    textAlign: "center",
+    fontFamily: FONTS.leagueBold,
   },
 });

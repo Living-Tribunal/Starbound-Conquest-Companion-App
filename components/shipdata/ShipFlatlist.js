@@ -14,9 +14,18 @@ import { Colors } from "@/constants/Colors";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { useNavigation } from "@react-navigation/native";
 import { getFleetData } from "../../components/API/API";
+import Toast from "react-native-toast-message";
 
 export default function ShipFlatList({ type, fleetClass }) {
-  const { data, setData, toggleToDelete } = useStarBoundContext();
+  const {
+    data,
+    setData,
+    toggleToDelete,
+    turnTaken,
+    setDeleting,
+    setSetDeleting,
+    hitPointsColor,
+  } = useStarBoundContext();
   const user = FIREBASE_AUTH.currentUser;
   const navigation = useNavigation();
 
@@ -29,6 +38,7 @@ export default function ShipFlatList({ type, fleetClass }) {
   console.log("----------------------"); */
 
   const deleteShip = async (ship) => {
+    setSetDeleting(true);
     if (!user?.uid) {
       console.error("User not found");
       return;
@@ -44,13 +54,15 @@ export default function ShipFlatList({ type, fleetClass }) {
       );
       await deleteDoc(deleteShipReference);
       await getFleetData({ data, setData });
+      setSetDeleting(false);
 
-      // Refresh locally without needing to refetch from Firestore
-      //const updatedShips = ship.filter((b) => b.docId !== ship.docId);
-
-      Alert.alert(`${ship.id} Deleted`, "Ship has been deleted.", [
-        { text: "OK" },
-      ]);
+      Toast.show({
+        type: "success", // 'success' | 'error' | 'info'
+        text1: "Starbound Conquest",
+        text2: "Ship has been deleted.",
+        position: "top", // optional, 'top' | 'bottom'
+        visibilityTime: 2000, // 2 seconds
+      });
 
       console.log(`Deleted Ship: ${ship.id}`);
     } catch (e) {
@@ -66,77 +78,79 @@ export default function ShipFlatList({ type, fleetClass }) {
           nestedScrollEnabled={true}
           numColumns={4}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => {
-                if (toggleToDelete) {
-                  deleteShip(item);
-                  console.log("Deleted Ship:", item.id);
-                } else {
-                  navigation.navigate("Stats", { ship: item });
-                  console.log("Navigated to Stats:", item.id);
-                }
-              }}
-            >
-              <View
-                style={{
-                  alignSelf: "center",
-                  width: "80%",
-                  flex: 1,
-                  alignItems: "center",
-                  padding: 2,
-                  borderRadius: 5,
-                  borderWidth: 1,
-                  borderColor: Colors.hud,
-                  marginVertical: 5,
+          renderItem={({ item }) => {
+            const thisShipColor = hitPointsColor[item.id] || "green";
+
+            return (
+              <TouchableOpacity
+                onPress={() => {
+                  if (toggleToDelete) {
+                    deleteShip(item);
+                    console.log("Deleted Ship:", item.id);
+                  } else {
+                    navigation.navigate("Stats", { shipId: item.id });
+                    console.log("Navigated to Stats:", item.id);
+                  }
                 }}
               >
-                {/* <Text style={styles.typeText}>
-                  {item.shipId
-                </Text> */}
                 <View
                   style={{
-                    marginBottom: 50,
-                    position: "relative",
-                    width: 90,
-                    height: 40,
+                    alignSelf: "center",
+                    width: "80%",
+                    flex: 1,
                     alignItems: "center",
+                    padding: 2,
+                    borderRadius: 5,
+                    borderWidth: 1,
+                    borderColor: item.isToggled ? Colors.gold : Colors.hud,
+                    backgroundColor: Colors.dark_gray,
+                    marginVertical: 5,
                   }}
                 >
-                  <Image
-                    resizeMode="contain"
-                    source={require("../../assets/images/fleethud-01.png")}
+                  <View
                     style={{
-                      width: 80,
-                      height: 20,
-                      tintColor: item.isToggled ? "orange" : Colors.hud,
-                    }}
-                  />
-                  <Text
-                    style={{
-                      position: "absolute",
-                      top: 5,
-                      color: "white",
-                      textAlign: "center",
-                      fontSize: 8,
+                      marginBottom: 50,
+                      position: "relative",
+                      width: 90,
+                      height: 40,
+                      alignItems: "center",
                     }}
                   >
-                    {item.shipId}
-                  </Text>
-                  <Image
-                    resizeMode="contain"
-                    source={{ uri: item.image }}
-                    style={{
-                      width: 60,
-                      height: 60,
-                      alignSelf: "center",
-                      marginTop: 5,
-                    }}
-                  />
+                    <Image
+                      resizeMode="contain"
+                      source={require("../../assets/images/fleethud-01.png")}
+                      style={{
+                        width: 80,
+                        height: 20,
+                        tintColor: thisShipColor, // ✅ now this is correct
+                      }}
+                    />
+                    <Text
+                      style={{
+                        position: "absolute",
+                        top: 5,
+                        color: "white",
+                        textAlign: "center",
+                        fontSize: 8,
+                      }}
+                    >
+                      {item.shipId}
+                    </Text>
+                    <Image
+                      resizeMode="contain"
+                      source={{ uri: item.image }}
+                      style={{
+                        width: 60,
+                        height: 60,
+                        alignSelf: "center",
+                        marginTop: 5,
+                      }}
+                    />
+                  </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          )}
+              </TouchableOpacity>
+            );
+          }}
         />
       ) : (
         <Text style={styles.noData}>No {type}s available.</Text>

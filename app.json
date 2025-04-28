@@ -5,11 +5,11 @@
     "version": "1.1.0",
     "orientation": "portrait",
     "newArchEnabled": true,
-    "icon": "./assets/images/sbcq.png",
+    "icon": "./assets/images/SC_logo1SQ.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/logo.png",
+      "image": "./assets/images/SC_logo1.png",
       "resizeMode": "cover",
       "backgroundColor": "#000000"
     },
@@ -20,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/logo.png",
+        "foregroundImage": "./assets/images/SC_logo1SQ.png",
         "backgroundColor": "#000000"
       },
       "package": "com.happybob59.StarBoundConquest"
@@ -28,11 +28,29 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/logo.png"
+      "favicon": "./assets/images/SC_logo1.png"
     },
     "plugins": [
       "expo-router",
-      "expo-font",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Aboreto-Regular.ttf",
+            "./assets/fonts/LegacySpartan-Black.ttf",
+            "./assets/fonts/LegacySpartan-Bold.ttf",
+            "./assets/fonts/LegacySpartan-Light.ttf",
+            "./assets/fonts/LegacySpartan-Medium.ttf",
+            "./assets/fonts/LegacySpartan-Regular.ttf",
+            "./assets/fonts/LegacySpartan-SemiBold.ttf",
+            "./assets/fonts/LegacySpartan-ExtraBold.ttf",
+            "./assets/fonts/LegacySpartan-Thin.ttf",
+            "./assets/fonts/SpaceMono-Regular.ttf",
+            "./assets/fonts/SpaceMono-Italic.ttf",
+            "./assets/fonts/SpaceMono-Bold.ttf"
+          ]
+        }
+      ],
       "@react-native-google-signin/google-signin",
       [
         "expo-image-picker",

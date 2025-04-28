@@ -22,10 +22,12 @@ import Toast from "react-native-toast-message";
 import ImagePicker from "../../components/picker/ImagePicker.js";
 import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Settings() {
   const auth = getAuth();
   const user = auth.currentUser;
+  const navigation = useNavigation();
   GoogleSignin.configure({
     webClientId:
       "633304307229-acjrh8tpf2eddgdjcutludsg7vqf1pru.apps.googleusercontent.com",
@@ -330,6 +332,15 @@ export default function Settings() {
     return null;
   };
 
+  const handleSignOut = async () => {
+    try {
+      console.log("Signing out...");
+      await FIREBASE_AUTH.signOut();
+      navigation.navigate("Login");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
   /* console.log("profile picture is in Logout Screen:", profile); */
 
   return (
@@ -446,7 +457,7 @@ export default function Settings() {
           </View>
           <View style={styles.TouchableOpacityContainer}>
             <TouchableOpacity
-              onPress={() => FIREBASE_AUTH.signOut()}
+              onPress={handleSignOut}
               style={styles.deleteButton}
             >
               <Text
