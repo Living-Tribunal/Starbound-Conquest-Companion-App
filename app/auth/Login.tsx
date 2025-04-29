@@ -145,8 +145,8 @@ const Login = () => {
     setAuthInProgress(false);
   };
 
-  console.log("Faction selected:", faction);
-  console.log("Faction image URL:", FactionAvatars[faction]?.image);
+  /* console.log("Faction selected:", faction);
+  console.log("Faction image URL:", FactionAvatars[faction]?.image); */
 
   const signUp = async () => {
     if (!email || password !== confirmPassword || !username) {
@@ -553,8 +553,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   image: {
-    width: 150,
-    height: 150,
+    width: 200,
+    height: 200,
     resizeMode: "contain",
     borderRadius: 5,
     marginTop: 10,

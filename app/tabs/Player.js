@@ -53,6 +53,7 @@ export default function Player() {
     setToggleToDelete,
     setDeleting,
     setSetDeleting,
+    userProfilePicture,
   } = useStarBoundContext();
 
   const onCancelWarning = () => {
@@ -81,6 +82,8 @@ export default function Player() {
       getFleetDataButton();
     }, [])
   );
+
+  console.log("Ship Length:", data);
 
   const getFleetDataButton = async () => {
     setLoading(true);
@@ -254,12 +257,27 @@ export default function Player() {
 
   /* console.log(JSON.stringify(totalFleetValue) + " In Player"); */
 
+  function send_message_discord() {
+    const request = new XMLHttpRequest();
+    request.open(
+      "POST",
+      "https://discord.com/api/webhooks/1334142368613400598/ByDe3g5n2lUlWW_dpj1tYV5JggI6XMbWpaldCsn53EJF5P1vJ3IU1Tg0-IqZ4cnWuOn_"
+    );
+    request.setRequestHeader("Content-Type", "application/json");
+    const params = {
+      username: "Starbound Conquest",
+      avatar_url: "",
+      content: `${username} has ended their turn.`,
+    };
+    request.send(JSON.stringify(params));
+  }
+
   const endYourTurn = async () => {
     if (!user) return;
     try {
       const shipRef = collection(FIREBASE_DB, "users", user.uid, "ships");
-      const q = query(shipRef, where("isToggled", "==", true));
-      const snapshot = await getDocs(q);
+      const snapshot = await getDocs(shipRef); // <-- fetch ALL ships
+
       const resetPromises = snapshot.docs.map(async (shipDoc) => {
         const shipDocRef = doc(
           FIREBASE_DB,
@@ -268,17 +286,33 @@ export default function Player() {
           "ships",
           shipDoc.id
         );
+        const shipData = shipDoc.data();
+        console.log("Ship data:", shipData);
+
+        // Reset special orders if they exist
+        let newSpecialOrders = {};
+        if (shipData.specialOrders) {
+          Object.keys(shipData.specialOrders).forEach((order) => {
+            newSpecialOrders[order] = false;
+          });
+        }
+        console.log("New special orders:", newSpecialOrders);
+
         await updateDoc(shipDocRef, {
           isToggled: false,
+          specialOrders: newSpecialOrders,
         });
       });
+
       await Promise.all(resetPromises);
       await getFleetData({ data, setData });
+      send_message_discord();
+
       Toast.show({
-        type: "success", // 'success' | 'error' | 'info'
+        type: "success",
         text1: "Starbound Conquest",
-        text2: "Your turn has ended.",
-        position: "top", // optional, 'top' | 'bottom'
+        text2: "Your turn has ended and all special orders reset.",
+        position: "top",
       });
     } catch (e) {
       console.error("Error updating document: ", e);
@@ -388,6 +422,9 @@ export default function Player() {
                 style={[
                   styles.profileContainer,
                   {
+                    borderColor: toggleToDelete
+                      ? Colors.lighter_red
+                      : Colors.hud,
                     shadowColor: toggleToDelete
                       ? Colors.lighter_red
                       : Colors.hud,
@@ -397,9 +434,7 @@ export default function Player() {
                 <Image
                   style={styles.profile}
                   source={
-                    profile
-                      ? { uri: profile }
-                      : require("../../assets/images/ships.jpg")
+                    user.photoURL ? { uri: user.photoURL } : { uri: profile }
                   }
                 />
                 <Text
@@ -688,7 +723,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderRadius: 10,
     justifyContent: "center",
-    shadowColor: Colors.hud,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    elevation: 10,
   },
   editContainer: {
     alignItems: "center",

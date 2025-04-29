@@ -20,62 +20,40 @@ import { shipDiceMapping } from "../../components/buttons/Dice.js";
 import { FONTS } from "../../constants/fonts.js";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { useNavigation } from "@react-navigation/native";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, or, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import HeaderComponent from "@/components/header/HeaderComponent.js";
 
 export default function ShipStats({ route }) {
   const user = FIREBASE_AUTH.currentUser;
   const { shipId } = route.params || {};
-  const { showStat, handlePress, showAllStat } = ShowStat();
+  const { showStat, showAllStat } = ShowStat();
   const [areAllStatsShows, setAreAllStatsShows] = useState(true);
   const [pressed, setPressed] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedShip, setSelectedShip] = useState(ship?.type || "");
-  const navigation = useNavigation();
 
   const [selectedFaction, setSelectedFaction] = useState("Nova Raiders");
 
   const tabBarHeight = useBottomTabBarHeight();
 
-  const {
-    faction,
-    data,
-    setData,
-    turnTaken,
-    setTurnTaken,
-    hitPoints,
-    setHitPoints,
-    hitPointsColor,
-    setHitPointsColor,
-  } = useStarBoundContext();
+  const { faction, data, setData, hitPoints, setHitPoints, setHitPointsColor } =
+    useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
-  const ShipData = ShipAttributes[ship.type];
-  const selectedShipDice = shipDiceMapping[ship.type];
+  const ShipData = ship ? ShipAttributes[ship.type] : null;
+  const selectedShipDice = ship ? shipDiceMapping[ship.type] : [];
 
   useEffect(() => {
     setSelectedFaction(faction);
     console.log(faction);
   }, [faction]);
 
-  if (!ship) {
-    return (
-      <SafeAreaView style={styles.mainContainer}>
-        <Text
-          style={{ color: Colors.white, textAlign: "center", marginTop: 50 }}
-        >
-          Loading ship data...
-        </Text>
-      </SafeAreaView>
-    );
-  }
-
   useEffect(() => {
-    if (!ship) return;
-    const shipHealth = (ship.hp / ship.maxHP) * 100;
+    if (!ship || typeof ship.hp !== "number" || typeof ship.maxHP !== "number")
+      return;
 
+    const shipHealth = (ship.hp / ship.maxHP) * 100;
     let newColor = "red";
+
     if (shipHealth === 100) newColor = "green";
     else if (shipHealth >= 75) newColor = "yellow";
     else if (shipHealth >= 50) newColor = "orange";
@@ -84,7 +62,7 @@ export default function ShipStats({ route }) {
       ...prevColors,
       [ship.id]: newColor,
     }));
-  }, [ship.hp, ship.maxHP]);
+  }, [ship]);
 
   /*  console.log(
     JSON.stringify(ship, null, 2) +
@@ -92,6 +70,35 @@ export default function ShipStats({ route }) {
   );
  */
   //console.log("In ship stats:" + JSON.stringify(data, null, 2));
+
+  const toggleSpecialOrdersButton = async (orderName) => {
+    if (!ship || !user) return;
+
+    try {
+      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", shipId);
+
+      // New field if not existing
+      const currentOrders = ship.specialOrders || {};
+
+      const updatedOrders = {
+        ...currentOrders,
+        [orderName]: !currentOrders[orderName],
+      };
+
+      await updateDoc(shipRef, {
+        specialOrders: updatedOrders,
+      });
+
+      // Update local data
+      setData((prevData) =>
+        prevData.map((s) =>
+          s.id === shipId ? { ...s, specialOrders: updatedOrders } : s
+        )
+      );
+    } catch (e) {
+      console.error("Error toggling special order:", e);
+    }
+  };
 
   const toggleTurn = () => {
     setData((prevData) =>
@@ -146,6 +153,18 @@ export default function ShipStats({ route }) {
   const openHPModal = () => {
     setIsModalVisible(true);
   };
+
+  if (!ship) {
+    return (
+      <SafeAreaView style={styles.mainContainer}>
+        <Text
+          style={{ color: Colors.white, textAlign: "center", marginTop: 50 }}
+        >
+          Loading ship data...
+        </Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -388,62 +407,82 @@ export default function ShipStats({ route }) {
             <View
               style={[styles.statButton, { marginBottom: 40, marginTop: 50 }]}
             >
-              <TouchableOpacity
-                disabled
-                style={{ backgroundColor: "transparent", width: "100%" }}
-                onPress={() => {
-                  handlePress("specialOrders");
-                  setPressed((prev) => !prev);
-                }}
+              <Text
+                style={[
+                  styles.statButtonText,
+                  {
+                    color: Colors.hudDarker,
+                    backgroundColor: Colors.hud,
+                    width: "50%",
+                    left: "13%",
+                    borderWidth: 4,
+                    borderColor: Colors.hudDarker,
+                  },
+                ]}
               >
-                <Text
-                  style={[
-                    styles.statButtonText,
-                    {
-                      color: Colors.hudDarker,
-                      backgroundColor: Colors.hud,
-                      width: "50%",
-                      left: "13%",
-                      borderWidth: 4,
-                      borderColor: Colors.hudDarker,
-                    },
-                  ]}
-                >
-                  Special Orders
-                </Text>
-                <Image
-                  style={{
-                    resizeMode: "contain",
-                    position: "absolute",
-                    top: -125,
-                    right: "25%",
-                    transform: [
-                      { translateX: 245 },
-                      { translateY: 2 },
-                      { scale: 0.5 }, // Adjust the value to scale the image
-                    ],
-                  }}
-                  source={require("../../assets/images/hudstat1.png")}
-                />
-              </TouchableOpacity>
+                Special Orders
+              </Text>
+              <Image
+                style={{
+                  resizeMode: "contain",
+                  position: "absolute",
+                  top: -125,
+                  right: "25%",
+                  transform: [
+                    { translateX: 245 },
+                    { translateY: 2 },
+                    { scale: 0.5 }, // Adjust the value to scale the image
+                  ],
+                }}
+                source={require("../../assets/images/hudstat1.png")}
+              />
             </View>
             <>
-              <View style={{}}>
-                {ShipData.specialOrders.map((specialOrders, index) => (
-                  <View key={index}>
-                    <Text
-                      style={{
-                        textAlign: "center",
-                        color: Colors.white,
-                        marginRight: 5,
-                        paddingBottom: 10,
-                        fontFamily: "monospace",
-                      }}
-                    >
-                      {specialOrders}
-                    </Text>
-                  </View>
-                ))}
+              <View>
+                {ShipData &&
+                  ShipData.specialOrders &&
+                  ShipData.specialOrders.map((specialOrder, index) => {
+                    const orderName = specialOrder[0]; // full name
+                    const description = specialOrder[1]; // full description
+
+                    return (
+                      <View
+                        key={index}
+                        style={{
+                          marginBottom: 10,
+                        }}
+                      >
+                        <TouchableOpacity
+                          onPress={() => toggleSpecialOrdersButton(orderName)}
+                        >
+                          <Text
+                            style={{
+                              textAlign: "center",
+                              color: ship.specialOrders?.[orderName]
+                                ? Colors.hudDarker
+                                : Colors.white,
+                              fontFamily: "monospace",
+                              fontSize: 12,
+                              marginBottom: 2,
+                            }}
+                          >
+                            {orderName}
+                          </Text>
+                          <Text
+                            style={{
+                              fontSize: 10,
+                              color: Colors.hud,
+                              textAlign: "center",
+                              fontFamily: "monospace",
+                              paddingHorizontal: 10,
+                            }}
+                          >
+                            {description}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    );
+                  })}
               </View>
             </>
           </View>

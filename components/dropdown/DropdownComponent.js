@@ -6,9 +6,10 @@ import { Colors } from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { GameFactions } from "@/constants/GameFactions";
+import FactionAvatars from "@/constants/FactionAvatars";
 
 const DropdownComponent = () => {
-  const { faction, setFaction } = useStarBoundContext();
+  const { faction, setFaction, data } = useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
 
   const renderLabel = () => {
@@ -22,7 +23,7 @@ const DropdownComponent = () => {
     return null;
   };
 
-  console.log("faction:", faction);
+  //console.log("faction:", faction);
 
   return (
     <View style={styles.container}>

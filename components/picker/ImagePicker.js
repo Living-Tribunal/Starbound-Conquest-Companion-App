@@ -3,10 +3,19 @@ import { TouchableOpacity, Image, View, StyleSheet, Text } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Colors } from "@/constants/Colors";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
+import {
+  FIREBASE_STORE,
+  FIREBASE_AUTH,
+  getDownloadURL,
+} from "@/FirebaseConfig";
+import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { updateProfile, deleteUser } from "firebase/auth";
 
 export default function ImagePickerExample() {
-  const { profile, setProfile } = useStarBoundContext();
-
+  const { userProfilePicture, setUserProfilePicture, profile } =
+    useStarBoundContext();
+  const user = FIREBASE_AUTH.currentUser;
+  const storage = getStorage();
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -17,7 +26,59 @@ export default function ImagePickerExample() {
     });
 
     if (!result.canceled) {
-      setProfile(result.assets[0].uri);
+      try {
+        const downloadURL = await uploadImageAsync(
+          result.assets[0].uri,
+          user.uid
+        );
+        console.log("Download URL:", downloadURL);
+        setUserProfilePicture(downloadURL);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+  };
+
+  const uriToBlob = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    console.log("Blob:", blob);
+    return blob;
+  };
+
+  const uploadImageAsync = async (uri, userId) => {
+    try {
+      const blob = await uriToBlob(uri);
+      console.log("Blob URI:", blob);
+
+      const filename = `userProfilePhotos/${userId}/${Date.now()}.jpg`;
+      console.log("Filename:", filename);
+      const storageRef = ref(storage, filename);
+      console.log("Storage Ref:", storageRef);
+
+      const metadata = {
+        contentType: "image/jpeg",
+      };
+      console.log("Metadata:", metadata);
+
+      await uploadBytes(storageRef, blob, metadata);
+      console.log("✅ Upload success!");
+
+      const downloadURL = await getDownloadURL(storageRef);
+      console.log("📎 File available at:", downloadURL);
+
+      if (downloadURL) {
+        try {
+          setUserProfilePicture(downloadURL);
+          console.log(downloadURL, "were saved to Auth");
+        } catch (error) {
+          console.error("Error updating profile:", error);
+        }
+      }
+      return downloadURL;
+    } catch (err) {
+      console.error("🔥 Upload failed:", err);
+      throw err;
     }
   };
 
@@ -29,7 +90,7 @@ export default function ImagePickerExample() {
       <Image
         style={styles.image}
         source={
-          profile ? { uri: profile } : require("../../assets/images/ships.jpg")
+          userProfilePicture ? { uri: userProfilePicture } : { uri: profile }
         }
       />
     </View>

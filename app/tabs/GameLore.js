@@ -45,7 +45,7 @@ export default function GameLore() {
                     });
                   }}
                 >
-                  <Image source={data.image} style={styles.image} />
+                  <Image source={{ uri: data.image }} style={styles.image} />
                   <View style={styles.infoContainer}>
                     <Text style={styles.typeText}>{name}</Text>
                   </View>

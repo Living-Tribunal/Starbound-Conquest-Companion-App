@@ -19,7 +19,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [turnTaken, setTurnTaken] = useState(0);
   const [hitPoints, setHitPoints] = useState(0);
   const [hitPointsColor, setHitPointsColor] = useState({});
-
+  const [userProfilePicture, setUserProfilePicture] = useState(null);
   const [profile, setProfile] = useState(null);
   const [data, setData] = useState([]);
 
@@ -37,6 +37,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [username, setUsername] = useState("");
   const [toggleToDelete, setToggleToDelete] = useState(false);
   const [setDeleting, setSetDeleting] = useState(false);
+  const [toggleSpecialOrders, setToggleSpecialOrders] = useState(false);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -118,6 +119,10 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setHitPoints,
         hitPointsColor,
         setHitPointsColor,
+        userProfilePicture,
+        setUserProfilePicture,
+        toggleSpecialOrders,
+        setToggleSpecialOrders,
       }}
     >
       {[children, shipType]}

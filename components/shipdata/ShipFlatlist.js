@@ -17,6 +17,19 @@ import { getFleetData } from "../../components/API/API";
 import Toast from "react-native-toast-message";
 
 export default function ShipFlatList({ type, fleetClass }) {
+  const specialOrderShortNames = {
+    "All Head Full": "AHF",
+    "Evasive Maneuvers": "EVM",
+    "Combine Fire": "CBF",
+    "Anti-Fighter Barrage": "AFB",
+    "Power Up Main Guns": "PMG",
+    "All Systems Fire": "ASF",
+    "Reinforce Shields": "RFS",
+    "Launch Fighters": "LF",
+    "Charge Ion Beams": "CIB",
+    Broadside: "BRS",
+  };
+
   const {
     data,
     setData,
@@ -76,7 +89,7 @@ export default function ShipFlatList({ type, fleetClass }) {
         <FlatList
           data={fleetData}
           nestedScrollEnabled={true}
-          numColumns={4}
+          numColumns={3}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => {
             const thisShipColor = hitPointsColor[item.id] || "green";
@@ -93,6 +106,48 @@ export default function ShipFlatList({ type, fleetClass }) {
                   }
                 }}
               >
+                <View
+                  style={{
+                    marginTop: 5,
+                    width: "100%",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <View
+                    style={{
+                      height: 5,
+                      width: "80%",
+                      backgroundColor: "gray", // the empty bar background
+                      borderRadius: 2,
+                    }}
+                  >
+                    <View
+                      style={{
+                        height: 5,
+                        width: `${(item.hp / item.maxHP) * 100}%`,
+                        backgroundColor:
+                          item.hp / item.maxHP > 0.5
+                            ? "limegreen"
+                            : item.hp / item.maxHP > 0.25
+                            ? "yellow"
+                            : "red",
+                        borderRadius: 2,
+                      }}
+                    />
+                  </View>
+                  <Text
+                    style={{
+                      fontSize: 8,
+                      color: "white",
+                      textAlign: "center",
+                      marginTop: 2,
+                    }}
+                  >
+                    {item.hp} / {item.maxHP} HP
+                  </Text>
+                </View>
+
                 <View
                   style={{
                     alignSelf: "center",
@@ -122,7 +177,7 @@ export default function ShipFlatList({ type, fleetClass }) {
                       style={{
                         width: 80,
                         height: 20,
-                        tintColor: thisShipColor, // ✅ now this is correct
+                        tintColor: Colors.hud,
                       }}
                     />
                     <Text
@@ -147,6 +202,48 @@ export default function ShipFlatList({ type, fleetClass }) {
                       }}
                     />
                   </View>
+                  {item.specialOrders && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        flexWrap: "wrap",
+                        marginTop: 5,
+                      }}
+                    >
+                      {Object.entries(item.specialOrders).map(
+                        ([orderName, isActive], index) => {
+                          if (!isActive) return null;
+
+                          return (
+                            <View
+                              key={orderName}
+                              style={{
+                                backgroundColor: Colors.hudDarker,
+                                paddingHorizontal: 6,
+                                paddingVertical: 2,
+                                borderRadius: 10,
+                                margin: 2,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  fontSize: 6,
+                                  color: Colors.hud,
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                }}
+                              >
+                                {specialOrderShortNames[
+                                  orderName.trim().replace(":", "")
+                                ] || "???"}
+                              </Text>
+                            </View>
+                          );
+                        }
+                      )}
+                    </View>
+                  )}
                 </View>
               </TouchableOpacity>
             );
@@ -163,6 +260,13 @@ const styles = StyleSheet.create({
   noData: {
     fontSize: 16,
     color: Colors.hudDarker,
+    fontFamily: "monospace",
+    textAlign: "center",
+    marginTop: 10,
+  },
+  text1: {
+    fontSize: 10,
+    color: Colors.hud,
     fontFamily: "monospace",
     textAlign: "center",
     marginTop: 10,

@@ -14,19 +14,23 @@ import React, { useState, useEffect } from "react";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import DropdownComponent from "../../components/dropdown/DropdownComponent";
-import { FIREBASE_AUTH } from "@/FirebaseConfig";
-import { getAuth, updateProfile, deleteUser } from "firebase/auth";
+import { FIREBASE_AUTH, FIREBASE_STORE, FIREBASE_DB } from "@/FirebaseConfig";
+import { updateProfile } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
 import Toast from "react-native-toast-message";
 import ImagePicker from "../../components/picker/ImagePicker.js";
-import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
+import { doc, updateDoc } from "firebase/firestore"; // if you didn't import yet
+import {
+  GoogleAuthProvider,
+  signInWithCredential,
+  reload,
+} from "firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useNavigation } from "@react-navigation/native";
 
 export default function Settings() {
-  const auth = getAuth();
-  const user = auth.currentUser;
+  const user = FIREBASE_AUTH.currentUser;
   const navigation = useNavigation();
   GoogleSignin.configure({
     webClientId:
@@ -44,9 +48,14 @@ export default function Settings() {
     serverConnected,
     gameValue,
     setGameValue,
+    userProfilePicture,
+    setUserProfilePicture,
+    data,
   } = useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
   const [isFocusValue, setIsFocusValue] = useState(false);
+  /*   console.log("User Selected Profile Picture In Settings:", userProfilePicture);
+  console.log("Characther Creation Picture In Settings:", profile); */
 
   const showToast = () => {
     Toast.show({
@@ -76,18 +85,16 @@ export default function Settings() {
     });
   };
 
-  const checkForUsernamePhotoFaction = () => {
-    if (!username || !profile) {
-      // Check for empty fields
-      showErrorToast(); // Show error if any field is empty
+  const checkForUsernamePhotoFaction = async () => {
+    if (!username) {
+      showErrorToast();
       return false;
     } else {
       showToast();
-      saveName();
-      saveProfile();
-      saveUsername();
-      saveGameValue();
-      saveFaction();
+      await saveName();
+      await updateUserProfile();
+      await saveGameValue();
+      await saveFaction();
       return true;
     }
   };
@@ -101,7 +108,7 @@ export default function Settings() {
     }
   };
 
-  const dataWarning = () => {
+  /*  const dataWarning = () => {
     if (!serverConnected) {
       return (
         <View style={{ marginBottom: 5, marginTop: 5, flexDirection: "row" }}>
@@ -117,7 +124,7 @@ export default function Settings() {
         </View>
       );
     }
-  };
+  }; */
 
   /*   const deleteAuthUser = async () => {
     deleteUser(user)
@@ -129,30 +136,32 @@ export default function Settings() {
         // ...
       });
   }; */
-
-  const saveUsername = async () => {
-    if (!auth.currentUser) {
-      console.warn("No user is authenticated.");
-      return;
-    }
-
+  console.log("Link to Download:", userProfilePicture);
+  const updateUserProfile = async () => {
+    if (!user) return;
+    console.log("updating user profile");
     try {
-      await updateProfile(auth.currentUser, {
+      await reload(user);
+
+      await updateProfile(user, {
         displayName: username,
-        photoURL: profile,
+        photoURL: userProfilePicture,
+        factionName: faction,
       });
-      console.log(profile, username, "were saved to Auth");
+
+      const userDocRef = doc(
+        FIREBASE_DB,
+        "users",
+        FIREBASE_AUTH.currentUser.uid
+      );
+
+      await updateDoc(userDocRef, {
+        displayName: username, // new username
+        photoURL: userProfilePicture,
+        factionName: faction,
+      });
     } catch (error) {
       console.error("Error updating profile:", error);
-    }
-  };
-
-  const saveProfile = async () => {
-    try {
-      await AsyncStorage.setItem("ProfilePicture", profile);
-      console.log(profile, "was saved");
-    } catch (e) {
-      console.error("Error saving name:", e);
     }
   };
 
@@ -192,15 +201,6 @@ export default function Settings() {
     }
   };
 
-  const getProfile = async () => {
-    try {
-      const profilePicture = await AsyncStorage.getItem("ProfilePicture");
-      setProfile(profilePicture);
-    } catch (e) {
-      console.error("Error getting name:", e);
-    }
-  };
-
   const getName = async () => {
     try {
       const name = await AsyncStorage.getItem("UserName");
@@ -208,7 +208,6 @@ export default function Settings() {
     } catch (e) {
       console.error("Error getting name:", e);
     }
-    ProfilePicture;
   };
 
   const deleteAsync = async () => {
@@ -222,7 +221,6 @@ export default function Settings() {
   useEffect(() => {
     getName();
     getGameValue();
-    getProfile();
     getFaction();
   }, []);
 
@@ -248,6 +246,7 @@ export default function Settings() {
     try {
       await AsyncStorage.removeItem("ProfilePicture");
       setProfile(""); // Reset profile state
+      setUserProfilePicture("");
     } catch (e) {
       console.error("Error deleting profile picture:", e);
     }
@@ -368,12 +367,28 @@ export default function Settings() {
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
-            {dataWarning()}
-            <Text style={styles.text1}>Logged In Email: {email}</Text>
+            <Text style={styles.text1}>
+              Logged In Email: {user.email || ""}
+            </Text>
             <ImagePicker />
-            <View width="100%">
-              <DropdownComponent />
-            </View>
+            {!data.length ? (
+              <View width="100%">
+                <DropdownComponent />
+              </View>
+            ) : (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={styles.text1}>
+                  You have a fleet! You can't change your faction. Remove all
+                  ships and try again.
+                </Text>
+              </View>
+            )}
 
             <View style={{ flexDirection: "row", gap: 10 }}>
               <View style={{ width: "45%", position: "relative" }}>
@@ -406,9 +421,6 @@ export default function Settings() {
                 />
               </View>
             </View>
-            {/* <View style={{ width: "100%" }}>
-              <DropdownComponent />
-            </View> */}
 
             <View style={styles.heroModalContainerButtons}>
               <TouchableOpacity
@@ -633,7 +645,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.hud,
     backgroundColor: Colors.hudDarker,
-    marginBottom: 20,
+    marginBottom: 10,
+    marginTop: 10,
   },
   statusOnline: {
     fontSize: 12,
@@ -678,5 +691,11 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     paddingHorizontal: 5,
     paddingVertical: 3,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
+    borderRadius: 5,
   },
 });

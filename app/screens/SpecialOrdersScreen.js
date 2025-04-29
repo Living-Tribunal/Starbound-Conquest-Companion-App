@@ -10,7 +10,6 @@ import React from "react";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SpecialOrders } from "@/constants/SpecialOrders.js";
-import { useNavigation } from "@react-navigation/native";
 import { FONTS } from "@/constants/fonts";
 import HeaderComponent from "../../components/header/HeaderComponent.js";
 
