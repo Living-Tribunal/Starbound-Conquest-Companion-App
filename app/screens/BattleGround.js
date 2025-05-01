@@ -10,8 +10,9 @@ import {
   Platform,
   SafeAreaView,
   FlatList,
+  Modal,
 } from "react-native";
-import { Dropdown } from "react-native-element-dropdown";
+import { shipBattleDiceMapping } from "../../components/buttons/BattleDice.js";
 import HeaderComponent from "@/components/header/HeaderComponent";
 import { Colors } from "../../constants/Colors";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
@@ -26,6 +27,10 @@ export default function BattleGround(props) {
   const [singleUserShip, setSingleUserShip] = useState(null);
   const [pressed, setPressed] = useState(true);
   const [expandUserShipList, setExpandUserShipList] = useState(false);
+  const [modal, setModal] = useState(false);
+  const user = FIREBASE_AUTH.currentUser;
+
+  const selectedShipDice = ship ? shipBattleDiceMapping[ship.type] : [];
 
   const getAllUsers = async () => {
     try {
@@ -44,13 +49,15 @@ export default function BattleGround(props) {
       }));
       allUsersArray.push(...users);
       setAllUsers(allUsersArray);
-      //console.log("Users:", JSON.stringify(allUsersArray, null, 2));
+      console.log("Users:", JSON.stringify(allUsersArray, null, 2));
       return users;
     } catch (e) {
       console.error("Error getting users:", e);
       return [];
     }
   };
+
+  console.log("Ship:", ship.weaponDamage);
 
   useEffect(() => {
     const getAllUsersAndShips = async () => {
@@ -78,96 +85,127 @@ export default function BattleGround(props) {
     getAllUsersAndShips();
   }, []);
 
-  const headerComponent = () => {
-    return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Battleground</Text>
-        </View>
-        <View style={styles.body}>
-          <View style={styles.row}>
-            <Text style={styles.text}>Your Ship</Text>
-            <Text style={styles.text}>
-              {ship.type} - {ship.shipId}
-            </Text>
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
-              <Image
-                source={{ uri: ship.image }}
-                style={{ width: 150, height: 150, resizeMode: "contain" }}
-              />
-            </View>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.text}>is attacking your ship!</Text>
-          </View>
-        </View>
-      </View>
-    );
-  };
-
   return (
     <SafeAreaView style={styles.mainContainer}>
       <HeaderComponent text="BattleGround" NavToWhere={"Player"} />
-      <FlatList
-        data={allUsersShips}
-        keyExtractor={(item) => item.id}
-        ListHeaderComponent={headerComponent}
-        stickyHeaderIndices={[0]}
-        renderItem={({ item }) => {
-          const isPressed = item.id === expandUserShipList;
-
-          return (
-            <View>
-              <TouchableOpacity
-                style={styles.usernameToggle}
-                onPress={() => {
-                  setExpandUserShipList(isPressed ? null : item.id);
-                }}
+      <View style={styles.container}>
+        <View
+          style={[
+            styles.row,
+            { borderRadius: 5, backgroundColor: Colors.hudDarker, margin: 10 },
+          ]}
+        >
+          <Text style={[styles.text, { color: Colors.hud }]}>
+            {user.displayName}'s Ship
+          </Text>
+          <Text style={styles.text}>
+            {ship.type} - {ship.shipId}
+          </Text>
+        </View>
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <Image
+            source={{ uri: ship.image }}
+            style={{ width: 100, height: 100, resizeMode: "contain" }}
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          {ship.weaponDamage &&
+            selectedShipDice.map((DiceComponent, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.statTextUnder,
+                  {
+                    backgroundColor: Colors.dark_gray,
+                    flexDirection: "row",
+                  },
+                ]}
               >
-                <Text style={styles.usernameText}>{item.displayName}</Text>
-              </TouchableOpacity>
+                {DiceComponent}
+              </View>
+            ))}
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.text}>is attacking your ship!</Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={(prev) => setModal(true)}
+          >
+            <Text style={styles.closeText}>Choose Your Opponents</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <Modal visible={modal} animationType="slide">
+        <View style={{ flex: 1, backgroundColor: Colors.dark_gray }}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setModal(false)}
+          >
+            <Text style={styles.closeText}>Close Selection</Text>
+          </TouchableOpacity>
+          <FlatList
+            data={allUsersShips}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => {
+              const isPressed = item.id === expandUserShipList;
+              return (
+                <View>
+                  <TouchableOpacity
+                    style={styles.usernameToggle}
+                    onPress={() => {
+                      setExpandUserShipList(isPressed ? null : item.id);
+                    }}
+                  >
+                    <Text style={styles.usernameText}>{item.displayName}</Text>
+                  </TouchableOpacity>
 
-              {isPressed &&
-                Array.isArray(item.allUsersShips) &&
-                item.allUsersShips
-                  .slice()
-                  .sort((a, b) => (a.type || "").localeCompare(b.type || ""))
-                  .map((ship) => (
-                    <TouchableOpacity
-                      onPress={() => {
-                        console.log("Pressed ship:", ship.id);
-                        setPressed((prev) => !prev);
-                      }}
-                      key={ship.id}
-                      style={{
-                        marginTop: 10,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      {ship.image && (
-                        <Image
-                          source={{ uri: ship.image }}
-                          style={{
-                            width: 150,
-                            height: 150,
-                            resizeMode: "contain",
+                  {isPressed &&
+                    Array.isArray(item.allUsersShips) &&
+                    item.allUsersShips
+                      .slice()
+                      .sort((a, b) =>
+                        (a.type || "").localeCompare(b.type || "")
+                      )
+                      .map((ship) => (
+                        <TouchableOpacity
+                          onPress={() => {
+                            console.log("Pressed ship:", ship.id);
+                            setPressed((prev) => !prev);
                           }}
-                        />
-                      )}
-                      <Text style={styles.text}>{ship.shipId}</Text>
-                    </TouchableOpacity>
-                  ))}
-            </View>
-          );
-        }}
-        ListEmptyComponent={
-          <View style={styles.row}>
-            <Text style={styles.text}>No opponents found.</Text>
-          </View>
-        }
-      />
+                          key={ship.id}
+                          style={{
+                            marginTop: 10,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            flexDirection: "row",
+                          }}
+                        >
+                          {ship.image && (
+                            <Image
+                              source={{ uri: ship.image }}
+                              style={{
+                                width: 150,
+                                height: 150,
+                                resizeMode: "contain",
+                              }}
+                            />
+                          )}
+                          <Text style={styles.text}>{ship.shipId}</Text>
+                        </TouchableOpacity>
+                      ))}
+                </View>
+              );
+            }}
+            ListEmptyComponent={
+              <View style={styles.row}>
+                <Text style={styles.text}>No opponents found.</Text>
+              </View>
+            }
+          />
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -185,6 +223,7 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === "ios" ? 20 : 0,
     paddingHorizontal: 20,
     backgroundColor: Colors.dark_gray,
+    flex: 1,
   },
   title: {
     fontSize: 18,
@@ -197,16 +236,9 @@ const styles = StyleSheet.create({
   },
   body: {
     paddingHorizontal: 20,
-    justifyContent: "center",
-    alignItems: "center",
     flex: 1,
   },
-  row: {
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
+  row: {},
   text: {
     fontSize: 16,
     textAlign: "center",
@@ -214,7 +246,6 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   flatListRenderItem: {
-    backgroundColor: Colors.green_toggle,
     padding: 10,
     margin: 10,
     borderRadius: 5,
@@ -234,5 +265,26 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
+  },
+  statTextUnder: {
+    alignSelf: "center",
+    margin: 5,
+    backgroundColor: Colors.underTextGray,
+    width: "100%",
+    borderRadius: 2,
+  },
+  closeButton: {
+    top: 0,
+    right: 0,
+    padding: 10,
+    backgroundColor: Colors.hud,
+    margin: 10,
+    borderRadius: 5,
+  },
+  closeText: {
+    color: Colors.hudDarker,
+    fontSize: 20,
+    textAlign: "center",
+    fontFamily: "LeagueSpartan-Bold",
   },
 });
