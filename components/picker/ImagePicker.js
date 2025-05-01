@@ -69,7 +69,6 @@ export default function ImagePickerExample() {
 
       if (downloadURL) {
         try {
-          setUserProfilePicture(downloadURL);
           console.log(downloadURL, "were saved to Auth");
         } catch (error) {
           console.error("Error updating profile:", error);
@@ -81,6 +80,8 @@ export default function ImagePickerExample() {
       throw err;
     }
   };
+
+  console.log("User profile Image in Picker: ", profile);
 
   return (
     <View style={styles.container}>
@@ -108,6 +109,7 @@ const styles = StyleSheet.create({
   image: {
     width: 200,
     height: 200,
+    borderRadius: 10,
   },
   button: {
     backgroundColor: Colors.hud,

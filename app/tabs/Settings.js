@@ -10,17 +10,18 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Colors } from "@/constants/Colors";
+import { getAuth } from "firebase/auth";
+import { updateDoc, doc, getDoc } from "firebase/firestore";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import DropdownComponent from "../../components/dropdown/DropdownComponent";
 import { FIREBASE_AUTH, FIREBASE_STORE, FIREBASE_DB } from "@/FirebaseConfig";
 import { updateProfile } from "firebase/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
+import { useFocusEffect } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
 import ImagePicker from "../../components/picker/ImagePicker.js";
-import { doc, updateDoc } from "firebase/firestore"; // if you didn't import yet
 import {
   GoogleAuthProvider,
   signInWithCredential,
@@ -28,6 +29,7 @@ import {
 } from "firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Settings() {
   const user = FIREBASE_AUTH.currentUser;
@@ -108,45 +110,51 @@ export default function Settings() {
     }
   };
 
-  /*  const dataWarning = () => {
-    if (!serverConnected) {
-      return (
-        <View style={{ marginBottom: 5, marginTop: 5, flexDirection: "row" }}>
-          <Text style={styles.TextStatus}>Server Status: </Text>
-          <Text style={styles.statusOffline}>Disconnected</Text>
-        </View>
-      );
-    } else {
-      return (
-        <View style={{ marginBottom: 5, marginTop: 5, flexDirection: "row" }}>
-          <Text style={styles.TextStatus}>Server Status: </Text>
-          <Text style={styles.statusOnline}>Connected</Text>
-        </View>
-      );
-    }
-  }; */
+  useFocusEffect(
+    useCallback(() => {
+      const getUserData = async () => {
+        try {
+          const auth = getAuth();
+          const user = auth.currentUser;
+          if (!user) return;
 
-  /*   const deleteAuthUser = async () => {
-    deleteUser(user)
-      .then(() => {
-        // User deleted.
-      })
-      .catch((error) => {
-        // An error ocurred
-        // ...
-      });
-  }; */
-  console.log("Link to Download:", userProfilePicture);
+          const docRef = doc(FIREBASE_DB, "users", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            //console.log("User Data:", data);
+            setUsername(data.displayName);
+            setProfile(data.photoURL);
+            setFaction(data.factionName);
+            setGameValue(data.gameValue || 0);
+            console.log(
+              "Profile Image In Settings:",
+              JSON.stringify(data, null, 2)
+            );
+          }
+        } catch (error) {
+          console.error("Failed to retrieve user data:", error);
+        }
+      };
+
+      console.log("User profile Image: ", profile);
+
+      getUserData();
+    }, [])
+  );
   const updateUserProfile = async () => {
     if (!user) return;
     console.log("updating user profile");
     try {
       await reload(user);
 
+      const finalPhotourl = userProfilePicture?.trim()
+        ? userProfilePicture
+        : profile;
+
       await updateProfile(user, {
         displayName: username,
-        photoURL: userProfilePicture,
-        factionName: faction,
+        photoURL: finalPhotourl,
       });
 
       const userDocRef = doc(
@@ -156,9 +164,11 @@ export default function Settings() {
       );
 
       await updateDoc(userDocRef, {
-        displayName: username, // new username
-        photoURL: userProfilePicture,
-        factionName: faction,
+        displayName: username,
+        photoURL: finalPhotourl,
+        factionName: String(faction),
+        gameValue: String(gameValue),
+        email: user.email,
       });
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -177,7 +187,7 @@ export default function Settings() {
   const saveGameValue = async () => {
     // Ensure faction is not null or undefined
     try {
-      await AsyncStorage.setItem("GameValue", gameValue);
+      await AsyncStorage.setItem("GameValue", String(gameValue));
       console.log(gameValue, "was saved");
     } catch (e) {
       console.error("Error saving faction:", e);
@@ -335,6 +345,7 @@ export default function Settings() {
     try {
       console.log("Signing out...");
       await FIREBASE_AUTH.signOut();
+      await AsyncStorage.clear();
       navigation.navigate("Login");
     } catch (error) {
       console.error("Error signing out:", error);

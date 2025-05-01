@@ -20,6 +20,7 @@ import GameLore from "./tabs/GameLore";
 import FactionInfoScreen from "./screens/FactionInfoScreen";
 import DiceRoller from "./tabs/Dice";
 import FactionInfoPreview from "./screens/FactionInfoPreview";
+import BattleGround from "./screens/BattleGround";
 import { Colors } from "../constants/Colors";
 import { StarBoundProvider } from "../components/Global/StarBoundProvider";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -205,6 +206,15 @@ function MainTabs() {
           <Tab.Screen
             name="Stats"
             component={ShipStats}
+            options={{
+              tabBarItemStyle: { display: "none" },
+              tabBarStyle: { display: "none" },
+              headerShown: false,
+            }}
+          />
+          <Tab.Screen
+            name="BattleGround"
+            component={BattleGround}
             options={{
               tabBarItemStyle: { display: "none" },
               tabBarStyle: { display: "none" },

@@ -17,6 +17,7 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import ShipFlatlist from "../../components/shipdata/ShipFlatlist";
 import { getFleetData } from "../../components/API/API";
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
+import { getAuth } from "firebase/auth";
 import { shipObject } from "../../constants/shipObjects";
 import Toast from "react-native-toast-message";
 import {
@@ -27,11 +28,12 @@ import {
   updateDoc,
   doc,
   addDoc,
+  getDoc,
   setDoc,
 } from "firebase/firestore";
 import { useFocusEffect } from "expo-router";
 export default function Player() {
-  const user = FIREBASE_AUTH.currentUser;
+  const user = getAuth().currentUser;
   const tabBarHeight = useBottomTabBarHeight();
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -83,7 +85,7 @@ export default function Player() {
     }, [])
   );
 
-  console.log("Ship Length:", data);
+  //console.log("Ship Length:", data);
 
   const getFleetDataButton = async () => {
     setLoading(true);
@@ -160,25 +162,34 @@ export default function Player() {
  */
   //console.log(JSON.stringify(data, null, data));
 
-  useEffect(() => {
-    const getUserData = async () => {
-      try {
-        const storedUsername = await AsyncStorage.getItem("UserName");
-        const gameMaxValue = await AsyncStorage.getItem("GameValue");
-        const storedProfile = await AsyncStorage.getItem("ProfilePicture");
-        const storedFaction = await AsyncStorage.getItem("Faction");
+  useFocusEffect(
+    useCallback(() => {
+      const getUserData = async () => {
+        try {
+          const auth = getAuth();
+          const user = auth.currentUser;
+          if (!user) return;
 
-        setUsername(storedUsername || "Commander");
-        setProfile(storedProfile || "");
-        setGameValue(gameMaxValue || 0);
-        setFaction(storedFaction || "Choose a Faction");
-      } catch (error) {
-        console.error("Failed to retrieve user data:", error);
-      }
-    };
+          const docRef = doc(FIREBASE_DB, "users", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            //console.log("User Data:", data);
+            setUsername(data.displayName);
+            setProfile(data.photoURL);
+            setFaction(data.factionName);
+            //console.log("Profile Image In Player:", data.photoURL);
+          }
+        } catch (error) {
+          console.error("Failed to retrieve user data:", error);
+        }
+      };
 
-    getUserData();
-  }, []);
+      console.log("User profile Image: ", profile);
+
+      getUserData();
+    }, [])
+  );
 
   const incrementShipCount = (type) => {
     setShipCounts((prev) => ({
@@ -434,7 +445,9 @@ export default function Player() {
                 <Image
                   style={styles.profile}
                   source={
-                    user.photoURL ? { uri: user.photoURL } : { uri: profile }
+                    profile
+                      ? { uri: profile }
+                      : require("../../assets/images/SC_logo1.png") // fallback image
                   }
                 />
                 <Text

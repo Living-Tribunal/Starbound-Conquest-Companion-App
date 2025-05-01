@@ -23,8 +23,11 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { doc, or, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import HeaderComponent from "@/components/header/HeaderComponent.js";
+import Toast from "react-native-toast-message";
+import { useNavigation } from "@react-navigation/native";
 
 export default function ShipStats({ route }) {
+  const navigation = useNavigation();
   const user = FIREBASE_AUTH.currentUser;
   const { shipId } = route.params || {};
   const { showStat, showAllStat } = ShowStat();
@@ -70,6 +73,7 @@ export default function ShipStats({ route }) {
   );
  */
   //console.log("In ship stats:" + JSON.stringify(data, null, 2));
+  //console.log("SPecial Orders Length: " + specialOrders.isToggled.length);
 
   const toggleSpecialOrdersButton = async (orderName) => {
     if (!ship || !user) return;
@@ -77,8 +81,26 @@ export default function ShipStats({ route }) {
     try {
       const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", shipId);
 
-      // New field if not existing
+      // Existing special orders
       const currentOrders = ship.specialOrders || {};
+
+      // Count how many are currently ON (true)
+      const activeOrdersCount = Object.values(currentOrders).filter(
+        (v) => v
+      ).length;
+
+      const isCurrentlyActive = currentOrders[orderName];
+
+      // Check if trying to turn ON a third order
+      if (!isCurrentlyActive && activeOrdersCount >= 2) {
+        Toast.show({
+          type: "error", // 'success' | 'error' | 'info'
+          text1: "Starbound Conquest",
+          text2: "You can only have two active special orders at a time.",
+          position: "top", // optional, 'top' | 'bottom'
+        });
+        return; // stop, don't allow more than 2
+      }
 
       const updatedOrders = {
         ...currentOrders,
@@ -211,16 +233,14 @@ export default function ShipStats({ route }) {
             </TouchableOpacity>
           </View>
         </View>
-        <View>
-          <TouchableOpacity>
-            <Text style={styles.headerText}>Edit Ship: {ship.ordersUsed}</Text>
-          </TouchableOpacity>
+        <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
             style={[
               styles.button,
               {
                 backgroundColor: ship.isToggled ? Colors.hudDarker : Colors.hud,
                 borderColor: ship.isToggled ? Colors.hud : Colors.hud,
+                width: "45%",
               },
             ]}
             onPress={toggleHasTakenTurn}
@@ -229,13 +249,35 @@ export default function ShipStats({ route }) {
               style={[
                 styles.headerText,
                 {
-                  fontSize: 18,
+                  fontSize: 15,
                   color: ship.isToggled ? Colors.hud : Colors.hudDarker,
                 },
               ]}
             >
-              {ship.type}{" "}
-              {ship.isToggled ? "has ended its turn" : "is ready to engage"}
+              {ship.isToggled ? "Ended turn" : "Ready to engage"}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              {
+                backgroundColor: ship.isToggled ? Colors.hudDarker : Colors.hud,
+                borderColor: ship.isToggled ? Colors.hud : Colors.hud,
+                width: "45%",
+              },
+            ]}
+            onPress={() => navigation.navigate("BattleGround", { ship: ship })}
+          >
+            <Text
+              style={[
+                styles.headerText,
+                {
+                  fontSize: 15,
+                  color: ship.isToggled ? Colors.hud : Colors.hudDarker,
+                },
+              ]}
+            >
+              BattleGround
             </Text>
           </TouchableOpacity>
         </View>

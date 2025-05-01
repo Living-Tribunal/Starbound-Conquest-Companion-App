@@ -37,17 +37,16 @@
         {
           "fonts": [
             "./assets/fonts/Aboreto-Regular.ttf",
-            "./assets/fonts/LegacySpartan-Black.ttf",
-            "./assets/fonts/LegacySpartan-Bold.ttf",
-            "./assets/fonts/LegacySpartan-Light.ttf",
-            "./assets/fonts/LegacySpartan-Medium.ttf",
-            "./assets/fonts/LegacySpartan-Regular.ttf",
-            "./assets/fonts/LegacySpartan-SemiBold.ttf",
-            "./assets/fonts/LegacySpartan-ExtraBold.ttf",
-            "./assets/fonts/LegacySpartan-Thin.ttf",
-            "./assets/fonts/SpaceMono-Regular.ttf",
-            "./assets/fonts/SpaceMono-Italic.ttf",
-            "./assets/fonts/SpaceMono-Bold.ttf"
+            "./assets/fonts/LeagueSpartan-Black.ttf",
+            "./assets/fonts/LeagueSpartan-Bold.ttf",
+            "./assets/fonts/LeagueSpartan-Light.ttf",
+            "./assets/fonts/LeagueSpartan-ExtraLight.ttf",
+            "./assets/fonts/LeagueSpartan-Medium.ttf",
+            "./assets/fonts/LeagueSpartan-Regular.ttf",
+            "./assets/fonts/LeagueSpartan-SemiBold.ttf",
+            "./assets/fonts/LeagueSpartan-ExtraBold.ttf",
+            "./assets/fonts/LeagueSpartan-Thin.ttf",
+            "./assets/fonts/SpaceMono-Regular.ttf"
           ]
         }
       ],

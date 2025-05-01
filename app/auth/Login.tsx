@@ -182,15 +182,10 @@ const Login = () => {
             email: user.email,
             displayName: user.displayName,
             id: user.uid,
-            photoURL: FactionAvatars[faction]?.image,
+            factionName: faction,
           });
           console.log("User document written with ID:", user.uid);
-          await AsyncStorage.setItem(
-            "ProfilePicture",
-            FactionAvatars[faction]?.image
-          );
-          setProfile(FactionAvatars[faction]?.image);
-          console.log("Profile:", FactionAvatars[faction]?.image);
+          console.log("Users Profile:", user);
         } catch (e) {
           console.error("Error adding document:", e);
         }
