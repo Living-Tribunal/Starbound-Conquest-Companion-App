@@ -165,7 +165,13 @@ export default function BattleGround(props) {
                 </View>
               ))}
           </View>
-          <View style={{ borderColor: Colors.white, borderWidth: 1 }} />
+          <View
+            style={{
+              borderColor: Colors.white,
+              borderWidth: 1,
+              margin: 10,
+            }}
+          />
           <View style={styles.row}>
             <Text style={styles.text}>
               {!singleUser
