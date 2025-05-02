@@ -12,7 +12,6 @@ import {
   SafeAreaView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { useLocalSearchParams } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../FirebaseConfig";
 import FactionAvatars from "../../constants/FactionAvatars.js";

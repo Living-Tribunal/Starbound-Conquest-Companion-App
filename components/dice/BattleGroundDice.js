@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
+import { useStarBoundContext } from "../Global/StarBoundProvider";
 
 export default function BattleDice({
   text,
@@ -33,6 +34,7 @@ export default function BattleDice({
   const rollDiceOnTap = () => {
     setFirstDice((prev) => getDiceNum(prev));
   };
+  console.log("First Dice:", firstDice);
 
   return (
     <View
@@ -58,9 +60,6 @@ export default function BattleDice({
       <View style={[styles.resultContainer, borderColor]}>
         <Text style={[styles.diceText, textStyle]}>{firstDice}</Text>
       </View>
-      {/* <View>
-          <Text style={[styles.weapon, textStyle]}>{text}</Text>
-        </View> */}
     </View>
   );
 }

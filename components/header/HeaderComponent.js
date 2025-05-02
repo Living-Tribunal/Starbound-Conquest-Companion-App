@@ -4,7 +4,7 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 import { FONTS } from "@/constants/fonts";
 import { useNavigation } from "@react-navigation/native";
 
-export default function HeaderComponent({ text, NavToWhere }) {
+export default function HeaderComponent({ text, NavToWhere, onPress }) {
   const navigation = useNavigation();
 
   const goBack = () => {
@@ -21,6 +21,7 @@ export default function HeaderComponent({ text, NavToWhere }) {
       <TouchableOpacity
         onPress={() => {
           goBack();
+          onPress;
         }}
       >
         <Image

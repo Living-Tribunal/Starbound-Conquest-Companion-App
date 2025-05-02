@@ -38,6 +38,12 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [toggleToDelete, setToggleToDelete] = useState(false);
   const [setDeleting, setSetDeleting] = useState(false);
   const [toggleSpecialOrders, setToggleSpecialOrders] = useState(false);
+  const [allUsers, setAllUsers] = useState(null);
+  const [allUsersShips, setAllUsersShips] = useState(null);
+  const [singleUser, setSingleUser] = useState(null);
+  const [singleUserShip, setSingleUserShip] = useState(null);
+  const [expandUserShipList, setExpandUserShipList] = useState(false);
+  const [firstDice, setFirstDice] = React.useState(1);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -123,6 +129,18 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setUserProfilePicture,
         toggleSpecialOrders,
         setToggleSpecialOrders,
+        allUsers,
+        setAllUsers,
+        allUsersShips,
+        setAllUsersShips,
+        singleUser,
+        setSingleUser,
+        singleUserShip,
+        setSingleUserShip,
+        expandUserShipList,
+        setExpandUserShipList,
+        firstDice,
+        setFirstDice,
       }}
     >
       {[children, shipType]}

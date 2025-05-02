@@ -39,8 +39,16 @@ export default function ShipStats({ route }) {
 
   const tabBarHeight = useBottomTabBarHeight();
 
-  const { faction, data, setData, hitPoints, setHitPoints, setHitPointsColor } =
-    useStarBoundContext();
+  const {
+    faction,
+    data,
+    setData,
+    hitPoints,
+    setHitPoints,
+    setHitPointsColor,
+    setSingleUserShip,
+    setSingleUser,
+  } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
   const ShipData = ship ? ShipAttributes[ship.type] : null;
   const selectedShipDice = ship ? shipDiceMapping[ship.type] : [];
@@ -266,7 +274,11 @@ export default function ShipStats({ route }) {
                 width: "45%",
               },
             ]}
-            onPress={() => navigation.navigate("BattleGround", { ship: ship })}
+            onPress={() => {
+              navigation.navigate("BattleGround", { ship: ship });
+              setSingleUser(null);
+              setSingleUserShip(null);
+            }}
           >
             <Text
               style={[
