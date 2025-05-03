@@ -48,6 +48,12 @@ export default function ShipStats({ route }) {
     setHitPointsColor,
     setSingleUserShip,
     setSingleUser,
+    setHit,
+    rolledD20,
+    setRolledD20,
+    weaponId,
+    setWeaponId,
+    setDamageDone,
   } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
   const ShipData = ship ? ShipAttributes[ship.type] : null;
@@ -278,6 +284,10 @@ export default function ShipStats({ route }) {
               navigation.navigate("BattleGround", { ship: ship });
               setSingleUser(null);
               setSingleUserShip(null);
+              setHit("");
+              setRolledD20(false);
+              setWeaponId(null);
+              setDamageDone(0);
             }}
           >
             <Text

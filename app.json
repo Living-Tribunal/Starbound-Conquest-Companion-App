@@ -9,7 +9,7 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/SC_logo1.png",
+      "image": "./assets/images/SC.png",
       "resizeMode": "cover",
       "backgroundColor": "#000000"
     },

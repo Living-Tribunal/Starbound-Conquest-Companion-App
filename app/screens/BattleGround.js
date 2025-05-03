@@ -17,10 +17,17 @@ import { shipBattleDiceMapping } from "../../components/buttons/BattleDice.js";
 import HeaderComponent from "@/components/header/HeaderComponent";
 import { Colors } from "../../constants/Colors";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
-import { collection, doc, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+  onSnapshot,
+} from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import { useNavigation } from "@react-navigation/native";
-import { goBack } from "expo-router";
 
 export default function BattleGround(props) {
   const { ship } = props.route.params;
@@ -36,12 +43,19 @@ export default function BattleGround(props) {
     setSingleUserShip,
     expandUserShipList,
     setExpandUserShipList,
+    hit,
+    damageDone,
+    weaponId,
+    setWeaponId,
   } = useStarBoundContext();
   const [modal, setModal] = useState(false);
+  const [newHP, setNewHP] = useState(0);
+  const [isUser, setIsUser] = useState(null);
   const user = FIREBASE_AUTH.currentUser;
 
   const selectedShipDice = ship ? shipBattleDiceMapping[ship.type] : [];
 
+  //function to get all users EXCEPT current user from firestore
   const getAllUsers = async () => {
     try {
       const allUsersArray = [];
@@ -59,7 +73,6 @@ export default function BattleGround(props) {
       }));
       allUsersArray.push(...users);
       setAllUsers(allUsersArray);
-      //console.log("Users:", JSON.stringify(allUsersArray, null, 2));
       return users;
     } catch (e) {
       console.error("Error getting users:", e);
@@ -67,8 +80,60 @@ export default function BattleGround(props) {
     }
   };
 
-  /* console.log("Ship:", ship.weaponDamage); */
+  //useeffec function to update that selected users ships HP with the clampedHP value
+  useEffect(() => {
+    if (!singleUserShip || !isUser || damageDone == null || hit !== "Hit")
+      return;
 
+    const updateUserShipHP = async () => {
+      const newHP = singleUserShip.hp - damageDone;
+      const clampedHP = Math.max(0, newHP);
+
+      const userShipDocRef = doc(
+        FIREBASE_DB,
+        "users",
+        isUser.id,
+        "ships",
+        singleUserShip.id
+      );
+
+      try {
+        await updateDoc(userShipDocRef, {
+          hp: clampedHP,
+        });
+        setNewHP(clampedHP); // Sync your local state
+        console.log("Auto-applied damage:", damageDone);
+      } catch (e) {
+        console.error("Failed to apply damage:", e);
+      }
+    };
+
+    updateUserShipHP();
+  }, [hit, damageDone, singleUserShip?.id, isUser?.id]);
+
+  //useEffect function to listen for changes for the specific user and ship selected in battleGround
+  useEffect(() => {
+    if (!singleUserShip || !isUser) return;
+    console.log("Ship:", singleUserShip);
+    console.log("User:", isUser);
+    const userShipDocRef = doc(
+      FIREBASE_DB,
+      "users",
+      isUser.id,
+      "ships",
+      singleUserShip.id
+    );
+    const unsubscribe = onSnapshot(userShipDocRef, (doc) => {
+      if (doc.exists) {
+        const updatedShip = { id: doc.id, ...doc.data() };
+        console.log("Updated Ship:", updatedShip);
+        setSingleUserShip(updatedShip);
+      }
+    });
+    return () => unsubscribe();
+  }, [singleUserShip?.id, isUser?.id]);
+
+  //useEffect function to get ALL users and their ships from firestore
   useEffect(() => {
     const getAllUsersAndShips = async () => {
       const users = await getAllUsers();
@@ -90,13 +155,20 @@ export default function BattleGround(props) {
         usersWithShips.push({ ...user, allUsersShips: ships });
       }
       setAllUsersShips(usersWithShips);
-      //console.log("Ships:", JSON.stringify(usersWithShips, null, 2));
     };
     getAllUsersAndShips();
   }, []);
-  // console.log("Single User:", JSON.stringify(singleUser, null, 2));
-  console.log("Single User Ship:", JSON.stringify(singleUserShip, null, 2));
 
+  //useEffect function to clamp the value from going lower than 0 when rolling for damage and setting it to state
+  useEffect(() => {
+    if (!singleUserShip || damageDone == null) return;
+
+    const newHP = singleUserShip.hp - damageDone;
+    const clampedHP = Math.max(0, newHP);
+    setNewHP(clampedHP);
+  }, [singleUserShip, damageDone]);
+
+  //simple success message to show when a ship is selected in the battleGround
   const successMessage = () => {
     if (singleUser && singleUserShip) {
       return (
@@ -148,6 +220,50 @@ export default function BattleGround(props) {
               style={{ width: 150, height: 150, resizeMode: "contain" }}
             />
           </View>
+          <View
+            style={{
+              margin: 5,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={[
+                styles.hitOrMissText,
+                {
+                  backgroundColor:
+                    hit === "Miss"
+                      ? Colors.deep_red
+                      : Colors.darker_green_toggle,
+                  borderRadius: 5,
+                  padding: 5,
+                  width: "70%",
+                  borderWidth: 1,
+                  flexDirection: "row",
+                  borderColor:
+                    hit === "Miss" ? Colors.lighter_red : Colors.green_toggle,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.hitOrMissText,
+                  {
+                    color:
+                      hit === "Miss" ? Colors.lighter_red : Colors.green_toggle,
+                  },
+                ]}
+              >
+                Result: {hit}
+              </Text>
+            </View>
+            <View style={styles.hitOrMissTextContainer}>
+              <Text style={styles.damageDone}>
+                {weaponId} hit for: {damageDone} hp
+              </Text>
+            </View>
+          </View>
+
           <View>
             {ship.weaponDamage &&
               selectedShipDice.map((DiceComponent, index) => (
@@ -256,6 +372,33 @@ export default function BattleGround(props) {
                         </Text>
                       </View>
                     </View>
+                    <View style={styles.statContainerHolder}>
+                      <View style={styles.statContainerHeader}>
+                        <Text
+                          style={[
+                            styles.text,
+                            {
+                              color: Colors.hudDarker,
+                              fontSize: 13,
+                              fontFamily: "LeagueSpartan-Bold",
+                            },
+                          ]}
+                        >
+                          Soak
+                        </Text>
+                      </View>
+
+                      <View style={styles.statContainer}>
+                        <Text
+                          style={[
+                            styles.text,
+                            { color: Colors.white, fontSize: 15 },
+                          ]}
+                        >
+                          {singleUserShip?.damageThreshold}
+                        </Text>
+                      </View>
+                    </View>
                   </View>
                 </>
               ) : (
@@ -267,15 +410,29 @@ export default function BattleGround(props) {
           </View>
           <View style={{ flex: 1 }}>
             <TouchableOpacity
-              style={styles.closeButton}
+              style={[
+                styles.closeButton,
+                {
+                  backgroundColor: hit !== "" ? Colors.dark_gray : Colors.hud,
+                  borderColor: hit !== "" ? Colors.hud : Colors.hudDarker,
+                },
+              ]}
+              disabled={hit !== ""}
               onPress={() => {
                 setModal(true);
-                setSingleUser(null);
-                setSingleUserShip(null);
                 setExpandUserShipList({});
               }}
             >
-              <Text style={styles.closeText}>Choose Your Opponent</Text>
+              <Text
+                style={[
+                  styles.closeText,
+                  {
+                    color: hit !== "" ? Colors.hud : Colors.hudDarker,
+                  },
+                ]}
+              >
+                Choose Your Opponent
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -300,6 +457,7 @@ export default function BattleGround(props) {
                       style={styles.usernameToggle}
                       onPress={() => {
                         setSingleUser(item.displayName);
+                        setIsUser(item);
                         if (singleUser) {
                         }
 
@@ -433,6 +591,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.hud,
     margin: 10,
     borderRadius: 5,
+    borderWidth: 1,
+    borderColor: Colors.hud,
   },
   closeText: {
     color: Colors.hudDarker,
@@ -467,5 +627,30 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.hudDarker,
     width: "100%",
+  },
+  hitOrMissTextContainer: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 10,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    backgroundColor: Colors.hudDarker,
+    width: "70%",
+    borderRadius: 5,
+    padding: 10,
+  },
+  hitOrMissText: {
+    fontSize: 15,
+    textAlign: "center",
+    fontFamily: "monospace",
+    color: Colors.white,
+    justifyContent: "center",
+  },
+  damageDone: {
+    fontSize: 15,
+    textAlign: "center",
+    fontFamily: "monospace",
+    color: Colors.hud,
   },
 });

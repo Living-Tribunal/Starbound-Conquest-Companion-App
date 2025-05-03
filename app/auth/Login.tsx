@@ -52,13 +52,13 @@ const Login = () => {
   const [authInProgress, setAuthInProgress] = useState(false);
   const { faction, setFaction, profile, setProfile } = useStarBoundContext();
 
-  /*   useEffect(() => {
+  useEffect(() => {
     const unsubscribe = FIREBASE_AUTH.onAuthStateChanged((user) => {
-      console.log("Auth state changed:", user);
+      //console.log("Auth state changed:", user);
 
       if (authInProgress) {
         console.log("Manual auth in progress, not navigating.");
-        return; // ⛔ don't navigate when manually signing in or up
+        return;
       }
 
       if (user && user.emailVerified) {
@@ -69,7 +69,7 @@ const Login = () => {
     });
 
     return unsubscribe;
-  }, [authInProgress]); */
+  }, [authInProgress]);
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -95,6 +95,46 @@ const Login = () => {
     };
     getUserName();
   }, []);
+
+  async function onGoogleButtonPress() {
+    try {
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+
+      const signInResult = await GoogleSignin.signIn();
+      console.log("SignIn Result:", signInResult);
+
+      let idToken = signInResult?.idToken;
+
+      if (!idToken) {
+        console.error("No ID Token found");
+        throw new Error("No ID Token found");
+      }
+
+      // Create credential with the modular SDK
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+
+      // Use your existing FIREBASE_AUTH from config
+      const userCredential = await signInWithCredential(
+        FIREBASE_AUTH,
+        googleCredential
+      );
+      console.log("User Credential:", userCredential);
+
+      // Check if the user is new or existing
+      if (userCredential.additionalUserInfo?.isNewUser) {
+        console.log("New user created:", userCredential.user.uid);
+      } else {
+        console.log("Existing user logged in:", userCredential.user.uid);
+      }
+
+      navigation.replace("MainTabs", { screen: "Player" });
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+      Alert.alert("Google Sign-In Failed");
+    }
+  }
 
   const signIn = async () => {
     if (!email || !password) {
@@ -414,7 +454,7 @@ const Login = () => {
               source={require("../../assets/images/hud2.png")}
             />
           </TouchableOpacity>
-          {/* <View
+          <View
             style={{
               alignItems: "center",
               justifyContent: "center",
@@ -429,7 +469,7 @@ const Login = () => {
                 source={require("../../assets/icons/google.png")}
               />
             </TouchableOpacity>
-          </View> */}
+          </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

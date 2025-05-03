@@ -174,7 +174,7 @@ export default function Player() {
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             const data = docSnap.data();
-            //console.log("User Data:", data);
+            console.log("User Data:", data);
             setUsername(data.displayName);
             setProfile(data.photoURL);
             setFaction(data.factionName);

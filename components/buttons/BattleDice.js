@@ -17,12 +17,18 @@ const shipBattleDiceMapping = {
         <BattleDice
           text="Roll to Hit"
           number1={1}
+          id={"D20"}
           number2={20}
           tintColor={Colors.goldenrod}
           textStyle={{ color: Colors.gold }}
           borderColor={{ borderColor: Colors.goldenrod }}
         />
-        <BattleDice text="Light Cannon" number1={1} number2={6} />
+        <BattleDice
+          text="Light Cannon"
+          id={"Light Cannon"}
+          number1={1}
+          number2={6}
+        />
       </View>
     </View>,
   ],
@@ -40,12 +46,18 @@ const shipBattleDiceMapping = {
         <BattleDice
           text="Roll to Hit"
           number1={1}
+          id={"D20"}
           number2={20}
           tintColor={Colors.goldenrod}
           textStyle={{ color: Colors.gold }}
           borderColor={{ borderColor: Colors.goldenrod }}
         />
-        <BattleDice text="Medium Cannon" number1={1} number2={6} />
+        <BattleDice
+          text="Medium Cannon"
+          id={"Medium Cannon"}
+          number1={1}
+          number2={6}
+        />
       </View>
     </View>,
   ],
@@ -63,6 +75,7 @@ const shipBattleDiceMapping = {
         <BattleDice
           text="Roll to Hit"
           number1={1}
+          id={"D20"}
           number2={20}
           tintColor={Colors.goldenrod}
           textStyle={{ color: Colors.gold }}
@@ -78,8 +91,18 @@ const shipBattleDiceMapping = {
           alignContent: "center",
         }}
       >
-        <BattleDice text="Heavy Cannon" number1={1} number2={8} />
-        <BattleDice text="Plasma Cannon" number1={1} number2={10} />
+        <BattleDice
+          text="Heavy Cannon"
+          id={"Heavy Cannon"}
+          number1={1}
+          number2={8}
+        />
+        <BattleDice
+          text="Plasma Cannon"
+          id={"Plasma Cannon"}
+          number1={1}
+          number2={10}
+        />
       </View>
     </View>,
   ],
@@ -97,6 +120,7 @@ const shipBattleDiceMapping = {
         <BattleDice
           text="Roll to Hit"
           number1={1}
+          id={"D20"}
           number2={20}
           tintColor={Colors.goldenrod}
           textStyle={{ color: Colors.gold }}
@@ -112,8 +136,18 @@ const shipBattleDiceMapping = {
           alignContent: "center",
         }}
       >
-        <BattleDice text="350mm Railgun" number1={1} number2={8} />
-        <BattleDice text="Missile Battery" number1={1} number2={6} />
+        <BattleDice
+          text="350mm Railgun"
+          id={"350mm Railgun"}
+          number1={1}
+          number2={8}
+        />
+        <BattleDice
+          text="Missile Battery"
+          id={"Missile Battery"}
+          number1={1}
+          number2={6}
+        />
       </View>
     </View>,
   ],
@@ -132,11 +166,17 @@ const shipBattleDiceMapping = {
           text="Roll to Hit"
           number1={1}
           number2={20}
+          id={"D20"}
           tintColor={Colors.goldenrod}
           textStyle={{ color: Colors.gold }}
           borderColor={{ borderColor: Colors.goldenrod }}
         />
-        <BattleDice text="Ion Particle Beam" number1={1} number2={12} />
+        <BattleDice
+          text="Ion Particle Beam"
+          id={"Ion Particle Beam"}
+          number1={1}
+          number2={12}
+        />
       </View>
       <View
         style={{
@@ -146,8 +186,18 @@ const shipBattleDiceMapping = {
           alignContent: "center",
         }}
       >
-        <BattleDice text="Plasma Cannon" number1={1} number2={10} />
-        <BattleDice text="350mm Railgun" number1={1} number2={8} />
+        <BattleDice
+          text="Plasma Cannon"
+          id={"Plasma Cannon"}
+          number1={1}
+          number2={10}
+        />
+        <BattleDice
+          text="350mm Railgun"
+          id={"350mm Railgun"}
+          number1={1}
+          number2={8}
+        />
       </View>
     </View>,
   ],

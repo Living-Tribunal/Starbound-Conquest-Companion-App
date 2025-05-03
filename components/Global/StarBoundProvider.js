@@ -8,6 +8,7 @@ import {
 const StarBoundContext = createContext();
 
 export const StarBoundProvider = ({ children, shipType }) => {
+  const [disabledButton, setDisabledButton] = React.useState(false);
   const [fighterImages, setFighterImages] = useState([]);
   const [destroyerImages, setDestroyerImages] = useState([]);
   const [cruiserImages, setCruiserImages] = useState([]);
@@ -22,6 +23,9 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [userProfilePicture, setUserProfilePicture] = useState(null);
   const [profile, setProfile] = useState(null);
   const [data, setData] = useState([]);
+  const [disabledButtonOnHit, setDisabledButtonOnHit] = useState(false);
+  const [weaponId, setWeaponId] = useState(null);
+  const [rolledD20, setRolledD20] = useState(null);
 
   const [email, setEmail] = useState(null);
 
@@ -43,7 +47,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [singleUser, setSingleUser] = useState(null);
   const [singleUserShip, setSingleUserShip] = useState(null);
   const [expandUserShipList, setExpandUserShipList] = useState(false);
-  const [firstDice, setFirstDice] = React.useState(1);
+  const [hit, setHit] = useState(0);
+  const [damageDone, setDamageDone] = useState(0);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -106,6 +111,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
 
         profile,
         setProfile,
+        rolledD20,
+        setRolledD20,
 
         data,
         setData,
@@ -139,11 +146,19 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setSingleUserShip,
         expandUserShipList,
         setExpandUserShipList,
-        firstDice,
-        setFirstDice,
+        hit,
+        setHit,
+        damageDone,
+        setDamageDone,
+        disabledButton,
+        setDisabledButton,
+        disabledButtonOnHit,
+        setDisabledButtonOnHit,
+        weaponId,
+        setWeaponId,
       }}
     >
-      {[children, shipType]}
+      {children}
     </StarBoundContext.Provider>
   );
 };
