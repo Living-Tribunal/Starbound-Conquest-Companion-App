@@ -135,9 +135,11 @@ export default function BattleGround(props) {
 
   //useEffect function to get ALL users and their ships from firestore
   useEffect(() => {
-    const getAllUsersAndShips = async () => {
+    let unsubscribers = [];
+
+    const getAllUsersAndListen = async () => {
       const users = await getAllUsers();
-      const usersWithShips = [];
+      const updatedUsersWithShips = [];
 
       for (const user of users) {
         const shipCollection = collection(
@@ -146,17 +148,31 @@ export default function BattleGround(props) {
           user.id,
           "ships"
         );
-        const shipSnapshot = await getDocs(shipCollection);
-        const ships = shipSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          userId: user.id,
-          ...doc.data(),
-        }));
-        usersWithShips.push({ ...user, allUsersShips: ships });
+
+        const unsubscribe = onSnapshot(shipCollection, (snapshot) => {
+          const ships = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            userId: user.id,
+            ...doc.data(),
+          }));
+
+          // Replace or update user in state
+          setAllUsersShips((prev) => {
+            const filtered = (prev || []).filter((u) => u.id !== user.id);
+            return [...filtered, { ...user, allUsersShips: ships }];
+          });
+        });
+
+        unsubscribers.push(unsubscribe);
       }
-      setAllUsersShips(usersWithShips);
     };
-    getAllUsersAndShips();
+
+    getAllUsersAndListen();
+
+    // Cleanup listeners on unmount
+    return () => {
+      unsubscribers.forEach((unsubscribe) => unsubscribe());
+    };
   }, []);
 
   //useEffect function to clamp the value from going lower than 0 when rolling for damage and setting it to state
@@ -471,40 +487,162 @@ export default function BattleGround(props) {
                         {item.displayName}
                       </Text>
                     </TouchableOpacity>
-
                     {expandUserShipList[item.id] &&
-                      Array.isArray(item.allUsersShips) &&
-                      item.allUsersShips
-                        .slice()
-                        .sort((a, b) =>
-                          (a.type || "").localeCompare(b.type || "")
-                        )
-                        .map((ship) => (
-                          <TouchableOpacity
-                            onPress={() => {
-                              setSingleUserShip(ship);
-                            }}
-                            key={ship.id}
-                            style={{
-                              marginTop: 10,
-                              justifyContent: "center",
-                              alignItems: "center",
-                              flexDirection: "row",
-                            }}
-                          >
-                            {ship.image && (
-                              <Image
-                                source={{ uri: ship.image }}
-                                style={{
-                                  width: 150,
-                                  height: 150,
-                                  resizeMode: "contain",
+                      Array.isArray(item.allUsersShips) && (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            flexWrap: "wrap",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          {item.allUsersShips
+                            .sort((a, b) =>
+                              (a.type || "").localeCompare(b.type || "")
+                            )
+                            .map((ship) => (
+                              <TouchableOpacity
+                                disabled={ship.hp === 0}
+                                onPress={() => {
+                                  setSingleUserShip(ship);
                                 }}
-                              />
-                            )}
-                            <Text style={styles.text}>{ship.shipId}</Text>
-                          </TouchableOpacity>
-                        ))}
+                                key={ship.id}
+                                style={{
+                                  borderWidth: singleUser ? 1 : 5,
+                                  borderColor:
+                                    ship.hp === 0
+                                      ? Colors.lighter_red
+                                      : Colors.hud,
+                                  backgroundColor:
+                                    ship.hp === 0
+                                      ? Colors.deep_red
+                                      : Colors.hudDarker,
+                                  borderRadius: 5,
+                                  width: "32%", // ~3 per row with spacing
+                                  marginTop: 10,
+                                  marginBottom: 10,
+                                  justifyContent: "flex-end",
+                                  alignItems: "center",
+                                  flexDirection: "row",
+                                  padding: 5,
+                                }}
+                              >
+                                {ship.image && (
+                                  <Image
+                                    source={{ uri: ship.image }}
+                                    style={{
+                                      width: 40,
+                                      height: 40,
+                                      resizeMode: "center",
+                                    }}
+                                  />
+                                )}
+                                <Text style={styles.shipTextId}>
+                                  {ship.shipId}
+                                </Text>
+                              </TouchableOpacity>
+                            ))}
+                        </View>
+                      )}
+                    {/* or 2 columns */}
+                    {/*  {expandUserShipList[item.id] &&
+                      Array.isArray(item.allUsersShips) && (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          //First column
+                          <View style={{ width: "48%" }}>
+                            {item.allUsersShips
+                              .slice(
+                                0,
+                                Math.ceil(item.allUsersShips.length / 2)
+                              )
+                              .sort((a, b) =>
+                                (a.type || "").localeCompare(b.type || "")
+                              )
+                              .map((ship) => (
+                                <TouchableOpacity
+                                  disabled={ship.hp === 0}
+                                  onPress={() => {
+                                    setSingleUserShip(ship);
+                                  }}
+                                  key={ship.id}
+                                  style={{
+                                    borderWidth: 1,
+                                    borderColor: Colors.hud,
+                                    backgroundColor: Colors.hudDarker,
+                                    borderRadius: 5,
+                                    marginTop: 10,
+                                    justifyContent: "flex-end",
+                                    alignItems: "center",
+                                    flexDirection: "row",
+                                    padding: 5,
+                                  }}
+                                >
+                                  {ship.image && (
+                                    <Image
+                                      source={{ uri: ship.image }}
+                                      style={{
+                                        width: 100,
+                                        height: 100,
+                                        resizeMode: "center",
+                                      }}
+                                    />
+                                  )}
+                                  <Text style={styles.shipTextId}>
+                                    {ship.shipId}
+                                  </Text>
+                                </TouchableOpacity>
+                              ))}
+                          </View>
+
+                          //Second column
+                          <View style={{ width: "48%" }}>
+                            {item.allUsersShips
+                              .slice(Math.ceil(item.allUsersShips.length / 2))
+                              .sort((a, b) =>
+                                (a.type || "").localeCompare(b.type || "")
+                              )
+                              .map((ship) => (
+                                <TouchableOpacity
+                                  disabled={ship.hp === 0}
+                                  onPress={() => {
+                                    setSingleUserShip(ship);
+                                  }}
+                                  key={ship.id}
+                                  style={{
+                                    borderWidth: 1,
+                                    borderColor: Colors.hud,
+                                    backgroundColor: Colors.hudDarker,
+                                    borderRadius: 5,
+                                    marginTop: 10,
+                                    justifyContent: "flex-end",
+                                    alignItems: "center",
+                                    flexDirection: "row",
+                                    padding: 5,
+                                  }}
+                                >
+                                  {ship.image && (
+                                    <Image
+                                      source={{ uri: ship.image }}
+                                      style={{
+                                        width: 100,
+                                        height: 100,
+                                        resizeMode: "center",
+                                      }}
+                                    />
+                                  )}
+                                  <Text style={styles.shipTextId}>
+                                    {ship.shipId}
+                                  </Text>
+                                </TouchableOpacity>
+                              ))}
+                          </View>
+                        </View>
+                      )} */}
                   </View>
                 );
               }}
@@ -549,7 +687,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     flex: 1,
   },
-  row: {},
+  shipTextId: {
+    fontSize: 20,
+    textAlign: "center",
+    fontFamily: "monospace",
+    color: Colors.white,
+    marginRight: 15,
+  },
   text: {
     fontSize: 16,
     textAlign: "center",
