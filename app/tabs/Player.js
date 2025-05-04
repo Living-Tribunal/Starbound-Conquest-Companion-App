@@ -96,7 +96,7 @@ export default function Player() {
     //console.log("getFleetDataButton2");
     setLoading(false);
   };
-
+  //so ship ids arent too crazy long
   function generateShortId() {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let id = "";
@@ -176,19 +176,19 @@ export default function Player() {
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             const data = docSnap.data();
-            console.log("User Data:", data);
+            //console.log("User Data:", data);
             setUsername(data.displayName || "");
             setProfile(data.photoURL || "");
             setFaction(data.factionName || "");
             setGameRoom(data.gameRoom || "");
-            //console.log("Profile Image In Player:", data.photoURL);
+            //console.log("Profile Image In Player:", data.gameRoom);
           }
         } catch (error) {
           console.error("Failed to retrieve user data:", error);
         }
       };
 
-      console.log("User profile Image: ", profile);
+      //console.log("User profile Image: ", profile);
 
       getUserData();
     }, [])

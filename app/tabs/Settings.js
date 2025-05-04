@@ -142,7 +142,7 @@ export default function Settings() {
         }
       };
 
-      console.log("User profile Image: ", profile);
+      //console.log("User profile Image: ", profile);
 
       getUserData();
     }, [])
@@ -417,8 +417,8 @@ export default function Settings() {
                 }}
               >
                 <Text style={styles.text1}>
-                  You have a fleet! You can't change your faction. Remove all
-                  ships and try again.
+                  You have a fleet! You can't change your faction or game room
+                  until you remove all ships and try again.
                 </Text>
               </View>
             )}

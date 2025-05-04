@@ -81,7 +81,7 @@ export default function ImagePickerExample() {
     }
   };
 
-  console.log("User profile Image in Picker: ", profile);
+  //console.log("User profile Image in Picker: ", profile);
 
   return (
     <View style={styles.container}>

@@ -21,7 +21,7 @@ const DropdownComponentCampaigns = () => {
     return null;
   };
 
-  console.log("Game Mode:", gameRoom);
+  //console.log("Game Mode:", gameRoom);
 
   return (
     <View style={styles.container}>

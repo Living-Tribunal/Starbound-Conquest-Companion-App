@@ -46,6 +46,7 @@ export default function BattleGround(props) {
     hit,
     damageDone,
     weaponId,
+    gameRoom,
     setWeaponId,
   } = useStarBoundContext();
   const [modal, setModal] = useState(false);
@@ -60,11 +61,15 @@ export default function BattleGround(props) {
     try {
       const allUsersArray = [];
       const currentUserEmail = FIREBASE_AUTH.currentUser.email;
-      if (!currentUserEmail) return [];
+      console.log("Game Room:", gameRoom);
+      console.log("Game Room:", user.gameRoom);
+      if (!currentUserEmail || !gameRoom) return [];
+
       const usersCollection = collection(FIREBASE_DB, "users");
       const myQuery = query(
         usersCollection,
-        where("email", "!=", currentUserEmail)
+        where("email", "!=", currentUserEmail),
+        where("gameRoom", "==", gameRoom)
       );
       const querySnapshot = await getDocs(myQuery);
       const users = querySnapshot.docs.map((doc) => ({
@@ -114,8 +119,8 @@ export default function BattleGround(props) {
   //useEffect function to listen for changes for the specific user and ship selected in battleGround
   useEffect(() => {
     if (!singleUserShip || !isUser) return;
-    console.log("Ship:", singleUserShip);
-    console.log("User:", isUser);
+    //console.log("Ship:", singleUserShip);
+    //console.log("User:", isUser);
     const userShipDocRef = doc(
       FIREBASE_DB,
       "users",
