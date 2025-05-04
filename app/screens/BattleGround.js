@@ -518,7 +518,7 @@ export default function BattleGround(props) {
                                       ? Colors.deep_red
                                       : Colors.hudDarker,
                                   borderRadius: 5,
-                                  width: "32%", // ~3 per row with spacing
+                                  width: "32%",
                                   marginTop: 10,
                                   marginBottom: 10,
                                   justifyContent: "flex-end",
@@ -688,7 +688,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   shipTextId: {
-    fontSize: 20,
+    fontSize: 15,
     textAlign: "center",
     fontFamily: "monospace",
     color: Colors.white,

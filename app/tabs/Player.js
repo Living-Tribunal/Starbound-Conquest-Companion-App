@@ -56,6 +56,8 @@ export default function Player() {
     setDeleting,
     setSetDeleting,
     userProfilePicture,
+    gameRoom,
+    setGameRoom,
   } = useStarBoundContext();
 
   const onCancelWarning = () => {
@@ -175,9 +177,10 @@ export default function Player() {
           if (docSnap.exists()) {
             const data = docSnap.data();
             console.log("User Data:", data);
-            setUsername(data.displayName);
-            setProfile(data.photoURL);
-            setFaction(data.factionName);
+            setUsername(data.displayName || "");
+            setProfile(data.photoURL || "");
+            setFaction(data.factionName || "");
+            setGameRoom(data.gameRoom || "");
             //console.log("Profile Image In Player:", data.photoURL);
           }
         } catch (error) {
@@ -267,21 +270,6 @@ export default function Player() {
   }
 
   /* console.log(JSON.stringify(totalFleetValue) + " In Player"); */
-
-  function send_message_discord() {
-    const request = new XMLHttpRequest();
-    request.open(
-      "POST",
-      "https://discord.com/api/webhooks/1334142368613400598/ByDe3g5n2lUlWW_dpj1tYV5JggI6XMbWpaldCsn53EJF5P1vJ3IU1Tg0-IqZ4cnWuOn_"
-    );
-    request.setRequestHeader("Content-Type", "application/json");
-    const params = {
-      username: "Starbound Conquest",
-      avatar_url: "",
-      content: `${username} has ended their turn.`,
-    };
-    request.send(JSON.stringify(params));
-  }
 
   const endYourTurn = async () => {
     if (!user) return;
@@ -471,12 +459,26 @@ export default function Player() {
                 <View>
                   <View
                     style={{
-                      flexDirection: "row",
+                      flexDirection: "column",
                       alignItems: "center",
                       justifyContent: "center",
-                      gap: 20,
                     }}
                   >
+                    {gameRoom ? (
+                      <Text
+                        style={[
+                          styles.gameRoomText,
+                          { marginTop: 10, padding: 5 },
+                        ]}
+                      >
+                        {gameRoom || "Not Connected"}
+                      </Text>
+                    ) : (
+                      <Text style={styles.gameRoomText}>
+                        Game Room not selected, head over to Settings to pick
+                        one
+                      </Text>
+                    )}
                     <Text
                       style={[
                         styles.textSub,
@@ -810,5 +812,17 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 10,
     alignItems: "center",
+  },
+  gameRoomText: {
+    fontSize: 15,
+    color: Colors.hud,
+    fontFamily: "LeagueSpartan-Bold",
+    textAlign: "center",
+    marginBottom: 5,
+    marginTop: 5,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    backgroundColor: Colors.hudDarker,
+    borderRadius: 5,
   },
 });

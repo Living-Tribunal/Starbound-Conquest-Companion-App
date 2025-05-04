@@ -3,27 +3,25 @@ import { StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Colors } from "@/constants/Colors";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
-import { GameFactions } from "@/constants/GameFactions";
-import FactionAvatars from "@/constants/FactionAvatars";
+import { useStarBoundContext } from "../Global/StarBoundProvider";
+import { campaigns } from "@/constants/Campaigns";
 
-const DropdownComponent = () => {
-  const { faction, setFaction, data } = useStarBoundContext();
+const DropdownComponentCampaigns = () => {
+  const { gameRoom, setGameRoom, data } = useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
 
   const renderLabel = () => {
     if (isFocus) {
       return (
         <Text style={[styles.label, isFocus && { color: Colors.hud }]}>
-          Choose a Faction
+          Choose a Game Mode
         </Text>
       );
     }
     return null;
   };
 
-  //console.log("faction:", faction);
+  console.log("Game Mode:", gameRoom);
 
   return (
     <View style={styles.container}>
@@ -34,20 +32,20 @@ const DropdownComponent = () => {
         selectedTextStyle={styles.selectedTextStyle}
         inputSearchStyle={styles.inputSearchStyle}
         iconStyle={styles.iconStyle}
-        data={GameFactions}
+        data={campaigns}
         search
         maxHeight={350}
         labelField="value"
         valueField="value"
-        placeholder={!isFocus ? "Choose a Faction" : "..."}
+        placeholder={!isFocus ? "Choose a Game Room" : "..."}
         searchPlaceholder="Search..."
-        value={faction}
+        value={gameRoom}
         onFocus={() => setIsFocus(true)}
         onBlur={() => {
           setIsFocus(false);
         }}
         onChange={(item) => {
-          setFaction(item.value);
+          setGameRoom(item.value);
           setIsFocus(false);
         }}
         renderLeftIcon={() => (
@@ -63,7 +61,7 @@ const DropdownComponent = () => {
   );
 };
 
-export default DropdownComponent;
+export default DropdownComponentCampaigns;
 
 const styles = StyleSheet.create({
   container: {
@@ -71,7 +69,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   dropdown: {
-    height: 50,
+    height: 55,
     borderColor: Colors.hud,
     borderWidth: 0.5,
     borderRadius: 3,
@@ -98,10 +96,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   placeholderStyle: {
-    fontSize: 16,
+    fontSize: 12,
   },
   selectedTextStyle: {
-    fontSize: 16,
+    fontSize: 14,
     color: Colors.hud,
     backgroundColor: Colors.hudDarker,
   },

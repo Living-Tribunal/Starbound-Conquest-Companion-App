@@ -26,6 +26,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [disabledButtonOnHit, setDisabledButtonOnHit] = useState(false);
   const [weaponId, setWeaponId] = useState(null);
   const [rolledD20, setRolledD20] = useState(null);
+  const [gameRoom, setGameRoom] = useState(null);
 
   const [email, setEmail] = useState(null);
 
@@ -156,6 +157,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setDisabledButtonOnHit,
         weaponId,
         setWeaponId,
+        gameRoom,
+        setGameRoom,
       }}
     >
       {children}

@@ -28,7 +28,6 @@ import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useNavigation } from "@react-navigation/native";
 import { collection, addDoc, getDoc, doc, setDoc } from "firebase/firestore";
-import DropdownComponent from "../../components/dropdown/DropdownComponent";
 import Toast from "react-native-toast-message";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 
@@ -376,31 +375,7 @@ const Login = () => {
                     justifyContent: "center",
                     flexDirection: "row",
                   }}
-                >
-                  {faction && FactionAvatars[faction] && (
-                    <View style={styles.shipItem}>
-                      <TouchableOpacity
-                        style={styles.touchable}
-                        onPress={() => {
-                          navigation.navigate("Preview", {
-                            factionName: faction,
-                            factionImage: FactionAvatars[faction].image,
-                            description: FactionAvatars[faction].description,
-                            ship: FactionAvatars[faction].ship,
-                          });
-                        }}
-                      >
-                        <Image
-                          source={{ uri: FactionAvatars[faction].image }}
-                          style={styles.image}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  )}
-                </View>
-                <View style={{ width: "100%" }}>
-                  <DropdownComponent />
-                </View>
+                ></View>
               </>
             )}
           </View>

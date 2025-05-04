@@ -15,7 +15,8 @@ import { Colors } from "@/constants/Colors";
 import { getAuth } from "firebase/auth";
 import { updateDoc, doc, getDoc } from "firebase/firestore";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import DropdownComponent from "../../components/dropdown/DropdownComponent";
+import DropdownComponentFactions from "../../components/dropdown/DropdownComponentFactions";
+import DropdownComponentCampaigns from "../../components/dropdown/DropdownComponentCampaigns";
 import { FIREBASE_AUTH, FIREBASE_STORE, FIREBASE_DB } from "@/FirebaseConfig";
 import { updateProfile } from "firebase/auth";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
@@ -53,6 +54,8 @@ export default function Settings() {
     userProfilePicture,
     setUserProfilePicture,
     data,
+    gameRoom,
+    setGameRoom,
   } = useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
   const [isFocusValue, setIsFocusValue] = useState(false);
@@ -97,6 +100,7 @@ export default function Settings() {
       await updateUserProfile();
       await saveGameValue();
       await saveFaction();
+      await saveGameRoom();
       return true;
     }
   };
@@ -109,7 +113,7 @@ export default function Settings() {
       console.error("Error saving name:", e);
     }
   };
-
+  //getting the logged in user data
   useFocusEffect(
     useCallback(() => {
       const getUserData = async () => {
@@ -123,10 +127,11 @@ export default function Settings() {
           if (docSnap.exists()) {
             const data = docSnap.data();
             //console.log("User Data:", data);
-            setUsername(data.displayName);
-            setProfile(data.photoURL);
-            setFaction(data.factionName);
+            setUsername(data.displayName || "");
+            setProfile(data.photoURL || "");
+            setFaction(data.factionName || "");
             setGameValue(data.gameValue || 0);
+            setGameRoom(data.gameRoom || "");
             console.log(
               "Profile Image In Settings:",
               JSON.stringify(data, null, 2)
@@ -142,6 +147,8 @@ export default function Settings() {
       getUserData();
     }, [])
   );
+
+  //updating the logged in user profile
   const updateUserProfile = async () => {
     if (!user) return;
     console.log("updating user profile");
@@ -169,6 +176,7 @@ export default function Settings() {
         factionName: String(faction),
         gameValue: String(gameValue),
         email: user.email,
+        gameRoom: gameRoom,
       });
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -181,6 +189,15 @@ export default function Settings() {
       console.log(faction, "was saved");
     } catch (e) {
       console.error("Error saving faction:", e);
+    }
+  };
+
+  const saveGameRoom = async () => {
+    try {
+      await AsyncStorage.setItem("GameRoom", gameRoom);
+      console.log(gameRoom, "was saved");
+    } catch (e) {
+      console.error("Error saving game room:", e);
     }
   };
 
@@ -378,13 +395,18 @@ export default function Settings() {
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
-            <Text style={styles.text1}>
-              Logged In Email: {user.email || ""}
-            </Text>
+            {gameRoom ? (
+              <Text style={styles.text1}>{gameRoom}</Text>
+            ) : (
+              <Text style={styles.text1}>
+                Game Room not selected, head over to Settings to pick one
+              </Text>
+            )}
             <ImagePicker />
             {!data.length ? (
               <View width="100%">
-                <DropdownComponent />
+                <DropdownComponentFactions />
+                <DropdownComponentCampaigns />
               </View>
             ) : (
               <View
