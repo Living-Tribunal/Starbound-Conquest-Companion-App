@@ -66,7 +66,8 @@ export default DropdownComponentCampaigns;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.dark_gray,
-    padding: 16,
+    padding: 10,
+    marginBottom: 10,
   },
   dropdown: {
     height: 55,
@@ -87,13 +88,10 @@ const styles = StyleSheet.create({
     zIndex: 999,
     paddingHorizontal: 8,
     fontSize: 14,
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 3,
     borderColor: Colors.hud,
     color: Colors.hud,
-    borderWidth: 1,
-    borderRadius: 3,
-    paddingHorizontal: 8,
   },
   placeholderStyle: {
     fontSize: 12,

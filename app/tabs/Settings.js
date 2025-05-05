@@ -31,6 +31,7 @@ import {
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ColorPickerComponent from "../../components/ColorPicker/ColorPicker";
 
 export default function Settings() {
   const user = FIREBASE_AUTH.currentUser;
@@ -56,8 +57,11 @@ export default function Settings() {
     data,
     gameRoom,
     setGameRoom,
+    userFactionColor,
+    setUserFactionColor,
   } = useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
+  const [updatingProfile, setUpdatingProfile] = useState(false);
   const [isFocusValue, setIsFocusValue] = useState(false);
   /*   console.log("User Selected Profile Picture In Settings:", userProfilePicture);
   console.log("Characther Creation Picture In Settings:", profile); */
@@ -95,24 +99,11 @@ export default function Settings() {
       showErrorToast();
       return false;
     } else {
-      showToast();
-      await saveName();
-      await updateUserProfile();
-      await saveGameValue();
-      await saveFaction();
-      await saveGameRoom();
+      updateUserProfile();
       return true;
     }
   };
 
-  const saveName = async () => {
-    try {
-      await AsyncStorage.setItem("UserName", username);
-      setUsername(username);
-    } catch (e) {
-      console.error("Error saving name:", e);
-    }
-  };
   //getting the logged in user data
   useFocusEffect(
     useCallback(() => {
@@ -132,10 +123,8 @@ export default function Settings() {
             setFaction(data.factionName || "");
             setGameValue(data.gameValue || 0);
             setGameRoom(data.gameRoom || "");
-            console.log(
-              "Profile Image In Settings:",
-              JSON.stringify(data, null, 2)
-            );
+            setUserFactionColor(data.userFactionColor || "");
+            console.log("User in Settings:", JSON.stringify(data, null, 2));
           }
         } catch (error) {
           console.error("Failed to retrieve user data:", error);
@@ -151,7 +140,7 @@ export default function Settings() {
   //updating the logged in user profile
   const updateUserProfile = async () => {
     if (!user) return;
-    console.log("updating user profile");
+    setUpdatingProfile(true);
     try {
       await reload(user);
 
@@ -177,63 +166,11 @@ export default function Settings() {
         gameValue: String(gameValue),
         email: user.email,
         gameRoom: gameRoom,
+        userFactionColor: userFactionColor,
       });
+      setUpdatingProfile(false);
     } catch (error) {
       console.error("Error updating profile:", error);
-    }
-  };
-
-  const saveFaction = async () => {
-    try {
-      await AsyncStorage.setItem("Faction", faction);
-      console.log(faction, "was saved");
-    } catch (e) {
-      console.error("Error saving faction:", e);
-    }
-  };
-
-  const saveGameRoom = async () => {
-    try {
-      await AsyncStorage.setItem("GameRoom", gameRoom);
-      console.log(gameRoom, "was saved");
-    } catch (e) {
-      console.error("Error saving game room:", e);
-    }
-  };
-
-  const saveGameValue = async () => {
-    // Ensure faction is not null or undefined
-    try {
-      await AsyncStorage.setItem("GameValue", String(gameValue));
-      console.log(gameValue, "was saved");
-    } catch (e) {
-      console.error("Error saving faction:", e);
-    }
-  };
-
-  const getGameValue = async () => {
-    try {
-      const gameMaxValue = await AsyncStorage.getItem("GameValue");
-      setGameValue(gameMaxValue || 0);
-    } catch (e) {
-      console.error("Error getting faction:", e);
-    }
-  };
-  const getFaction = async () => {
-    try {
-      const faction = await AsyncStorage.getItem("Faction");
-      setFaction(faction);
-    } catch (e) {
-      console.error("Error getting faction:", e);
-    }
-  };
-
-  const getName = async () => {
-    try {
-      const name = await AsyncStorage.getItem("UserName");
-      setUsername(name);
-    } catch (e) {
-      console.error("Error getting name:", e);
     }
   };
 
@@ -242,40 +179,6 @@ export default function Settings() {
       await AsyncStorage.clear();
     } catch (e) {
       console.error("Error deleting data:", e);
-    }
-  };
-
-  useEffect(() => {
-    getName();
-    getGameValue();
-    getFaction();
-  }, []);
-
-  const deleteName = async () => {
-    try {
-      await AsyncStorage.removeItem("UserName");
-      setUsername(""); // Reset state
-    } catch (e) {
-      console.error("Error deleting name:", e);
-    }
-  };
-
-  const deleteFaction = async () => {
-    try {
-      await AsyncStorage.removeItem("Faction");
-      setFaction("Nova Raiders"); // Default fallback
-    } catch (e) {
-      console.error("Error deleting faction:", e);
-    }
-  };
-
-  const deleteProfilePicture = async () => {
-    try {
-      await AsyncStorage.removeItem("ProfilePicture");
-      setProfile(""); // Reset profile state
-      setUserProfilePicture("");
-    } catch (e) {
-      console.error("Error deleting profile picture:", e);
     }
   };
 
@@ -346,6 +249,20 @@ export default function Settings() {
     return null;
   };
 
+  if (updatingProfile) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Image
+          style={{ width: "80%", height: "22%" }}
+          source={require("../../assets/images/SC_logo1.png")}
+        />
+        <Text style={[styles.text1, { fontSize: 20 }]}>
+          Updating your profile...
+        </Text>
+      </View>
+    );
+  }
+
   const renderLabelGameValue = () => {
     if (isFocusValue) {
       /*  console.log(isFocus); */
@@ -384,11 +301,11 @@ export default function Settings() {
               }}
             >
               <Text style={styles.subHeaderText}>
-                Enter or update your username below and tap 'Save' to update it.
-                You can also remove your username if necessary. Don’t forget to
-                select your profile picture. Additionally, you have the option
-                to log out or permanently delete your account. Please note that
-                once deleted, your account cannot be recovered.
+                Enter or update your information below and tap 'Save' to update
+                it. Don’t forget to select your profile picture. Additionally,
+                you have the option to log out or permanently delete your
+                account. Please note that once deleted, your account cannot be
+                recovered.
               </Text>
             </View>
           </View>
@@ -396,13 +313,14 @@ export default function Settings() {
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
             {gameRoom ? (
-              <Text style={styles.text1}>{gameRoom}</Text>
+              <Text style={styles.text1}>Game Room: {gameRoom}</Text>
             ) : (
               <Text style={styles.text1}>
                 Game Room not selected, head over to Settings to pick one
               </Text>
             )}
             <ImagePicker />
+            <ColorPickerComponent />
             {!data.length ? (
               <View width="100%">
                 <DropdownComponentFactions />
@@ -428,6 +346,8 @@ export default function Settings() {
                 {renderLabel()}
                 <TextInput
                   maxLength={18}
+                  autoCorrect={false}
+                  spellCheck={false}
                   style={styles.textInput}
                   onChangeText={(text) => {
                     setUsername(text.trimStart());
@@ -462,41 +382,7 @@ export default function Settings() {
                   checkForUsernamePhotoFaction();
                 }}
               >
-                <Image
-                  source={require("../../assets/icons/icons8-save-50.png")}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    marginTop: 5,
-                  }}
-                />
-                <Image
-                  style={{ width: 60, height: 60, position: "absolute" }}
-                  source={require("../../assets/images/edithud.png")}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={toastNotification}
-                onLongPress={() => {
-                  deleteFaction();
-                  deleteName();
-                  deleteProfilePicture();
-                  /*  deleteAuthUser(); */
-                }}
-              >
-                <Image
-                  source={require("../../assets/icons/delete50.png")}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    marginTop: 5,
-                  }}
-                />
-                <Image
-                  style={{ width: 60, height: 60, position: "absolute" }}
-                  source={require("../../assets/images/edithud.png")}
-                />
+                <Text style={styles.title}>Save User Info</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -565,10 +451,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   title: {
-    color: Colors.white,
-    fontSize: 28,
-    marginBottom: 10,
-    marginTop: 20,
+    color: Colors.hud,
+    fontSize: 15,
     textAlign: "center",
   },
   text: {
@@ -629,11 +513,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   button: {
-    width: 75,
+    width: "50%",
     paddingVertical: 10,
     paddingHorizontal: 10,
     marginBottom: 10,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    borderRadius: 3,
+    backgroundColor: Colors.hudDarker,
   },
   heroModalContainerButtons: {
     flexDirection: "row",
@@ -670,7 +558,7 @@ const styles = StyleSheet.create({
   },
   text1: {
     color: Colors.hud,
-    fontFamily: "monospace",
+    fontFamily: "LeagueSpartan-Light",
     fontSize: 12,
     padding: 5,
     textAlign: "center",
@@ -730,5 +618,11 @@ const styles = StyleSheet.create({
     height: 100,
     resizeMode: "contain",
     borderRadius: 5,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.dark_gray,
   },
 });

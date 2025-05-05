@@ -48,6 +48,8 @@ export default function BattleGround(props) {
     weaponId,
     gameRoom,
     setWeaponId,
+    hasBeenInteractedWith,
+    setHasBeenInteractedWith,
   } = useStarBoundContext();
   const [modal, setModal] = useState(false);
   const [newHP, setNewHP] = useState(0);
@@ -61,8 +63,8 @@ export default function BattleGround(props) {
     try {
       const allUsersArray = [];
       const currentUserEmail = FIREBASE_AUTH.currentUser.email;
-      console.log("Game Room:", gameRoom);
-      console.log("Game Room:", user.gameRoom);
+      //console.log("Game Room:", gameRoom);
+      //console.log("Game Room:", user.gameRoom);
       if (!currentUserEmail || !gameRoom) return [];
 
       const usersCollection = collection(FIREBASE_DB, "users");
@@ -119,8 +121,8 @@ export default function BattleGround(props) {
   //useEffect function to listen for changes for the specific user and ship selected in battleGround
   useEffect(() => {
     if (!singleUserShip || !isUser) return;
-    //console.log("Ship:", singleUserShip);
-    //console.log("User:", isUser);
+    console.log("Ship:", JSON.stringify(singleUserShip, null, 2));
+    //console.log("User:", JSON.stringify(isUser, null, 2));
     const userShipDocRef = doc(
       FIREBASE_DB,
       "users",
@@ -131,7 +133,7 @@ export default function BattleGround(props) {
     const unsubscribe = onSnapshot(userShipDocRef, (doc) => {
       if (doc.exists) {
         const updatedShip = { id: doc.id, ...doc.data() };
-        console.log("Updated Ship:", updatedShip);
+        console.log("Updated Ship:", JSON.stringify(updatedShip, null, 2));
         setSingleUserShip(updatedShip);
       }
     });
@@ -507,9 +509,49 @@ export default function BattleGround(props) {
                             )
                             .map((ship) => (
                               <TouchableOpacity
-                                disabled={ship.hp === 0}
-                                onPress={() => {
+                                disabled={
+                                  ship.hp === 0 ||
+                                  ship.hasBeenInteractedWith === true
+                                }
+                                onLongPress={async () => {
                                   setSingleUserShip(ship);
+                                  try {
+                                    const shipDocRef = doc(
+                                      FIREBASE_DB,
+                                      "users",
+                                      item.id,
+                                      "ships",
+                                      ship.id
+                                    );
+                                    await updateDoc(shipDocRef, {
+                                      hasBeenInteractedWith: false,
+                                    });
+                                  } catch (e) {
+                                    console.error(
+                                      "Error updating document: ",
+                                      e
+                                    );
+                                  }
+                                }}
+                                onPress={async () => {
+                                  setSingleUserShip(ship);
+                                  try {
+                                    const shipDocRef = doc(
+                                      FIREBASE_DB,
+                                      "users",
+                                      item.id,
+                                      "ships",
+                                      ship.id
+                                    );
+                                    await updateDoc(shipDocRef, {
+                                      hasBeenInteractedWith: true,
+                                    });
+                                  } catch (e) {
+                                    console.error(
+                                      "Error updating document: ",
+                                      e
+                                    );
+                                  }
                                 }}
                                 key={ship.id}
                                 style={{
@@ -545,6 +587,16 @@ export default function BattleGround(props) {
                                 <Text style={styles.shipTextId}>
                                   {ship.shipId}
                                 </Text>
+                                {ship.hasBeenInteractedWith === true && (
+                                  <View
+                                    style={{
+                                      backgroundColor: "gold",
+                                      width: 15,
+                                      height: 15,
+                                      borderRadius: 50,
+                                    }}
+                                  />
+                                )}
                               </TouchableOpacity>
                             ))}
                         </View>

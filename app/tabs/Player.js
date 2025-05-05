@@ -20,6 +20,7 @@ import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import { getAuth } from "firebase/auth";
 import { shipObject } from "../../constants/shipObjects";
 import Toast from "react-native-toast-message";
+import LoadingComponent from "../../components/loading/LoadingComponent";
 import {
   collection,
   query,
@@ -58,6 +59,8 @@ export default function Player() {
     userProfilePicture,
     gameRoom,
     setGameRoom,
+    userFactionColor,
+    setUserFactionColor,
   } = useStarBoundContext();
 
   const onCancelWarning = () => {
@@ -135,6 +138,7 @@ export default function Player() {
           highlighted: false,
           isToggled: false,
           ordersUsed: 0,
+          hasBeenInteractedWith: false,
         };
         // Add to Firestore
         const docRef = await addDoc(
@@ -142,7 +146,7 @@ export default function Player() {
           shipToSave
         );
 
-        console.log("Ship added with ID:", docRef.id);
+        //console.log("Ship added with ID:", docRef.id);
         // After adding, update it to include the doc ID
         await setDoc(docRef, { id: docRef.id }, { merge: true });
       }
@@ -157,12 +161,6 @@ export default function Player() {
   const totalFleetValue = data
     ? data.reduce((sum, ship) => sum + (ship.pointValue || 0), 0)
     : 0;
-
-  /*   const factionName = data
-    ? [...new Set(data.map((ship) => ship.factionName))]
-    : [];
- */
-  //console.log(JSON.stringify(data, null, data));
 
   useFocusEffect(
     useCallback(() => {
@@ -181,6 +179,7 @@ export default function Player() {
             setProfile(data.photoURL || "");
             setFaction(data.factionName || "");
             setGameRoom(data.gameRoom || "");
+            setUserFactionColor(data.userFactionColor || "");
             //console.log("Profile Image In Player:", data.gameRoom);
           }
         } catch (error) {
@@ -189,6 +188,12 @@ export default function Player() {
       };
 
       //console.log("User profile Image: ", profile);
+      //console.log("Game Room: ", gameRoom);
+      /*   const factionName = data
+    ? [...new Set(data.map((ship) => ship.factionName))]
+    : [];
+ */
+      //console.log(JSON.stringify(data, null, data));
 
       getUserData();
     }, [])
@@ -246,75 +251,118 @@ export default function Player() {
   const fleetData = createShipForFleet(faction);
 
   if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Image
-          style={{ width: "80%", height: "22%" }}
-          source={require("../../assets/images/SC_logo1.png")}
-        />
-        <Text style={styles.textLoading}>Your fleet is arriving</Text>
-      </View>
-    );
+    return <LoadingComponent whatToSay="Summoning your fleet..." />;
   }
 
   if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Image
-          style={{ width: "80%", height: "22%" }}
-          source={require("../../assets/images/SC_logo1.png")}
-        />
-        <Text style={styles.textLoading}>Adding ships to your Fleet</Text>
-      </View>
-    );
+    return <LoadingComponent whatToSay="Adding ships to your Fleet..." />;
   }
 
   /* console.log(JSON.stringify(totalFleetValue) + " In Player"); */
 
-  const endYourTurn = async () => {
-    if (!user) return;
-    try {
-      const shipRef = collection(FIREBASE_DB, "users", user.uid, "ships");
-      const snapshot = await getDocs(shipRef); // <-- fetch ALL ships
+  function send_message_discord() {
+    const request = new XMLHttpRequest();
+    request.open(
+      "POST",
+      "https://discord.com/api/webhooks/1334142368613400598/ByDe3g5n2lUlWW_dpj1tYV5JggI6XMbWpaldCsn53EJF5P1vJ3IU1Tg0-IqZ4cnWuOn_"
+    );
+    request.setRequestHeader("Content-Type", "application/json");
+    const params = {
+      username: "Starbound Conquest",
+      avatar_url: "",
+      content: `${username} has ended their turn.`,
+    };
+    request.send(JSON.stringify(params));
+  }
 
-      const resetPromises = snapshot.docs.map(async (shipDoc) => {
-        const shipDocRef = doc(
+  const endYourTurn = async () => {
+    if (!user || !gameRoom) return;
+
+    try {
+      const allResetPromises = [];
+
+      // restting my ships back to default values
+      const myShipsRef = collection(FIREBASE_DB, "users", user.uid, "ships");
+      const myShipsSnapshot = await getDocs(myShipsRef);
+
+      for (const myShipDoc of myShipsSnapshot.docs) {
+        const myShipData = myShipDoc.data();
+        const myShipDocRef = doc(
           FIREBASE_DB,
           "users",
           user.uid,
           "ships",
-          shipDoc.id
+          myShipDoc.id
         );
-        const shipData = shipDoc.data();
-        console.log("Ship data:", shipData);
 
-        // Reset special orders if they exist
         let newSpecialOrders = {};
-        if (shipData.specialOrders) {
-          Object.keys(shipData.specialOrders).forEach((order) => {
+        if (myShipData.specialOrders) {
+          Object.keys(myShipData.specialOrders).forEach((order) => {
             newSpecialOrders[order] = false;
           });
         }
-        console.log("New special orders:", newSpecialOrders);
 
-        await updateDoc(shipDocRef, {
-          isToggled: false,
-          specialOrders: newSpecialOrders,
-        });
-      });
+        allResetPromises.push(
+          updateDoc(myShipDocRef, {
+            isToggled: false,
+            specialOrders: newSpecialOrders,
+            hasBeenInteractedWith: false,
+          })
+        );
+      }
 
-      await Promise.all(resetPromises);
+      // reset the opponents ships to default values
+      const usersRef = collection(FIREBASE_DB, "users");
+      const opponentsQuery = query(
+        usersRef,
+        where("gameRoom", "==", gameRoom),
+        where("email", "!=", user.email)
+      );
+      const opponentSnapshots = await getDocs(opponentsQuery);
+
+      for (const opponentDoc of opponentSnapshots.docs) {
+        const opponentId = opponentDoc.id;
+        const opponentShipsRef = collection(
+          FIREBASE_DB,
+          "users",
+          opponentId,
+          "ships"
+        );
+        const opponentShipsSnapshot = await getDocs(opponentShipsRef);
+
+        for (const shipDoc of opponentShipsSnapshot.docs) {
+          const shipDocRef = doc(
+            FIREBASE_DB,
+            "users",
+            opponentId,
+            "ships",
+            shipDoc.id
+          );
+
+          allResetPromises.push(
+            updateDoc(shipDocRef, {
+              hasBeenInteractedWith: false,
+            })
+          );
+        }
+      }
+
+      // ✅ Wait for all updates
+      await Promise.all(allResetPromises);
+
+      // 🔄 Refresh local fleet state
       await getFleetData({ data, setData });
+
       send_message_discord();
 
       Toast.show({
         type: "success",
         text1: "Starbound Conquest",
-        text2: "Your turn has ended and all special orders reset.",
+        text2: "Your turn has ended. Orders reset and enemy ships refreshed.",
         position: "top",
       });
     } catch (e) {
-      console.error("Error updating document: ", e);
+      console.error("Error in endYourTurn:", e);
     }
   };
 
@@ -402,7 +450,7 @@ export default function Player() {
                 fleet's status. Use the buttons to navigate to screens where you
                 can manage your ships' stats, toggle their turns, and issue
                 orders. Also tap on the settings to change your Faction,
-                Username and Profie Picture.
+                Username and Profile Picture.
               </Text>
               {toggleToDelete && (
                 <View>
@@ -423,10 +471,10 @@ export default function Player() {
                   {
                     borderColor: toggleToDelete
                       ? Colors.lighter_red
-                      : Colors.hud,
+                      : userFactionColor || Colors.hud,
                     shadowColor: toggleToDelete
                       ? Colors.lighter_red
-                      : Colors.hud,
+                      : userFactionColor || Colors.hud,
                   },
                 ]}
               >
@@ -441,7 +489,11 @@ export default function Player() {
                 <Text
                   style={[
                     styles.playerText,
-                    { color: toggleToDelete ? Colors.lighter_red : Colors.hud },
+                    {
+                      color: toggleToDelete
+                        ? Colors.lighter_red
+                        : userFactionColor || Colors.hud,
+                    },
                   ]}
                 >
                   {username}
@@ -449,7 +501,11 @@ export default function Player() {
                 <Text
                   style={[
                     styles.factionText,
-                    { color: toggleToDelete ? Colors.lighter_red : Colors.hud },
+                    {
+                      color: toggleToDelete
+                        ? Colors.lighter_red
+                        : userFactionColor || Colors.hud,
+                    },
                   ]}
                 >
                   {faction}
@@ -468,10 +524,22 @@ export default function Player() {
                       <Text
                         style={[
                           styles.gameRoomText,
-                          { marginTop: 10, padding: 5 },
+                          {
+                            marginTop: 10,
+                            padding: 5,
+                            color: toggleToDelete
+                              ? Colors.lighter_red
+                              : Colors.hud,
+                            backgroundColor: toggleToDelete
+                              ? Colors.deep_red
+                              : Colors.hudDarker,
+                            borderColor: toggleToDelete
+                              ? Colors.lighter_red
+                              : Colors.hud,
+                          },
                         ]}
                       >
-                        {gameRoom || "Not Connected"}
+                        Game Room: {gameRoom || "Not Connected"}
                       </Text>
                     ) : (
                       <Text style={styles.gameRoomText}>
@@ -634,7 +702,7 @@ export default function Player() {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                disabled={toggleToDelete}
+                disabled={toggleToDelete || !gameRoom}
                 onPress={() =>
                   addShipToFleet(item.ships[0], shipCounts[item.type] || 1)
                 }
@@ -708,7 +776,7 @@ const styles = StyleSheet.create({
   textSub: {
     fontSize: 30,
     color: Colors.white,
-    fontFamily: "leagueBold",
+    fontFamily: "LeagueSpartan-Bold",
     textAlign: "center",
     marginBottom: 20,
     marginTop: 25,
@@ -816,7 +884,7 @@ const styles = StyleSheet.create({
   gameRoomText: {
     fontSize: 15,
     color: Colors.hud,
-    fontFamily: "LeagueSpartan-Bold",
+    fontFamily: "LeagueSpartan-Light",
     textAlign: "center",
     marginBottom: 5,
     marginTop: 5,

@@ -39,7 +39,7 @@ export default function BattleDice({
   const threatLevel = singleUserShip?.threatLevel ?? null;
   const damageThreshold = singleUserShip?.damageThreshold ?? null;
 
-  useEffect(() =>{},[])
+  useEffect(() => {}, []);
 
   const randomNum = (min = number1, max = number2) =>
     Math.floor(Math.random() * (max - min + 1)) + min;
