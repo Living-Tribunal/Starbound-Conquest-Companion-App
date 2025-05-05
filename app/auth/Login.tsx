@@ -104,7 +104,7 @@ const Login = () => {
       const signInResult = await GoogleSignin.signIn();
       console.log("SignIn Result:", signInResult);
 
-      let idToken = signInResult?.idToken;
+      let idToken = signInResult?.data.idToken;
 
       if (!idToken) {
         console.error("No ID Token found");

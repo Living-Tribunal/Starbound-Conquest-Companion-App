@@ -268,7 +268,7 @@ export default function Settings() {
       /*  console.log(isFocus); */
       return (
         <Text style={[styles.label, isFocusValue && { color: Colors.hud }]}>
-          Enter Max Value
+          Game Value
         </Text>
       );
     }
@@ -320,9 +320,15 @@ export default function Settings() {
               </Text>
             )}
             <ImagePicker />
-            <ColorPickerComponent />
             {!data.length ? (
-              <View width="100%">
+              <View
+                width="100%"
+                style={{
+                  width: "100%",
+                  justifyContent: "center",
+                }}
+              >
+                <ColorPickerComponent />
                 <DropdownComponentFactions />
                 <DropdownComponentCampaigns />
               </View>
@@ -335,14 +341,14 @@ export default function Settings() {
                 }}
               >
                 <Text style={styles.text1}>
-                  You have a fleet! You can't change your faction or game room
-                  until you remove all ships and try again.
+                  You have a fleet! You can't change your faction, game room or
+                  color until you remove all ships and try again.
                 </Text>
               </View>
             )}
 
             <View style={{ flexDirection: "row", gap: 10 }}>
-              <View style={{ width: "45%", position: "relative" }}>
+              <View style={{ width: "68%", position: "relative" }}>
                 {renderLabel()}
                 <TextInput
                   maxLength={18}
@@ -358,7 +364,7 @@ export default function Settings() {
                   onBlur={() => setIsFocus(false)}
                 />
               </View>
-              <View style={{ width: "45%", position: "relative" }}>
+              <View style={{ width: "25%", position: "relative" }}>
                 {renderLabelGameValue()}
                 <TextInput
                   maxLength={12}
@@ -547,8 +553,8 @@ const styles = StyleSheet.create({
     top: -15,
     zIndex: 999,
     paddingHorizontal: 8,
-    fontSize: 14,
-    borderWidth: 1,
+    fontSize: 12,
+    borderWidth: 3,
     borderRadius: 3,
     borderColor: Colors.hud,
     color: Colors.hud,

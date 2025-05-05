@@ -182,7 +182,8 @@ const styles = StyleSheet.create({
     marginVertical: 0,
   },
   openButton: {
-    width: "90%",
+    width: "95%",
+    alignSelf: "center",
     borderRadius: 5,
     paddingHorizontal: 40,
     paddingVertical: 10,

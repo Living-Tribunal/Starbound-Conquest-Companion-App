@@ -21,6 +21,7 @@ import { getAuth } from "firebase/auth";
 import { shipObject } from "../../constants/shipObjects";
 import Toast from "react-native-toast-message";
 import LoadingComponent from "../../components/loading/LoadingComponent";
+import { factionIcons } from "../../constants/shipIcons";
 import {
   collection,
   query,
@@ -51,12 +52,8 @@ export default function Player() {
     data,
     setData,
     gameValue,
-    setGameValue,
     toggleToDelete,
     setToggleToDelete,
-    setDeleting,
-    setSetDeleting,
-    userProfilePicture,
     gameRoom,
     setGameRoom,
     userFactionColor,
@@ -139,6 +136,8 @@ export default function Player() {
           isToggled: false,
           ordersUsed: 0,
           hasBeenInteractedWith: false,
+          gameRoomId: gameRoom,
+          factionColor: userFactionColor,
         };
         // Add to Firestore
         const docRef = await addDoc(
@@ -381,7 +380,7 @@ export default function Player() {
       <View style={styles.loadingContainer}>
         <Text style={[styles.valueWarning, { fontSize: 20, padding: 10 }]}>
           Warning: You are now in a delete mode, any ship you tap on WILL be
-          deleted.
+          deleted. To return to normal mode, tap on the X button.
         </Text>
         <View
           style={{
@@ -673,10 +672,32 @@ export default function Player() {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
+                justifyContent: "space-between",
                 gap: 10,
                 margin: 10,
               }}
             >
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  borderColor: toggleToDelete ? Colors.lighter_red : Colors.hud,
+                  padding: 5,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Image
+                  source={factionIcons[item.type.toLowerCase()]}
+                  style={{
+                    width: 35,
+                    height: 35,
+                    tintColor: toggleToDelete ? Colors.lighter_red : Colors.hud,
+                  }}
+                  resizeMode="contain"
+                />
+              </View>
+
               <Text
                 style={[
                   styles.textUnder,
