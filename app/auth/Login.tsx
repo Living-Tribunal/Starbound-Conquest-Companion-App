@@ -14,13 +14,11 @@ import {
 import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../FirebaseConfig";
-import FactionAvatars from "../../constants/FactionAvatars.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
   sendEmailVerification,
-  signOut,
 } from "firebase/auth";
 import { Colors } from "@/constants/Colors";
 import { FONTS } from "../../constants/fonts";
@@ -49,7 +47,7 @@ const Login = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [authInProgress, setAuthInProgress] = useState(false);
-  const { faction, setFaction, profile, setProfile } = useStarBoundContext();
+  const { faction } = useStarBoundContext();
 
   useEffect(() => {
     const unsubscribe = FIREBASE_AUTH.onAuthStateChanged((user) => {
@@ -113,19 +111,36 @@ const Login = () => {
 
       // Create credential with the modular SDK
       const googleCredential = GoogleAuthProvider.credential(idToken);
-
+      setLoadingSignUp(true);
       // Use your existing FIREBASE_AUTH from config
       const userCredential = await signInWithCredential(
         FIREBASE_AUTH,
         googleCredential
       );
-      console.log("User Credential:", userCredential);
 
-      // Check if the user is new or existing
-      if (userCredential.additionalUserInfo?.isNewUser) {
-        console.log("New user created:", userCredential.user.uid);
-      } else {
-        console.log("Existing user logged in:", userCredential.user.uid);
+      const user = userCredential.user;
+      await updateProfile(user, { displayName: username || "Commander" });
+      await AsyncStorage.setItem("UserName", username || "Commander");
+      await saveFaction();
+      console.log("User Name:" + JSON.stringify(user.displayName));
+
+      const userReference = doc(FIREBASE_DB, "users", user?.uid);
+      const userSnapshot = await getDoc(userReference);
+      //check if user is already in firestore
+      if (!userSnapshot.exists()) {
+        try {
+          await setDoc(doc(FIREBASE_DB, "users", user.uid), {
+            email: user.email,
+            displayName: user.displayName || "Commander",
+            id: user.uid,
+            factionName:
+              faction || "Head over to settings to build your character",
+          });
+          console.log("User document written with ID:", user.uid);
+          console.log("Users Profile:", user);
+        } catch (e) {
+          console.error("Error adding document:", e);
+        }
       }
 
       navigation.replace("MainTabs", { screen: "Player" });
@@ -133,6 +148,7 @@ const Login = () => {
       console.error("Google Sign-In Error:", error);
       Alert.alert("Google Sign-In Failed");
     }
+    setLoadingSignUp(false);
   }
 
   const signIn = async () => {

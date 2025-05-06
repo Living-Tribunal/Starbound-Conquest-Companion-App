@@ -850,11 +850,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: Colors.hud,
     marginTop: 10,
+    textAlign: "center",
   },
   factionText: {
     fontSize: 20,
-    fontStyle: "italic",
+    fontStyle: "LeagueSpartan-Light",
     color: Colors.hud,
+    textAlign: "center",
   },
   subHeaderText: {
     fontFamily: "monospace",

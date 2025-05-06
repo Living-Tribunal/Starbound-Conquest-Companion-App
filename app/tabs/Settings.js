@@ -301,11 +301,10 @@ export default function Settings() {
               }}
             >
               <Text style={styles.subHeaderText}>
-                Enter or update your information below and tap 'Save' to update
-                it. Don’t forget to select your profile picture. Additionally,
-                you have the option to log out or permanently delete your
-                account. Please note that once deleted, your account cannot be
-                recovered.
+                Enter or update your information below, then tap 'Save' to apply
+                the changes. Make sure to select your faction, game room, and
+                faction color, set your game value, and choose a profile
+                picture.
               </Text>
             </View>
           </View>
@@ -351,7 +350,7 @@ export default function Settings() {
               <View style={{ width: "68%", position: "relative" }}>
                 {renderLabel()}
                 <TextInput
-                  maxLength={18}
+                  maxLength={30}
                   autoCorrect={false}
                   spellCheck={false}
                   style={styles.textInput}
