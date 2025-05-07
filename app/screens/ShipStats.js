@@ -120,8 +120,9 @@ export default function ShipStats({ route }) {
         ...currentOrders,
         [orderName]: !currentOrders[orderName],
       };
-
+      const { x, y, ...safeData } = ship;
       await updateDoc(shipRef, {
+        ...safeData,
         specialOrders: updatedOrders,
       });
 
@@ -148,7 +149,9 @@ export default function ShipStats({ route }) {
     if (!ship || !user) return;
     try {
       const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", shipId);
+      const { x, y, ...safeData } = ship;
       await updateDoc(shipRef, {
+        ...safeData,
         isToggled: !ship.isToggled,
       });
       console.log("Updated ship:", ship.isToggled);
@@ -176,7 +179,9 @@ export default function ShipStats({ route }) {
     try {
       const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", shipId);
       const newHP = Math.max(0, Math.min(Number(hitPoints), ship.maxHP));
+      const { x, y, ...safeData } = ship;
       await updateDoc(shipRef, {
+        ...safeData,
         hp: newHP,
       });
       console.log("Updated ship HP:", hitPoints);

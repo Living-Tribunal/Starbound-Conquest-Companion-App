@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  Component,
+} from "react";
 import {
   View,
   Text,
@@ -22,6 +28,9 @@ import { shipObject } from "../../constants/shipObjects";
 import Toast from "react-native-toast-message";
 import LoadingComponent from "../../components/loading/LoadingComponent";
 import { factionIcons } from "../../constants/shipIcons";
+import ViewShot from "react-native-view-shot";
+import Share from "react-native-share";
+import { WebView } from "react-native-webview";
 import {
   collection,
   query,
@@ -35,6 +44,7 @@ import {
 } from "firebase/firestore";
 import { useFocusEffect } from "expo-router";
 export default function Player() {
+  const ref = useRef();
   const user = getAuth().currentUser;
   const tabBarHeight = useBottomTabBarHeight();
   const [loading, setLoading] = useState(false);
@@ -52,6 +62,7 @@ export default function Player() {
     data,
     setData,
     gameValue,
+    setGameValue,
     toggleToDelete,
     setToggleToDelete,
     gameRoom,
@@ -86,6 +97,21 @@ export default function Player() {
       getFleetDataButton();
     }, [])
   );
+
+  const saveCharacterImage = async () => {
+    try {
+      ref.current.capture().then(async (uri) => {
+        await Share.open({
+          url: "file://" + uri, // add explicit scheme
+          type: "image/png",
+          failOnCancel: false,
+          message: user.displayName + "'s Character Image",
+        });
+      });
+    } catch (error) {
+      console.error("Error saving character image:", error);
+    }
+  };
 
   //console.log("Ship Length:", data);
 
@@ -139,10 +165,11 @@ export default function Player() {
           gameRoomId: gameRoom,
           factionColor: userFactionColor,
         };
+        const { x, y, ...safeShipToSave } = shipToSave;
         // Add to Firestore
         const docRef = await addDoc(
           collection(FIREBASE_DB, "users", user.uid, "ships"),
-          shipToSave
+          safeShipToSave
         );
 
         //console.log("Ship added with ID:", docRef.id);
@@ -179,6 +206,7 @@ export default function Player() {
             setFaction(data.factionName || "");
             setGameRoom(data.gameRoom || "");
             setUserFactionColor(data.userFactionColor || "");
+            setGameValue(data.gameValue || "");
             //console.log("Profile Image In Player:", data.gameRoom);
           }
         } catch (error) {
@@ -300,9 +328,10 @@ export default function Player() {
             newSpecialOrders[order] = false;
           });
         }
-
+        const { x, y, ...safeData } = myShipData;
         allResetPromises.push(
           updateDoc(myShipDocRef, {
+            ...safeData,
             isToggled: false,
             specialOrders: newSpecialOrders,
             hasBeenInteractedWith: false,
@@ -330,6 +359,7 @@ export default function Player() {
         const opponentShipsSnapshot = await getDocs(opponentShipsRef);
 
         for (const shipDoc of opponentShipsSnapshot.docs) {
+          const shipData = shipDoc.data();
           const shipDocRef = doc(
             FIREBASE_DB,
             "users",
@@ -337,9 +367,10 @@ export default function Player() {
             "ships",
             shipDoc.id
           );
-
+          const { x, y, ...safeData } = shipData;
           allResetPromises.push(
             updateDoc(shipDocRef, {
+              ...safeData,
               hasBeenInteractedWith: false,
             })
           );
@@ -463,53 +494,84 @@ export default function Player() {
                   </Text>
                 </View>
               )}
-              <TouchableOpacity
-                disabled
-                style={[
-                  styles.profileContainer,
-                  {
-                    borderColor: toggleToDelete
-                      ? Colors.lighter_red
-                      : userFactionColor || Colors.hud,
-                    shadowColor: toggleToDelete
-                      ? Colors.lighter_red
-                      : userFactionColor || Colors.hud,
-                  },
-                ]}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                  width: "100%",
+                  marginHorizontal: -20,
+                }}
               >
-                <Image
-                  style={styles.profile}
-                  source={
-                    profile
-                      ? { uri: profile }
-                      : require("../../assets/images/SC_logo1.png") // fallback image
-                  }
-                />
-                <Text
+                <TouchableOpacity
+                  style={styles.shareButton}
+                  onPress={saveCharacterImage}
+                >
+                  <Image
+                    style={{
+                      width: 25,
+                      height: 25,
+                      tintColor: Colors.gold,
+                    }}
+                    source={require("../../assets/icons/icons8-share-100.png")}
+                  />
+                </TouchableOpacity>
+              </View>
+              <ViewShot
+                style={{ justifyContent: "center", alignItems: "center" }}
+                ref={ref}
+                options={{
+                  fileName: username,
+                  format: "jpg",
+                  quality: 1,
+                }}
+              >
+                <View
                   style={[
-                    styles.playerText,
+                    styles.profileContainer,
                     {
-                      color: toggleToDelete
+                      borderColor: toggleToDelete
+                        ? Colors.lighter_red
+                        : userFactionColor || Colors.hud,
+                      shadowColor: toggleToDelete
                         ? Colors.lighter_red
                         : userFactionColor || Colors.hud,
                     },
                   ]}
                 >
-                  {username}
-                </Text>
-                <Text
-                  style={[
-                    styles.factionText,
-                    {
-                      color: toggleToDelete
-                        ? Colors.lighter_red
-                        : userFactionColor || Colors.hud,
-                    },
-                  ]}
-                >
-                  {faction}
-                </Text>
-              </TouchableOpacity>
+                  <Image
+                    style={styles.profile}
+                    source={
+                      profile
+                        ? { uri: profile }
+                        : require("../../assets/images/SC_logo1.png") // fallback image
+                    }
+                  />
+                  <Text
+                    style={[
+                      styles.playerText,
+                      {
+                        color: toggleToDelete
+                          ? Colors.lighter_red
+                          : userFactionColor || Colors.hud,
+                      },
+                    ]}
+                  >
+                    {username}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.factionText,
+                      {
+                        color: toggleToDelete
+                          ? Colors.lighter_red
+                          : userFactionColor || Colors.hud,
+                      },
+                    ]}
+                  >
+                    {faction}
+                  </Text>
+                </View>
+              </ViewShot>
               {faction !== "Choose a Faction" && (
                 <View>
                   <View
@@ -840,13 +902,13 @@ const styles = StyleSheet.create({
     shadowColor: Colors.hud,
   },
   profile: {
-    width: 250,
-    height: 250,
+    width: 275,
+    height: 275,
     borderRadius: 10,
     shadowColor: Colors.dark_gray,
   },
   playerText: {
-    fontSize: 30,
+    fontSize: 20,
     fontWeight: "bold",
     color: Colors.hud,
     marginTop: 10,
@@ -915,5 +977,14 @@ const styles = StyleSheet.create({
     borderColor: Colors.hud,
     backgroundColor: Colors.hudDarker,
     borderRadius: 5,
+  },
+  shareButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: Colors.gold,
+    backgroundColor: Colors.goldenrod,
+    padding: 5,
   },
 });

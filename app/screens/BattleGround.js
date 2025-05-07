@@ -105,7 +105,9 @@ export default function BattleGround(props) {
       );
 
       try {
+        const { x, y, ...safeData } = singleUserShip;
         await updateDoc(userShipDocRef, {
+          ...safeData,
           hp: clampedHP,
         });
         setNewHP(clampedHP); // Sync your local state
@@ -509,10 +511,7 @@ export default function BattleGround(props) {
                             )
                             .map((ship) => (
                               <TouchableOpacity
-                                disabled={
-                                  ship.hp === 0 ||
-                                  ship.hasBeenInteractedWith === true
-                                }
+                                disabled={ship.hp === 0}
                                 onLongPress={async () => {
                                   setSingleUserShip(ship);
                                   try {
@@ -523,7 +522,9 @@ export default function BattleGround(props) {
                                       "ships",
                                       ship.id
                                     );
+                                    const { x, y, ...safeData } = ship;
                                     await updateDoc(shipDocRef, {
+                                      ...safeData,
                                       hasBeenInteractedWith: false,
                                     });
                                   } catch (e) {
@@ -543,7 +544,9 @@ export default function BattleGround(props) {
                                       "ships",
                                       ship.id
                                     );
+                                    const { x, y, ...safeData } = ship;
                                     await updateDoc(shipDocRef, {
+                                      ...safeData,
                                       hasBeenInteractedWith: true,
                                     });
                                   } catch (e) {

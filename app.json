@@ -10,7 +10,7 @@
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/SC.png",
-      "resizeMode": "cover",
+      "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
     "ios": {

@@ -121,7 +121,7 @@ export default function Settings() {
             setUsername(data.displayName || "");
             setProfile(data.photoURL || "");
             setFaction(data.factionName || "");
-            setGameValue(data.gameValue || 0);
+            setGameValue(data.gameValue || "");
             setGameRoom(data.gameRoom || "");
             setUserFactionColor(data.userFactionColor || "");
             console.log("User in Settings:", JSON.stringify(data, null, 2));
@@ -350,7 +350,6 @@ export default function Settings() {
               <View style={{ width: "68%", position: "relative" }}>
                 {renderLabel()}
                 <TextInput
-                  maxLength={30}
                   autoCorrect={false}
                   spellCheck={false}
                   style={styles.textInput}
