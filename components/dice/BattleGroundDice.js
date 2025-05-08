@@ -41,20 +41,31 @@ export default function BattleDice({
 
   useEffect(() => {}, []);
 
-  const randomNum = (min = number1, max = number2) =>
-    Math.floor(Math.random() * (max - min + 1)) + min;
-  const getDiceNum = (prev) => {
-    let num = randomNum();
-    if (prev === num) {
-      return randomNum();
-    }
-    return num;
+  const rollDiceAnimation = () => {
+    const interval = setInterval(() => {
+      setFirstDice(
+        Math.floor(Math.random() * (number2 - number1 + 1)) + number1
+      );
+    }, 100);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      const final =
+        Math.floor(Math.random() * (number2 - number1 + 1)) + number1;
+      setFirstDice(final);
+
+      if (id === "D20") {
+        checkIfHit(final);
+      } else {
+        weaponDamageRoll(final);
+      }
+    }, 1000);
   };
   //console.log("In Dice:", JSON.stringify(singleUserShip.threatLevel, null, 2));
   //console.log(`First Dice ${id}: ${firstDice}`);
 
-  const checkIfHit = () => {
-    const newRolledValue = getDiceNum(firstDice);
+  const checkIfHit = (value) => {
+    const newRolledValue = value;
     setFirstDice(newRolledValue);
 
     if (threatLevel === null) {
@@ -84,8 +95,8 @@ export default function BattleDice({
     }
   };
 
-  const weaponDamageRoll = () => {
-    const newWeaponRolledValue = getDiceNum(firstDice);
+  const weaponDamageRoll = (value) => {
+    const newWeaponRolledValue = value;
     setFirstDice(newWeaponRolledValue);
     setWeaponId(id);
     console.log("weaponId:", id);
@@ -112,11 +123,7 @@ export default function BattleDice({
   };
 
   const rollingBothDice = () => {
-    if (id === "D20") {
-      checkIfHit();
-    } else {
-      weaponDamageRoll();
-    }
+    rollDiceAnimation();
   };
 
   useEffect(() => {

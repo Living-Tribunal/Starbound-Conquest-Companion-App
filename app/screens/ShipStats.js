@@ -280,8 +280,8 @@ export default function ShipStats({ route }) {
             style={[
               styles.button,
               {
-                backgroundColor: ship.isToggled ? Colors.hudDarker : Colors.hud,
-                borderColor: ship.isToggled ? Colors.hud : Colors.hud,
+                backgroundColor: Colors.hud,
+                borderColor: Colors.hud,
                 width: "45%",
               },
             ]}
@@ -300,7 +300,7 @@ export default function ShipStats({ route }) {
                 styles.headerText,
                 {
                   fontSize: 15,
-                  color: ship.isToggled ? Colors.hud : Colors.hudDarker,
+                  color: Colors.hudDarker,
                 },
               ]}
             >

@@ -36,6 +36,7 @@ import {
   query,
   where,
   getDocs,
+  getCountFromServer,
   updateDoc,
   doc,
   addDoc,
@@ -51,6 +52,7 @@ export default function Player() {
   const [isLoading, setIsLoading] = useState(false);
   const [isShowWarning, setIsShowWarning] = useState(false);
   const [shipCounts, setShipCounts] = useState({});
+  const [numberOfShips, setNumberOfShips] = useState(0);
 
   const {
     username,
@@ -165,11 +167,10 @@ export default function Player() {
           gameRoomId: gameRoom,
           factionColor: userFactionColor,
         };
-        const { x, y, ...safeShipToSave } = shipToSave;
         // Add to Firestore
         const docRef = await addDoc(
           collection(FIREBASE_DB, "users", user.uid, "ships"),
-          safeShipToSave
+          shipToSave
         );
 
         //console.log("Ship added with ID:", docRef.id);
@@ -196,7 +197,11 @@ export default function Player() {
           const user = auth.currentUser;
           if (!user) return;
 
+          const shipsRef = collection(FIREBASE_DB, "users", user.uid, "ships");
           const docRef = doc(FIREBASE_DB, "users", user.uid);
+          const ships = await getCountFromServer(shipsRef);
+          setNumberOfShips(ships.data().count);
+          console.log("Ship Counts:", numberOfShips);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             const data = docSnap.data();
@@ -213,14 +218,6 @@ export default function Player() {
           console.error("Failed to retrieve user data:", error);
         }
       };
-
-      //console.log("User profile Image: ", profile);
-      //console.log("Game Room: ", gameRoom);
-      /*   const factionName = data
-    ? [...new Set(data.map((ship) => ship.factionName))]
-    : [];
- */
-      //console.log(JSON.stringify(data, null, data));
 
       getUserData();
     }, [])
@@ -569,6 +566,9 @@ export default function Player() {
                     ]}
                   >
                     {faction}
+                  </Text>
+                  <Text style={styles.underText}>
+                    Number of Ships: {numberOfShips}
                   </Text>
                 </View>
               </ViewShot>
@@ -986,5 +986,13 @@ const styles = StyleSheet.create({
     borderColor: Colors.gold,
     backgroundColor: Colors.goldenrod,
     padding: 5,
+  },
+  underText: {
+    fontSize: 12,
+    color: Colors.hud,
+    fontFamily: "monospace",
+    textAlign: "center",
+    marginBottom: 5,
+    marginTop: 5,
   },
 });
