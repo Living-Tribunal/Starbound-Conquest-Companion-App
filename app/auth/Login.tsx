@@ -119,7 +119,7 @@ const Login = () => {
       );
 
       const user = userCredential.user;
-      await updateProfile(user, { displayName: username || "Commander" });
+      //await updateProfile(user, { displayName: username || "Commander" });
       await AsyncStorage.setItem("UserName", username || "Commander");
       await saveFaction();
       console.log("User Name:" + JSON.stringify(user.displayName));

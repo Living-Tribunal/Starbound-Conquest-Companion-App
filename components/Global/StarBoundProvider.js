@@ -33,6 +33,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [text, setText] = useState("0");
 
   const [faction, setFaction] = useState("");
+  const [getAllUsersShipToggled, setGetAllUsersShipToggled] = useState([]);
 
   const [showFighterClass, setShowFighterClass] = useState(true);
   const [showDestroyerClass, setShowDestroyerClass] = useState(true);
@@ -165,6 +166,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setUserFactionColor,
         hasBeenInteractedWith,
         setHasBeenInteractedWith,
+        getAllUsersShipToggled,
+        setGetAllUsersShipToggled,
       }}
     >
       {children}

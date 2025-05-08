@@ -44,6 +44,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { useFocusEffect } from "expo-router";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 export default function Player() {
   const ref = useRef();
   const user = getAuth().currentUser;
@@ -53,6 +54,8 @@ export default function Player() {
   const [isShowWarning, setIsShowWarning] = useState(false);
   const [shipCounts, setShipCounts] = useState({});
   const [numberOfShips, setNumberOfShips] = useState(0);
+  const [showEndOfRound, setShowEndOfRound] = useState(false);
+  const [getAllUsersShipTotals, setGetAllUsersShipTotals] = useState(0);
 
   const {
     username,
@@ -71,6 +74,8 @@ export default function Player() {
     setGameRoom,
     userFactionColor,
     setUserFactionColor,
+    getAllUsersShipToggled,
+    setGetAllUsersShipToggled,
   } = useStarBoundContext();
 
   const onCancelWarning = () => {
@@ -201,7 +206,7 @@ export default function Player() {
           const docRef = doc(FIREBASE_DB, "users", user.uid);
           const ships = await getCountFromServer(shipsRef);
           setNumberOfShips(ships.data().count);
-          console.log("Ship Counts:", numberOfShips);
+          //console.log("Ship Counts:", numberOfShips);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             const data = docSnap.data();
@@ -274,14 +279,6 @@ export default function Player() {
 
   const fleetData = createShipForFleet(faction);
 
-  if (loading) {
-    return <LoadingComponent whatToSay="Summoning your fleet..." />;
-  }
-
-  if (isLoading) {
-    return <LoadingComponent whatToSay="Adding ships to your Fleet..." />;
-  }
-
   /* console.log(JSON.stringify(totalFleetValue) + " In Player"); */
 
   function send_message_discord() {
@@ -299,8 +296,24 @@ export default function Player() {
     request.send(JSON.stringify(params));
   }
 
+  function send_message_discord_end_of_round() {
+    const request = new XMLHttpRequest();
+    request.open(
+      "POST",
+      "https://discord.com/api/webhooks/1334142368613400598/ByDe3g5n2lUlWW_dpj1tYV5JggI6XMbWpaldCsn53EJF5P1vJ3IU1Tg0-IqZ4cnWuOn_"
+    );
+    request.setRequestHeader("Content-Type", "application/json");
+    const params = {
+      username: "Starbound Conquest",
+      avatar_url: "",
+      content: `The Round has ended. Resetting your ships.`,
+    };
+    request.send(JSON.stringify(params));
+  }
+
   const endYourTurn = async () => {
     if (!user || !gameRoom) return;
+    setShowEndOfRound(true);
 
     try {
       const allResetPromises = [];
@@ -354,6 +367,7 @@ export default function Player() {
           "ships"
         );
         const opponentShipsSnapshot = await getDocs(opponentShipsRef);
+        console.log("ship snaps in player:", opponentShipsSnapshot);
 
         for (const shipDoc of opponentShipsSnapshot.docs) {
           const shipData = shipDoc.data();
@@ -376,32 +390,106 @@ export default function Player() {
 
       // ✅ Wait for all updates
       await Promise.all(allResetPromises);
+      //setGetAllUsersShipToggled([]);
+      setGetAllUsersShipTotals(0);
 
       // 🔄 Refresh local fleet state
       await getFleetData({ data, setData });
 
-      send_message_discord();
-
-      Toast.show({
-        type: "success",
-        text1: "Starbound Conquest",
-        text2: "Your turn has ended. Orders reset and enemy ships refreshed.",
-        position: "top",
-      });
+      setShowEndOfRound(false);
     } catch (e) {
       console.error("Error in endYourTurn:", e);
+    } finally {
+      setShowEndOfRound(false); // Ensures it's always turned off
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const fetchAndCheckShips = async () => {
+        if (!gameRoom) return;
+
+        let allShips = [];
+        let toggledCount = 0;
+
+        const userSnap = await getDocs(collection(FIREBASE_DB, "users"));
+
+        for (const userDoc of userSnap.docs) {
+          const uid = userDoc.id;
+
+          const shipsRef = collection(FIREBASE_DB, "users", uid, "ships");
+          const shipsQuery = query(
+            shipsRef,
+            where("gameRoomId", "==", gameRoom)
+          );
+          const shipsSnapshot = await getDocs(shipsQuery);
+
+          shipsSnapshot.forEach((shipDoc) => {
+            const ship = shipDoc.data();
+            allShips.push(ship);
+            if (ship.isToggled) toggledCount++;
+          });
+        }
+
+        setGetAllUsersShipToggled(allShips);
+        setGetAllUsersShipTotals(toggledCount);
+
+        if (allShips.length > 0 && toggledCount === allShips.length) {
+          console.log("🚀 All ships toggled — ending round...");
+          await endYourTurn();
+          send_message_discord_end_of_round();
+        }
+      };
+
+      fetchAndCheckShips();
+    }, [gameRoom])
+  );
+
   const endYourTurnPressed = () => {
-    Toast.show({
-      type: "error", // 'success' | 'error' | 'info'
-      text1: "Starbound Conquest",
-      text2: "Long press to end your turn.",
-      position: "top", // optional, 'top' | 'bottom'
-      visibilityTime: 2000, // 2 seconds
-    });
+    send_message_discord();
   };
+
+  /*  const checkTotalShipsVersusToggledShips = (
+    currentShipArray, // array of all ships
+    currentToggledCount // count of toggled ships
+  ) => {
+    const totalShipsInvolved = currentShipArray
+      ? currentShipArray.length
+      : getAllUsersShipToggled.length;
+    const numToggledShips =
+      currentToggledCount !== undefined
+        ? currentToggledCount
+        : getAllUsersShipToggled;
+    console.log(
+      `checkTotalShipsVersusToggledShips: Total Ships = ${totalShipsInvolved}, Toggled Ships = ${numToggledShips}`
+    );
+
+    if (totalShipsInvolved > 0 && totalShipsInvolved === numToggledShips) {
+      console.log("End of round");
+      setShowEndOfRound(true);
+      return true;
+    } else if (totalShipsInvolved === 0) {
+      console.log("No ships in game");
+    } else {
+      console.log(
+        `Not end of round. Toggled: ${numToggledShips} / Total: ${totalShipsInvolved}`
+      );
+      return false;
+    }
+  }; */
+
+  if (showEndOfRound) {
+    return (
+      <LoadingComponent whatToSay="Round has ended. Resetting your ships..." />
+    );
+  }
+  if (loading) {
+    return <LoadingComponent whatToSay="Summoning your fleet..." />;
+  }
+
+  if (isLoading) {
+    return <LoadingComponent whatToSay="Adding ships to your Fleet..." />;
+  }
 
   if (isShowWarning) {
     return (
@@ -567,8 +655,11 @@ export default function Player() {
                   >
                     {faction}
                   </Text>
-                  <Text style={styles.underText}>
-                    Number of Ships: {numberOfShips}
+                  <Text
+                    style={[styles.underText, { color: Colors.green_toggle }]}
+                  >
+                    Toggled: {getAllUsersShipTotals || 0} / Total:{" "}
+                    {getAllUsersShipToggled.length}
                   </Text>
                 </View>
               </ViewShot>
@@ -660,7 +751,6 @@ export default function Player() {
                     <TouchableOpacity
                       disabled={toggleToDelete}
                       onPress={endYourTurnPressed}
-                      onLongPress={endYourTurn}
                       style={[
                         styles.editContainer,
                         {
