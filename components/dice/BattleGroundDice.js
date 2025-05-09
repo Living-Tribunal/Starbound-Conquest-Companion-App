@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -19,25 +19,35 @@ export default function BattleDice({
   borderColor,
   howManyDice,
   id,
+  diceValue,
+  disabledButton: disabledProp = null,
+  disabledButtonOnHit: disabledOnHitProp = null,
 }) {
-  const [firstDice, setFirstDice] = React.useState(1);
+  const [firstDice, setFirstDice] = useState(1);
   const {
     singleUserShip,
     hit,
     setHit,
     damageDone,
     setDamageDone,
-    disabledButton,
+    disabledButton: contextDisabledButton,
     setDisabledButton,
-    disabledButtonOnHit,
+    disabledButtonOnHit: contextDisabledButtonOnHit,
     setDisabledButtonOnHit,
     rolledD20,
     setRolledD20,
     weaponId,
     setWeaponId,
+    diceValueToShare,
+    setDiceValueToShare,
   } = useStarBoundContext();
   const threatLevel = singleUserShip?.threatLevel ?? null;
   const damageThreshold = singleUserShip?.damageThreshold ?? null;
+
+  const disabledButton =
+    disabledProp !== null ? disabledProp : contextDisabledButton;
+  const disabledButtonOnHit =
+    disabledOnHitProp !== null ? disabledOnHitProp : contextDisabledButtonOnHit;
 
   useEffect(() => {}, []);
 
@@ -61,12 +71,14 @@ export default function BattleDice({
       }
     }, 1000);
   };
-  //console.log("In Dice:", JSON.stringify(singleUserShip.threatLevel, null, 2));
-  //console.log(`First Dice ${id}: ${firstDice}`);
+  console.log(`First Dice ${id}: ${firstDice}`);
+
+  //console.log("In Dice:", JSON.stringify(diceValue, null, 2));
 
   const checkIfHit = (value) => {
     const newRolledValue = value;
     setFirstDice(newRolledValue);
+    setDiceValueToShare(newRolledValue);
 
     if (threatLevel === null) {
       console.log("No ship selected.");

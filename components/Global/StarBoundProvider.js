@@ -27,6 +27,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [weaponId, setWeaponId] = useState(null);
   const [rolledD20, setRolledD20] = useState(null);
   const [gameRoom, setGameRoom] = useState(null);
+  const [diceValueToShare, setDiceValueToShare] = useState(null);
 
   const [email, setEmail] = useState(null);
 
@@ -168,6 +169,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setHasBeenInteractedWith,
         getAllUsersShipToggled,
         setGetAllUsersShipToggled,
+        diceValueToShare,
+        setDiceValueToShare,
       }}
     >
       {children}

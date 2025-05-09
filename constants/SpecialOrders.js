@@ -1,11 +1,11 @@
 export const SpecialOrders = {
   1: {
     name: "All Head Full: ",
-    text: "Roll a d20, on an 11 or higher, you can move your full move speed again and on a 10 or lower, you can move half.",
+    text: "Roll a d20, on an 11 or higher, you can move your full Movement Distance and on a 10 or lower, you can move half.",
   },
   2: {
     name: "Evasive Maneuvers: ",
-    text: "Roll 1d20, on an 11 or higher, this ship cannon be targeted by Anti-Fighter Barrage this turn and attack rolls against it are made with disadvantage.",
+    text: "Roll 1d20, on an 11 or higher, this ship cannot be targeted by Anti-Fighter Barrage this turn and attack rolls against it are made with disadvantage.",
   },
   3: {
     name: "Combine Fire: ",

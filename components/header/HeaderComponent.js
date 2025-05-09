@@ -21,7 +21,7 @@ export default function HeaderComponent({ text, NavToWhere, onPress }) {
       <TouchableOpacity
         onPress={() => {
           goBack();
-          onPress;
+          onPress?.();
         }}
       >
         <Image

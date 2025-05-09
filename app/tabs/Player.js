@@ -291,7 +291,7 @@ export default function Player() {
     const params = {
       username: "Starbound Conquest",
       avatar_url: "",
-      content: `${username} has ended their turn.`,
+      content: `${username} has ended their turn in ${gameRoom}.`,
     };
     request.send(JSON.stringify(params));
   }
@@ -306,7 +306,7 @@ export default function Player() {
     const params = {
       username: "Starbound Conquest",
       avatar_url: "",
-      content: `The Round has ended. Resetting your ships.`,
+      content: `The Round has ended in ${gameRoom}. Resetting your ships.`,
     };
     request.send(JSON.stringify(params));
   }

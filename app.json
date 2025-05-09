@@ -20,15 +20,15 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/SC_logo1SQ.png",
-        "backgroundColor": "#000000"
+        "foregroundImage": "./assets/images/SC.png",
+        "backgroundColor": "#0a1d31"
       },
       "package": "com.happybob59.StarBoundConquest"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/SC_logo1.png"
+      "favicon": "./assets/images/SC.png"
     },
     "plugins": [
       "expo-router",

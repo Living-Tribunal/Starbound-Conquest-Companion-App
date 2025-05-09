@@ -16,7 +16,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import ShowStat from "../../hooks/ShowStat.js";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
-import { shipDiceMapping } from "../../components/buttons/Dice.js";
 import { FONTS } from "../../constants/fonts.js";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -25,6 +24,7 @@ import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import HeaderComponent from "@/components/header/HeaderComponent.js";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
+import BattleDice from "@/components/dice/BattleGroundDice.js";
 
 export default function ShipStats({ route }) {
   const navigation = useNavigation();
@@ -34,9 +34,10 @@ export default function ShipStats({ route }) {
   const [areAllStatsShows, setAreAllStatsShows] = useState(true);
   const [pressed, setPressed] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const [modalToRollADice, setModalToRollADice] = useState(false);
+  const [orderName, setOrderName] = useState("");
+  const [orderDescription, setOrderDescription] = useState("");
   const [selectedFaction, setSelectedFaction] = useState("Nova Raiders");
-
   const tabBarHeight = useBottomTabBarHeight();
 
   const {
@@ -49,16 +50,14 @@ export default function ShipStats({ route }) {
     setSingleUserShip,
     setSingleUser,
     setHit,
-    rolledD20,
     setRolledD20,
-    weaponId,
     setWeaponId,
     setDamageDone,
+    diceValueToShare,
+    setDiceValueToShare,
   } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
   const ShipData = ship ? ShipAttributes[ship.type] : null;
-  const selectedShipDice = ship ? shipDiceMapping[ship.type] : [];
-
   useEffect(() => {
     setSelectedFaction(faction);
     console.log(faction);
@@ -174,6 +173,16 @@ export default function ShipStats({ route }) {
     );
   };
 
+  const rollForBonus = () => {
+    if (diceValueToShare >= 11) {
+      setDiceValueToShare(ship.moveDistance);
+    } else {
+      const halfShipMoveDistance = ship.moveDistance / 2;
+      setDiceValueToShare(halfShipMoveDistance);
+    }
+  };
+
+  console.log("In Ship Stats:", JSON.stringify(diceValueToShare, null, 2));
   const adjustShipsHitPoints = async () => {
     if (!ship || !user) return;
     try {
@@ -207,10 +216,84 @@ export default function ShipStats({ route }) {
     );
   }
 
+  if (modalToRollADice) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: Colors.dark_gray,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text
+          style={{
+            textAlign: "center",
+            color: Colors.white,
+            fontFamily: "monospace",
+            fontSize: 12,
+            marginBottom: 2,
+          }}
+        >
+          {orderName}
+        </Text>
+        <Text
+          style={{
+            fontSize: 10,
+            color: Colors.slate,
+            textAlign: "center",
+            fontFamily: "monospace",
+            paddingHorizontal: 10,
+            marginBottom: 10,
+          }}
+        >
+          {orderDescription}
+        </Text>
+        <BattleDice
+          text={orderName}
+          number1={1}
+          id={"D20"}
+          number2={20}
+          tintColor={Colors.goldenrod}
+          textStyle={{ color: Colors.gold }}
+          borderColor={{ borderColor: Colors.goldenrod }}
+          disabledButton={false}
+          disabledButtonOnHit={false}
+          disabled={false}
+        />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={async () => {
+              await toggleSpecialOrdersButton(orderName);
+              setModalToRollADice(false);
+              rollForBonus();
+            }}
+          >
+            <Text>Accept</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              setModalToRollADice(false);
+              setDiceValueToShare(0);
+            }}
+          >
+            <Text>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <StatusBar />
-      <HeaderComponent text="Ship Stats" NavToWhere={"Player"} />
+      <HeaderComponent
+        onPress={() => setDiceValueToShare(0)}
+        text="Ship Stats"
+        NavToWhere={"Player"}
+      />
       <ScrollView
         nestedScrollEnabled
         contentContainerStyle={{
@@ -338,52 +421,6 @@ export default function ShipStats({ route }) {
               <View
                 style={{ width: "100%", backgroundColor: Colors.hudDarker }}
               >
-                <Text style={styles.statButtonText}>To Hit</Text>
-              </View>
-            </View>
-            <View style={styles.statTextUnder}>
-              <Text
-                style={{
-                  textAlign: "center",
-                  color: Colors.white,
-                  fontFamily: "monospace",
-                  fontSize: 12,
-                  marginTop: 2,
-                }}
-              >
-                {ship.threatLevel}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View style={styles.buttonContainer}>
-          <View style={{ width: "45%" }}>
-            <View style={[styles.statButton]}>
-              <View
-                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-              >
-                <Text style={styles.statButtonText}>Soak</Text>
-              </View>
-            </View>
-            <View style={styles.statTextUnder}>
-              <Text
-                style={{
-                  textAlign: "center",
-                  color: Colors.white,
-                  fontFamily: "monospace",
-                  fontSize: 12,
-                  marginTop: 2,
-                }}
-              >
-                {ship.damageThreshold}
-              </Text>
-            </View>
-          </View>
-          <View style={{ width: "45%" }}>
-            <View style={[styles.statButton]}>
-              <View
-                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-              >
                 <Text style={styles.statButtonText}>Move Distance</Text>
               </View>
             </View>
@@ -397,32 +434,9 @@ export default function ShipStats({ route }) {
                   marginTop: 2,
                 }}
               >
-                {ship.moveDistance}
+                {ship.moveDistance + diceValueToShare}
               </Text>
             </View>
-          </View>
-        </View>
-        <View style={styles.buttonContainer}>
-          <View style={{ flex: 1, marginHorizontal: 10 }}>
-            <View style={[styles.statButton]}>
-              <View
-                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-              >
-                <Text style={styles.statButtonText}>Weapon Damage</Text>
-              </View>
-            </View>
-            {!showStat.weaponDamage &&
-              selectedShipDice.map((DiceComponent, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.statTextUnder,
-                    { alignItems: "center", backgroundColor: Colors.dark_gray },
-                  ]}
-                >
-                  {DiceComponent}
-                </View>
-              ))}
           </View>
         </View>
         <View style={styles.buttonContainer}>
@@ -473,85 +487,89 @@ export default function ShipStats({ route }) {
         </View>
         <View style={styles.buttonContainer}>
           <View style={{ width: "95%" }}>
-            <View
-              style={[styles.statButton, { marginBottom: 40, marginTop: 50 }]}
-            >
+            <View style={styles.statButton}>
               <Text
                 style={[
                   styles.statButtonText,
                   {
                     color: Colors.hudDarker,
                     backgroundColor: Colors.hud,
-                    width: "50%",
-                    left: "13%",
+                    borderRadius: 10,
+                    width: "100%",
                     borderWidth: 4,
                     borderColor: Colors.hudDarker,
+                    marginBottom: 10,
                   },
                 ]}
               >
                 Special Orders
               </Text>
-              <Image
-                style={{
-                  resizeMode: "contain",
-                  position: "absolute",
-                  top: -125,
-                  right: "25%",
-                  transform: [
-                    { translateX: 245 },
-                    { translateY: 2 },
-                    { scale: 0.5 }, // Adjust the value to scale the image
-                  ],
-                }}
-                source={require("../../assets/images/hudstat1.png")}
-              />
             </View>
             <>
-              <View>
-                {ShipData &&
-                  ShipData.specialOrders &&
-                  ShipData.specialOrders.map((specialOrder, index) => {
-                    const orderName = specialOrder[0]; // full name
-                    const description = specialOrder[1]; // full description
+              <View
+                style={{
+                  backgroundColor: Colors.underTextGray,
+                  borderRadius: 5,
+                }}
+              >
+                {ShipData?.specialOrders?.map((specialOrder, index) => {
+                  const orderName = specialOrder[0];
+                  const description = specialOrder[1];
 
-                    return (
-                      <View
-                        key={index}
-                        style={{
-                          marginBottom: 10,
+                  const activeOrdersCount = Object.values(
+                    ship.specialOrders || {}
+                  ).filter(Boolean).length;
+                  const isDisabled =
+                    ship.specialOrders?.[orderName] || activeOrdersCount >= 2;
+
+                  return (
+                    <View
+                      key={index}
+                      style={{
+                        marginBottom: 10,
+                      }}
+                    >
+                      <TouchableOpacity
+                        disabled={ship.specialOrders?.[orderName]}
+                        onPress={() => {
+                          if (!isDisabled) {
+                            setOrderName(orderName);
+                            setOrderDescription(description);
+                            setModalToRollADice(true);
+                            setDiceValueToShare(0);
+                          }
                         }}
                       >
-                        <TouchableOpacity
-                          onPress={() => toggleSpecialOrdersButton(orderName)}
+                        <Text
+                          style={{
+                            textAlign: "center",
+                            color: ship.specialOrders?.[orderName]
+                              ? Colors.hudDarker
+                              : Colors.white,
+                            fontFamily: "monospace",
+                            fontSize: 12,
+                            marginBottom: 2,
+                          }}
                         >
-                          <Text
-                            style={{
-                              textAlign: "center",
-                              color: ship.specialOrders?.[orderName]
-                                ? Colors.hudDarker
-                                : Colors.white,
-                              fontFamily: "monospace",
-                              fontSize: 12,
-                              marginBottom: 2,
-                            }}
-                          >
-                            {orderName}
-                          </Text>
-                          <Text
-                            style={{
-                              fontSize: 10,
-                              color: Colors.hud,
-                              textAlign: "center",
-                              fontFamily: "monospace",
-                              paddingHorizontal: 10,
-                            }}
-                          >
-                            {description}
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                    );
-                  })}
+                          {orderName}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 10,
+                            color: ship.specialOrders?.[orderName]
+                              ? Colors.hudDarker
+                              : Colors.slate,
+                            textAlign: "center",
+                            fontFamily: "monospace",
+                            paddingHorizontal: 10,
+                          }}
+                        >
+                          {description}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
               </View>
             </>
           </View>
@@ -696,8 +714,8 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    marginBottom: 15,
-    marginTop: 15,
+    marginBottom: 10,
+    marginTop: 10,
     flexDirection: "row",
     justifyContent: "space-around",
   },
