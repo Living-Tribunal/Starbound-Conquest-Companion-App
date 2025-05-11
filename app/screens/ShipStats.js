@@ -5,8 +5,6 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
-  FlatList,
-  Pressable,
   Modal,
   StatusBar,
   TextInput,
@@ -14,7 +12,6 @@ import {
 import { Colors } from "../../constants/Colors.js";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
-import ShowStat from "../../hooks/ShowStat.js";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
 import { FONTS } from "../../constants/fonts.js";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
@@ -30,16 +27,15 @@ export default function ShipStats({ route }) {
   const navigation = useNavigation();
   const user = FIREBASE_AUTH.currentUser;
   const { shipId } = route.params || {};
-  const { showStat, showAllStat } = ShowStat();
-  const [areAllStatsShows, setAreAllStatsShows] = useState(true);
-  const [pressed, setPressed] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [localDiceRoll, setLocalDiceRoll] = useState(0); // this is the dice rolled by the player
   const [modalToRollADice, setModalToRollADice] = useState(false);
   const [orderName, setOrderName] = useState("");
   const [orderDescription, setOrderDescription] = useState("");
   const [selectedFaction, setSelectedFaction] = useState("Nova Raiders");
+  const [movementBonus, setMovementBonus] = useState(0);
+  const [hasEnteredBattle, setHasEnteredBattle] = useState(false);
   const tabBarHeight = useBottomTabBarHeight();
-
   const {
     faction,
     data,
@@ -60,9 +56,12 @@ export default function ShipStats({ route }) {
   const ShipData = ship ? ShipAttributes[ship.type] : null;
   useEffect(() => {
     setSelectedFaction(faction);
-    console.log(faction);
+    /* console.log(faction); */
   }, [faction]);
 
+  //console.log("In Ship Stats:", JSON.stringify(ShipData, null, 2));
+
+  //showing the hp bar with colors representing the health of the ship
   useEffect(() => {
     if (!ship || typeof ship.hp !== "number" || typeof ship.maxHP !== "number")
       return;
@@ -105,14 +104,8 @@ export default function ShipStats({ route }) {
       const isCurrentlyActive = currentOrders[orderName];
 
       // Check if trying to turn ON a third order
-      if (!isCurrentlyActive && activeOrdersCount >= 2) {
-        Toast.show({
-          type: "error", // 'success' | 'error' | 'info'
-          text1: "Starbound Conquest",
-          text2: "You can only have two active special orders at a time.",
-          position: "top", // optional, 'top' | 'bottom'
-        });
-        return; // stop, don't allow more than 2
+      if (!isCurrentlyActive && activeOrdersCount >= 1) {
+        return; // stop, don't allow more than 1
       }
 
       const updatedOrders = {
@@ -153,8 +146,9 @@ export default function ShipStats({ route }) {
         ...safeData,
         isToggled: !ship.isToggled,
       });
-      console.log("Updated ship:", ship.isToggled);
+      /* console.log("Updated ship:", ship.isToggled); */
       toggleTurn();
+      setDiceValueToShare(0);
     } catch (e) {
       console.error("Error updating document: ", e);
     }
@@ -173,16 +167,7 @@ export default function ShipStats({ route }) {
     );
   };
 
-  const rollForBonus = () => {
-    if (diceValueToShare >= 11) {
-      setDiceValueToShare(ship.moveDistance);
-    } else {
-      const halfShipMoveDistance = ship.moveDistance / 2;
-      setDiceValueToShare(halfShipMoveDistance);
-    }
-  };
-
-  console.log("In Ship Stats:", JSON.stringify(diceValueToShare, null, 2));
+  /* console.log("In Ship Stats:", JSON.stringify(diceValueToShare, null, 2)); */
   const adjustShipsHitPoints = async () => {
     if (!ship || !user) return;
     try {
@@ -193,7 +178,7 @@ export default function ShipStats({ route }) {
         ...safeData,
         hp: newHP,
       });
-      console.log("Updated ship HP:", hitPoints);
+      /* console.log("Updated ship HP:", hitPoints); */
       adjustHP();
     } catch (e) {
       console.error("Error updating HP in Firestore:", e);
@@ -202,6 +187,121 @@ export default function ShipStats({ route }) {
 
   const openHPModal = () => {
     setIsModalVisible(true);
+  };
+  //switch case to apply bonuses based on which special order is selected
+
+  const specialOrderBonuses = (orderName, ship, localDiceRoll) => {
+    //console.log("Special Order Bonuses: ", orderName);
+    if (!ship || localDiceRoll === undefined) {
+      console.warn("specialOrderBonuses called without ship or diceRoll");
+      return;
+    }
+    switch (orderName) {
+      case "All Ahead Full":
+        console.log("All Ahead Full:");
+        const bonus =
+          localDiceRoll >= 11 ? ship.moveDistance : ship.moveDistance / 2;
+        console.log("Bonus:", bonus);
+        setMovementBonus(bonus);
+        break;
+      case "Reinforce Shields":
+        if (localDiceRoll >= 1 && ship.hp !== ship.maxHP) {
+          const newHP = Math.max(0, Math.min(Number(ship.hp + 1), ship.maxHP));
+          console.log("Reinforce Shields succeeded. New HP:", newHP);
+
+          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+          const { x, y, ...safeData } = ship;
+
+          updateDoc(shipRef, {
+            ...safeData,
+            hp: newHP,
+          })
+            .then(() => {
+              // Update local data
+              setData((prevData) =>
+                prevData.map((s) =>
+                  s.id === ship.id ? { ...s, hp: newHP } : s
+                )
+              );
+              Toast.show({
+                type: "success",
+                text1: "Shields Reinforced!",
+                text2: `+1 HP (now at ${newHP}/${ship.maxHP})`,
+                position: "top",
+              });
+            })
+            .catch((error) => {
+              console.error("Failed to update HP in Firestore:", error);
+            });
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "HP is already at max!",
+            text2: `No bonus added`,
+            position: "top",
+          });
+        }
+        break;
+      case "Evasive Maneuvers":
+        console.log("Evasive Maneuvers");
+        break;
+      case "Combine Fire":
+        console.log("Combine Fire");
+        break;
+      case "Anti-Fighter Barrage":
+        console.log("Anti-Fighter Barrage");
+        break;
+      case "Power Up Main Guns":
+        console.log("Power Up Main Guns");
+        break;
+      case "All Systems Fire":
+        console.log("All Systems Fire");
+        break;
+      case "Broadside":
+        console.log("Broadside");
+        break;
+      case "Launch Fighters":
+        console.log("Launch Fighters");
+        break;
+      case "Charge Ion Beams":
+        console.log("Charge Ion Beams");
+        if (localDiceRoll >= 11) {
+          console.log("Bonus (Ion):", localDiceRoll);
+          setHit(false);
+          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+          const { x, y, rotation_angle, ...safeData } = ship;
+
+          updateDoc(shipRef, {
+            ...safeData,
+            hit: false,
+          })
+            .then(() => {
+              // Update local data
+              setData((prevData) =>
+                prevData.map((s) =>
+                  s.id === ship.id ? { ...s, hit: false } : s
+                )
+              );
+              Toast.show({
+                type: "success",
+                text1: "Ion Particle Beam Recharges!",
+                position: "top",
+              });
+            })
+            .catch((error) => {
+              console.error("Failed to update HP in Firestore:", error);
+            });
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Ion Particle Beam Recharge Failed!",
+            position: "top",
+          });
+        }
+        break;
+      default:
+        console.log("No special order selected");
+    }
   };
 
   if (!ship) {
@@ -260,26 +360,63 @@ export default function ShipStats({ route }) {
           disabledButton={false}
           disabledButtonOnHit={false}
           disabled={false}
+          onRoll={(value) => setLocalDiceRoll(value)}
         />
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={styles.button}
+            disabled={localDiceRoll === 0}
+            style={[
+              styles.button,
+              {
+                backgroundColor:
+                  localDiceRoll === 0 ? Colors.hudDarker : Colors.hud,
+                borderColor:
+                  localDiceRoll === 0 ? Colors.hud : Colors.hudDarker,
+              },
+            ]}
             onPress={async () => {
               await toggleSpecialOrdersButton(orderName);
               setModalToRollADice(false);
-              rollForBonus();
+              specialOrderBonuses(orderName, ship, localDiceRoll);
             }}
           >
-            <Text>Accept</Text>
+            <Text
+              style={[
+                styles.buttonText,
+                {
+                  color: localDiceRoll === 0 ? Colors.hud : Colors.hudDarker,
+                },
+              ]}
+            >
+              Accept
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.button}
+            disabled={localDiceRoll !== 0}
+            style={[
+              styles.button,
+              {
+                backgroundColor:
+                  localDiceRoll !== 0 ? Colors.hudDarker : Colors.hud,
+                borderColor:
+                  localDiceRoll !== 0 ? Colors.hud : Colors.hudDarker,
+              },
+            ]}
             onPress={() => {
               setModalToRollADice(false);
               setDiceValueToShare(0);
             }}
           >
-            <Text>Cancel</Text>
+            <Text
+              style={[
+                styles.buttonText,
+                {
+                  color: localDiceRoll !== 0 ? Colors.hud : Colors.hudDarker,
+                },
+              ]}
+            >
+              Cancel
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -289,11 +426,7 @@ export default function ShipStats({ route }) {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <StatusBar />
-      <HeaderComponent
-        onPress={() => setDiceValueToShare(0)}
-        text="Ship Stats"
-        NavToWhere={"Player"}
-      />
+      <HeaderComponent text="Ship Stats" NavToWhere={"Player"} />
       <ScrollView
         nestedScrollEnabled
         contentContainerStyle={{
@@ -316,26 +449,14 @@ export default function ShipStats({ route }) {
               alignItems: "center",
             }}
           >
-            <TouchableOpacity
-              disabled
-              style={styles.showButton}
-              onPress={() => {
-                const newShowAllStatsState = !areAllStatsShows;
-                showAllStat(newShowAllStatsState);
-                setAreAllStatsShows(newShowAllStatsState);
-                setPressed(newShowAllStatsState);
-              }}
-            >
-              <Image
-                resizeMode={"center"}
-                style={[styles.icon]}
-                source={{ uri: ship.image }}
-              />
-              {/* <Text>{className}</Text>*/}
-            </TouchableOpacity>
+            <Image
+              resizeMode={"center"}
+              style={[styles.icon]}
+              source={{ uri: ship.image }}
+            />
           </View>
         </View>
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: "row", justifyContent: "center" }}>
           <TouchableOpacity
             style={[
               styles.button,
@@ -360,19 +481,22 @@ export default function ShipStats({ route }) {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={!hasEnteredBattle && !ship.hit}
             style={[
               styles.button,
               {
-                backgroundColor: Colors.hud,
-                borderColor: Colors.hud,
+                backgroundColor:
+                  ship.hit !== null ? Colors.hudDarker : Colors.hud,
+                borderColor: ship.hit !== null ? Colors.hud : Colors.hud,
                 width: "45%",
               },
             ]}
             onPress={() => {
               navigation.navigate("BattleGround", { ship: ship });
               setSingleUser(null);
+              setHasEnteredBattle(true);
               setSingleUserShip(null);
-              setHit("");
+              setHit(null);
               setRolledD20(false);
               setWeaponId(null);
               setDamageDone(0);
@@ -383,7 +507,7 @@ export default function ShipStats({ route }) {
                 styles.headerText,
                 {
                   fontSize: 15,
-                  color: Colors.hudDarker,
+                  color: ship.hit !== null ? Colors.hud : Colors.hudDarker,
                 },
               ]}
             >
@@ -434,7 +558,7 @@ export default function ShipStats({ route }) {
                   marginTop: 2,
                 }}
               >
-                {ship.moveDistance + diceValueToShare}
+                {ship.moveDistance + movementBonus}
               </Text>
             </View>
           </View>
@@ -512,15 +636,29 @@ export default function ShipStats({ route }) {
                   borderRadius: 5,
                 }}
               >
+                {/* {ShipData?.weaponType?.map((weaponType, index) => {
+                  return (
+                    <View key={index}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          console.log("Weapon Type:", weaponType);
+                        }}
+                      >
+                        <Text style={{ color: Colors.white }}>
+                          {weaponType}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })} */}
                 {ShipData?.specialOrders?.map((specialOrder, index) => {
                   const orderName = specialOrder[0];
                   const description = specialOrder[1];
-
                   const activeOrdersCount = Object.values(
                     ship.specialOrders || {}
                   ).filter(Boolean).length;
                   const isDisabled =
-                    ship.specialOrders?.[orderName] || activeOrdersCount >= 2;
+                    ship.specialOrders?.[orderName] || activeOrdersCount >= 1;
 
                   return (
                     <View
@@ -530,14 +668,14 @@ export default function ShipStats({ route }) {
                       }}
                     >
                       <TouchableOpacity
-                        disabled={ship.specialOrders?.[orderName]}
+                        disabled={isDisabled}
                         onPress={() => {
-                          if (!isDisabled) {
-                            setOrderName(orderName);
-                            setOrderDescription(description);
-                            setModalToRollADice(true);
-                            setDiceValueToShare(0);
-                          }
+                          /* if (!isDisabled) { */
+                          setOrderName(orderName);
+                          setOrderDescription(description);
+                          setModalToRollADice(true);
+                          setDiceValueToShare(0);
+                          /* } */
                         }}
                       >
                         <Text
@@ -683,8 +821,11 @@ const styles = StyleSheet.create({
   icon: {
     flex: 1,
     aspectRatio: 1,
-    transform: [{ scale: 2 }, { rotate: "0deg" }],
+    transform: [{ scale: 1.5 }, { rotate: "0deg" }],
     margin: 20,
+    height: 100,
+    justifyContent: "center",
+    marginVertical: 30,
   },
   statButton: {
     borderRadius: 5,

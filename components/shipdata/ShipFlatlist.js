@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
-import { Alert } from "react-native";
 import { doc, deleteDoc } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import { Colors } from "@/constants/Colors";
@@ -18,7 +17,7 @@ import Toast from "react-native-toast-message";
 
 export default function ShipFlatList({ type, fleetClass }) {
   const specialOrderShortNames = {
-    "All Head Full": "AHF",
+    "All Ahead Full": "AHF",
     "Evasive Maneuvers": "EVM",
     "Combine Fire": "CBF",
     "Anti-Fighter Barrage": "AFB",
@@ -96,13 +95,14 @@ export default function ShipFlatList({ type, fleetClass }) {
 
             return (
               <TouchableOpacity
+                //disabled={item.hit !== null}
                 onPress={() => {
                   if (toggleToDelete) {
                     deleteShip(item);
-                    console.log("Deleted Ship:", item.id);
+                    //console.log("Deleted Ship:", item.id);
                   } else {
                     navigation.navigate("Stats", { shipId: item.id });
-                    console.log("Navigated to Stats:", item.id);
+                    //console.log("Navigated to Stats:", item.id);
                   }
                 }}
               >
@@ -234,9 +234,7 @@ export default function ShipFlatList({ type, fleetClass }) {
                                   textAlign: "center",
                                 }}
                               >
-                                {specialOrderShortNames[
-                                  orderName.trim().replace(":", "")
-                                ] || "???"}
+                                {specialOrderShortNames[orderName] || "???"}
                               </Text>
                             </View>
                           );

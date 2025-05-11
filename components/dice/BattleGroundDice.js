@@ -18,17 +18,16 @@ export default function BattleDice({
   textStyle,
   borderColor,
   howManyDice,
+  onRoll,
   id,
-  diceValue,
   disabledButton: disabledProp = null,
   disabledButtonOnHit: disabledOnHitProp = null,
 }) {
-  const [firstDice, setFirstDice] = useState(1);
+  const [firstDice, setFirstDice] = useState(0);
   const {
     singleUserShip,
     hit,
     setHit,
-    damageDone,
     setDamageDone,
     disabledButton: contextDisabledButton,
     setDisabledButton,
@@ -36,9 +35,7 @@ export default function BattleDice({
     setDisabledButtonOnHit,
     rolledD20,
     setRolledD20,
-    weaponId,
     setWeaponId,
-    diceValueToShare,
     setDiceValueToShare,
   } = useStarBoundContext();
   const threatLevel = singleUserShip?.threatLevel ?? null;
@@ -48,8 +45,6 @@ export default function BattleDice({
     disabledProp !== null ? disabledProp : contextDisabledButton;
   const disabledButtonOnHit =
     disabledOnHitProp !== null ? disabledOnHitProp : contextDisabledButtonOnHit;
-
-  useEffect(() => {}, []);
 
   const rollDiceAnimation = () => {
     const interval = setInterval(() => {
@@ -64,6 +59,10 @@ export default function BattleDice({
         Math.floor(Math.random() * (number2 - number1 + 1)) + number1;
       setFirstDice(final);
 
+      if (onRoll) {
+        onRoll(final);
+      }
+
       if (id === "D20") {
         checkIfHit(final);
       } else {
@@ -71,17 +70,17 @@ export default function BattleDice({
       }
     }, 1000);
   };
-  console.log(`First Dice ${id}: ${firstDice}`);
+  //console.log(`First Dice ${id}: ${firstDice}`);
 
   //console.log("In Dice:", JSON.stringify(diceValue, null, 2));
 
   const checkIfHit = (value) => {
     const newRolledValue = value;
     setFirstDice(newRolledValue);
-    setDiceValueToShare(newRolledValue);
+    //setDiceValueToShare(newRolledValue);
 
     if (threatLevel === null) {
-      console.log("No ship selected.");
+      //console.log("No ship selected.");
       return null;
     }
 
@@ -91,14 +90,14 @@ export default function BattleDice({
         console.log(
           `✅ Dice ${id} rolled ${newRolledValue} — HIT (≥ ${threatLevel})`
         );
-        setHit("Hit");
+        setHit(true);
         setDisabledButtonOnHit(false);
         setDisabledButton(false);
       } else {
         console.log(
           `❌ Dice ${id} rolled ${newRolledValue} — MISS (< ${threatLevel})`
         );
-        setHit("Miss");
+        setHit(false);
         setDisabledButtonOnHit(true);
         setDisabledButton(true);
       }
@@ -115,7 +114,7 @@ export default function BattleDice({
     //console.log(`🎲 Weapon Damage Roll ${newWeaponRolledValue}`);
 
     if (damageThreshold === null) {
-      console.log("No ship selected.");
+      //console.log("No ship selected.");
       return null;
     }
     if (id !== "D20") {
@@ -139,7 +138,7 @@ export default function BattleDice({
   };
 
   useEffect(() => {
-    if (hit === "miss") {
+    if (hit === false) {
       setDisabledButtonOnHit(true);
     } else {
       setDisabledButtonOnHit(false);

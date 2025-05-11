@@ -171,6 +171,8 @@ export default function Player() {
           hasBeenInteractedWith: false,
           gameRoomId: gameRoom,
           factionColor: userFactionColor,
+          hit: false,
+          weaponStatus: {},
         };
         // Add to Firestore
         const docRef = await addDoc(
@@ -367,7 +369,7 @@ export default function Player() {
           "ships"
         );
         const opponentShipsSnapshot = await getDocs(opponentShipsRef);
-        console.log("ship snaps in player:", opponentShipsSnapshot);
+        //console.log("ship snaps in player:", opponentShipsSnapshot);
 
         for (const shipDoc of opponentShipsSnapshot.docs) {
           const shipData = shipDoc.data();
@@ -437,7 +439,7 @@ export default function Player() {
         if (allShips.length > 0 && toggledCount === allShips.length) {
           console.log("🚀 All ships toggled — ending round...");
           await endYourTurn();
-          send_message_discord_end_of_round();
+          //send_message_discord_end_of_round();
         }
       };
 
@@ -448,35 +450,6 @@ export default function Player() {
   const endYourTurnPressed = () => {
     send_message_discord();
   };
-
-  /*  const checkTotalShipsVersusToggledShips = (
-    currentShipArray, // array of all ships
-    currentToggledCount // count of toggled ships
-  ) => {
-    const totalShipsInvolved = currentShipArray
-      ? currentShipArray.length
-      : getAllUsersShipToggled.length;
-    const numToggledShips =
-      currentToggledCount !== undefined
-        ? currentToggledCount
-        : getAllUsersShipToggled;
-    console.log(
-      `checkTotalShipsVersusToggledShips: Total Ships = ${totalShipsInvolved}, Toggled Ships = ${numToggledShips}`
-    );
-
-    if (totalShipsInvolved > 0 && totalShipsInvolved === numToggledShips) {
-      console.log("End of round");
-      setShowEndOfRound(true);
-      return true;
-    } else if (totalShipsInvolved === 0) {
-      console.log("No ships in game");
-    } else {
-      console.log(
-        `Not end of round. Toggled: ${numToggledShips} / Total: ${totalShipsInvolved}`
-      );
-      return false;
-    }
-  }; */
 
   if (showEndOfRound) {
     return (

@@ -50,7 +50,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [singleUser, setSingleUser] = useState(null);
   const [singleUserShip, setSingleUserShip] = useState(null);
   const [expandUserShipList, setExpandUserShipList] = useState(false);
-  const [hit, setHit] = useState(0);
+  const [hit, setHit] = useState(false);
   const [damageDone, setDamageDone] = useState(0);
   const [userFactionColor, setUserFactionColor] = useState(null);
   const [hasBeenInteractedWith, setHasBeenInteractedWith] = useState(false);

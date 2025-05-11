@@ -46,10 +46,9 @@ export default function BattleGround(props) {
     hit,
     damageDone,
     weaponId,
+    setDiceValueToShare,
     gameRoom,
-    setWeaponId,
-    hasBeenInteractedWith,
-    setHasBeenInteractedWith,
+    setData,
   } = useStarBoundContext();
   const [modal, setModal] = useState(false);
   const [newHP, setNewHP] = useState(0);
@@ -57,6 +56,59 @@ export default function BattleGround(props) {
   const user = FIREBASE_AUTH.currentUser;
 
   const selectedShipDice = ship ? shipBattleDiceMapping[ship.type] : [];
+
+  const settingHitState = async () => {
+    if (!ship || !user) return;
+    try {
+      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+      const { x, y, ...safeData } = ship;
+      await updateDoc(shipRef, {
+        ...safeData,
+        hit: hit,
+      });
+      console.log("Updated ship:", ship.hit);
+      setDiceValueToShare(0);
+    } catch (e) {
+      console.error("Error updating document: ", e);
+    }
+  };
+
+  const setWeaponHasAttacked = async (weaponId) => {
+    if (!ship || !user) return;
+
+    try {
+      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+
+      // Existing special orders
+      const currentWeapon = ship.selectedWeapon || {};
+
+      const updatedWeaponStatus = {
+        ...currentWeapon,
+        [weaponId]: true,
+      };
+      const { x, y, ...safeData } = ship;
+      await updateDoc(shipRef, {
+        ...safeData,
+        weaponStatus: updatedWeaponStatus || {},
+      });
+
+      // Update local data
+      setData((prevData) =>
+        prevData.map((s) =>
+          s.id === ship.id ? { ...s, weaponStatus: updatedWeaponStatus } : s
+        )
+      );
+    } catch (e) {
+      console.error("Error toggling weapon:", e);
+    }
+  };
+
+  useEffect(() => {
+    if (weaponId) {
+      setWeaponHasAttacked(weaponId);
+      console.log("WeaponId in BattleGround:", weaponId);
+    }
+  }, [weaponId]);
 
   //function to get all users EXCEPT current user from firestore
   const getAllUsers = async () => {
@@ -86,10 +138,11 @@ export default function BattleGround(props) {
       return [];
     }
   };
+  console.log("Hit:", hit);
 
   //useeffec function to update that selected users ships HP with the clampedHP value
   useEffect(() => {
-    if (!singleUserShip || !isUser || damageDone == null || hit !== "Hit")
+    if (!singleUserShip || !isUser || damageDone == null || hit === false)
       return;
 
     const updateUserShipHP = async () => {
@@ -219,6 +272,10 @@ export default function BattleGround(props) {
       <HeaderComponent
         text="BattleGround"
         NavToWhere={{ name: "Stats", params: { shipId: ship.id } }}
+        onPress={() => {
+          setDiceValueToShare(0);
+          settingHitState();
+        }}
       />
       <ScrollView>
         <View style={styles.container}>
@@ -257,7 +314,7 @@ export default function BattleGround(props) {
                 styles.hitOrMissText,
                 {
                   backgroundColor:
-                    hit === "Miss"
+                    hit === false
                       ? Colors.deep_red
                       : Colors.darker_green_toggle,
                   borderRadius: 5,
@@ -266,7 +323,7 @@ export default function BattleGround(props) {
                   borderWidth: 1,
                   flexDirection: "row",
                   borderColor:
-                    hit === "Miss" ? Colors.lighter_red : Colors.green_toggle,
+                    hit === false ? Colors.lighter_red : Colors.green_toggle,
                 },
               ]}
             >
@@ -275,11 +332,11 @@ export default function BattleGround(props) {
                   styles.hitOrMissText,
                   {
                     color:
-                      hit === "Miss" ? Colors.lighter_red : Colors.green_toggle,
+                      hit === false ? Colors.lighter_red : Colors.green_toggle,
                   },
                 ]}
               >
-                Result: {hit}
+                Result: {hit && "Miss" ? "Hit" : ""}
               </Text>
             </View>
             <View style={styles.hitOrMissTextContainer}>
@@ -438,11 +495,11 @@ export default function BattleGround(props) {
               style={[
                 styles.closeButton,
                 {
-                  backgroundColor: hit !== "" ? Colors.dark_gray : Colors.hud,
-                  borderColor: hit !== "" ? Colors.hud : Colors.hudDarker,
+                  backgroundColor: hit !== null ? Colors.dark_gray : Colors.hud,
+                  borderColor: hit !== null ? Colors.hud : Colors.hudDarker,
                 },
               ]}
-              disabled={hit !== ""}
+              disabled={hit !== null}
               onPress={() => {
                 setModal(true);
                 setExpandUserShipList({});
@@ -452,7 +509,7 @@ export default function BattleGround(props) {
                 style={[
                   styles.closeText,
                   {
-                    color: hit !== "" ? Colors.hud : Colors.hudDarker,
+                    color: hit !== null ? Colors.hudDarker : Colors.hudDarker,
                   },
                 ]}
               >
@@ -483,8 +540,6 @@ export default function BattleGround(props) {
                       onPress={() => {
                         setSingleUser(item.displayName);
                         setIsUser(item);
-                        if (singleUser) {
-                        }
 
                         setExpandUserShipList((prev) => ({
                           ...prev,
@@ -604,105 +659,6 @@ export default function BattleGround(props) {
                             ))}
                         </View>
                       )}
-                    {/* or 2 columns */}
-                    {/*  {expandUserShipList[item.id] &&
-                      Array.isArray(item.allUsersShips) && (
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          //First column
-                          <View style={{ width: "48%" }}>
-                            {item.allUsersShips
-                              .slice(
-                                0,
-                                Math.ceil(item.allUsersShips.length / 2)
-                              )
-                              .sort((a, b) =>
-                                (a.type || "").localeCompare(b.type || "")
-                              )
-                              .map((ship) => (
-                                <TouchableOpacity
-                                  disabled={ship.hp === 0}
-                                  onPress={() => {
-                                    setSingleUserShip(ship);
-                                  }}
-                                  key={ship.id}
-                                  style={{
-                                    borderWidth: 1,
-                                    borderColor: Colors.hud,
-                                    backgroundColor: Colors.hudDarker,
-                                    borderRadius: 5,
-                                    marginTop: 10,
-                                    justifyContent: "flex-end",
-                                    alignItems: "center",
-                                    flexDirection: "row",
-                                    padding: 5,
-                                  }}
-                                >
-                                  {ship.image && (
-                                    <Image
-                                      source={{ uri: ship.image }}
-                                      style={{
-                                        width: 100,
-                                        height: 100,
-                                        resizeMode: "center",
-                                      }}
-                                    />
-                                  )}
-                                  <Text style={styles.shipTextId}>
-                                    {ship.shipId}
-                                  </Text>
-                                </TouchableOpacity>
-                              ))}
-                          </View>
-
-                          //Second column
-                          <View style={{ width: "48%" }}>
-                            {item.allUsersShips
-                              .slice(Math.ceil(item.allUsersShips.length / 2))
-                              .sort((a, b) =>
-                                (a.type || "").localeCompare(b.type || "")
-                              )
-                              .map((ship) => (
-                                <TouchableOpacity
-                                  disabled={ship.hp === 0}
-                                  onPress={() => {
-                                    setSingleUserShip(ship);
-                                  }}
-                                  key={ship.id}
-                                  style={{
-                                    borderWidth: 1,
-                                    borderColor: Colors.hud,
-                                    backgroundColor: Colors.hudDarker,
-                                    borderRadius: 5,
-                                    marginTop: 10,
-                                    justifyContent: "flex-end",
-                                    alignItems: "center",
-                                    flexDirection: "row",
-                                    padding: 5,
-                                  }}
-                                >
-                                  {ship.image && (
-                                    <Image
-                                      source={{ uri: ship.image }}
-                                      style={{
-                                        width: 100,
-                                        height: 100,
-                                        resizeMode: "center",
-                                      }}
-                                    />
-                                  )}
-                                  <Text style={styles.shipTextId}>
-                                    {ship.shipId}
-                                  </Text>
-                                </TouchableOpacity>
-                              ))}
-                          </View>
-                        </View>
-                      )} */}
                   </View>
                 );
               }}
