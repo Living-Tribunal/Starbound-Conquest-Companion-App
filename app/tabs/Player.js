@@ -171,7 +171,7 @@ export default function Player() {
           hasBeenInteractedWith: false,
           gameRoomId: gameRoom,
           factionColor: userFactionColor,
-          hit: false,
+          hit: null,
           weaponStatus: {},
         };
         // Add to Firestore
@@ -347,6 +347,7 @@ export default function Player() {
             isToggled: false,
             specialOrders: newSpecialOrders,
             hasBeenInteractedWith: false,
+            hit: null,
           })
         );
       }

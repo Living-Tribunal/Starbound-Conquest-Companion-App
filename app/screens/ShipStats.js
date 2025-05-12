@@ -9,9 +9,10 @@ import {
   StatusBar,
   TextInput,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { Colors } from "../../constants/Colors.js";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
 import { FONTS } from "../../constants/fonts.js";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
@@ -22,6 +23,7 @@ import HeaderComponent from "@/components/header/HeaderComponent.js";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import BattleDice from "@/components/dice/BattleGroundDice.js";
+import { getFleetData } from "@/components/API/API.js";
 
 export default function ShipStats({ route }) {
   const navigation = useNavigation();
@@ -34,7 +36,6 @@ export default function ShipStats({ route }) {
   const [orderDescription, setOrderDescription] = useState("");
   const [selectedFaction, setSelectedFaction] = useState("Nova Raiders");
   const [movementBonus, setMovementBonus] = useState(0);
-  const [hasEnteredBattle, setHasEnteredBattle] = useState(false);
   const tabBarHeight = useBottomTabBarHeight();
   const {
     faction,
@@ -54,6 +55,7 @@ export default function ShipStats({ route }) {
   } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
   const ShipData = ship ? ShipAttributes[ship.type] : null;
+
   useEffect(() => {
     setSelectedFaction(faction);
     /* console.log(faction); */
@@ -62,6 +64,13 @@ export default function ShipStats({ route }) {
   //console.log("In Ship Stats:", JSON.stringify(ShipData, null, 2));
 
   //showing the hp bar with colors representing the health of the ship
+
+  useFocusEffect(
+    useCallback(() => {
+      getFleetData({ data, setData });
+    }, [])
+  );
+
   useEffect(() => {
     if (!ship || typeof ship.hp !== "number" || typeof ship.maxHP !== "number")
       return;
@@ -190,6 +199,12 @@ export default function ShipStats({ route }) {
   };
   //switch case to apply bonuses based on which special order is selected
 
+  /*   console.log(
+    "Selected Weapon ID Status in shipStats:",
+    ship.weaponStatus[weaponId]
+  );
+ */
+  //console.log("In Ship Stats:", JSON.stringify(ship.hit, null, 2));
   const specialOrderBonuses = (orderName, ship, localDiceRoll) => {
     //console.log("Special Order Bonuses: ", orderName);
     if (!ship || localDiceRoll === undefined) {
@@ -265,21 +280,29 @@ export default function ShipStats({ route }) {
         break;
       case "Charge Ion Beams":
         console.log("Charge Ion Beams");
+        if (hit === null) {
+          Toast.show({
+            type: "error",
+            text1: "Ion Particle Beam has not fired yet!",
+            position: "top",
+          });
+          return;
+        }
         if (localDiceRoll >= 11) {
           console.log("Bonus (Ion):", localDiceRoll);
-          setHit(false);
+          setHit(null);
           const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
           const { x, y, rotation_angle, ...safeData } = ship;
 
           updateDoc(shipRef, {
             ...safeData,
-            hit: false,
+            hit: null,
           })
             .then(() => {
               // Update local data
               setData((prevData) =>
                 prevData.map((s) =>
-                  s.id === ship.id ? { ...s, hit: false } : s
+                  s.id === ship.id ? { ...s, hit: null } : s
                 )
               );
               Toast.show({
@@ -426,7 +449,11 @@ export default function ShipStats({ route }) {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <StatusBar />
-      <HeaderComponent text="Ship Stats" NavToWhere={"Player"} />
+      <HeaderComponent
+        onPress={() => setMovementBonus(0)}
+        text="Ship Stats"
+        NavToWhere={"Player"}
+      />
       <ScrollView
         nestedScrollEnabled
         contentContainerStyle={{
@@ -481,7 +508,7 @@ export default function ShipStats({ route }) {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            disabled={!hasEnteredBattle && !ship.hit}
+            disabled={ship.hit !== null}
             style={[
               styles.button,
               {
@@ -494,7 +521,6 @@ export default function ShipStats({ route }) {
             onPress={() => {
               navigation.navigate("BattleGround", { ship: ship });
               setSingleUser(null);
-              setHasEnteredBattle(true);
               setSingleUserShip(null);
               setHit(null);
               setRolledD20(false);
@@ -636,21 +662,6 @@ export default function ShipStats({ route }) {
                   borderRadius: 5,
                 }}
               >
-                {/* {ShipData?.weaponType?.map((weaponType, index) => {
-                  return (
-                    <View key={index}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          console.log("Weapon Type:", weaponType);
-                        }}
-                      >
-                        <Text style={{ color: Colors.white }}>
-                          {weaponType}
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  );
-                })} */}
                 {ShipData?.specialOrders?.map((specialOrder, index) => {
                   const orderName = specialOrder[0];
                   const description = specialOrder[1];
@@ -670,12 +681,26 @@ export default function ShipStats({ route }) {
                       <TouchableOpacity
                         disabled={isDisabled}
                         onPress={() => {
-                          /* if (!isDisabled) { */
                           setOrderName(orderName);
-                          setOrderDescription(description);
-                          setModalToRollADice(true);
-                          setDiceValueToShare(0);
-                          /* } */
+                          if (
+                            orderName === "Charge Ion Beams" &&
+                            ship.hit === null
+                          ) {
+                            setOrderDescription(
+                              "Ion Particle Beam has not fired yet!"
+                            );
+                            Toast.show({
+                              type: "error",
+                              text1: "Cannot activate",
+                              text2: "Ion Particle Beam has not fired yet!",
+                              position: "top",
+                            });
+                            return;
+                          } else {
+                            setModalToRollADice(true);
+                            setDiceValueToShare(0);
+                            setOrderDescription(description);
+                          }
                         }}
                       >
                         <Text

@@ -66,7 +66,7 @@ export default function BattleGround(props) {
         ...safeData,
         hit: hit,
       });
-      console.log("Updated ship:", ship.hit);
+      console.log("Updated ship hit:", hit);
       setDiceValueToShare(0);
     } catch (e) {
       console.error("Error updating document: ", e);
@@ -110,6 +110,12 @@ export default function BattleGround(props) {
     }
   }, [weaponId]);
 
+  useEffect(() => {
+    if (ship.hit !== null) {
+      setHit(ship.hit);
+    }
+  }, [ship.hit]);
+
   //function to get all users EXCEPT current user from firestore
   const getAllUsers = async () => {
     try {
@@ -138,7 +144,7 @@ export default function BattleGround(props) {
       return [];
     }
   };
-  console.log("Hit:", hit);
+  //console.log("Hit in BattleGround:", hit);
 
   //useeffec function to update that selected users ships HP with the clampedHP value
   useEffect(() => {
@@ -188,20 +194,26 @@ export default function BattleGround(props) {
     const unsubscribe = onSnapshot(userShipDocRef, (doc) => {
       if (doc.exists) {
         const updatedShip = { id: doc.id, ...doc.data() };
-        console.log("Updated Ship:", JSON.stringify(updatedShip, null, 2));
+        console.log(
+          "Updated Ship in the UseEffect:",
+          JSON.stringify(updatedShip, null, 2)
+        );
         setSingleUserShip(updatedShip);
       }
     });
     return () => unsubscribe();
   }, [singleUserShip?.id, isUser?.id]);
-
+  /*   console.log(
+    "Selected Weapon ID Status in Battleground:",
+    ship.weaponStatus[weaponId]
+  );
+ */
   //useEffect function to get ALL users and their ships from firestore
   useEffect(() => {
     let unsubscribers = [];
 
     const getAllUsersAndListen = async () => {
       const users = await getAllUsers();
-      const updatedUsersWithShips = [];
 
       for (const user of users) {
         const shipCollection = collection(
@@ -336,7 +348,7 @@ export default function BattleGround(props) {
                   },
                 ]}
               >
-                Result: {hit && "Miss" ? "Hit" : ""}
+                Result: {hit === true ? "Hit" : hit === false ? "Miss" : ""}
               </Text>
             </View>
             <View style={styles.hitOrMissTextContainer}>
