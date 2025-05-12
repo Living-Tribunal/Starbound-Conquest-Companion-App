@@ -517,11 +517,14 @@ export default function ShipStats({ route }) {
             style={[
               {
                 backgroundColor:
-                  ship.hit !== null ? Colors.deep_red : Colors.green_toggle,
+                  ship.hit !== null
+                    ? Colors.deep_red
+                    : Colors.darker_green_toggle,
                 borderColor:
                   ship.hit !== null ? Colors.deep_red : Colors.green_toggle,
-                width: "90%",
+                width: "95%",
                 borderRadius: 5,
+                borderWidth: 2,
               },
             ]}
           >
@@ -530,10 +533,11 @@ export default function ShipStats({ route }) {
                 styles.headerText,
                 {
                   fontSize: 15,
+                  fontFamily: "LeagueSpartan-Regular",
                   color:
                     ship.hit !== null
                       ? Colors.lighter_red
-                      : Colors.darker_green_toggle,
+                      : Colors.green_toggle,
                 },
               ]}
             >
@@ -565,7 +569,7 @@ export default function ShipStats({ route }) {
               style={[
                 styles.headerText,
                 {
-                  fontSize: 15,
+                  fontSize: 20,
                   color: ship.hit !== null ? Colors.hud : Colors.hudDarker,
                 },
               ]}
@@ -578,9 +582,7 @@ export default function ShipStats({ route }) {
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
               <TouchableOpacity onPress={openHPModal}>
-                <View
-                  style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-                >
+                <View style={{ width: "100%" }}>
                   <Text style={styles.statButtonText}>Hit Point</Text>
                 </View>
                 <View style={styles.statTextUnder}>
@@ -601,9 +603,7 @@ export default function ShipStats({ route }) {
           </View>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <View
-                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-              >
+              <View style={{ width: "100%" }}>
                 <Text style={styles.statButtonText}>Move Distance</Text>
               </View>
             </View>
@@ -625,9 +625,7 @@ export default function ShipStats({ route }) {
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <View
-                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-              >
+              <View style={{ width: "100%" }}>
                 <Text style={styles.statButtonText}>Capacity</Text>
               </View>
             </View>
@@ -647,9 +645,7 @@ export default function ShipStats({ route }) {
           </View>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <View
-                style={{ width: "100%", backgroundColor: Colors.hudDarker }}
-              >
+              <View style={{ width: "100%" }}>
                 <Text style={styles.statButtonText}>Point Value</Text>
               </View>
             </View>
@@ -675,12 +671,11 @@ export default function ShipStats({ route }) {
                 style={[
                   styles.statButtonText,
                   {
-                    color: Colors.hudDarker,
-                    backgroundColor: Colors.hud,
-                    borderRadius: 10,
+                    color: Colors.hud,
+                    borderRadius: 5,
                     width: "100%",
-                    borderWidth: 4,
-                    borderColor: Colors.hudDarker,
+                    borderWidth: 2,
+                    borderColor: Colors.hud,
                     marginBottom: 10,
                   },
                 ]}
@@ -856,7 +851,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     marginBottom: 5,
     textAlign: "center",
-    fontFamily: FONTS.leagueBold,
+    fontFamily: FONTS.leagueRegular,
     borderBottomColor: Colors.white,
     borderTopColor: "transparent",
   },
@@ -886,16 +881,21 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   statButtonText: {
-    color: Colors.hudDarker,
     borderRadius: 5,
     fontFamily: "monospace",
     fontWeight: "bold",
     fontSize: 12,
     textAlign: "center",
     alignSelf: "center",
-    backgroundColor: Colors.hud,
+    backgroundColor: Colors.hudDarker,
     padding: 5,
     width: "100%",
+    color: Colors.hud,
+    borderRadius: 5,
+    width: "100%",
+    borderWidth: 2,
+    borderColor: Colors.hud,
+    marginBottom: 10,
   },
   statButtonText1: {
     color: Colors.hudDarker,
@@ -974,9 +974,8 @@ const styles = StyleSheet.create({
   button: {
     borderWidth: 1,
     borderRadius: 5,
-    padding: 10,
+    padding: 2,
     margin: 10,
-    borderRadius: 5,
     backgroundColor: Colors.hud,
   },
   textHeader: {
@@ -984,6 +983,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginBottom: 5,
     textAlign: "center",
-    fontFamily: FONTS.leagueBold,
+    fontFamily: FONTS.leagueRegular,
   },
 });

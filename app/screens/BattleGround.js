@@ -697,15 +697,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark_gray,
     flex: 1,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-    fontFamily: "league-gothic",
-    backgroundColor: Colors.hud,
-    borderRadius: 5,
-    color: Colors.hudDarker,
-  },
   body: {
     paddingHorizontal: 20,
     flex: 1,
