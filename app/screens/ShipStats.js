@@ -96,6 +96,19 @@ export default function ShipStats({ route }) {
   //console.log("In ship stats:" + JSON.stringify(data, null, 2));
   //console.log("SPecial Orders Length: " + specialOrders.isToggled.length);
 
+  const changedRolledDToHit = async () => {
+    if (!ship || !user) return;
+    try {
+      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+      await updateDoc(shipRef, {
+        hasRolledDToHit: true,
+      });
+      console.log("Updated ship hasRolledDToHit:", true);
+    } catch (e) {
+      console.error("Error updating RDT in Firestore:", e);
+    }
+  };
+
   const toggleSpecialOrdersButton = async (orderName) => {
     if (!ship || !user) return;
 
@@ -123,7 +136,6 @@ export default function ShipStats({ route }) {
       };
       const { x, y, ...safeData } = ship;
       await updateDoc(shipRef, {
-        ...safeData,
         specialOrders: updatedOrders,
       });
 
@@ -146,22 +158,27 @@ export default function ShipStats({ route }) {
     );
   };
 
-  const toggleHasTakenTurn = async () => {
-    if (!ship || !user) return;
-    try {
-      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", shipId);
-      const { x, y, ...safeData } = ship;
-      await updateDoc(shipRef, {
-        ...safeData,
-        isToggled: !ship.isToggled,
-      });
-      /* console.log("Updated ship:", ship.isToggled); */
-      toggleTurn();
-      setDiceValueToShare(0);
-    } catch (e) {
-      console.error("Error updating document: ", e);
+  useEffect(() => {
+    if (ship.hit !== null) {
+      const toggleHasTakenTurn = async () => {
+        if (!ship || !user) return;
+        try {
+          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", shipId);
+          const { x, y, ...safeData } = ship;
+          await updateDoc(shipRef, {
+            isToggled: true,
+            hasRolledDToHit: true,
+          });
+          /* console.log("Updated ship:", ship.isToggled); */
+          toggleTurn();
+          setDiceValueToShare(0);
+        } catch (e) {
+          console.error("Error updating document: ", e);
+        }
+      };
+      toggleHasTakenTurn();
     }
-  };
+  }, [ship?.hit]);
 
   const adjustHP = () => {
     //prev data is the ships array of all currnt ships
@@ -184,7 +201,6 @@ export default function ShipStats({ route }) {
       const newHP = Math.max(0, Math.min(Number(hitPoints), ship.maxHP));
       const { x, y, ...safeData } = ship;
       await updateDoc(shipRef, {
-        ...safeData,
         hp: newHP,
       });
       /* console.log("Updated ship HP:", hitPoints); */
@@ -205,7 +221,7 @@ export default function ShipStats({ route }) {
   );
  */
   //console.log("In Ship Stats:", JSON.stringify(ship.hit, null, 2));
-  const specialOrderBonuses = (orderName, ship, localDiceRoll) => {
+  const specialOrderBonuses = async (orderName, ship, localDiceRoll) => {
     //console.log("Special Order Bonuses: ", orderName);
     if (!ship || localDiceRoll === undefined) {
       console.warn("specialOrderBonuses called without ship or diceRoll");
@@ -225,10 +241,8 @@ export default function ShipStats({ route }) {
           console.log("Reinforce Shields succeeded. New HP:", newHP);
 
           const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-          const { x, y, ...safeData } = ship;
 
           updateDoc(shipRef, {
-            ...safeData,
             hp: newHP,
           })
             .then(() => {
@@ -279,8 +293,8 @@ export default function ShipStats({ route }) {
         console.log("Launch Fighters");
         break;
       case "Charge Ion Beams":
-        console.log("Charge Ion Beams");
-        if (hit === null) {
+        console.log("Ion Beam check - ship.hit:", ship.hit);
+        if (ship.hit === null) {
           Toast.show({
             type: "error",
             text1: "Ion Particle Beam has not fired yet!",
@@ -288,32 +302,35 @@ export default function ShipStats({ route }) {
           });
           return;
         }
-        if (localDiceRoll >= 11) {
+        console.log("Starting Charge Ion Beams Bonus");
+        if (localDiceRoll >= 5) {
           console.log("Bonus (Ion):", localDiceRoll);
-          setHit(null);
-          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-          const { x, y, rotation_angle, ...safeData } = ship;
-
-          updateDoc(shipRef, {
-            ...safeData,
-            hit: null,
-          })
-            .then(() => {
-              // Update local data
-              setData((prevData) =>
-                prevData.map((s) =>
-                  s.id === ship.id ? { ...s, hit: null } : s
-                )
-              );
-              Toast.show({
-                type: "success",
-                text1: "Ion Particle Beam Recharges!",
-                position: "top",
-              });
-            })
-            .catch((error) => {
-              console.error("Failed to update HP in Firestore:", error);
+          try {
+            const shipRef = doc(
+              FIREBASE_DB,
+              "users",
+              user.uid,
+              "ships",
+              ship.id
+            );
+            await updateDoc(shipRef, {
+              hit: null,
             });
+
+            // ✅ Now update local state after Firestore confirmed update
+            setHit(null);
+            setData((prevData) =>
+              prevData.map((s) => (s.id === ship.id ? { ...s, hit: null } : s))
+            );
+
+            Toast.show({
+              type: "success",
+              text1: "Ion Particle Beam Recharges!",
+              position: "top",
+            });
+          } catch (error) {
+            console.error("Failed to update hit in Firestore:", error);
+          }
         } else {
           Toast.show({
             type: "error",
@@ -383,7 +400,12 @@ export default function ShipStats({ route }) {
           disabledButton={false}
           disabledButtonOnHit={false}
           disabled={false}
-          onRoll={(value) => setLocalDiceRoll(value)}
+          onRoll={(value, diceId) => {
+            setLocalDiceRoll(value);
+            if (diceId === "D20") {
+              changedRolledDToHit();
+            }
+          }}
         />
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -401,6 +423,7 @@ export default function ShipStats({ route }) {
               await toggleSpecialOrdersButton(orderName);
               setModalToRollADice(false);
               specialOrderBonuses(orderName, ship, localDiceRoll);
+              getFleetData({ data, setData });
             }}
           >
             <Text
@@ -483,30 +506,40 @@ export default function ShipStats({ route }) {
             />
           </View>
         </View>
-        <View style={{ flexDirection: "row", justifyContent: "center" }}>
-          <TouchableOpacity
+        <View
+          style={{
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View
             style={[
-              styles.button,
               {
-                backgroundColor: ship.isToggled ? Colors.hudDarker : Colors.hud,
-                borderColor: ship.isToggled ? Colors.hud : Colors.hud,
-                width: "45%",
+                backgroundColor:
+                  ship.hit !== null ? Colors.deep_red : Colors.green_toggle,
+                borderColor:
+                  ship.hit !== null ? Colors.deep_red : Colors.green_toggle,
+                width: "90%",
+                borderRadius: 5,
               },
             ]}
-            onPress={toggleHasTakenTurn}
           >
             <Text
               style={[
                 styles.headerText,
                 {
                   fontSize: 15,
-                  color: ship.isToggled ? Colors.hud : Colors.hudDarker,
+                  color:
+                    ship.hit !== null
+                      ? Colors.lighter_red
+                      : Colors.darker_green_toggle,
                 },
               ]}
             >
-              {ship.isToggled ? "Ended turn" : "Ready to engage"}
+              {ship.hit !== null ? "Ended turn" : "Ready to engage"}
             </Text>
-          </TouchableOpacity>
+          </View>
           <TouchableOpacity
             disabled={ship.hit !== null}
             style={[
@@ -515,7 +548,7 @@ export default function ShipStats({ route }) {
                 backgroundColor:
                   ship.hit !== null ? Colors.hudDarker : Colors.hud,
                 borderColor: ship.hit !== null ? Colors.hud : Colors.hud,
-                width: "45%",
+                width: "95%",
               },
             ]}
             onPress={() => {
@@ -686,9 +719,6 @@ export default function ShipStats({ route }) {
                             orderName === "Charge Ion Beams" &&
                             ship.hit === null
                           ) {
-                            setOrderDescription(
-                              "Ion Particle Beam has not fired yet!"
-                            );
                             Toast.show({
                               type: "error",
                               text1: "Cannot activate",

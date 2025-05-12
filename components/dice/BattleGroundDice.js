@@ -60,9 +60,8 @@ export default function BattleDice({
       setFirstDice(final);
 
       if (onRoll) {
-        onRoll(final);
+        onRoll(final, id);
       }
-
       if (id === "D20") {
         checkIfHit(final);
       } else {

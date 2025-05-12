@@ -63,7 +63,6 @@ export default function BattleGround(props) {
       const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
       const { x, y, ...safeData } = ship;
       await updateDoc(shipRef, {
-        ...safeData,
         hit: hit,
       });
       console.log("Updated ship hit:", hit);
@@ -88,7 +87,6 @@ export default function BattleGround(props) {
       };
       const { x, y, ...safeData } = ship;
       await updateDoc(shipRef, {
-        ...safeData,
         weaponStatus: updatedWeaponStatus || {},
       });
 
@@ -110,11 +108,11 @@ export default function BattleGround(props) {
     }
   }, [weaponId]);
 
-  useEffect(() => {
+  /*  useEffect(() => {
     if (ship.hit !== null) {
       setHit(ship.hit);
     }
-  }, [ship.hit]);
+  }, [ship.hit]); */
 
   //function to get all users EXCEPT current user from firestore
   const getAllUsers = async () => {
@@ -166,7 +164,6 @@ export default function BattleGround(props) {
       try {
         const { x, y, ...safeData } = singleUserShip;
         await updateDoc(userShipDocRef, {
-          ...safeData,
           hp: clampedHP,
         });
         setNewHP(clampedHP); // Sync your local state
@@ -194,10 +191,10 @@ export default function BattleGround(props) {
     const unsubscribe = onSnapshot(userShipDocRef, (doc) => {
       if (doc.exists) {
         const updatedShip = { id: doc.id, ...doc.data() };
-        console.log(
+        /* console.log(
           "Updated Ship in the UseEffect:",
           JSON.stringify(updatedShip, null, 2)
-        );
+        ); */
         setSingleUserShip(updatedShip);
       }
     });
@@ -591,7 +588,6 @@ export default function BattleGround(props) {
                                     );
                                     const { x, y, ...safeData } = ship;
                                     await updateDoc(shipDocRef, {
-                                      ...safeData,
                                       hasBeenInteractedWith: false,
                                     });
                                   } catch (e) {
@@ -613,7 +609,6 @@ export default function BattleGround(props) {
                                     );
                                     const { x, y, ...safeData } = ship;
                                     await updateDoc(shipDocRef, {
-                                      ...safeData,
                                       hasBeenInteractedWith: true,
                                     });
                                   } catch (e) {

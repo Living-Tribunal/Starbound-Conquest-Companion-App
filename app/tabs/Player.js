@@ -173,6 +173,7 @@ export default function Player() {
           factionColor: userFactionColor,
           hit: null,
           weaponStatus: {},
+          hasRolledDToHit: false,
         };
         // Add to Firestore
         const docRef = await addDoc(
@@ -343,11 +344,11 @@ export default function Player() {
         const { x, y, ...safeData } = myShipData;
         allResetPromises.push(
           updateDoc(myShipDocRef, {
-            ...safeData,
             isToggled: false,
             specialOrders: newSpecialOrders,
             hasBeenInteractedWith: false,
             hit: null,
+            hasRolledDToHit: false,
           })
         );
       }
@@ -384,7 +385,6 @@ export default function Player() {
           const { x, y, ...safeData } = shipData;
           allResetPromises.push(
             updateDoc(shipDocRef, {
-              ...safeData,
               hasBeenInteractedWith: false,
             })
           );

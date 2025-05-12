@@ -95,7 +95,7 @@ export default function ShipFlatList({ type, fleetClass }) {
 
             return (
               <TouchableOpacity
-                //disabled={item.hit !== null}
+                //disabled={item.isToggled === true}
                 onPress={() => {
                   if (toggleToDelete) {
                     deleteShip(item);
@@ -157,7 +157,8 @@ export default function ShipFlatList({ type, fleetClass }) {
                     padding: 2,
                     borderRadius: 5,
                     borderWidth: 1,
-                    borderColor: item.isToggled ? Colors.gold : Colors.hud,
+                    borderColor:
+                      item.isToggled === true ? Colors.gold : Colors.hud,
                     backgroundColor: Colors.dark_gray,
                     marginVertical: 5,
                   }}
