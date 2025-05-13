@@ -33,6 +33,9 @@ export const shipObject = {
       orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Light Cannon": false,
+      },
     },
 
     destroyer: {
@@ -68,6 +71,9 @@ export const shipObject = {
       orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Medium Cannon": false,
+      },
     },
     cruiser: {
       id: Date.now().toString(),
@@ -103,6 +109,10 @@ export const shipObject = {
         "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Heavy Cannon": false,
+        "Plasma Cannon": false,
+      },
     },
     carrier: {
       id: Date.now().toString(),
@@ -138,6 +148,10 @@ export const shipObject = {
         "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "350mm Railgun": false,
+        "Missile Battery": false,
+      },
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -174,6 +188,11 @@ export const shipObject = {
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Ion Particle Beam": false,
+        "Plasma Cannon": false,
+        "350mm Railgun": false,
+      },
     },
   },
   "The Zyrrians": {
@@ -210,6 +229,9 @@ export const shipObject = {
       orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Light Cannon": false,
+      },
     },
 
     destroyer: {
@@ -245,6 +267,9 @@ export const shipObject = {
       orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Medium Cannon": false,
+      },
     },
     cruiser: {
       id: Date.now().toString(),
@@ -280,6 +305,10 @@ export const shipObject = {
         "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Heavy Cannon": false,
+        "Plasma Cannon": false,
+      },
     },
     carrier: {
       id: Date.now().toString(),
@@ -315,6 +344,10 @@ export const shipObject = {
         "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "350mm Railgun": false,
+        "Missile Battery": false,
+      },
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -351,6 +384,11 @@ export const shipObject = {
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Ion Particle Beam": false,
+        "Plasma Cannon": false,
+        "350mm Railgun": false,
+      },
     },
   },
   "Voidborn Marauders": {
@@ -386,6 +424,9 @@ export const shipObject = {
       pointValue: 1,
       orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
       ordersUsed: 0,
+      weaponStatus: {
+        "Light Cannon": false,
+      },
     },
 
     destroyer: {
@@ -420,6 +461,9 @@ export const shipObject = {
       pointValue: 30,
       orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
       ordersUsed: 0,
+      weaponStatus: {
+        "Medium Cannon": false,
+      },
     },
     cruiser: {
       id: Date.now().toString(),
@@ -454,6 +498,10 @@ export const shipObject = {
       orders:
         "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
       ordersUsed: 0,
+      weaponStatus: {
+        "Heavy Cannon": false,
+        "Plasma Cannon": false,
+      },
     },
     carrier: {
       id: Date.now().toString(),
@@ -488,6 +536,10 @@ export const shipObject = {
       orders:
         "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
       ordersUsed: 0,
+      weaponStatus: {
+        "350mm Railgun": false,
+        "Missile Battery": false,
+      },
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -523,6 +575,11 @@ export const shipObject = {
       orders:
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
       ordersUsed: 0,
+      weaponStatus: {
+        "Ion Particle Beam": false,
+        "Plasma Cannon": false,
+        "350mm Railgun": false,
+      },
     },
   },
   "Star Reapers": {
@@ -559,6 +616,9 @@ export const shipObject = {
       orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Light Cannon": false,
+      },
     },
 
     destroyer: {
@@ -594,6 +654,9 @@ export const shipObject = {
       orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Medium Cannon": false,
+      },
     },
     cruiser: {
       id: Date.now().toString(),
@@ -629,6 +692,10 @@ export const shipObject = {
         "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Heavy Cannon": false,
+        "Plasma Cannon": false,
+      },
     },
     carrier: {
       id: Date.now().toString(),
@@ -664,6 +731,10 @@ export const shipObject = {
         "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "350mm Railgun": false,
+        "Missile Battery": false,
+      },
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -700,6 +771,11 @@ export const shipObject = {
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Ion Particle Beam": false,
+        "Plasma Cannon": false,
+        "350mm Railgun": false,
+      },
     },
   },
   "Praxleon Empire": {
@@ -736,6 +812,9 @@ export const shipObject = {
       orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Light Cannon": false,
+      },
     },
 
     destroyer: {
@@ -771,6 +850,9 @@ export const shipObject = {
       orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Medium Cannon": false,
+      },
     },
     cruiser: {
       id: Date.now().toString(),
@@ -806,6 +888,10 @@ export const shipObject = {
         "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Heavy Cannon": false,
+        "Plasma Cannon": false,
+      },
     },
     carrier: {
       id: Date.now().toString(),
@@ -841,6 +927,10 @@ export const shipObject = {
         "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "350mm Railgun": false,
+        "Missile Battery": false,
+      },
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -877,6 +967,11 @@ export const shipObject = {
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Ion Particle Beam": false,
+        "Plasma Cannon": false,
+        "350mm Railgun": false,
+      },
     },
   },
   "Synthon Syndicate": {
@@ -913,6 +1008,9 @@ export const shipObject = {
       orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Light Cannon": false,
+      },
     },
 
     destroyer: {
@@ -948,6 +1046,9 @@ export const shipObject = {
       orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Medium Cannon": false,
+      },
     },
     cruiser: {
       id: Date.now().toString(),
@@ -983,6 +1084,10 @@ export const shipObject = {
         "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Heavy Cannon": false,
+        "Plasma Cannon": false,
+      },
     },
     carrier: {
       id: Date.now().toString(),
@@ -1018,6 +1123,10 @@ export const shipObject = {
         "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "350mm Railgun": false,
+        "Missile Battery": false,
+      },
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -1054,6 +1163,11 @@ export const shipObject = {
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Ion Particle Beam": false,
+        "Plasma Cannon": false,
+        "350mm Railgun": false,
+      },
     },
   },
   "The Union": {
@@ -1090,6 +1204,9 @@ export const shipObject = {
       orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Light Cannon": false,
+      },
     },
 
     destroyer: {
@@ -1125,6 +1242,9 @@ export const shipObject = {
       orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Medium Cannon": false,
+      },
     },
     cruiser: {
       id: Date.now().toString(),
@@ -1160,6 +1280,10 @@ export const shipObject = {
         "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Heavy Cannon": false,
+        "Plasma Cannon": false,
+      },
     },
     carrier: {
       id: Date.now().toString(),
@@ -1195,6 +1319,10 @@ export const shipObject = {
         "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "350mm Railgun": false,
+        "Missile Battery": false,
+      },
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -1231,6 +1359,11 @@ export const shipObject = {
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
       ordersUsed: 0,
       hasBeenInteractedWith: false,
+      weaponStatus: {
+        "Ion Particle Beam": false,
+        "Plasma Cannon": false,
+        "350mm Railgun": false,
+      },
     },
   },
 };

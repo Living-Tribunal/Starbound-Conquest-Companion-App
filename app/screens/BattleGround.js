@@ -1,5 +1,6 @@
 import React, { Component, useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
+import BattleDice from "@/components/dice/BattleGroundDice.js";
 import {
   View,
   Text,
@@ -28,6 +29,7 @@ import {
 } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import { useNavigation } from "@react-navigation/native";
+import { getDoc } from "firebase/firestore";
 
 export default function BattleGround(props) {
   const { ship } = props.route.params;
@@ -49,19 +51,20 @@ export default function BattleGround(props) {
     setDiceValueToShare,
     gameRoom,
     setData,
+    setWeaponId,
   } = useStarBoundContext();
   const [modal, setModal] = useState(false);
   const [newHP, setNewHP] = useState(0);
   const [isUser, setIsUser] = useState(null);
+  const [liveShip, setLiveShip] = useState(null);
   const user = FIREBASE_AUTH.currentUser;
 
-  const selectedShipDice = ship ? shipBattleDiceMapping[ship.type] : [];
+  const selectedShipDice = liveShip ? shipBattleDiceMapping[ship.type] : [];
 
   const settingHitState = async () => {
     if (!ship || !user) return;
     try {
       const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-      const { x, y, ...safeData } = ship;
       await updateDoc(shipRef, {
         hit: hit,
       });
@@ -78,19 +81,22 @@ export default function BattleGround(props) {
     try {
       const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
 
-      // Existing special orders
-      const currentWeapon = ship.selectedWeapon || {};
+      const shipSnap = await getDoc(shipRef);
+      const latestShipData = shipSnap.exists() ? shipSnap.data() : null;
+      const currentWeaponStatus = latestShipData.weaponStatus || {};
 
+      // Add or update just this one weapon
       const updatedWeaponStatus = {
-        ...currentWeapon,
+        ...currentWeaponStatus,
         [weaponId]: true,
       };
-      const { x, y, ...safeData } = ship;
+
+      // Send to Firestore
       await updateDoc(shipRef, {
-        weaponStatus: updatedWeaponStatus || {},
+        weaponStatus: updatedWeaponStatus,
       });
 
-      // Update local data
+      // Update local state
       setData((prevData) =>
         prevData.map((s) =>
           s.id === ship.id ? { ...s, weaponStatus: updatedWeaponStatus } : s
@@ -101,18 +107,27 @@ export default function BattleGround(props) {
     }
   };
 
+  //console.log("Weapon Fired In BattleGround:", weaponId);
+
   useEffect(() => {
     if (weaponId) {
       setWeaponHasAttacked(weaponId);
-      console.log("WeaponId in BattleGround:", weaponId);
+      //console.log("WeaponId in BattleGround:", weaponId);
     }
   }, [weaponId]);
 
-  /*  useEffect(() => {
-    if (ship.hit !== null) {
-      setHit(ship.hit);
-    }
-  }, [ship.hit]); */
+  useEffect(() => {
+    if (!ship || !user) return;
+
+    const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+    const unsubscribe = onSnapshot(shipRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setLiveShip({ id: docSnap.id, ...docSnap.data() });
+      }
+    });
+
+    return () => unsubscribe();
+  }, [ship?.id, user?.uid]);
 
   //function to get all users EXCEPT current user from firestore
   const getAllUsers = async () => {
@@ -166,8 +181,8 @@ export default function BattleGround(props) {
         await updateDoc(userShipDocRef, {
           hp: clampedHP,
         });
-        setNewHP(clampedHP); // Sync your local state
-        console.log("Auto-applied damage:", damageDone);
+        setNewHP(clampedHP);
+        //console.log("Auto-applied damage:", damageDone);
       } catch (e) {
         console.error("Failed to apply damage:", e);
       }
@@ -200,11 +215,16 @@ export default function BattleGround(props) {
     });
     return () => unsubscribe();
   }, [singleUserShip?.id, isUser?.id]);
+
+  useEffect(() => {
+    //console.log("Live ship updated:", liveShip);
+  }, [liveShip]);
+
   /*   console.log(
     "Selected Weapon ID Status in Battleground:",
-    ship.weaponStatus[weaponId]
-  );
- */
+    liveShip?.weaponStatus?.[weaponId]
+  ); */
+
   //useEffect function to get ALL users and their ships from firestore
   useEffect(() => {
     let unsubscribers = [];
@@ -254,6 +274,8 @@ export default function BattleGround(props) {
     const clampedHP = Math.max(0, newHP);
     setNewHP(clampedHP);
   }, [singleUserShip, damageDone]);
+
+  if (!liveShip) return <Text>Loading...</Text>;
 
   //simple success message to show when a ship is selected in the battleGround
   const successMessage = () => {
@@ -355,23 +377,43 @@ export default function BattleGround(props) {
             </View>
           </View>
 
-          <View>
-            {ship.weaponDamage &&
-              selectedShipDice.map((DiceComponent, index) => (
-                <View
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              margin: 10,
+              gap: 10,
+            }}
+          >
+            {selectedShipDice.map((dice, index) => {
+              const isIonParticleBeam = dice.id === "Ion Particle Beam";
+              const ipbHasBeenFired =
+                liveShip.weaponStatus?.["Ion Particle Beam"] === true;
+
+              return (
+                <BattleDice
                   key={index}
-                  style={[
-                    styles.statTextUnder,
-                    {
-                      backgroundColor: Colors.dark_gray,
-                      flexDirection: "row",
-                    },
-                  ]}
-                >
-                  {DiceComponent}
-                </View>
-              ))}
+                  id={dice.id}
+                  text={dice.text}
+                  number1={dice.number1}
+                  number2={dice.number2}
+                  tintColor={dice.tintColor}
+                  textStyle={dice.textStyle}
+                  borderColor={dice.borderColor}
+                  disabledButtonOnHit={isIonParticleBeam && ipbHasBeenFired}
+                  //disabledButton={isIonParticleBeam && ipbHasBeenFired}
+                  onPress={() => {
+                    if (!(isIonParticleBeam && ipbHasBeenFired)) {
+                      setWeaponHasAttacked(dice.id);
+                      setWeaponId(dice.id);
+                    }
+                  }}
+                />
+              );
+            })}
           </View>
+
           <View
             style={{
               borderColor: Colors.white,

@@ -215,12 +215,13 @@ export default function ShipStats({ route }) {
   };
   //switch case to apply bonuses based on which special order is selected
 
-  /*   console.log(
+  /*  console.log(
     "Selected Weapon ID Status in shipStats:",
-    ship.weaponStatus[weaponId]
+    ship.weaponStatus["Ion Particle Beam"]
   );
  */
   //console.log("In Ship Stats:", JSON.stringify(ship.hit, null, 2));
+
   const specialOrderBonuses = async (orderName, ship, localDiceRoll) => {
     //console.log("Special Order Bonuses: ", orderName);
     if (!ship || localDiceRoll === undefined) {
@@ -284,7 +285,51 @@ export default function ShipStats({ route }) {
         console.log("Power Up Main Guns");
         break;
       case "All Systems Fire":
-        console.log("All Systems Fire");
+        console.log("All Systems Fire - ship.hit:", ship.hit);
+        if (ship.hit === null) {
+          Toast.show({
+            type: "error",
+            text1: "No weapons have been fired yet!",
+            position: "top",
+          });
+          return;
+        }
+        console.log("All Systems Fire Bonus");
+        /* if (localDiceRoll >= 5) {
+          console.log("Bonus (Ion):", localDiceRoll);
+          try {
+            const shipRef = doc(
+              FIREBASE_DB,
+              "users",
+              user.uid,
+              "ships",
+              ship.id
+            );
+            await updateDoc(shipRef, {
+              hit: null,
+            });
+
+            // ✅ Now update local state after Firestore confirmed update
+            setHit(null);
+            setData((prevData) =>
+              prevData.map((s) => (s.id === ship.id ? { ...s, hit: null } : s))
+            );
+
+            Toast.show({
+              type: "success",
+              text1: "All systems, ready to fire!",
+              position: "top",
+            });
+          } catch (error) {
+            console.error("Failed to update hit in Firestore:", error);
+          }
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Unable to fire all systems",
+            position: "top",
+          });
+        } */
         break;
       case "Broadside":
         console.log("Broadside");
@@ -293,14 +338,13 @@ export default function ShipStats({ route }) {
         console.log("Launch Fighters");
         break;
       case "Charge Ion Beams":
-        console.log("Ion Beam check - ship.hit:", ship.hit);
-        if (ship.hit === null) {
+        //console.log("Ion Beam check - ship.hit:", ship.hit);
+        if (ship.weaponStatus["Ion Particle Beam"] === false) {
           Toast.show({
             type: "error",
             text1: "Ion Particle Beam has not fired yet!",
             position: "top",
           });
-          return;
         }
         console.log("Starting Charge Ion Beams Bonus");
         if (localDiceRoll >= 5) {
@@ -314,6 +358,7 @@ export default function ShipStats({ route }) {
               ship.id
             );
             await updateDoc(shipRef, {
+              "weaponStatus.Ion Particle Beam": false,
               hit: null,
             });
 
@@ -397,9 +442,9 @@ export default function ShipStats({ route }) {
           tintColor={Colors.goldenrod}
           textStyle={{ color: Colors.gold }}
           borderColor={{ borderColor: Colors.goldenrod }}
-          disabledButton={false}
-          disabledButtonOnHit={false}
-          disabled={false}
+          disabledButton={localDiceRoll !== 0}
+          disabledButtonOnHit={null}
+          disabled={localDiceRoll !== 0}
           onRoll={(value, diceId) => {
             setLocalDiceRoll(value);
             if (diceId === "D20") {
@@ -424,6 +469,7 @@ export default function ShipStats({ route }) {
               setModalToRollADice(false);
               specialOrderBonuses(orderName, ship, localDiceRoll);
               getFleetData({ data, setData });
+              setLocalDiceRoll(0);
             }}
           >
             <Text
@@ -451,6 +497,7 @@ export default function ShipStats({ route }) {
             onPress={() => {
               setModalToRollADice(false);
               setDiceValueToShare(0);
+              setLocalDiceRoll(0);
             }}
           >
             <Text
@@ -712,7 +759,7 @@ export default function ShipStats({ route }) {
                           setOrderName(orderName);
                           if (
                             orderName === "Charge Ion Beams" &&
-                            ship.hit === null
+                            ship.hit === false
                           ) {
                             Toast.show({
                               type: "error",
@@ -977,6 +1024,7 @@ const styles = StyleSheet.create({
     padding: 2,
     margin: 10,
     backgroundColor: Colors.hud,
+    padding: 5,
   },
   textHeader: {
     color: Colors.white,

@@ -172,7 +172,6 @@ export default function Player() {
           gameRoomId: gameRoom,
           factionColor: userFactionColor,
           hit: null,
-          weaponStatus: {},
           hasRolledDToHit: false,
         };
         // Add to Firestore

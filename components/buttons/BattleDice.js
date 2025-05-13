@@ -1,206 +1,119 @@
-import BattleDice from "../dice/BattleGroundDice.js";
-import { Colors } from "@/constants/Colors.js";
-import { View, StyleSheet } from "react-native";
+import { Colors } from "@/constants/Colors";
 
-const shipBattleDiceMapping = {
+export const shipBattleDiceMapping = {
   Fighter: [
-    <View style={{ width: "100%" }}>
-      <View
-        style={{
-          width: "100%",
-          flexDirection: "row",
-          alignContent: "center",
-          justifyContent: "space-evenly",
-          marginBottom: 10,
-        }}
-      >
-        <BattleDice
-          text="Roll to Hit"
-          number1={1}
-          id={"D20"}
-          number2={20}
-          tintColor={Colors.goldenrod}
-          textStyle={{ color: Colors.gold }}
-          borderColor={{ borderColor: Colors.goldenrod }}
-        />
-        <BattleDice
-          text="Light Cannon"
-          id={"Light Cannon"}
-          number1={1}
-          number2={6}
-        />
-      </View>
-    </View>,
+    {
+      id: "D20",
+      text: "Roll to Hit",
+      number1: 1,
+      number2: 20,
+      isUtility: true,
+      tintColor: Colors.goldenrod,
+      textStyle: { color: Colors.gold },
+      borderColor: { borderColor: Colors.goldenrod },
+    },
+    {
+      id: "Light Cannon",
+      text: "Light Cannon",
+      number1: 1,
+      number2: 6,
+    },
   ],
   Destroyer: [
-    <View style={{ width: "100%" }}>
-      <View
-        style={{
-          width: "100%",
-          flexDirection: "row",
-          alignContent: "center",
-          justifyContent: "space-evenly",
-          marginBottom: 10,
-        }}
-      >
-        <BattleDice
-          text="Roll to Hit"
-          number1={1}
-          id={"D20"}
-          number2={20}
-          tintColor={Colors.goldenrod}
-          textStyle={{ color: Colors.gold }}
-          borderColor={{ borderColor: Colors.goldenrod }}
-        />
-        <BattleDice
-          text="Medium Cannon"
-          id={"Medium Cannon"}
-          number1={1}
-          number2={6}
-        />
-      </View>
-    </View>,
+    {
+      id: "D20",
+      text: "Roll to Hit",
+      number1: 1,
+      number2: 20,
+      isUtility: true,
+      tintColor: Colors.goldenrod,
+      textStyle: { color: Colors.gold },
+      borderColor: { borderColor: Colors.goldenrod },
+    },
+    {
+      id: "Medium Cannon",
+      text: "Medium Cannon",
+      number1: 1,
+      number2: 6,
+    },
   ],
   Cruiser: [
-    <View style={{ width: "100%" }}>
-      <View
-        style={{
-          width: "100%",
-          flexDirection: "row",
-          alignContent: "center",
-          justifyContent: "space-evenly",
-          marginBottom: 10,
-        }}
-      >
-        <BattleDice
-          text="Roll to Hit"
-          number1={1}
-          id={"D20"}
-          number2={20}
-          tintColor={Colors.goldenrod}
-          textStyle={{ color: Colors.gold }}
-          borderColor={{ borderColor: Colors.goldenrod }}
-        />
-      </View>
-
-      <View
-        style={{
-          width: "100%",
-          flexDirection: "row",
-          justifyContent: "space-evenly",
-          alignContent: "center",
-        }}
-      >
-        <BattleDice
-          text="Heavy Cannon"
-          id={"Heavy Cannon"}
-          number1={1}
-          number2={8}
-        />
-        <BattleDice
-          text="Plasma Cannon"
-          id={"Plasma Cannon"}
-          number1={1}
-          number2={10}
-        />
-      </View>
-    </View>,
+    {
+      id: "D20",
+      text: "Roll to Hit",
+      number1: 1,
+      number2: 20,
+      isUtility: true,
+      tintColor: Colors.goldenrod,
+      textStyle: { color: Colors.gold },
+      borderColor: { borderColor: Colors.goldenrod },
+    },
+    {
+      id: "Heavy Cannon",
+      text: "Heavy Cannon",
+      number1: 1,
+      number2: 8,
+    },
+    {
+      id: "Plasma Cannon",
+      text: "Plasma Cannon",
+      number1: 1,
+      number2: 10,
+    },
   ],
   Carrier: [
-    <View style={{ width: "100%" }}>
-      <View
-        style={{
-          width: "100%",
-          flexDirection: "row",
-          alignContent: "center",
-          justifyContent: "space-evenly",
-          marginBottom: 10,
-        }}
-      >
-        <BattleDice
-          text="Roll to Hit"
-          number1={1}
-          id={"D20"}
-          number2={20}
-          tintColor={Colors.goldenrod}
-          textStyle={{ color: Colors.gold }}
-          borderColor={{ borderColor: Colors.goldenrod }}
-        />
-      </View>
-
-      <View
-        style={{
-          width: "100%",
-          flexDirection: "row",
-          justifyContent: "space-evenly",
-          alignContent: "center",
-        }}
-      >
-        <BattleDice
-          text="350mm Railgun"
-          id={"350mm Railgun"}
-          number1={1}
-          number2={8}
-        />
-        <BattleDice
-          text="Missile Battery"
-          id={"Missile Battery"}
-          number1={1}
-          number2={6}
-        />
-      </View>
-    </View>,
+    {
+      id: "D20",
+      text: "Roll to Hit",
+      number1: 1,
+      number2: 20,
+      isUtility: true,
+      tintColor: Colors.goldenrod,
+      textStyle: { color: Colors.gold },
+      borderColor: { borderColor: Colors.goldenrod },
+    },
+    {
+      id: "350mm Railgun",
+      text: "350mm Railgun",
+      number1: 1,
+      number2: 8,
+    },
+    {
+      id: "Missile Battery",
+      text: "Missile Battery",
+      number1: 1,
+      number2: 6,
+    },
   ],
   Dreadnought: [
-    <View style={{ width: "100%" }}>
-      <View
-        style={{
-          width: "100%",
-          flexDirection: "row",
-          alignContent: "center",
-          justifyContent: "space-evenly",
-          marginBottom: 10,
-        }}
-      >
-        <BattleDice
-          text="Roll to Hit"
-          number1={1}
-          number2={20}
-          id={"D20"}
-          tintColor={Colors.goldenrod}
-          textStyle={{ color: Colors.gold }}
-          borderColor={{ borderColor: Colors.goldenrod }}
-        />
-        <BattleDice
-          text="Ion Particle Beam"
-          id={"Ion Particle Beam"}
-          number1={1}
-          number2={12}
-        />
-      </View>
-      <View
-        style={{
-          width: "100%",
-          flexDirection: "row",
-          justifyContent: "space-evenly",
-          alignContent: "center",
-        }}
-      >
-        <BattleDice
-          text="Plasma Cannon"
-          id={"Plasma Cannon"}
-          number1={1}
-          number2={10}
-        />
-        <BattleDice
-          text="350mm Railgun"
-          id={"350mm Railgun"}
-          number1={1}
-          number2={8}
-        />
-      </View>
-    </View>,
+    {
+      id: "D20",
+      text: "Roll to Hit",
+      number1: 1,
+      number2: 20,
+      isUtility: true,
+      tintColor: Colors.goldenrod,
+      textStyle: { color: Colors.gold },
+      borderColor: { borderColor: Colors.goldenrod },
+    },
+    {
+      id: "Ion Particle Beam",
+      text: "Ion Particle Beam",
+      number1: 1,
+      number2: 10,
+      numberOfDice: 2,
+    },
+    {
+      id: "Plasma Cannon",
+      text: "Plasma Cannon",
+      number1: 1,
+      number2: 10,
+    },
+    {
+      id: "350mm Railgun",
+      text: "350mm Railgun",
+      number1: 1,
+      number2: 8,
+    },
   ],
 };
-
-export { shipBattleDiceMapping };

@@ -20,6 +20,7 @@ export default function BattleDice({
   howManyDice,
   onRoll,
   id,
+  numberOfDice,
   disabledButton: disabledProp = null,
   disabledButtonOnHit: disabledOnHitProp = null,
 }) {
@@ -46,29 +47,39 @@ export default function BattleDice({
   const disabledButtonOnHit =
     disabledOnHitProp !== null ? disabledOnHitProp : contextDisabledButtonOnHit;
 
-  const rollDiceAnimation = () => {
+  const rollMultipleDice = () => {
+    const diceCount = numberOfDice || 1;
+
     const interval = setInterval(() => {
-      setFirstDice(
-        Math.floor(Math.random() * (number2 - number1 + 1)) + number1
+      const animatedResults = Array.from(
+        { length: diceCount },
+        () => Math.floor(Math.random() * (number2 - number1 + 1)) + number1
       );
+      setDiceResults(animatedResults);
     }, 100);
 
     setTimeout(() => {
       clearInterval(interval);
-      const final =
-        Math.floor(Math.random() * (number2 - number1 + 1)) + number1;
-      setFirstDice(final);
+      const finalResults = Array.from(
+        { length: diceCount },
+        () => Math.floor(Math.random() * (number2 - number1 + 1)) + number1
+      );
+      setDiceResults(finalResults);
+
+      const total = finalResults.reduce((sum, val) => sum + val, 0);
 
       if (onRoll) {
-        onRoll(final, id);
+        onRoll(total, id); // Or pass full array if you want
       }
+
       if (id === "D20") {
-        checkIfHit(final);
+        checkIfHit(total); // Could also apply logic per die if needed
       } else {
-        weaponDamageRoll(final);
+        weaponDamageRoll(total);
       }
     }, 1000);
   };
+
   //console.log(`First Dice ${id}: ${firstDice}`);
 
   //console.log("In Dice:", JSON.stringify(diceValue, null, 2));
@@ -110,25 +121,30 @@ export default function BattleDice({
     setFirstDice(newWeaponRolledValue);
     setWeaponId(id);
     console.log("weaponId:", id);
-    //console.log(`🎲 Weapon Damage Roll ${newWeaponRolledValue}`);
 
     if (damageThreshold === null) {
-      //console.log("No ship selected.");
       return null;
     }
-    if (id !== "D20") {
+
+    if (id !== "Ion Particle Beam") {
       const damageTakenValue = newWeaponRolledValue - damageThreshold;
       if (damageTakenValue < 0) {
-        const damageTakenValueNegative = 0;
-        setDamageDone(damageTakenValueNegative);
-        console.log(
-          `🎲 Damage Taken: ${damageTakenValueNegative} (negative damage)`
-        );
+        setDamageDone(0);
+        console.log(`🎲 Damage Taken: 0 (negative damage)`);
       } else {
-        console.log(`🎲 Damage Taken: ${damageTakenValue}`);
         setDamageDone(damageTakenValue);
+        console.log(`🎲 Damage Taken: ${damageTakenValue}`);
       }
       setDisabledButton(true);
+      setDisabledButtonOnHit(true);
+    } else {
+      //outside else to handle ion particle beam
+      setDamageDone(newWeaponRolledValue);
+      console.log(
+        `⚡ Ion Beam direct damage: ${newWeaponRolledValue} (Bypasses soak)`
+      );
+      setDisabledButton(true);
+      setDisabledButtonOnHit(true);
     }
   };
 
