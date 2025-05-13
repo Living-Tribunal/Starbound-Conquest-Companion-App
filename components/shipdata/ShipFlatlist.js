@@ -76,7 +76,7 @@ export default function ShipFlatList({ type, fleetClass }) {
         visibilityTime: 2000, // 2 seconds
       });
 
-      console.log(`Deleted Ship: ${ship.id}`);
+      //console.log(`Deleted Ship: ${ship.id}`);
     } catch (e) {
       console.error("Error deleting document: ", e);
     }

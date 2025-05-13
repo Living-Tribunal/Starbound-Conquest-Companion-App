@@ -347,7 +347,7 @@ export default function Player() {
             specialOrders: newSpecialOrders,
             hasBeenInteractedWith: false,
             hit: null,
-            hasRolledDToHit: false,
+            hasRolledDToHit: null,
           })
         );
       }

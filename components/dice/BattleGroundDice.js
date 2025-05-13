@@ -17,10 +17,9 @@ export default function BattleDice({
   tintColor,
   textStyle,
   borderColor,
-  howManyDice,
-  onRoll,
   id,
   numberOfDice,
+  onRoll,
   disabledButton: disabledProp = null,
   disabledButtonOnHit: disabledOnHitProp = null,
 }) {
@@ -29,6 +28,7 @@ export default function BattleDice({
     singleUserShip,
     hit,
     setHit,
+    damageDone,
     setDamageDone,
     disabledButton: contextDisabledButton,
     setDisabledButton,
@@ -36,7 +36,9 @@ export default function BattleDice({
     setDisabledButtonOnHit,
     rolledD20,
     setRolledD20,
+    weaponId,
     setWeaponId,
+    diceValueToShare,
     setDiceValueToShare,
   } = useStarBoundContext();
   const threatLevel = singleUserShip?.threatLevel ?? null;
@@ -47,39 +49,41 @@ export default function BattleDice({
   const disabledButtonOnHit =
     disabledOnHitProp !== null ? disabledOnHitProp : contextDisabledButtonOnHit;
 
-  const rollMultipleDice = () => {
-    const diceCount = numberOfDice || 1;
+  const rollDice = () => {
+    if (numberOfDice > 1) {
+      let total = 0;
+      for (let i = 0; i < numberOfDice; i++) {
+        total += Math.floor(Math.random() * (number2 - number1 + 1)) + number1;
+      }
+      return total;
+    } else {
+      return Math.floor(Math.random() * (number2 - number1 + 1)) + number1;
+    }
+  };
 
+  const rollDiceAnimation = () => {
     const interval = setInterval(() => {
-      const animatedResults = Array.from(
-        { length: diceCount },
-        () => Math.floor(Math.random() * (number2 - number1 + 1)) + number1
+      setFirstDice(
+        Math.floor(Math.random() * (number2 - number1 + 1)) + number1
       );
-      setDiceResults(animatedResults);
     }, 100);
 
     setTimeout(() => {
       clearInterval(interval);
-      const finalResults = Array.from(
-        { length: diceCount },
-        () => Math.floor(Math.random() * (number2 - number1 + 1)) + number1
-      );
-      setDiceResults(finalResults);
-
-      const total = finalResults.reduce((sum, val) => sum + val, 0);
+      const final = rollDice();
+      setFirstDice(final);
 
       if (onRoll) {
-        onRoll(total, id); // Or pass full array if you want
+        onRoll(final, id);
       }
 
       if (id === "D20") {
-        checkIfHit(total); // Could also apply logic per die if needed
+        checkIfHit(final);
       } else {
-        weaponDamageRoll(total);
+        weaponDamageRoll(final);
       }
     }, 1000);
   };
-
   //console.log(`First Dice ${id}: ${firstDice}`);
 
   //console.log("In Dice:", JSON.stringify(diceValue, null, 2));
@@ -87,10 +91,10 @@ export default function BattleDice({
   const checkIfHit = (value) => {
     const newRolledValue = value;
     setFirstDice(newRolledValue);
-    //setDiceValueToShare(newRolledValue);
+    setDiceValueToShare(newRolledValue);
 
     if (threatLevel === null) {
-      //console.log("No ship selected.");
+      console.log("No ship selected.");
       return null;
     }
 
@@ -121,11 +125,12 @@ export default function BattleDice({
     setFirstDice(newWeaponRolledValue);
     setWeaponId(id);
     console.log("weaponId:", id);
+    //console.log(`🎲 Weapon Damage Roll ${newWeaponRolledValue}`);
 
     if (damageThreshold === null) {
+      console.log("No ship selected.");
       return null;
     }
-
     if (id !== "Ion Particle Beam") {
       const damageTakenValue = newWeaponRolledValue - damageThreshold;
       if (damageTakenValue < 0) {
@@ -153,7 +158,7 @@ export default function BattleDice({
   };
 
   useEffect(() => {
-    if (hit === false) {
+    if (hit === "miss") {
       setDisabledButtonOnHit(true);
     } else {
       setDisabledButtonOnHit(false);
@@ -209,7 +214,7 @@ export default function BattleDice({
               ) && textStyle,
             ]}
           >
-            {howManyDice}D{number2}
+            {numberOfDice}D{number2}
           </Text>
           <Image
             style={[

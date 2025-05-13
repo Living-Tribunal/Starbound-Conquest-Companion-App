@@ -51,6 +51,7 @@ export default function BattleGround(props) {
     setDiceValueToShare,
     gameRoom,
     setData,
+    setHit,
     setWeaponId,
   } = useStarBoundContext();
   const [modal, setModal] = useState(false);
@@ -72,6 +73,19 @@ export default function BattleGround(props) {
       setDiceValueToShare(0);
     } catch (e) {
       console.error("Error updating document: ", e);
+    }
+  };
+
+  const changedRolledDToHit = async () => {
+    if (!ship || !user) return;
+    try {
+      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+      await updateDoc(shipRef, {
+        hasRolledDToHit: true,
+      });
+      console.log("Updated ship hasRolledDToHit:", true);
+    } catch (e) {
+      console.error("Error updating RDT in Firestore:", e);
     }
   };
 
@@ -108,6 +122,13 @@ export default function BattleGround(props) {
   };
 
   //console.log("Weapon Fired In BattleGround:", weaponId);
+  //resetting sethit state when leaving the screen
+  useEffect(() => {
+    return () => {
+      // Reset hit state when leaving the screen
+      setHit(null);
+    };
+  }, []);
 
   useEffect(() => {
     if (weaponId) {
@@ -194,7 +215,7 @@ export default function BattleGround(props) {
   //useEffect function to listen for changes for the specific user and ship selected in battleGround
   useEffect(() => {
     if (!singleUserShip || !isUser) return;
-    console.log("Ship:", JSON.stringify(singleUserShip, null, 2));
+    //console.log("Ship:", JSON.stringify(singleUserShip, null, 2));
     //console.log("User:", JSON.stringify(isUser, null, 2));
     const userShipDocRef = doc(
       FIREBASE_DB,
@@ -305,7 +326,6 @@ export default function BattleGround(props) {
         NavToWhere={{ name: "Stats", params: { shipId: ship.id } }}
         onPress={() => {
           setDiceValueToShare(0);
-          settingHitState();
         }}
       />
       <ScrollView>
@@ -347,14 +367,20 @@ export default function BattleGround(props) {
                   backgroundColor:
                     hit === false
                       ? Colors.deep_red
-                      : Colors.darker_green_toggle,
+                      : hit === true
+                      ? Colors.darker_green_toggle
+                      : Colors.hudDarker,
                   borderRadius: 5,
                   padding: 5,
                   width: "70%",
                   borderWidth: 1,
                   flexDirection: "row",
                   borderColor:
-                    hit === false ? Colors.lighter_red : Colors.green_toggle,
+                    hit === false
+                      ? Colors.lighter_red
+                      : hit === true
+                      ? Colors.green_toggle
+                      : Colors.hud,
                 },
               ]}
             >
@@ -363,7 +389,11 @@ export default function BattleGround(props) {
                   styles.hitOrMissText,
                   {
                     color:
-                      hit === false ? Colors.lighter_red : Colors.green_toggle,
+                      hit === false
+                        ? Colors.lighter_red
+                        : hit === true
+                        ? Colors.green_toggle
+                        : Colors.hud,
                   },
                 ]}
               >
@@ -395,6 +425,7 @@ export default function BattleGround(props) {
                 <BattleDice
                   key={index}
                   id={dice.id}
+                  numberOfDice={dice.numberOfDice}
                   text={dice.text}
                   number1={dice.number1}
                   number2={dice.number2}
@@ -407,6 +438,19 @@ export default function BattleGround(props) {
                     if (!(isIonParticleBeam && ipbHasBeenFired)) {
                       setWeaponHasAttacked(dice.id);
                       setWeaponId(dice.id);
+                    }
+                  }}
+                  //checking if the rolled value and greater or = to the enemies TH the setting that to hit so I can show hit/miss
+                  onRoll={(value, id) => {
+                    if (id === "D20" && singleUserShip?.threatLevel != null) {
+                      const isHit = value >= singleUserShip.threatLevel;
+                      console.log("Hit in BattleGround:", isHit);
+                      setHit(isHit);
+                      settingHitState(isHit);
+
+                      changedRolledDToHit();
+
+                      /* console.log("Hit in BattleGround:", isHit); */
                     }
                   }}
                 />
@@ -841,9 +885,9 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   hitOrMissText: {
-    fontSize: 15,
+    fontSize: 20,
     textAlign: "center",
-    fontFamily: "monospace",
+    fontFamily: "LeagueSpartan-Bold",
     color: Colors.white,
     justifyContent: "center",
   },
