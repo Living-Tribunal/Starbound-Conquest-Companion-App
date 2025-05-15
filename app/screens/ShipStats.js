@@ -33,6 +33,7 @@ export default function ShipStats({ route }) {
   const [localDiceRoll, setLocalDiceRoll] = useState(0); // this is the dice rolled by the player
   const [modalToRollADice, setModalToRollADice] = useState(false);
   const [orderName, setOrderName] = useState("");
+  const [orderIcon, setOrderIcon] = useState("");
   const [orderDescription, setOrderDescription] = useState("");
   const [selectedFaction, setSelectedFaction] = useState("Nova Raiders");
   const [movementBonus, setMovementBonus] = useState(0);
@@ -68,6 +69,9 @@ export default function ShipStats({ route }) {
 
   //showing the hp bar with colors representing the health of the ship
 
+  //console.log("In Ship Stats:", JSON.stringify(orderIcon, null, 2));
+  //console.log("In Ship Stats:", JSON.stringify(localDiceRoll, null, 2));
+
   useFocusEffect(
     useCallback(() => {
       getFleetData({ data, setData });
@@ -91,24 +95,6 @@ export default function ShipStats({ route }) {
     }));
   }, [ship]);
 
-  /*   const changedRolledDToHit = async () => {
-    if (!ship || !user) return;
-    try {
-      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-      await updateDoc(shipRef, {
-        hasRolledDToHit: true,
-      });
-      console.log("Updated ship hasRolledDToHit:", true);
-    } catch (e) {
-      console.error("Error updating RDT in Firestore:", e);
-    }
-  }; */
-
-  /*  console.log(
-    JSON.stringify(ship, null, 2) +
-      " That came from player through ship flatlist into shipStats"
-  );
- */
   //console.log("In ship stats:" + JSON.stringify(data, null, 2));
   //console.log("SPecial Orders Length: " + specialOrders.isToggled.length);
   const toggleSpecialOrdersButton = async (orderName) => {
@@ -303,18 +289,9 @@ export default function ShipStats({ route }) {
         console.log("Power Up Main Guns");
         break;
       case "All Systems Fire":
-        console.log("All Systems Fire - ship.hit:", ship.hit);
-        if (ship.hit === null) {
-          Toast.show({
-            type: "error",
-            text1: "No weapons have been fired yet!",
-            position: "top",
-          });
-          return;
-        }
         console.log("All Systems Fire Bonus");
-        /* if (localDiceRoll >= 5) {
-          console.log("Bonus (Ion):", localDiceRoll);
+        if (localDiceRoll >= 11) {
+          console.log("All Systems Fire:", localDiceRoll);
           try {
             const shipRef = doc(
               FIREBASE_DB,
@@ -324,7 +301,7 @@ export default function ShipStats({ route }) {
               ship.id
             );
             await updateDoc(shipRef, {
-              hit: null,
+              hasRolledDToHit: false,
             });
 
             // ✅ Now update local state after Firestore confirmed update
@@ -344,10 +321,10 @@ export default function ShipStats({ route }) {
         } else {
           Toast.show({
             type: "error",
-            text1: "Unable to fire all systems",
+            text1: "Unable to reintialize systems.",
             position: "top",
           });
-        } */
+        }
         break;
       case "Broadside":
         console.log("Broadside");
@@ -371,7 +348,7 @@ export default function ShipStats({ route }) {
             await updateDoc(shipRef, {
               "weaponStatus.Ion Particle Beam": false,
               //hit: null,
-              hasRolledDToHit: null,
+              hasRolledDToHit: false,
             });
 
             // ✅ Now update local state after Firestore confirmed update
@@ -465,7 +442,7 @@ export default function ShipStats({ route }) {
         />
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            disabled={localDiceRoll <= 0}
+            disabled={localDiceRoll === 0}
             style={[
               styles.button,
               {
@@ -757,6 +734,7 @@ export default function ShipStats({ route }) {
                 {ShipData?.specialOrders?.map((specialOrder, index) => {
                   const orderName = specialOrder[0];
                   const description = specialOrder[1];
+                  const orderIcon = specialOrder[2];
                   const activeOrdersCount = Object.values(
                     ship.specialOrders || {}
                   ).filter(Boolean).length;
@@ -795,26 +773,60 @@ export default function ShipStats({ route }) {
                               position: "top",
                             });
                             return;
+                          } else if (
+                            orderName === "All Systems Fire" &&
+                            ship.hasRolledDToHit === false
+                          ) {
+                            Toast.show({
+                              type: "error",
+                              text1: "No weapons have been fired yet!",
+                              position: "top",
+                            });
+                            return;
                           } else {
                             setModalToRollADice(true);
+                            setLocalDiceRoll(0);
                             setDiceValueToShare(0);
                             setOrderDescription(description);
+                            setOrderIcon(orderIcon);
                           }
                         }}
                       >
-                        <Text
+                        <View
                           style={{
-                            textAlign: "center",
-                            color: ship.specialOrders?.[orderName]
-                              ? Colors.hudDarker
-                              : Colors.white,
-                            fontFamily: "monospace",
-                            fontSize: 12,
-                            marginBottom: 2,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 10,
                           }}
                         >
-                          {orderName}
-                        </Text>
+                          <Text
+                            style={{
+                              textAlign: "center",
+                              color: ship.specialOrders?.[orderName]
+                                ? Colors.hudDarker
+                                : Colors.white,
+                              fontFamily: "monospace",
+                              fontSize: 12,
+                              marginBottom: 2,
+                            }}
+                          >
+                            {orderName}
+                          </Text>
+                          {orderIcon && (
+                            <Image
+                              source={{ uri: orderIcon }}
+                              style={{
+                                width: 34,
+                                height: 34,
+                                alignSelf: "center",
+                                //opacity: isDisabled ? 0.3 : 1,
+                              }}
+                              resizeMode="contain"
+                            />
+                          )}
+                        </View>
+
                         <Text
                           style={{
                             fontSize: 10,

@@ -433,7 +433,7 @@ export default function BattleGround(props) {
                   textStyle={dice.textStyle}
                   borderColor={dice.borderColor}
                   disabledButtonOnHit={isIonParticleBeam && ipbHasBeenFired}
-                  //disabledButton={isIonParticleBeam && ipbHasBeenFired}
+                  //disabledButton={ship.hasRolledDToHit === true}
                   onPress={() => {
                     if (!(isIonParticleBeam && ipbHasBeenFired)) {
                       setWeaponHasAttacked(dice.id);

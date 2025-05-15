@@ -49,6 +49,8 @@ export default function ShipFlatList({ type, fleetClass }) {
   console.log(`${type} count:`, fleetData.length);
   console.log("----------------------"); */
 
+  console.log("In Ship Flatlist:", JSON.stringify(fleetData, null, 2));
+
   const deleteShip = async (ship) => {
     setSetDeleting(true);
     if (!user?.uid) {
@@ -99,7 +101,6 @@ export default function ShipFlatList({ type, fleetClass }) {
                 onPress={() => {
                   if (toggleToDelete) {
                     deleteShip(item);
-                    //console.log("Deleted Ship:", item.id);
                   } else {
                     navigation.navigate("Stats", { shipId: item.id });
                     //console.log("Navigated to Stats:", item.id);
@@ -136,16 +137,53 @@ export default function ShipFlatList({ type, fleetClass }) {
                       }}
                     />
                   </View>
-                  <Text
+                  <View
                     style={{
-                      fontSize: 8,
-                      color: "white",
-                      textAlign: "center",
-                      marginTop: 2,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      flexDirection: "row",
                     }}
                   >
-                    {item.hp} / {item.maxHP} HP
-                  </Text>
+                    <Text
+                      style={{
+                        fontSize: 8,
+                        color: "white",
+                        textAlign: "center",
+                        marginTop: 2,
+                      }}
+                    >
+                      {item.hp} / {item.maxHP} HP
+                    </Text>
+                    {item.type === "Dreadnought" ? (
+                      item.weaponStatus?.["Ion Particle Beam"] === true ? (
+                        <View>
+                          <Image
+                            style={{
+                              width: 30,
+                              height: 30,
+                              alignSelf: "center",
+                              marginTop: 5,
+                              tintColor: Colors.blue_gray,
+                            }}
+                            source={require("../../assets/icons/ManeuverIcons/IPB.png")}
+                          />
+                        </View>
+                      ) : (
+                        <View>
+                          <Image
+                            style={{
+                              width: 30,
+                              height: 30,
+                              alignSelf: "center",
+                              marginTop: 5,
+                              tintColor: Colors.green_toggle,
+                            }}
+                            source={require("../../assets/icons/ManeuverIcons/IPB.png")} // Replace with your fallback image
+                          />
+                        </View>
+                      )
+                    ) : null}
+                  </View>
                 </View>
 
                 <View
@@ -178,7 +216,8 @@ export default function ShipFlatList({ type, fleetClass }) {
                       style={{
                         width: 80,
                         height: 20,
-                        tintColor: Colors.hud,
+                        tintColor:
+                          item.isToggled === true ? Colors.gold : Colors.hud,
                       }}
                     />
                     <Text

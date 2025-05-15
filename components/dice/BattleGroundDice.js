@@ -158,10 +158,10 @@ export default function BattleDice({
   };
 
   useEffect(() => {
-    if (hit === "miss") {
+    if (hit === false) {
       setDisabledButtonOnHit(true);
     } else {
-      setDisabledButtonOnHit(false);
+      setDisabledButtonOnHit(true);
     }
   }, [hit]);
 
