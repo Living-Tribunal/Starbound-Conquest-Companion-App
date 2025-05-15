@@ -122,7 +122,6 @@ export default function ShipStats({ route }) {
         ...currentOrders,
         [orderName]: !currentOrders[orderName],
       };
-      const { x, y, ...safeData } = ship;
       await updateDoc(shipRef, {
         specialOrders: updatedOrders,
       });
@@ -819,8 +818,18 @@ export default function ShipStats({ route }) {
                               style={{
                                 width: 34,
                                 height: 34,
+                                tintColor: ship.specialOrders?.[orderName]
+                                  ? Colors.hudDarker
+                                  : Colors.white,
                                 alignSelf: "center",
-                                //opacity: isDisabled ? 0.3 : 1,
+                                opacity: ship.specialOrders?.[orderName]
+                                  ? 0.3
+                                  : 1,
+                                borderWidth: 1,
+                                borderColor: ship.specialOrders?.[orderName]
+                                  ? Colors.hudDarker
+                                  : Colors.white,
+                                borderRadius: 5,
                               }}
                               resizeMode="contain"
                             />

@@ -49,7 +49,7 @@ export default function ShipFlatList({ type, fleetClass }) {
   console.log(`${type} count:`, fleetData.length);
   console.log("----------------------"); */
 
-  console.log("In Ship Flatlist:", JSON.stringify(fleetData, null, 2));
+  //console.log("In Ship Flatlist:", JSON.stringify(fleetData, null, 2));
 
   const deleteShip = async (ship) => {
     setSetDeleting(true);
@@ -165,7 +165,9 @@ export default function ShipFlatList({ type, fleetClass }) {
                               marginTop: 5,
                               tintColor: Colors.blue_gray,
                             }}
-                            source={require("../../assets/icons/ManeuverIcons/IPB.png")}
+                            source={{
+                              uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fsinusoidal-beam.png?alt=media&token=96d76ac5-5426-4bbb-835c-f541f7ba3023",
+                            }}
                           />
                         </View>
                       ) : (
@@ -178,7 +180,9 @@ export default function ShipFlatList({ type, fleetClass }) {
                               marginTop: 5,
                               tintColor: Colors.green_toggle,
                             }}
-                            source={require("../../assets/icons/ManeuverIcons/IPB.png")} // Replace with your fallback image
+                            source={{
+                              uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fsinusoidal-beam.png?alt=media&token=96d76ac5-5426-4bbb-835c-f541f7ba3023",
+                            }}
                           />
                         </View>
                       )
