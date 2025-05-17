@@ -16,11 +16,12 @@ import Settings from "./tabs/Settings";
 import Player from "./tabs/Player";
 import SpecialOrdersScreen from "./screens/SpecialOrdersScreen";
 import WeaponTypes from "./screens/WeaponTypes";
-import GameLore from "./tabs/GameLore";
+import GameLore from "./screens/GameLore";
 import FactionInfoScreen from "./screens/FactionInfoScreen";
 import DiceRoller from "./tabs/Dice";
 import FactionInfoPreview from "./screens/FactionInfoPreview";
 import BattleGround from "./screens/BattleGround";
+import GameMap from "./tabs/GameMap";
 import { Colors } from "../constants/Colors";
 import { StarBoundProvider } from "../components/Global/StarBoundProvider";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -93,15 +94,15 @@ function MainTabs() {
             }}
           />
           <Tab.Screen
-            name="Factions"
-            component={GameLore}
+            name="GameMap"
+            component={GameMap}
             options={{
               tabBarIcon: ({ focused, size }) => (
                 <Image
                   source={
                     focused
-                      ? require("../assets/icons/icons8-book-50.png")
-                      : require("../assets/icons/icons8-bookclosed-50.png")
+                      ? require("../assets/icons/icons8-board-game-100.png")
+                      : require("../assets/icons/icons8-board-game-64.png")
                   }
                   style={{
                     height: 25,
@@ -197,6 +198,15 @@ function MainTabs() {
           <Tab.Screen
             name="Faction Info"
             component={FactionInfoScreen}
+            options={{
+              tabBarItemStyle: { display: "none" },
+              tabBarStyle: { display: "none" },
+              headerShown: false,
+            }}
+          />
+          <Tab.Screen
+            name="Game Lore"
+            component={GameLore}
             options={{
               tabBarItemStyle: { display: "none" },
               tabBarStyle: { display: "none" },

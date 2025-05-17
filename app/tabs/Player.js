@@ -324,7 +324,7 @@ export default function Player() {
     if (!hasNoShips || getAllUsersShipToggled.length > 0) {
       Toast.show({
         type: "error",
-        text1: "There are ships on the field.",
+        text1: "There are ships on the field",
         text2: "Cannot reset round",
         position: "top",
       });
@@ -337,6 +337,12 @@ export default function Player() {
       const userRef = doc(FIREBASE_DB, "users", user.uid);
       await updateDoc(userRef, {
         round: 0,
+      });
+      Toast.show({
+        type: "success",
+        text1: "Round reset for current user",
+        text2: "Round reset to 0",
+        position: "top",
       });
       console.log("Round reset for current user");
     } catch (error) {
