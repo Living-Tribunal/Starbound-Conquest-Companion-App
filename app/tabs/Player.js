@@ -21,7 +21,7 @@ import LoadingComponent from "../../components/loading/LoadingComponent";
 import { factionIcons } from "../../constants/shipIcons";
 import ViewShot from "react-native-view-shot";
 import Share from "react-native-share";
-import { WebView } from "react-native-webview";
+import { useNavigation } from "@react-navigation/native";
 import {
   collection,
   query,
@@ -40,6 +40,7 @@ import { useFocusEffect } from "expo-router";
 export default function Player() {
   const ref = useRef();
   const user = getAuth().currentUser;
+  const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

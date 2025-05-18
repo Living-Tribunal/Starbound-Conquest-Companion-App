@@ -20,7 +20,7 @@ export const getFleetData = async ({ data, setData }) => {
         );
       }
       // console.log("Saved to AsyncStorage: ", JSON.stringify(ships, null, 2));
-      const totalShips = await getCountFromServer(shipReference);
+    
       // console.log("Total ships: ", totalShips.data().count);
     } catch (e) {
       console.error("Error fetching fleet data: ", e);

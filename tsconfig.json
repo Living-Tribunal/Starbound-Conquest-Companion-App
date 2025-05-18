@@ -26,5 +26,5 @@
     "app/index.js",
     "app/tabs/Player.js",
     "app/auth/Login.tsx"
-  ]
+, "app/tabs/GameMap.js"  ]
 }

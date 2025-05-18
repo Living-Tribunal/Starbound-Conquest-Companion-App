@@ -593,7 +593,6 @@ export default function ShipStats({ route }) {
               },
             ]}
             onPress={() => {
-              navigation.navigate("BattleGround", { ship: ship });
               setSingleUser(null);
               setSingleUserShip(null);
               setHit(null);

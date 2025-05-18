@@ -14,6 +14,7 @@ import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { useNavigation } from "@react-navigation/native";
 import { getFleetData } from "../../components/API/API";
 import Toast from "react-native-toast-message";
+import { FactionImages } from "../../constants/FactionImages";
 
 export default function ShipFlatList({ type, fleetClass }) {
   const specialOrderShortNames = {
@@ -94,7 +95,8 @@ export default function ShipFlatList({ type, fleetClass }) {
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => {
             const thisShipColor = hitPointsColor[item.id] || "green";
-
+            const localImage =
+              FactionImages[item.factionName]?.[item.type]?.classImage;
             return (
               <TouchableOpacity
                 //disabled={item.isToggled === true}
@@ -237,7 +239,7 @@ export default function ShipFlatList({ type, fleetClass }) {
                     </Text>
                     <Image
                       resizeMode="contain"
-                      source={{ uri: item.image }}
+                      source={localImage}
                       style={{
                         width: 60,
                         height: 60,
