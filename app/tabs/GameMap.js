@@ -8,6 +8,7 @@ import {
   Dimensions,
   SafeAreaView,
   Text,
+  TouchableOpacity,
 } from "react-native";
 import { getAllShipsInGameRoom } from "@/components/API/APIGameRoom";
 import { useStarBoundContext } from "@/components/Global/StarBoundProvider";
@@ -16,17 +17,24 @@ import { FIREBASE_DB, FIREBASE_AUTH } from "@/FirebaseConfig";
 import { useFocusEffect } from "expo-router";
 import TileBackground from "../../components/background/Background";
 import LoadingComponent from "@/components/loading/LoadingComponent";
+import { useNavigation } from "@react-navigation/native";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 export default function FleetMap() {
+  const navigation = useNavigation();
   const { data, setData, gameRoom } = useStarBoundContext();
   const [ships, setShips] = useState([]);
   const [shipPressed, setShipPressed] = useState(null);
   const [loading, setLoading] = useState(false);
   const user = FIREBASE_AUTH.currentUser;
-  console.log("GameRoom in GameMap:", gameRoom);
-  console.log("Ships in GameMap:", JSON.stringify(ships.length, null, 2));
+  //console.log("GameRoom in GameMap:", gameRoom);
+  //console.log("Ships in GameMap:", JSON.stringify(ships.length, null, 2));
+
+  const navigateToStats = (shipId) => {
+    navigation.navigate("Stats", { shipId, from: "GameMap" });
+    //console.log("Navigated to Stats:", shipId);
+  };
 
   const updatingPosition = async (shipId, x, y) => {
     if (!ships || !user) return;
@@ -61,8 +69,8 @@ export default function FleetMap() {
   if (loading) {
     return <LoadingComponent whatToSay="Entering the battle..." />;
   }
-  console.log("User in GameMap:", user.uid);
-  console.log("Ship ID in GameMap:", ships.id);
+  /*   console.log("User in GameMap:", user.uid);
+  console.log("Ship ID in GameMap:", ships.id); */
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -77,6 +85,10 @@ export default function FleetMap() {
                 onStartShouldSetPanResponder: () => true,
                 onPanResponderGrant: () => {
                   ship.position.extractOffset();
+                  navigateToStats(ship.id);
+                  /*  setShipPressed((prevId) =>
+                    prevId === ship.id ? null : ship.id
+                  ); */
                 },
                 onPanResponderMove: Animated.event(
                   [null, { dx: ship.position.x, dy: ship.position.y }],
@@ -92,26 +104,27 @@ export default function FleetMap() {
             : undefined;
 
           return (
-            <Animated.View
-              key={ship.id}
-              {...(isUserShip ? panResponder.panHandlers : {})}
-              style={[
-                styles.ship,
-                {
-                  transform: ship.position.getTranslateTransform(),
-                },
-              ]}
-            >
-              <Image
-                source={{ uri: ship.image }}
-                style={{
-                  opacity: shipPressed === ship.id ? 0.25 : 1,
-                  width: ship.width / 4,
-                  height: ship.height / 4,
-                }}
-                resizeMode="contain"
-              />
-            </Animated.View>
+            <TouchableOpacity key={ship.id}>
+              <Animated.View
+                {...(isUserShip ? panResponder.panHandlers : {})}
+                style={[
+                  styles.ship,
+                  {
+                    transform: ship.position.getTranslateTransform(),
+                  },
+                ]}
+              >
+                <Image
+                  source={{ uri: ship.image }}
+                  style={{
+                    //opacity: shipPressed === ship.id ? 0.25 : 1,
+                    width: ship.width / 4,
+                    height: ship.height / 4,
+                  }}
+                  resizeMode="contain"
+                />
+              </Animated.View>
+            </TouchableOpacity>
           );
         })}
       </View>

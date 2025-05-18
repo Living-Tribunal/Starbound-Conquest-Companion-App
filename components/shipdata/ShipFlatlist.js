@@ -104,7 +104,10 @@ export default function ShipFlatList({ type, fleetClass }) {
                   if (toggleToDelete) {
                     deleteShip(item);
                   } else {
-                    navigation.navigate("Stats", { shipId: item.id });
+                    navigation.navigate("Stats", {
+                      shipId: item.id,
+                      from: "Player",
+                    });
                     //console.log("Navigated to Stats:", item.id);
                   }
                 }}

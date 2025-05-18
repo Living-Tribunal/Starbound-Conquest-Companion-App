@@ -27,6 +27,7 @@ import { getFleetData } from "@/components/API/API.js";
 
 export default function ShipStats({ route }) {
   const navigation = useNavigation();
+  const { from } = route.params;
   const user = FIREBASE_AUTH.currentUser;
   const { shipId } = route.params || {};
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -54,14 +55,26 @@ export default function ShipStats({ route }) {
     diceValueToShare,
     setDiceValueToShare,
     firstDice,
+    fromGameMap,
+    setFromGameMap,
   } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
   const ShipData = ship ? ShipAttributes[ship.type] : null;
+  console.log("From in ShipStats Initially:", from);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (from) {
+        setFromGameMap(from);
+        console.log("Set fromGameMap to:", from);
+      }
+    }, [from, setFromGameMap])
+  );
 
   useEffect(() => {
     setSelectedFaction(faction);
     /* console.log(faction); */
-  }, [faction]);
+  }, [faction, from]);
 
   //console.log(`in Ship Stats: ${JSON.stringify(diceValueToShare, null, 2)}`);
 
@@ -509,7 +522,7 @@ export default function ShipStats({ route }) {
       <HeaderComponent
         onPress={() => setMovementBonus(0)}
         text="Ship Stats"
-        NavToWhere={"Player"}
+        NavToWhere={fromGameMap === "GameMap" ? "GameMap" : "Player"}
       />
       <ScrollView
         nestedScrollEnabled
@@ -593,6 +606,10 @@ export default function ShipStats({ route }) {
               },
             ]}
             onPress={() => {
+              navigation.navigate("BattleGround", {
+                ship: ship,
+                from: "ShipStats",
+              });
               setSingleUser(null);
               setSingleUserShip(null);
               setHit(null);

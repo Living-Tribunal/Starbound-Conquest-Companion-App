@@ -32,6 +32,7 @@ import { useNavigation } from "@react-navigation/native";
 import { getDoc } from "firebase/firestore";
 
 export default function BattleGround(props) {
+  const { from } = props.route.params;
   const { ship } = props.route.params;
   const navigation = useNavigation();
   const {
@@ -53,6 +54,8 @@ export default function BattleGround(props) {
     setData,
     setHit,
     setWeaponId,
+    fromGameMap,
+    setFromGameMap,
   } = useStarBoundContext();
   const [modal, setModal] = useState(false);
   const [newHP, setNewHP] = useState(0);
@@ -61,6 +64,8 @@ export default function BattleGround(props) {
   const user = FIREBASE_AUTH.currentUser;
 
   const selectedShipDice = liveShip ? shipBattleDiceMapping[ship.type] : [];
+  //console.log("From in BattleGround:", from);
+  console.log("from State in BattleGround:", fromGameMap);
 
   const settingHitState = async () => {
     if (!ship || !user) return;

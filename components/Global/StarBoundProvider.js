@@ -35,6 +35,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
 
   const [faction, setFaction] = useState("");
   const [getAllUsersShipToggled, setGetAllUsersShipToggled] = useState([]);
+  const [fromGameMap, setFromGameMap] = useState(null);
 
   const [showFighterClass, setShowFighterClass] = useState(true);
   const [showDestroyerClass, setShowDestroyerClass] = useState(true);
@@ -171,6 +172,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setGetAllUsersShipToggled,
         diceValueToShare,
         setDiceValueToShare,
+        fromGameMap,
+        setFromGameMap,
       }}
     >
       {children}
