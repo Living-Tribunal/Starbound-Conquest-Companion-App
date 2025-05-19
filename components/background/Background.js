@@ -3,8 +3,8 @@ import { View, Image, Dimensions } from "react-native";
 const TILE_SIZE = 256;
 const screen = Dimensions.get("window");
 
-const rows = Math.ceil((screen.height / TILE_SIZE) * 4);
-const cols = Math.ceil((screen.width / TILE_SIZE) * 4);
+const rows = Math.ceil((screen.height / TILE_SIZE) * 3);
+const cols = Math.ceil((screen.width / TILE_SIZE) * 6);
 const image = require("../../assets/background/starfield.png");
 
 export default function TiledBackground() {
