@@ -60,13 +60,13 @@ export default function ShipStats({ route }) {
   } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
   const ShipData = ship ? ShipAttributes[ship.type] : null;
-  console.log("From in ShipStats Initially:", from);
+  //console.log("From in ShipStats Initially:", from);
 
   useFocusEffect(
     useCallback(() => {
       if (from) {
         setFromGameMap(from);
-        console.log("Set fromGameMap to:", from);
+        //console.log("Set fromGameMap to:", from);
       }
     }, [from, setFromGameMap])
   );

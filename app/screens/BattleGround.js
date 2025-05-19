@@ -65,7 +65,7 @@ export default function BattleGround(props) {
 
   const selectedShipDice = liveShip ? shipBattleDiceMapping[ship.type] : [];
   //console.log("From in BattleGround:", from);
-  console.log("from State in BattleGround:", fromGameMap);
+  //console.log("from State in BattleGround:", fromGameMap);
 
   const settingHitState = async () => {
     if (!ship || !user) return;

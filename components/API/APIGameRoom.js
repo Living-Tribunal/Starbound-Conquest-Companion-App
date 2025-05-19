@@ -47,7 +47,7 @@ export const getAllShipsInGameRoom = async ({
     }
 
     setData(allShips);
-    console.log("✅ Loaded ships for all players in room:", allShips.length);
+    //console.log("✅ Loaded ships for all players in room:", allShips.length);
   } catch (e) {
     console.error("❌ Failed to get all ships:", e);
   } finally {

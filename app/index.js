@@ -1,3 +1,5 @@
+import "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   Image,
   TouchableOpacity,
@@ -240,46 +242,49 @@ function MainTabs() {
 // Main App Navigator
 export default function AppNavigator() {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.dark_gray }}>
-      <StatusBar />
-      <StarBoundProvider>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
-          initialRouteName={
-            FIREBASE_AUTH.currentUser && FIREBASE_AUTH.currentUser.emailVerified
-              ? "MainTabs"
-              : "Login"
-          }
-        >
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.dark_gray }}>
+        <StatusBar />
+        <StarBoundProvider>
+          <Stack.Navigator
+            screenOptions={{
               headerShown: false,
             }}
-          />
-          <Stack.Screen
-            name="MainTabs"
-            component={MainTabs}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="Preview"
-            animation="fade"
-            component={FactionInfoPreview}
-            options={{
-              headerShown: false,
-              animation: "fade_from_bottom",
-            }}
-          />
-        </Stack.Navigator>
-      </StarBoundProvider>
-      <Toast />
-    </SafeAreaView>
+            initialRouteName={
+              FIREBASE_AUTH.currentUser &&
+              FIREBASE_AUTH.currentUser.emailVerified
+                ? "MainTabs"
+                : "Login"
+            }
+          >
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="MainTabs"
+              component={MainTabs}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="Preview"
+              animation="fade"
+              component={FactionInfoPreview}
+              options={{
+                headerShown: false,
+                animation: "fade_from_bottom",
+              }}
+            />
+          </Stack.Navigator>
+        </StarBoundProvider>
+        <Toast />
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 }
 
