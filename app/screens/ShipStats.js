@@ -16,7 +16,6 @@ import { useState, useEffect, useCallback } from "react";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
 import { FONTS } from "../../constants/fonts.js";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { doc, or, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import HeaderComponent from "@/components/header/HeaderComponent.js";
@@ -38,7 +37,6 @@ export default function ShipStats({ route }) {
   const [orderDescription, setOrderDescription] = useState("");
   const [selectedFaction, setSelectedFaction] = useState("Nova Raiders");
   const [movementBonus, setMovementBonus] = useState(0);
-  const tabBarHeight = useBottomTabBarHeight();
   const {
     faction,
     data,
@@ -528,7 +526,6 @@ export default function ShipStats({ route }) {
         nestedScrollEnabled
         contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom: tabBarHeight,
         }}
       >
         <Text style={styles.subHeaderText}>

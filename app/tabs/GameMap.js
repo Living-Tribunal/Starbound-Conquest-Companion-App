@@ -18,6 +18,7 @@ import { useFocusEffect } from "expo-router";
 import TileBackground from "../../components/background/Background";
 import LoadingComponent from "@/components/loading/LoadingComponent";
 import { useNavigation } from "@react-navigation/native";
+import { TouchableWithoutFeedback, Keyboard } from "react-native";
 import {
   PinchGestureHandler,
   GestureHandlerRootView,
@@ -43,6 +44,7 @@ export default function FleetMap() {
   const [isDraggingShip, setIsDraggingShip] = useState(false);
   //console.log("GameRoom in GameMap:", gameRoom);
   //console.log("Ships in GameMap:", JSON.stringify(ships.length, null, 2));
+  console.log("ship pressed:", shipPressed);
 
   const updateZoom = (delta) => {
     const newScale = Math.max(0.5, Math.min(scaleValue.current + delta, 2));
@@ -69,10 +71,9 @@ export default function FleetMap() {
   });
 
   const navigateToStats = (shipId) => {
+    console.log("Navigating with shipId:", shipId);
     navigation.navigate("Stats", { shipId, from: "GameMap" });
-    //console.log("Navigated to Stats:", shipId);
   };
-
   const updatingPosition = async (shipId, x, y) => {
     if (!ships || !user) return;
     try {
@@ -120,83 +121,105 @@ export default function FleetMap() {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.zoomControls}>
-        <TouchableOpacity
-          onPress={() => {
-            scale.setValue(Math.min(scale._value + 0.3, 2));
-          }}
-          style={styles.zoomButton}
-        >
-          <Text style={styles.zoomText}>➕</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => {
-            scale.setValue(Math.max(scale._value - 0.3, 0.25));
-          }}
-          style={styles.zoomButton}
-        >
-          <Text style={styles.zoomText}>➖</Text>
-        </TouchableOpacity>
-      </View>
-      <PinchGestureHandler
-        onGestureEvent={Animated.event(
-          [{ nativeEvent: { scale: pinchScale } }],
-          { useNativeDriver: false }
+        {shipPressed && (
+          <View style={styles.statsOverlay}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: Colors.hudDarker,
+                borderRadius: 5,
+                padding: 5,
+                borderWidth: 1,
+                borderColor: Colors.hud,
+              }}
+              onPress={() => navigateToStats(shipPressed)}
+            >
+              <Text
+                style={{
+                  color: Colors.hud,
+                  fontFamily: "LeagueSpartan-ExtraBold",
+                  textAlign: "center",
+                  fontSize: 12,
+                }}
+              >
+                Ship Stats
+              </Text>
+            </TouchableOpacity>
+          </View>
         )}
-        onHandlerStateChange={(event) => {
-          console.log("Pinch event:", event.nativeEvent);
-          if (event.nativeEvent.state === State.END) {
-            let newScale = scaleValue.current * event.nativeEvent.scale;
-            newScale = Math.max(0.5, Math.min(newScale, 2));
-            scale.setValue(newScale);
-            scaleValue.current = newScale;
-            pinchScale.setValue(1); // reset after gesture ends
-          }
-        }}
-      >
-        <Animated.View
-          style={[
-            styles.container,
-            {
-              transform: [
-                ...worldPan.getTranslateTransform(),
-                { scale: scale },
-              ],
-            },
-          ]}
-          {...worldPanResponder.panHandlers}
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 10,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
-          <TileBackground />
-          {ships.map((ship) => {
-            const isUserShip = user.uid === ship.userId;
-            const panResponder = isUserShip
-              ? PanResponder.create({
-                  onStartShouldSetPanResponder: () => true,
-                  onPanResponderGrant: () => {
-                    setIsDraggingShip(true);
-                    ship.position.extractOffset();
-                    //navigateToStats(ship.id);
-                    setShipPressed(ship.id);
-                  },
-                  onPanResponderMove: (e, gestureState) => {
-                    const scaleFactor = scale.__getValue();
-                    ship.position.setValue({
-                      x: gestureState.dx / scaleFactor,
-                      y: gestureState.dy / scaleFactor,
-                    });
-                  },
-                  onPanResponderRelease: () => {
-                    setIsDraggingShip(false);
-                    ship.position.flattenOffset();
-                    const { x, y } = ship.position.__getValue();
-                    updatingPosition(ship.id, x, y);
-                  },
-                })
-              : undefined;
+          <TouchableOpacity
+            onPress={() => {
+              scale.setValue(Math.min(scale._value + 0.3, 2));
+            }}
+            style={styles.zoomButton}
+          >
+            <Text style={styles.zoomText}>+</Text>
+          </TouchableOpacity>
 
-            return (
-              <TouchableOpacity key={ship.id}>
+          <TouchableOpacity
+            onPress={() => {
+              scale.setValue(Math.max(scale._value - 0.3, 0.25));
+            }}
+            style={styles.zoomButton}
+          >
+            <Text style={styles.zoomText}>-</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>
+          <Animated.View
+            style={[
+              styles.container,
+              {
+                transform: [
+                  ...worldPan.getTranslateTransform(),
+                  { scale: scale },
+                ],
+              },
+            ]}
+            {...worldPanResponder.panHandlers}
+          >
+            <TileBackground />
+            {ships.map((ship) => {
+              const isUserShip = user.uid === ship.user;
+              const isSelected = shipPressed === ship.id;
+
+              const panResponder = isUserShip
+                ? PanResponder.create({
+                    onStartShouldSetPanResponder: () => true,
+                    onPanResponderGrant: () => {
+                      setIsDraggingShip(true);
+                      ship.position.extractOffset();
+                      setShipPressed(ship.id);
+                      //navigateToStats(ship.id)
+                    },
+                    onPanResponderMove: (e, gestureState) => {
+                      const scaleFactor = scale.__getValue();
+                      ship.position.setValue({
+                        x: gestureState.dx / scaleFactor,
+                        y: gestureState.dy / scaleFactor,
+                      });
+                    },
+                    onPanResponderRelease: () => {
+                      setIsDraggingShip(false);
+                      ship.position.flattenOffset();
+                      const { x, y } = ship.position.__getValue();
+                      updatingPosition(ship.id, x, y);
+                    },
+                  })
+                : undefined;
+
+              return (
                 <Animated.View
+                  key={ship.id}
                   {...(isUserShip ? panResponder.panHandlers : {})}
                   style={[
                     styles.ship,
@@ -218,26 +241,34 @@ export default function FleetMap() {
                       borderRadius: 2,
                     }}
                   />
-                  <Image
-                    source={{ uri: ship.image }}
+                  <View
                     style={{
-                      width: ship.width / 4,
-                      height: ship.height / 4,
+                      borderWidth: isSelected ? 1 : 2,
+                      borderColor: isSelected ? Colors.hud : null,
+                      borderRadius: 5,
+                      backgroundColor: "black",
+                      marginTop: 5,
+                      padding: 5,
                     }}
-                    resizeMode="contain"
-                  />
-                  <Text style={[styles.info]}>{ship.shipId}</Text>
-                  {shipPressed === ship.id && (
-                    <View>
-                      <Text style={{ color: Colors.gold }}>Pressed</Text>
-                    </View>
-                  )}
+                  >
+                    <Image
+                      source={{ uri: ship.image }}
+                      style={{
+                        width: ship.width / 4,
+                        height: ship.height / 4,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                      resizeMode="contain"
+                    />
+                    <Text style={styles.info}>{ship.shipId}</Text>
+                  </View>
                 </Animated.View>
-              </TouchableOpacity>
-            );
-          })}
-        </Animated.View>
-      </PinchGestureHandler>
+              );
+            })}
+          </Animated.View>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -267,14 +298,17 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   zoomButton: {
-    backgroundColor: "#333",
-    padding: 10,
+    backgroundColor: Colors.goldenrod,
+    width: 30,
+    height: 30,
     borderRadius: 8,
-    marginVertical: 5,
+    borderWidth: 1,
+    borderColor: Colors.gold,
   },
   zoomText: {
-    color: "white",
-    fontSize: 18,
+    color: Colors.gold,
+    fontSize: 15,
+    textAlign: "center",
   },
   info: {
     color: Colors.hud,
@@ -285,6 +319,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.hud,
     borderRadius: 5,
+    opacity: 0.5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  touchButton: {
+    borderWidth: 1,
+    borderColor: Colors.lightened_gold,
+    borderRadius: 5,
+    backgroundColor: Colors.goldenrod,
+    marginTop: 5,
+    padding: 5,
     opacity: 0.5,
   },
 });
