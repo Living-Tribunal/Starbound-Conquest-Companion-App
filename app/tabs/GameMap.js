@@ -8,6 +8,7 @@ import {
   Dimensions,
   SafeAreaView,
   Text,
+  Pressable,
   TouchableOpacity,
 } from "react-native";
 import { getAllShipsInGameRoom } from "@/components/API/APIGameRoom";
@@ -18,13 +19,9 @@ import { useFocusEffect } from "expo-router";
 import TileBackground from "../../components/background/Background";
 import LoadingComponent from "@/components/loading/LoadingComponent";
 import { useNavigation } from "@react-navigation/native";
-import { TouchableWithoutFeedback, Keyboard } from "react-native";
-import {
-  PinchGestureHandler,
-  GestureHandlerRootView,
-  State,
-} from "react-native-gesture-handler";
 import { Colors } from "@/constants/Colors";
+import ShipSwitch from "@/components/switch/ShipSwitch";
+import ZoomControls from "@/components/GameMapButtons/ZoonControls";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -33,12 +30,11 @@ export default function FleetMap() {
   const { data, setData, gameRoom } = useStarBoundContext();
   const [ships, setShips] = useState([]);
   const [shipPressed, setShipPressed] = useState(null);
+  const [showFiringArcs, setShowFiringArcs] = useState(true);
   const [loading, setLoading] = useState(false);
   const user = FIREBASE_AUTH.currentUser;
-  const pinchScale = useRef(new Animated.Value(1)).current; // live scale during gesture
-  const scale = useRef(new Animated.Value(1)).current; // base scale
+  const scale = useRef(new Animated.Value(1)).current;
   const scaleValue = useRef(1);
-  const animatedScale = Animated.multiply(scale, pinchScale);
 
   const worldPan = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
   const [isDraggingShip, setIsDraggingShip] = useState(false);
@@ -49,9 +45,14 @@ export default function FleetMap() {
   const worldPanResponder = PanResponder.create({
     //onStartShouldSetPanResponder: () => !isDraggingShip,
     //onMoveShouldSetPanResponder: () => !isDraggingShip,
-    onStartShouldSetPanResponder: () => !isDraggingShip,
-    onMoveShouldSetPanResponder: () => !isDraggingShip,
+    onStartShouldSetPanResponder: (evt, gestureState) => {
+      return gestureState.numberActiveTouches === 1 && !isDraggingShip;
+    },
+    onMoveShouldSetPanResponder: (evt, gestureState) => {
+      return gestureState.numberActiveTouches === 1 && !isDraggingShip;
+    },
     onPanResponderGrant: () => {
+      console.log("Pan start1");
       worldPan.extractOffset();
     },
     onPanResponderMove: Animated.event(
@@ -136,223 +137,131 @@ export default function FleetMap() {
 
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <View style={styles.zoomControls}>
-        {shipPressed && (
-          <View style={styles.statsOverlay}>
-            <TouchableOpacity
-              style={{
-                backgroundColor: Colors.hudDarker,
-                borderRadius: 5,
-                padding: 5,
-                borderWidth: 1,
-                borderColor: Colors.hud,
-              }}
-              onPress={() => navigateToStats(shipPressed)}
+      <ZoomControls
+        scale={scale}
+        shipPressed={shipPressed}
+        handleShipRotation={handleShipRotation}
+        setShowFiringArcs={setShowFiringArcs}
+        showFiringArcs={showFiringArcs}
+        setShipPressed={setShipPressed}
+        setIsDraggingShip={setIsDraggingShip}
+        navigateToStats={navigateToStats}
+      />
+      <Animated.View
+        style={[
+          styles.container,
+          {
+            transform: [...worldPan.getTranslateTransform(), { scale: scale }],
+          },
+        ]}
+        {...worldPanResponder.panHandlers}
+      >
+        <TileBackground />
+        {ships.map((ship) => {
+          const isUserShip = user.uid === ship.user;
+          const isSelected = shipPressed === ship.id;
+          const panResponder = isUserShip
+            ? PanResponder.create({
+                onStartShouldSetPanResponder: () => true,
+                onPanResponderGrant: () => {
+                  console.log("Pan start");
+                  setIsDraggingShip(true);
+                  ship.position.extractOffset();
+                  setShipPressed(ship.id);
+                },
+                onPanResponderMove: (e, gestureState) => {
+                  const scaleFactor = scale.__getValue();
+                  ship.position.setValue({
+                    x: gestureState.dx / scaleFactor,
+                    y: gestureState.dy / scaleFactor,
+                  });
+                },
+                onPanResponderRelease: () => {
+                  setIsDraggingShip(false);
+                  ship.position.flattenOffset();
+                  const { x, y } = ship.position.__getValue();
+                  const rotation = ship.rotation.__getValue();
+                  console.log("Rotation:", rotation);
+                  updatingPosition(ship.id, x, y, rotation);
+                },
+              })
+            : undefined;
+
+          return (
+            <Animated.View
+              key={ship.id}
+              {...(isUserShip ? panResponder.panHandlers : {})}
+              style={[
+                styles.ship,
+                {
+                  transform: [
+                    ...ship.position.getTranslateTransform(),
+                    {
+                      rotate: ship.rotation.interpolate({
+                        inputRange: [0, 360],
+                        outputRange: ["0deg", "360deg"],
+                      }),
+                    },
+                  ],
+                },
+              ]}
             >
-              <Text
+              <View
                 style={{
-                  color: Colors.hud,
-                  fontFamily: "LeagueSpartan-ExtraBold",
-                  textAlign: "center",
-                  fontSize: 12,
+                  height: 5,
+                  width: `${(ship.hp / ship.maxHP) * 100}%`,
+                  backgroundColor:
+                    ship.hp / ship.maxHP > 0.5
+                      ? "limegreen"
+                      : ship.hp / ship.maxHP > 0.25
+                      ? "yellow"
+                      : "red",
+                  borderRadius: 2,
+                }}
+              />
+              <View
+                style={{
+                  marginTop: 5,
+                  padding: 5,
                 }}
               >
-                Ship Stats
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        <View
-          style={{
-            flexDirection: "row",
-            gap: 10,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              scale.setValue(Math.max(scale._value - 0.3, 0.25));
-            }}
-            style={styles.zoomButton}
-          >
-            <Image
-              style={{ tintColor: Colors.hud, width: 30, height: 30 }}
-              source={require("../../assets/icons/icons8-minus-100.png")}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              scale.setValue(Math.min(scale._value + 0.3, 2));
-            }}
-            style={styles.zoomButton}
-          >
-            <Image
-              style={{ tintColor: Colors.hud, width: 30, height: 30 }}
-              source={require("../../assets/icons/icons8-plus-100.png")}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={{ justifyContent: "center", alignItems: "center" }}>
-          {shipPressed && (
-            <View style={{ flexDirection: "row", gap: 10 }}>
-              <TouchableOpacity
-                style={[styles.zoomButton]}
-                onPress={() => handleShipRotation(shipPressed, -45)} // rotate 15 degrees
-              >
                 <Image
-                  style={{ tintColor: Colors.hud, width: 30, height: 30 }}
-                  source={require("../../assets/icons/icons8-rotate-left-50.png")}
+                  source={{ uri: ship.image }}
+                  style={{
+                    width: ship.width / 3,
+                    height: ship.height / 3,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  resizeMode="contain"
                 />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.zoomButton]}
-                //adjust the rotation of the ship HERE!!
-                onPress={() => handleShipRotation(shipPressed, 45)}
-              >
-                <Image
-                  style={{ tintColor: Colors.hud, width: 30, height: 30 }}
-                  source={require("../../assets/icons/icons8-rotate-right-50.png")}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      </View>
-      <View style={{ flex: 1 }}>
-        <View
-          style={{ flex: 1 }}
-          onStartShouldSetResponderCapture={() => {
-            if (shipPressed) {
-              setShipPressed(null);
-            }
-            return false; // ← allow PanResponder to take over
-          }}
-        >
-          <Animated.View
-            style={[
-              styles.container,
-              {
-                transform: [
-                  ...worldPan.getTranslateTransform(),
-                  { scale: scale },
-                ],
-              },
-            ]}
-            {...worldPanResponder.panHandlers}
-          >
-            <TileBackground />
-
-            {ships.map((ship) => {
-              const isUserShip = user.uid === ship.user;
-              const isSelected = shipPressed === ship.id;
-              switch (ship.type) {
-                case "Fighter":
-                  console.log("Fighter");
-                  break;
-                case "Destroyer":
-                  console.log("Destroyer");
-                  break;
-                case "Cruiser":
-                  console.log("Cruiser");
-                  break;
-                case "Carrier":
-                  console.log("Carrier");
-                  break;
-                case "Dreadnought":
-                  console.log("Dreadnought");
-                  break;
-                default:
-                  console.log("No ship type found");
-              }
-
-              const panResponder = isUserShip
-                ? PanResponder.create({
-                    onStartShouldSetPanResponder: () => true,
-                    onPanResponderGrant: () => {
-                      setIsDraggingShip(true);
-                      ship.position.extractOffset();
-                      setShipPressed(ship.id);
-                      //navigateToStats(ship.id)
-                    },
-                    onPanResponderMove: (e, gestureState) => {
-                      const scaleFactor = scale.__getValue();
-                      ship.position.setValue({
-                        x: gestureState.dx / scaleFactor,
-                        y: gestureState.dy / scaleFactor,
-                      });
-                    },
-                    onPanResponderRelease: () => {
-                      setIsDraggingShip(false);
-                      ship.position.flattenOffset();
-                      const { x, y } = ship.position.__getValue();
-                      const rotation = ship.rotation.__getValue();
-                      console.log("Rotation:", rotation);
-                      updatingPosition(ship.id, x, y, rotation);
-                    },
-                  })
-                : undefined;
-
-              return (
-                <Animated.View
-                  key={ship.id}
-                  {...(isUserShip ? panResponder.panHandlers : {})}
-                  style={[
-                    styles.ship,
-                    {
-                      transform: [
-                        ...ship.position.getTranslateTransform(),
-                        {
-                          rotate: ship.rotation.interpolate({
-                            inputRange: [0, 360],
-                            outputRange: ["0deg", "360deg"],
-                          }),
-                        },
-                      ],
-                    },
-                  ]}
-                >
-                  <View
-                    style={{
-                      height: 5,
-                      width: `${(ship.hp / ship.maxHP) * 100}%`,
-                      backgroundColor:
-                        ship.hp / ship.maxHP > 0.5
-                          ? "limegreen"
-                          : ship.hp / ship.maxHP > 0.25
-                          ? "yellow"
-                          : "red",
-                      borderRadius: 2,
-                    }}
+                {shipPressed && isUserShip && ship.id === shipPressed && (
+                  <ShipSwitch
+                    ship={ships.find((s) => s.id === shipPressed)}
+                    showFiringArcs={showFiringArcs}
                   />
-                  <View
-                    style={{
-                      borderWidth: isSelected ? 1 : 2,
-                      borderColor: isSelected ? Colors.hud : null,
-                      borderRadius: 5,
-                      backgroundColor: "black",
-                      marginTop: 5,
-                      padding: 5,
-                    }}
-                  >
-                    <Image
-                      source={{ uri: ship.image }}
-                      style={{
-                        width: ship.width / 4,
-                        height: ship.height / 4,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                      resizeMode="contain"
-                    />
-                  </View>
-                  <Text style={styles.info}>{ship.shipId}</Text>
-                </Animated.View>
-              );
-            })}
-          </Animated.View>
-        </View>
-      </View>
+                )}
+              </View>
+              <Text
+                style={[
+                  styles.info,
+                  {
+                    color: ship.id === shipPressed ? Colors.gold : Colors.hud,
+                    backgroundColor:
+                      ship.id === shipPressed
+                        ? Colors.goldenrod
+                        : Colors.hudDarker,
+                    borderColor:
+                      ship.id === shipPressed ? Colors.gold : Colors.hud,
+                  },
+                ]}
+              >
+                {ship.shipId}
+              </Text>
+            </Animated.View>
+          );
+        })}
+      </Animated.View>
     </SafeAreaView>
   );
 }
@@ -360,11 +269,10 @@ export default function FleetMap() {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: Colors.dark_gray,
+    backgroundColor: "black",
   },
   container: {
     flex: 1,
-    backgroundColor: "red",
   },
   ship: {
     position: "absolute",
@@ -373,28 +281,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
-  },
-  zoomControls: {
-    position: "absolute",
-    top: 20,
-    right: 20,
-    zIndex: 100,
-    gap: 10,
-  },
-  zoomButton: {
-    backgroundColor: Colors.hudDarker,
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.hud,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  zoomText: {
-    color: Colors.gold,
-    fontSize: 15,
-    textAlign: "center",
   },
   info: {
     color: Colors.hud,
@@ -408,14 +294,5 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     justifyContent: "center",
     alignItems: "center",
-  },
-  touchButton: {
-    borderWidth: 1,
-    borderColor: Colors.lightened_gold,
-    borderRadius: 5,
-    backgroundColor: Colors.goldenrod,
-    marginTop: 5,
-    padding: 5,
-    opacity: 0.5,
   },
 });

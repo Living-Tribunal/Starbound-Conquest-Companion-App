@@ -1,10 +1,14 @@
 import { View, Image, Dimensions } from "react-native";
+import { Colors } from "@/constants/Colors";
 
 const TILE_SIZE = 256;
 const screen = Dimensions.get("window");
+const VIRTUAL_WIDTH = 1200;
+const VIRTUAL_HEIGHT = 900;
 
-const rows = Math.ceil((screen.height / TILE_SIZE) * 3);
-const cols = Math.ceil((screen.width / TILE_SIZE) * 6);
+const rows = Math.ceil(VIRTUAL_HEIGHT / TILE_SIZE);
+const cols = Math.ceil(VIRTUAL_WIDTH / TILE_SIZE);
+
 const image = require("../../assets/background/starfield.png");
 
 export default function TiledBackground() {
@@ -17,16 +21,27 @@ export default function TiledBackground() {
           key={`${x}-${y}`}
           source={image}
           style={{
-            width: TILE_SIZE / 1.5,
-            height: TILE_SIZE / 1.5,
+            width: TILE_SIZE,
+            height: TILE_SIZE,
             position: "absolute",
-            left: (x * TILE_SIZE) / 1.5,
-            top: (y * TILE_SIZE) / 1.5,
+            left: x * TILE_SIZE,
+            top: y * TILE_SIZE,
+            borderWidth: 1,
           }}
         />
       );
     }
   }
 
-  return <View style={{ flex: 1 }}>{tiles}</View>;
+  return (
+    <View
+      style={{
+        width: VIRTUAL_WIDTH,
+        height: VIRTUAL_HEIGHT,
+        position: "absolute",
+      }}
+    >
+      {tiles}
+    </View>
+  );
 }
