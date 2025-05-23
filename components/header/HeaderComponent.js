@@ -3,9 +3,12 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { FONTS } from "@/constants/fonts";
 import { useNavigation } from "@react-navigation/native";
+import { useMapImageContext } from "@/components/Global/MapImageContext";
 
 export default function HeaderComponent({ text, NavToWhere, onPress }) {
   const navigation = useNavigation();
+  const { gameSectors } = useMapImageContext();
+  console.log("Game Sectors in HeaderComponent:", gameSectors);
 
   const goBack = () => {
     navigation.navigate(NavToWhere);

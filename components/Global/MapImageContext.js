@@ -9,6 +9,12 @@ export const MapImageProvider = ({ children }) => {
   const [MapImage3, setMapImage3] = useState(null);
   const [gameSectors, setGameSectors] = useState("Show All Ships");
   const [tileSize, setTileSize] = useState(900);
+  const [MapImage3Top, setMapImage3Top] = useState(null);
+  const [MapImage3Left, setMapImage3Left] = useState(null);
+  const [MapImageTop, setMapImageTop] = useState(null);
+  const [MapImageLeft, setMapImageLeft] = useState(null);
+  const [MapImage2Top, setMapImage2Top] = useState(null);
+  const [MapImage2Left, setMapImage2Left] = useState(null);
 
   return (
     <MapImageContext.Provider
@@ -25,6 +31,18 @@ export const MapImageProvider = ({ children }) => {
         setGameSectors,
         tileSize,
         setTileSize,
+        MapImage3Top,
+        setMapImage3Top,
+        MapImage3Left,
+        setMapImage3Left,
+        MapImageTop,
+        setMapImageTop,
+        MapImageLeft,
+        setMapImageLeft,
+        MapImage2Top,
+        setMapImage2Top,
+        MapImage2Left,
+        setMapImage2Left,
       }}
     >
       {children}

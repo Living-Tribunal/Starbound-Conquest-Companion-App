@@ -14,14 +14,26 @@ export const MapSector = ({
   MapImage3,
   SectorName,
   tileSize,
+  MapImage3Top,
+  MapImage3Left,
+  MapImageTop,
+  MapImageLeft,
+  MapImage2Top,
+  MapImage2Left,
 }) => {
   const {
     setMapImagesBackground,
     setMapImage,
     setMapImage2,
     setMapImage3,
+    setMapImage3Top,
+    setMapImage3Left,
     setGameSectors,
     setTileSize,
+    setMapImageTop,
+    setMapImageLeft,
+    setMapImage2Top,
+    setMapImage2Left,
   } = useMapImageContext();
   const handlePress = () => {
     setMapImagesBackground(MapImagesBackground || null);
@@ -30,6 +42,12 @@ export const MapSector = ({
     setMapImage3(MapImage3 || null);
     setTileSize(tileSize || null);
     setGameSectors(SectorName || null);
+    setMapImage3Top(MapImage3Top || null);
+    setMapImage3Left(MapImage3Left || null);
+    setMapImageTop(MapImageTop || null);
+    setMapImageLeft(MapImageLeft || null);
+    setMapImage2Top(MapImage2Top || null);
+    setMapImage2Left(MapImage2Left || null);
     setTimeout(() => {
       navigation.navigate(NavToSector, { sector: SectorName });
     }, 100);

@@ -37,6 +37,7 @@ export default function ShipStats({ route }) {
   const [orderDescription, setOrderDescription] = useState("");
   const [selectedFaction, setSelectedFaction] = useState("Nova Raiders");
   const [movementBonus, setMovementBonus] = useState(0);
+  const [broadSideBonus, setBroadSideBonus] = useState(0);
   const {
     faction,
     data,
@@ -200,7 +201,7 @@ export default function ShipStats({ route }) {
     try {
       const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", shipId);
       const newHP = Math.max(0, Math.min(Number(hitPoints), ship.maxHP));
-      const { x, y, ...safeData } = ship;
+
       await updateDoc(shipRef, {
         hp: newHP,
       });
@@ -353,7 +354,42 @@ export default function ShipStats({ route }) {
         }
         break;
       case "Broadside":
-        console.log("Broadside");
+        if (localDiceRoll >= 2) {
+          console.log("Broadside Rolled:", localDiceRoll);
+          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+          console.log("Boardside Bonus:", broadSideBonus);
+
+          updateDoc(shipRef, {
+            broadSideBonus: 15,
+            hasRolledDToHit: false,
+          })
+            .then(() => {
+              // Update local data
+              setData((prevData) =>
+                prevData.map((s) =>
+                  s.id === ship.id ? { ...s, broadSideBonus: 15 } : s
+                )
+              );
+              Toast.show({
+                type: "success",
+                text1: "Systems have been reinitialized.",
+                position: "top",
+              });
+            })
+            .catch((error) => {
+              console.error(
+                "Failed to update broadSideBonus in Firestore:",
+                error
+              );
+            });
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Unable to reintialize systems!",
+            position: "top",
+          });
+        }
+        setBroadSideBonus(15);
         break;
       case "Launch Fighters":
         console.log("Launch Fighters");
@@ -534,7 +570,10 @@ export default function ShipStats({ route }) {
     <SafeAreaView style={styles.mainContainer}>
       <StatusBar />
       <HeaderComponent
-        onPress={() => setMovementBonus(0)}
+        onPress={() => {
+          setMovementBonus(0);
+          setBroadSideBonus(0);
+        }}
         text="Ship Stats"
         NavToWhere={fromGameMap === "GameMap" ? "GameMap" : "Player"}
       />
@@ -686,7 +725,7 @@ export default function ShipStats({ route }) {
                   marginTop: 2,
                 }}
               >
-                {ship.moveDistance + movementBonus}
+                {(movementBonus || broadSideBonus || 0) + ship.moveDistance}
               </Text>
             </View>
           </View>

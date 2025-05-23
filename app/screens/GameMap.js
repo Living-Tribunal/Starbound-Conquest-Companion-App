@@ -25,13 +25,13 @@ import ZoomControls from "@/components/GameMapButtons/ZoonControls";
 import TraveledDistance from "@/components/TravelDistance/TravelDistance";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
 import { useMapImageContext } from "@/components/Global/MapImageContext";
-import { useRoute } from "@react-navigation/native";
+import { BlurView } from "expo-blur";
 
 export default function FleetMap() {
   const navigation = useNavigation();
   const { gameSectors, setGameSectors } = useMapImageContext();
-  const route = useRoute();
-  const { sector } = route.params;
+  /*  const route = useRoute();
+  const { sector } = route.params; */
   const { data, setData, gameRoom } = useStarBoundContext();
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [ships, setShips] = useState([]);
@@ -262,6 +262,7 @@ export default function FleetMap() {
           return (
             <Animated.View
               key={ship.id}
+              pointerEvents={ship.isToggled ? "none" : "auto"}
               {...(isUserShip ? panResponder.panHandlers : {})}
               style={[
                 styles.ship,
@@ -289,6 +290,21 @@ export default function FleetMap() {
                 }}
                 resizeMode="contain"
               />
+              <BlurView experimentalBlurMethod={true} intensity={100} tint={80}>
+                <View
+                  style={{
+                    width: 20,
+                    height: 20,
+                    backgroundColor: ship.isToggled
+                      ? Colors.lighter_red
+                      : Colors.green_toggle,
+                    borderRadius: 10,
+                    position: "absolute",
+                    top: 2,
+                    left: 2,
+                  }}
+                />
+              </BlurView>
               {shipPressed && isUserShip && ship.id === shipPressed && (
                 <>
                   <ShipSwitch

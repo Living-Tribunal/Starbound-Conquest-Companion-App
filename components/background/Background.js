@@ -3,8 +3,19 @@ import { View, Image, Dimensions, Animated, StyleSheet } from "react-native";
 import { useMapImageContext } from "../Global/MapImageContext";
 
 export default function TileBackground({ panX, panY }) {
-  const { MapImagesBackground, MapImage, MapImage2, MapImage3, tileSize } =
-    useMapImageContext();
+  const {
+    MapImagesBackground,
+    MapImage,
+    MapImage2,
+    MapImage3,
+    tileSize,
+    MapImage3Top,
+    MapImage3Left,
+    MapImageTop,
+    MapImageLeft,
+    MapImage2Left,
+    MapImage2Top,
+  } = useMapImageContext();
   const [loading, setLoading] = useState(true);
   const TILE_SIZE = tileSize;
   const WORLD_WIDTH = 1400;
@@ -13,7 +24,7 @@ export default function TileBackground({ panX, panY }) {
   const rows = Math.ceil(WORLD_HEIGHT / TILE_SIZE);
   const cols = Math.ceil(WORLD_WIDTH / TILE_SIZE);
 
-/*   console.log("🧱 MapImage:", MapImage);
+  /*   console.log("🧱 MapImage:", MapImage);
   console.log("🧱 MapImagesBackground:", MapImagesBackground); */
   //console.log("🧱 TileBackground rendered");
   useEffect(() => {
@@ -72,7 +83,8 @@ export default function TileBackground({ panX, panY }) {
           position: "absolute",
           width: 1024,
           height: 1024,
-          top: 100,
+          top: MapImage2Top,
+          left: MapImage2Left,
           left: 200,
           transform: [
             { translateX: Animated.multiply(panX, 0.1) },
@@ -88,8 +100,8 @@ export default function TileBackground({ panX, panY }) {
           position: "absolute",
           width: 924,
           height: 924,
-          top: 1700,
-          left: 100,
+          top: MapImageTop,
+          left: MapImageLeft,
           transform: [
             { translateX: Animated.multiply(panX, 0.2) },
             { translateY: Animated.multiply(panY, 0.2) },
@@ -104,8 +116,8 @@ export default function TileBackground({ panX, panY }) {
           position: "absolute",
           width: 900,
           height: 900,
-          top: 1700,
-          left: 200,
+          top: MapImage3Top,
+          left: MapImage3Left,
           transform: [
             { translateX: Animated.multiply(panX, 0.6) },
             { translateY: Animated.multiply(panY, 0.6) },

@@ -54,7 +54,6 @@ export default function Player() {
   const [gameRound, setGameRound] = useState(0);
   const [getAllUsersShipTotals, setGetAllUsersShipTotals] = useState(0);
   const { gameSectors, setGameSectors } = useMapImageContext();
-  const [showAllUsersShips, setShowAllUsersShips] = useState(false);
   const {
     username,
     setUsername,
@@ -189,6 +188,7 @@ export default function Player() {
           shipInterval: 0,
           moveDistanceBonus: 0,
           gameSector: gameSectors,
+          broadSideBonus: 0,
         };
         // Add to Firestore
         const docRef = await addDoc(
@@ -432,6 +432,7 @@ export default function Player() {
             hasRolledDToHit: false,
             shipInterval: increment(1),
             distanceTraveled: 0,
+            broadSideBonus: 0,
           })
         );
       }

@@ -34,15 +34,21 @@ export default function Map() {
         />
         <MapSector
           navigation={navigation}
-          tileSize={1100}
+          tileSize={400}
           NavToSector="GameMap"
           top={400}
           left={-400}
           SectorName="Crucible of Raths"
           MapImagesBackground={MapImages.colorStars}
           MapImage={MapImages.planetBottom}
+          MapImageTop={1800}
+          MapImageLeft={200}
           MapImage2={MapImages.greenplanet}
+          MapImage2Top={400}
+          MapImage2Left={500}
           MapImage3={null}
+          MapImage3Top={null}
+          MapImage3Left={null}
         />
         <MapSector
           navigation={navigation}
@@ -52,9 +58,15 @@ export default function Map() {
           left={-400}
           SectorName="Echoes of Purgatis"
           MapImagesBackground={MapImages.starsImage}
-          MapImage={MapImages.city}
+          MapImage={null}
+          MapImageTop={null}
+          MapImageLeft={null}
           MapImage2={MapImages.largeShip}
+          MapImage2Top={1000}
+          MapImage2Left={500}
           MapImage3={null}
+          MapImage3Top={null}
+          MapImage3Left={null}
         />
         <MapSector
           navigation={navigation}
@@ -64,9 +76,15 @@ export default function Map() {
           left={600}
           SectorName="The Ashward Maw"
           MapImagesBackground={MapImages.nebAshward}
-          MapImage={MapImages.planetBreaking1}
+          MapImage={null}
+          MapImageTop={null}
+          MapImageLeft={null}
           MapImage2={MapImages.ringworld}
+          MapImage2Top={1000}
+          MapImage2Left={500}
           MapImage3={null}
+          MapImage3Top={null}
+          MapImage3Left={null}
         />
         <MapSector
           navigation={navigation}
@@ -77,8 +95,14 @@ export default function Map() {
           SectorName="The Deadward Coil"
           MapImagesBackground={MapImages.starsImage}
           MapImage={MapImages.breaking}
+          MapImageTop={800}
+          MapImageLeft={200}
           MapImage2={null}
+          MapImage2Top={null}
+          MapImage2Left={null}
           MapImage3={MapImages.debris}
+          MapImage3Top={500}
+          MapImage3Left={300}
         />
         <MapSector
           navigation={navigation}
@@ -87,10 +111,14 @@ export default function Map() {
           top={1000}
           left={-600}
           SectorName={"The Cogspire Belt"}
-          MapImagesBackground={MapImages.colorStars}
-          MapImage={MapImages.planet}
-          MapImage2={null}
-          MapImage3={MapImages.pinkNebulae}
+          MapImagesBackground={MapImages.starsImage}
+          MapImage={null}
+          MapImage2={MapImages.planet}
+          MapImage2Top={1000}
+          MapImage2Left={500}
+          MapImage3={null}
+          MapImage3Top={null}
+          MapImage3Left={null}
         />
       </ReactNativeZoomableView>
     </SafeAreaView>

@@ -2,17 +2,11 @@ import { View, Text } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { Colors } from "@/constants/Colors";
 
-export default function TraveledDistance({
-  ship,
-  user,
-  shipPressed,
-  position,
-  resetTrigger,
-}) {
+export default function TraveledDistance({ ship, position, resetTrigger }) {
   const [distance, setDistance] = useState(0);
   const startX = useRef(null);
   const startY = useRef(null);
-  const warning = distance >= ship.moveDistance + ship.moveDistanceBonus;
+  const warning = distance > ship.moveDistance + ship.moveDistanceBonus;
 
   useEffect(() => {
     setDistance(0);

@@ -19,7 +19,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -140 }, { translateY: -250 }],
+                  transform: [{ translateX: -165 }, { translateY: -250 }],
                   zIndex: -1,
                 }}
               >
@@ -71,7 +71,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -140 }, { translateY: -250 }],
+                  transform: [{ translateX: -165 }, { translateY: -250 }],
                   zIndex: -1,
                 }}
               >
@@ -123,7 +123,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -140 }, { translateY: -250 }],
+                  transform: [{ translateX: -165 }, { translateY: -250 }],
                   zIndex: -1,
                 }}
               >
@@ -154,7 +154,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -200 }, { translateY: -200 }],
+                  transform: [{ translateX: -220 }, { translateY: -200 }],
                   zIndex: -1, // send behind ship image if needed
                 }}
               >
@@ -184,7 +184,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -100 }, { translateY: -200 }],
+                  transform: [{ translateX: -120 }, { translateY: -200 }],
                   zIndex: -1,
                 }}
               >
@@ -249,7 +249,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -140 }, { translateY: -460 }],
+                  transform: [{ translateX: -165 }, { translateY: -460 }],
                   zIndex: -1,
                 }}
               >
@@ -280,7 +280,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -140 }, { translateY: -250 }],
+                  transform: [{ translateX: -165 }, { translateY: -250 }],
                   zIndex: -1,
                 }}
               >
@@ -311,7 +311,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -140 }, { translateY: -270 }],
+                  transform: [{ translateX: -165 }, { translateY: -270 }],
                   zIndex: -1,
                 }}
               >
@@ -351,7 +351,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -200 }, { translateY: -200 }],
+                  transform: [{ translateX: -220 }, { translateY: -200 }],
                   zIndex: -1, // send behind ship image if needed
                 }}
               >
@@ -394,7 +394,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -100 }, { translateY: -200 }],
+                  transform: [{ translateX: -120 }, { translateY: -200 }],
                   zIndex: -1,
                 }}
               >
@@ -426,7 +426,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -140 }, { translateY: -270 }],
+                  transform: [{ translateX: -165 }, { translateY: -270 }],
                   zIndex: -1,
                 }}
               >
@@ -459,7 +459,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -140 }, { translateY: -460 }],
+                  transform: [{ translateX: -165 }, { translateY: -460 }],
                   zIndex: -1,
                 }}
               >
@@ -490,7 +490,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -140 }, { translateY: -250 }],
+                  transform: [{ translateX: -165 }, { translateY: -250 }],
                   zIndex: -1,
                 }}
               >
