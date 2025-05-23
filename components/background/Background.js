@@ -69,8 +69,8 @@ export default function TileBackground({ panX, panY }) {
         resizeMode="contain"
         style={{
           position: "absolute",
-          width: 1524,
-          height: 1524,
+          width: 1024,
+          height: 1024,
           top: 100,
           left: 200,
           transform: [
@@ -85,13 +85,13 @@ export default function TileBackground({ panX, panY }) {
         resizeMode="contain"
         style={{
           position: "absolute",
-          width: 1424,
-          height: 1424,
-          top: 1400,
+          width: 924,
+          height: 924,
+          top: 1700,
           left: 100,
           transform: [
-            { translateX: Animated.multiply(panX, 0.3) },
-            { translateY: Animated.multiply(panY, 0.3) },
+            { translateX: Animated.multiply(panX, 0.2) },
+            { translateY: Animated.multiply(panY, 0.2) },
             { rotate: "0deg" },
           ],
         }}

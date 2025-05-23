@@ -61,7 +61,7 @@ export default function ZoomControls({
                 Enter Ship
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/*     <TouchableOpacity
               style={{
                 backgroundColor: Colors.hudDarker,
                 borderRadius: 5,
@@ -87,7 +87,7 @@ export default function ZoomControls({
               >
                 Deselect
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
               style={{
                 backgroundColor: Colors.hudDarker,

@@ -46,7 +46,7 @@ export default function TraveledDistance({
     };
   }, [position]);
 
-  if (!(shipPressed === ship.id && user.uid === ship.user)) return null;
+  /*   if (!(shipPressed === ship.id && user.uid === ship.user)) return null; */
 
   return (
     <View

@@ -15,7 +15,7 @@ export default function Map() {
         maxZoom={1.5}
         minZoom={0.25}
         zoomStep={0.5}
-        initialZoom={0.5}
+        initialZoom={0.25}
         bindToBorders={true}
         style={{
           padding: 10,

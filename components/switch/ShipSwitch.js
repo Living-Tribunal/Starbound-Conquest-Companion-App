@@ -45,13 +45,13 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
               <View
                 style={{
                   position: "absolute",
-                  top: -45,
-                  left: -19,
+                  top: -25,
+                  left: -15,
                 }}
               >
                 <PulsingGlow
                   ship={ship}
-                  size={60}
+                  size={30}
                   color={Colors.plasmaCannon}
                 />
               </View>
@@ -97,13 +97,13 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
               <View
                 style={{
                   position: "absolute",
-                  top: -70,
-                  left: -19,
+                  top: -50,
+                  left: -25,
                 }}
               >
                 <PulsingGlow
                   ship={ship}
-                  size={70}
+                  size={50}
                   color={Colors.plasmaCannon}
                 />
               </View>
@@ -210,13 +210,13 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
               <View
                 style={{
                   position: "absolute",
-                  top: -85,
-                  left: -24,
+                  top: -57,
+                  left: -25,
                 }}
               >
                 <PulsingGlow
                   ship={ship}
-                  size={90}
+                  size={50}
                   color={Colors.plasmaCannon}
                 />
               </View>
@@ -231,13 +231,13 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
               <View
                 style={{
                   position: "absolute",
-                  top: -75,
-                  left: -22,
+                  top: -56,
+                  left: -30,
                 }}
               >
                 <PulsingGlow
                   ship={ship}
-                  size={80}
+                  size={60}
                   color={Colors.plasmaCannon}
                 />
               </View>
@@ -375,13 +375,13 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
               <View
                 style={{
                   position: "absolute",
-                  top: -110,
-                  left: -13,
+                  top: -82,
+                  left: -35,
                 }}
               >
                 <PulsingGlow
                   ship={ship}
-                  size={100}
+                  size={70}
                   color={Colors.plasmaCannon}
                 />
               </View>

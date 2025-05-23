@@ -8,7 +8,7 @@ import {
   Dimensions,
   SafeAreaView,
   Text,
-  Pressable,
+  TouchableWithoutFeedback,
   TouchableOpacity,
 } from "react-native";
 import { getAllShipsInGameRoom } from "@/components/API/APIGameRoom";
@@ -49,8 +49,8 @@ export default function FleetMap() {
   const panX = useRef(new Animated.Value(0)).current;
   const panY = useRef(new Animated.Value(0)).current;
 
-  const BACKGROUND_WIDTH = WORLD_WIDTH * 2;
-  const BACKGROUND_HEIGHT = WORLD_HEIGHT * 2;
+  const BACKGROUND_WIDTH = WORLD_WIDTH;
+  const BACKGROUND_HEIGHT = WORLD_HEIGHT;
 
   const [isDraggingShip, setIsDraggingShip] = useState(false);
   //console.log("GameRoom in GameMap:", gameRoom);
@@ -204,17 +204,24 @@ export default function FleetMap() {
         navigateToStats={navigateToStats}
         resetShipDistance={resetShipDistance}
       />
+
       <ReactNativeZoomableView
         ref={zoomRef}
-        maxZoom={30}
+        maxZoom={2}
         minZoom={0.5}
+        initialZoom={0.5}
+        longPressDuration={10}
+        onLongPress={() => setShipPressed(null)}
         contentWidth={BACKGROUND_WIDTH}
         contentHeight={BACKGROUND_HEIGHT}
         bindToBorders={true}
-        doubleTapZoomToCenter={true}
         style={{ backgroundColor: "black" }}
+        initialOffsetY={-100}
+        initialOffsetX={-100}
+        panBoundaryPadding={1000}
       >
         <TileBackground panX={panX} panY={panY} />
+
         {ships.map((ship) => {
           const isUserShip = user.uid === ship.user;
           const panResponder = isUserShip
@@ -296,6 +303,7 @@ export default function FleetMap() {
               <View
                 style={{
                   flexDirection: "column",
+                  justifyContent: "center",
                   top: 10,
                 }}
               >
@@ -341,6 +349,8 @@ const styles = StyleSheet.create({
   },
   ship: {
     position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
   },
   background: {
     flex: 1,
@@ -358,6 +368,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
+    padding: 5,
   },
   image: {
     width: 40,
