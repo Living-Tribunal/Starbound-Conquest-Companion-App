@@ -575,6 +575,7 @@ export const shipObject = {
       orders:
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
       ordersUsed: 0,
+      moveDistanceBonus: 0,
       weaponStatus: {
         "Ion Particle Beam": false,
         "Plasma Cannon": false,

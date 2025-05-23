@@ -1,6 +1,7 @@
 import Svg, { Path, Circle, Text as SvgText, G } from "react-native-svg";
 import { View } from "react-native";
 import { Colors } from "@/constants/Colors";
+import PulsingGlow from "@/components/Pusle/PulsingGlow";
 
 export default function ShipSwitch({ ship, showFiringArcs }) {
   const shipSwitch = (ship) => {
@@ -41,6 +42,19 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   Light Cannon
                 </SvgText>
               </Svg>
+              <View
+                style={{
+                  position: "absolute",
+                  top: -45,
+                  left: -19,
+                }}
+              >
+                <PulsingGlow
+                  ship={ship}
+                  size={60}
+                  color={Colors.plasmaCannon}
+                />
+              </View>
             </View>
           );
         }
@@ -80,6 +94,19 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   Medium Cannon
                 </SvgText>
               </Svg>
+              <View
+                style={{
+                  position: "absolute",
+                  top: -70,
+                  left: -19,
+                }}
+              >
+                <PulsingGlow
+                  ship={ship}
+                  size={70}
+                  color={Colors.plasmaCannon}
+                />
+              </View>
             </View>
           );
         }
@@ -180,6 +207,19 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   Plasma Cannon
                 </SvgText>
               </Svg>
+              <View
+                style={{
+                  position: "absolute",
+                  top: -85,
+                  left: -24,
+                }}
+              >
+                <PulsingGlow
+                  ship={ship}
+                  size={90}
+                  color={Colors.plasmaCannon}
+                />
+              </View>
             </View>
           );
         }
@@ -188,6 +228,19 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
         if (showFiringArcs) {
           return (
             <View>
+              <View
+                style={{
+                  position: "absolute",
+                  top: -75,
+                  left: -22,
+                }}
+              >
+                <PulsingGlow
+                  ship={ship}
+                  size={80}
+                  color={Colors.plasmaCannon}
+                />
+              </View>
               <Svg
                 width={300}
                 height={300}
@@ -319,6 +372,19 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   Plasma Cannon
                 </SvgText>
               </Svg>
+              <View
+                style={{
+                  position: "absolute",
+                  top: -110,
+                  left: -13,
+                }}
+              >
+                <PulsingGlow
+                  ship={ship}
+                  size={100}
+                  color={Colors.plasmaCannon}
+                />
+              </View>
 
               <Svg
                 width={300}
@@ -451,7 +517,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
           );
         }
       default:
-        console.log("No ship type found");
+      //console.log("No ship type found");
     }
   };
   return shipSwitch(ship, showFiringArcs);

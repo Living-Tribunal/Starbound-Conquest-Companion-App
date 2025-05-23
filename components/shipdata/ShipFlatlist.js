@@ -15,8 +15,9 @@ import { useNavigation } from "@react-navigation/native";
 import { getFleetData } from "../../components/API/API";
 import Toast from "react-native-toast-message";
 import { FactionImages } from "../../constants/FactionImages";
+import { useMapImageContext } from "../Global/MapImageContext";
 
-export default function ShipFlatList({ type, fleetClass }) {
+export default function ShipFlatList({ type, ships }) {
   const specialOrderShortNames = {
     "All Ahead Full": "AHF",
     "Evasive Maneuvers": "EVM",
@@ -30,20 +31,20 @@ export default function ShipFlatList({ type, fleetClass }) {
     Broadside: "BRS",
   };
 
-  const {
-    data,
-    setData,
-    toggleToDelete,
-    turnTaken,
-    setDeleting,
-    setSetDeleting,
-    hitPointsColor,
-  } = useStarBoundContext();
+  const { data, setData, toggleToDelete, setSetDeleting, hitPointsColor } =
+    useStarBoundContext();
+  const { gameSectors } = useMapImageContext();
   const user = FIREBASE_AUTH.currentUser;
   const navigation = useNavigation();
 
   const fleetData = Array.isArray(data)
-    ? data.filter((ship) => ship.type === type)
+    ? data.filter(
+        (ship) =>
+          ship.type === type &&
+          ship.user === user.uid &&
+          (gameSectors === "Show All Ships..." ||
+            ship.gameSector === gameSectors)
+      )
     : [];
 
   /*   console.log("----------------------");
@@ -94,7 +95,6 @@ export default function ShipFlatList({ type, fleetClass }) {
           numColumns={3}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => {
-            const thisShipColor = hitPointsColor[item.id] || "green";
             const localImage =
               FactionImages[item.factionName]?.[item.type]?.classImage;
             return (

@@ -233,12 +233,28 @@ export default function ShipStats({ route }) {
         const bonus =
           localDiceRoll >= 11 ? ship.moveDistance : ship.moveDistance / 2;
         if (bonus >= 11) {
-          Toast.show({
-            type: "success",
-            text1: "All Ahead Full!",
-            text2: "Movement speed x2.",
-            position: "top",
-          });
+          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+
+          updateDoc(shipRef, {
+            moveDistanceBonus: bonus,
+          })
+            .then(() => {
+              // Update local data
+              setData((prevData) =>
+                prevData.map((s) =>
+                  s.id === ship.id ? { ...s, moveDistanceBonus: bonus } : s
+                )
+              );
+              Toast.show({
+                type: "success",
+                text1: "All Ahead Full!",
+                text2: "Movement speed x2.",
+                position: "top",
+              });
+            })
+            .catch((error) => {
+              console.error("Failed to update HP in Firestore:", error);
+            });
         } else {
           Toast.show({
             type: "error",

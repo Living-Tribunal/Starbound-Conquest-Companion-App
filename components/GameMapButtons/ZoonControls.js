@@ -10,46 +10,16 @@ export default function ZoomControls({
   setShipPressed,
   setIsDraggingShip,
   navigateToStats,
+  resetShipDistance,
 }) {
   return (
     <View style={styles.zoomControls}>
-      <View
-        style={{
-          flexDirection: "row",
-          gap: 10,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <TouchableOpacity
-          onPress={() => {
-            scale.setValue(Math.max(scale._value - 0.3, 0.25));
-          }}
-          style={styles.zoomButton}
-        >
-          <Image
-            style={{ tintColor: Colors.hud, width: 30, height: 30 }}
-            source={require("../../assets/icons/icons8-minus-100.png")}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            scale.setValue(Math.min(scale._value + 0.3, 2));
-          }}
-          style={styles.zoomButton}
-        >
-          <Image
-            style={{ tintColor: Colors.hud, width: 30, height: 30 }}
-            source={require("../../assets/icons/icons8-plus-100.png")}
-          />
-        </TouchableOpacity>
-      </View>
       <View style={{ justifyContent: "center", alignItems: "center" }}>
         {shipPressed && (
           <View style={{ flexDirection: "row", gap: 10 }}>
             <TouchableOpacity
               style={[styles.zoomButton]}
-              onPress={() => handleShipRotation(shipPressed, -45)} // rotate 15 degrees
+              onPress={() => handleShipRotation(shipPressed, -45)} //adjust the rotation of the ship HERE!!
             >
               <Image
                 style={{ tintColor: Colors.hud, width: 30, height: 30 }}
@@ -58,8 +28,7 @@ export default function ZoomControls({
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.zoomButton]}
-              //adjust the rotation of the ship HERE!!
-              onPress={() => handleShipRotation(shipPressed, 45)}
+              onPress={() => handleShipRotation(shipPressed, 45)} //adjust the rotation of the ship HERE!!
             >
               <Image
                 style={{ tintColor: Colors.hud, width: 30, height: 30 }}
@@ -69,7 +38,7 @@ export default function ZoomControls({
           </View>
         )}
         {shipPressed && (
-          <View style={{ flexDirection: "row", marginTop: 10 }}>
+          <View style={{ flexDirection: "column", marginTop: 10 }}>
             <TouchableOpacity
               style={{
                 backgroundColor: Colors.hudDarker,
@@ -92,10 +61,6 @@ export default function ZoomControls({
                 Enter Ship
               </Text>
             </TouchableOpacity>
-          </View>
-        )}
-        {shipPressed && (
-          <View style={{ flexDirection: "column", marginTop: 10 }}>
             <TouchableOpacity
               style={{
                 backgroundColor: Colors.hudDarker,
@@ -147,6 +112,34 @@ export default function ZoomControls({
                 }}
               >
                 Firing Arcs
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                backgroundColor: Colors.hudDarker,
+                borderRadius: 5,
+                padding: 5,
+                borderWidth: 1,
+                borderColor: Colors.hud,
+                marginTop: 10,
+                width: 100,
+              }}
+              onPress={() => {
+                if (shipPressed) {
+                  console.log("Resetting movement for ship:", shipPressed);
+                  resetShipDistance(shipPressed);
+                }
+              }}
+            >
+              <Text
+                style={{
+                  color: Colors.hud,
+                  fontFamily: "LeagueSpartan-ExtraBold",
+                  textAlign: "center",
+                  fontSize: 8,
+                }}
+              >
+                Reset Movement
               </Text>
             </TouchableOpacity>
           </View>

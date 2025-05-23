@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
+import { useMapImageContext } from "../../components/Global/MapImageContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import ShipFlatlist from "../../components/shipdata/ShipFlatlist";
@@ -22,6 +23,7 @@ import { factionIcons } from "../../constants/shipIcons";
 import ViewShot from "react-native-view-shot";
 import Share from "react-native-share";
 import { useNavigation } from "@react-navigation/native";
+import DropdownComponentSectors from "../../components/dropdown/DropdownComponentSectors";
 import {
   collection,
   query,
@@ -37,6 +39,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { useFocusEffect } from "expo-router";
+
 export default function Player() {
   const ref = useRef();
   const user = getAuth().currentUser;
@@ -50,7 +53,8 @@ export default function Player() {
   const [showEndOfRound, setShowEndOfRound] = useState(false);
   const [gameRound, setGameRound] = useState(0);
   const [getAllUsersShipTotals, setGetAllUsersShipTotals] = useState(0);
-
+  const { gameSectors, setGameSectors } = useMapImageContext();
+  const [showAllUsersShips, setShowAllUsersShips] = useState(false);
   const {
     username,
     setUsername,
@@ -79,6 +83,7 @@ export default function Player() {
   //assignt that to a variable to check if there are any ships
   const hasNoShips = myShips.length === 0;
 
+  //console.log("Game Sectors:", gameSectors);
   const onCancelWarning = () => {
     setIsShowWarning(false);
     setToggleToDelete(false);
@@ -144,8 +149,13 @@ export default function Player() {
     //console.log("Button Pressed: ", JSON.stringify(shipData, null, 2));
     //console.log("Players Faction: ", faction);
 
-    if (!user) {
-      // console.error("User not authenticated");
+    if (!user || !gameSectors || gameSectors === "Show All Ships...") {
+      Toast.show({
+        type: "error",
+        text1: "Starbound Conquest",
+        text2: "You must select a sector to deploy to.",
+        position: "top",
+      });
       return;
     }
 
@@ -177,6 +187,8 @@ export default function Player() {
           round: 0,
           trackManeuver: 0,
           shipInterval: 0,
+          moveDistanceBonus: 0,
+          gameSector: gameSectors,
         };
         // Add to Firestore
         const docRef = await addDoc(
@@ -202,35 +214,41 @@ export default function Player() {
 
   useFocusEffect(
     useCallback(() => {
-      const getUserData = async () => {
-        try {
-          const auth = getAuth();
-          const user = auth.currentUser;
-          if (!user) return;
+      if (gameSectors !== "Show All Ships...") {
+        setGameSectors(null);
 
-          const shipsRef = collection(FIREBASE_DB, "users", user.uid, "ships");
-          const docRef = doc(FIREBASE_DB, "users", user.uid);
-          const ships = await getCountFromServer(shipsRef);
-          setNumberOfShips(ships.data().count);
-          //console.log("Ship Counts:", numberOfShips);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            //console.log("User Data:", data);
-            setUsername(data.displayName || "");
-            setProfile(data.photoURL || "");
-            setFaction(data.factionName || "");
-            setGameRoom(data.gameRoom || "");
-            setUserFactionColor(data.userFactionColor || "");
-            setGameValue(data.gameValue || "");
-            //console.log("Profile Image In Player:", data.gameRoom);
+        const getUserData = async () => {
+          try {
+            const auth = getAuth();
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const shipsRef = query(
+              collection(FIREBASE_DB, "users", user.uid, "ships"),
+              where("gameRoom", "==", gameRoom)
+            );
+            const docRef = doc(FIREBASE_DB, "users", user.uid);
+            const ships = await getCountFromServer(shipsRef);
+            setNumberOfShips(ships.data().count);
+            //console.log("Ship Counts:", numberOfShips);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+              const data = docSnap.data();
+              //console.log("User Data:", data);
+              setUsername(data.displayName || "");
+              setProfile(data.photoURL || "");
+              setFaction(data.factionName || "");
+              setGameRoom(data.gameRoom || "");
+              setUserFactionColor(data.userFactionColor || "");
+              setGameValue(data.gameValue || "");
+              //console.log("Profile Image In Player:", data.gameRoom);
+            }
+          } catch (error) {
+            console.error("Failed to retrieve user data:", error);
           }
-        } catch (error) {
-          console.error("Failed to retrieve user data:", error);
-        }
-      };
-
-      getUserData();
+        };
+        getUserData();
+      }
     }, [])
   );
 
@@ -413,6 +431,7 @@ export default function Player() {
             hit: null,
             hasRolledDToHit: false,
             shipInterval: increment(1),
+            distanceTraveled: 0,
           })
         );
       }
@@ -462,6 +481,7 @@ export default function Player() {
               hit: null,
               hasRolledDToHit: false,
               shipInterval: increment(1),
+              distanceTraveled: 0,
             })
           );
         }
@@ -751,32 +771,6 @@ export default function Player() {
                         one
                       </Text>
                     )}
-                    {gameRoom ? (
-                      <TouchableOpacity onLongPress={resetRoundForCurretUser}>
-                        <Text
-                          style={[
-                            styles.gameRoomText,
-                            {
-                              marginTop: 10,
-                              padding: 5,
-                              color: toggleToDelete
-                                ? Colors.lighter_red
-                                : Colors.hud,
-                              backgroundColor: toggleToDelete
-                                ? Colors.deep_red
-                                : Colors.hudDarker,
-                              borderColor: toggleToDelete
-                                ? Colors.lighter_red
-                                : Colors.hud,
-                            },
-                          ]}
-                        >
-                          Round: {gameRound}
-                        </Text>
-                      </TouchableOpacity>
-                    ) : (
-                      <Text style={styles.gameRoomText}>0</Text>
-                    )}
                     <Text
                       style={[
                         styles.textSub,
@@ -817,6 +811,32 @@ export default function Player() {
                     >
                       Total Fleet Value: {totalFleetValue}/{gameValue}
                     </Text>
+                    {gameRoom ? (
+                      <TouchableOpacity onLongPress={resetRoundForCurretUser}>
+                        <Text
+                          style={[
+                            styles.gameRoomText,
+                            {
+                              marginTop: 10,
+                              padding: 5,
+                              color: toggleToDelete
+                                ? Colors.lighter_red
+                                : Colors.hud,
+                              backgroundColor: toggleToDelete
+                                ? Colors.deep_red
+                                : Colors.dark_gray,
+                              borderColor: toggleToDelete
+                                ? Colors.lighter_red
+                                : Colors.hud,
+                            },
+                          ]}
+                        >
+                          Round: {gameRound}
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <Text style={styles.gameRoomText}>0</Text>
+                    )}
                   </View>
                   <View
                     style={{
@@ -911,6 +931,7 @@ export default function Player() {
                       </Text>
                     </TouchableOpacity>
                   </View>
+                  <DropdownComponentSectors />
                 </View>
               )}
             </View>
@@ -1011,12 +1032,7 @@ export default function Player() {
             </View>
 
             <View style={{ flexDirection: "column" }}>
-              <ShipFlatlist
-                toggleToDelete={toggleToDelete}
-                type={item.type}
-                fleetClass={item.fleetClass}
-                ships={item.ships}
-              />
+              <ShipFlatlist toggleToDelete={toggleToDelete} type={item.type} />
             </View>
           </View>
         )}
