@@ -42,8 +42,8 @@ export default function FleetMap() {
   const user = FIREBASE_AUTH.currentUser;
   const scale = useRef(new Animated.Value(1)).current;
   const scaleValue = useRef(1);
-  const WORLD_WIDTH = 700;
-  const WORLD_HEIGHT = 1300;
+  const WORLD_WIDTH = 1400;
+  const WORLD_HEIGHT = 2900;
   const zoomRef = useRef(1);
 
   const panX = useRef(new Animated.Value(0)).current;
@@ -215,10 +215,7 @@ export default function FleetMap() {
         contentWidth={BACKGROUND_WIDTH}
         contentHeight={BACKGROUND_HEIGHT}
         bindToBorders={true}
-        style={{ backgroundColor: "black" }}
-        initialOffsetY={-100}
-        initialOffsetX={-100}
-        panBoundaryPadding={1000}
+        panBoundaryPadding={1}
       >
         <TileBackground panX={panX} panY={panY} />
 

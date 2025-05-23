@@ -1,20 +1,21 @@
-import React, { useMemo, useEffect, useRef } from "react";
+import React, { useMemo, useEffect, useRef, useState } from "react";
 import { View, Image, Dimensions, Animated, StyleSheet } from "react-native";
 import { useMapImageContext } from "../Global/MapImageContext";
 
 export default function TileBackground({ panX, panY }) {
-  const TILE_SIZE = 260;
+  const { MapImagesBackground, MapImage, MapImage2, MapImage3, tileSize } =
+    useMapImageContext();
+  const [loading, setLoading] = useState(true);
+  const TILE_SIZE = tileSize;
   const WORLD_WIDTH = 1400;
   const WORLD_HEIGHT = 2900;
-
+  //console.log("🧱 tileSize:", tileSize);
   const rows = Math.ceil(WORLD_HEIGHT / TILE_SIZE);
   const cols = Math.ceil(WORLD_WIDTH / TILE_SIZE);
-  const { MapImagesBackground, MapImage, MapImage2, MapImage3 } =
-    useMapImageContext();
-  /*  console.log("🧱 MapImage:", MapImage);
+
+/*   console.log("🧱 MapImage:", MapImage);
   console.log("🧱 MapImagesBackground:", MapImagesBackground); */
   //console.log("🧱 TileBackground rendered");
-
   useEffect(() => {
     Animated.parallel([
       Animated.timing(panX, {
@@ -101,10 +102,10 @@ export default function TileBackground({ panX, panY }) {
         resizeMode="contain"
         style={{
           position: "absolute",
-          width: 1124,
-          height: 1524,
-          top: 1200,
-          left: 400,
+          width: 900,
+          height: 900,
+          top: 1700,
+          left: 200,
           transform: [
             { translateX: Animated.multiply(panX, 0.6) },
             { translateY: Animated.multiply(panY, 0.6) },

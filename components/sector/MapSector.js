@@ -13,6 +13,7 @@ export const MapSector = ({
   MapImage2,
   MapImage3,
   SectorName,
+  tileSize,
 }) => {
   const {
     setMapImagesBackground,
@@ -20,14 +21,15 @@ export const MapSector = ({
     setMapImage2,
     setMapImage3,
     setGameSectors,
+    setTileSize,
   } = useMapImageContext();
   const handlePress = () => {
     setMapImagesBackground(MapImagesBackground || null);
     setMapImage(MapImage || null);
     setMapImage2(MapImage2 || null);
     setMapImage3(MapImage3 || null);
+    setTileSize(tileSize || null);
     setGameSectors(SectorName || null);
-    console.log("OnPress SectorName:", SectorName);
     setTimeout(() => {
       navigation.navigate(NavToSector, { sector: SectorName });
     }, 100);

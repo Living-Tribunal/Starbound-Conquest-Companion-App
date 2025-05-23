@@ -1,5 +1,5 @@
 export const MapImages = {
-  starsImage: require("../../assets/background/stars1.png"),
+  starsImage: require("../../assets/background/stars/stars1.png"),
   metal: require("../../assets/background/background/metal.png"),
   planet: require("../../assets/background/planets/planet2.png"),
   greenplanet: require("../../assets/background/planets/planet4.png"),
@@ -9,5 +9,14 @@ export const MapImages = {
   city: require("../../assets/background/city/city2.png"),
   planetBreaking1: require("../../assets/background/planetbreaking/Planet1.png"),
   pinkNebulae: require("../../assets/background/nebulae/nebulae2.png"),
-  cubeShip: require("../../assets/background/ships/ship1.png"),
+  orangeNebulae: require("../../assets/background/nebulae/neb6.png"),
+  oldStars: require("../../assets/background/stars/stars5.png"),
+  packedStars: require("../../assets/background/stars/star8.png"),
+  brokenShips: require("../../assets/background/debris/debris.png"),
+  largeShip: require("../../assets/background/debris/debris1.png"),
+  androGalaxy: require("../../assets/background/galaxy/galaxy.png"),
+  androGalaxy: require("../../assets/background/background/galaxy1.png"),
+  nebAshward: require("../../assets/background/nebulae/neb7.png"),
+  colorStars: require("../../assets/background/nebulae/neb7.png"),
+  ringworld: require("../../assets/background/objects/ringworld.png"),
 };
