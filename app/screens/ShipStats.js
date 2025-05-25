@@ -270,7 +270,7 @@ export default function ShipStats({ route }) {
         setMovementBonus(bonus);
         break;
       case "Reinforce Shields":
-        if (localDiceRoll >= 1 && ship.hp !== ship.maxHP) {
+        if (localDiceRoll >= 11 && ship.hp !== ship.maxHP) {
           const newHP = Math.max(0, Math.min(Number(ship.hp + 1), ship.maxHP));
           console.log("Reinforce Shields succeeded. New HP:", newHP);
 
@@ -315,7 +315,7 @@ export default function ShipStats({ route }) {
         console.log("Anti-Fighter Barrage");
         break;
       case "Power Up Main Guns":
-        if (localDiceRoll >= 2 && ship.type === "Destroyer") {
+        if (localDiceRoll >= 11 && ship.type === "Destroyer") {
           console.log({ "ship type in switch": ship.type });
           setDisableDiceModifiers(false);
           Toast.show({
@@ -370,7 +370,7 @@ export default function ShipStats({ route }) {
         }
         break;
       case "Broadside":
-        if (localDiceRoll >= 2) {
+        if (localDiceRoll >= 11) {
           console.log("Broadside Rolled:", localDiceRoll);
           const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
           console.log("Boardside Bonus:", broadSideBonus);
