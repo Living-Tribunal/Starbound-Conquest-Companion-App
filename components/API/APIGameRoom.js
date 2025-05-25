@@ -8,7 +8,7 @@ export const getAllShipsInGameRoom = async ({
   gameSectors,
 }) => {
   const user = FIREBASE_AUTH.currentUser;
-  console.log("Game Sectors in API:", gameSectors);
+  //console.log("Game Sectors in API:", gameSectors);
   if (!user || !gameRoom) return;
 
   try {

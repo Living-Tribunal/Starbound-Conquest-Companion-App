@@ -30,11 +30,13 @@ import {
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import { useNavigation } from "@react-navigation/native";
 import { getDoc } from "firebase/firestore";
+import { useMapImageContext } from "@/components/Global/MapImageContext.js";
 
 export default function BattleGround(props) {
   const { from } = props.route.params;
   const { ship } = props.route.params;
   const navigation = useNavigation();
+  const { gameSectors } = useMapImageContext();
   const {
     allUsers,
     setAllUsers,
@@ -54,8 +56,6 @@ export default function BattleGround(props) {
     setData,
     setHit,
     setWeaponId,
-    fromGameMap,
-    setFromGameMap,
   } = useStarBoundContext();
   const [modal, setModal] = useState(false);
   const [newHP, setNewHP] = useState(0);
@@ -66,6 +66,7 @@ export default function BattleGround(props) {
   const selectedShipDice = liveShip ? shipBattleDiceMapping[ship.type] : [];
   //console.log("From in BattleGround:", from);
   //console.log("from State in BattleGround:", fromGameMap);
+  //console.log("Game Sector in BattleGround:", gameSectors);
 
   const settingHitState = async () => {
     if (!ship || !user) return;
@@ -169,6 +170,7 @@ export default function BattleGround(props) {
         usersCollection,
         where("email", "!=", currentUserEmail),
         where("gameRoom", "==", gameRoom)
+        //where("gameSector", "==", gameSectors)
       );
       const querySnapshot = await getDocs(myQuery);
       const users = querySnapshot.docs.map((doc) => ({

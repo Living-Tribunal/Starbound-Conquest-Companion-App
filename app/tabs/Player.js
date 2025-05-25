@@ -79,6 +79,11 @@ export default function Player() {
   const myShips = getAllUsersShipToggled.filter(
     (ship) => ship.user === user.uid
   );
+
+  const shipInSector =
+    gameSectors === "Show All Ships..."
+      ? myShips
+      : myShips.filter((ship) => ship.gameSector === gameSectors);
   //assignt that to a variable to check if there are any ships
   const hasNoShips = myShips.length === 0;
 
@@ -215,7 +220,7 @@ export default function Player() {
   useFocusEffect(
     useCallback(() => {
       if (gameSectors !== "Show All Ships...") {
-        setGameSectors(null);
+        //setGameSectors(null);
 
         const getUserData = async () => {
           try {
@@ -931,6 +936,36 @@ export default function Player() {
                         Delete a ship
                       </Text>
                     </TouchableOpacity>
+                  </View>
+                  <View
+                    style={{
+                      justifyContent: "center",
+                      alignSelf: "center",
+                      borderRadius: 5,
+                      marginTop: 10,
+                      padding: 5,
+                      width: "95%",
+                      alignItems: "center",
+                      borderWidth: 1,
+                      borderColor: toggleToDelete
+                        ? Colors.lighter_red
+                        : Colors.hud,
+                      backgroundColor: Colors.dark_gray,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: toggleToDelete ? Colors.lighter_red : Colors.hud,
+                        fontFamily: "LeagueSpartan-Light",
+                        fontSize: 15,
+                        textAlign: "center",
+                      }}
+                    >
+                      Ships in {gameSectors}:{" "}
+                      {shipInSector.length > 0
+                        ? shipInSector.length
+                        : "No ships"}
+                    </Text>
                   </View>
                   <DropdownComponentSectors />
                 </View>

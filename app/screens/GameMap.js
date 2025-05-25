@@ -304,6 +304,17 @@ export default function FleetMap() {
                     left: 2,
                   }}
                 />
+                <View
+                  style={{
+                    width: 20,
+                    height: 20,
+                    backgroundColor: ship.factionColor || Colors.hud,
+                    borderRadius: 10,
+                    position: "absolute",
+                    top: 2,
+                    right: 4,
+                  }}
+                />
               </BlurView>
               {shipPressed && isUserShip && ship.id === shipPressed && (
                 <>

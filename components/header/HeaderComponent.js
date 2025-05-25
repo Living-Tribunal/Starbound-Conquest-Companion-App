@@ -8,7 +8,7 @@ import { useMapImageContext } from "@/components/Global/MapImageContext";
 export default function HeaderComponent({ text, NavToWhere, onPress }) {
   const navigation = useNavigation();
   const { gameSectors } = useMapImageContext();
-  console.log("Game Sectors in HeaderComponent:", gameSectors);
+  //console.log("Game Sectors in HeaderComponent:", gameSectors);
 
   const goBack = () => {
     navigation.navigate(NavToWhere);

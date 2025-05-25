@@ -23,6 +23,7 @@ import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import BattleDice from "@/components/dice/BattleGroundDice.js";
 import { getFleetData } from "@/components/API/API.js";
+import { useDiceContext } from "@/components/Global/DiceContext.js";
 
 export default function ShipStats({ route }) {
   const navigation = useNavigation();
@@ -38,6 +39,7 @@ export default function ShipStats({ route }) {
   const [selectedFaction, setSelectedFaction] = useState("Nova Raiders");
   const [movementBonus, setMovementBonus] = useState(0);
   const [broadSideBonus, setBroadSideBonus] = useState(0);
+  const { disableDiceModifiers, setDisableDiceModifiers } = useDiceContext();
   const {
     faction,
     data,
@@ -313,7 +315,21 @@ export default function ShipStats({ route }) {
         console.log("Anti-Fighter Barrage");
         break;
       case "Power Up Main Guns":
-        console.log("Power Up Main Guns");
+        if (localDiceRoll >= 2 && ship.type === "Destroyer") {
+          console.log({ "ship type in switch": ship.type });
+          setDisableDiceModifiers(false);
+          Toast.show({
+            type: "success",
+            text1: "Power Up Main Guns!",
+            position: "top",
+          });
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Power Up Main Guns Failed!",
+            position: "top",
+          });
+        }
         break;
       case "All Systems Fire":
         console.log("All Systems Fire Bonus");
@@ -573,6 +589,7 @@ export default function ShipStats({ route }) {
         onPress={() => {
           setMovementBonus(0);
           setBroadSideBonus(0);
+          setDisableDiceModifiers(true);
         }}
         text="Ship Stats"
         NavToWhere={fromGameMap === "GameMap" ? "GameMap" : "Player"}
@@ -591,6 +608,9 @@ export default function ShipStats({ route }) {
             <Text style={styles.headerText}>{faction}</Text>
             <Text style={styles.statButtonText1}>
               {ship.type} - {ship.shipId}
+            </Text>
+            <Text style={styles.statButtonText1}>
+              Sector: {ship.gameSector}
             </Text>
           </View>
           <View
@@ -731,7 +751,7 @@ export default function ShipStats({ route }) {
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          <View style={{ width: "45%" }}>
+          <View style={{ width: "25%" }}>
             <View style={[styles.statButton]}>
               <View style={{ width: "100%" }}>
                 <Text style={styles.statButtonText}>Capacity</Text>
@@ -743,15 +763,14 @@ export default function ShipStats({ route }) {
                   textAlign: "center",
                   color: Colors.white,
                   fontFamily: "monospace",
-                  fontSize: 12,
-                  marginTop: 2,
+                  fontSize: 10,
                 }}
               >
                 {ShipData.capacity}
               </Text>
             </View>
           </View>
-          <View style={{ width: "45%" }}>
+          <View style={{ width: "25%" }}>
             <View style={[styles.statButton]}>
               <View style={{ width: "100%" }}>
                 <Text style={styles.statButtonText}>Point Value</Text>
@@ -763,11 +782,29 @@ export default function ShipStats({ route }) {
                   textAlign: "center",
                   color: Colors.white,
                   fontFamily: "monospace",
-                  fontSize: 12,
-                  marginTop: 2,
+                  fontSize: 10,
                 }}
               >
                 {ShipData.pointValue}
+              </Text>
+            </View>
+          </View>
+          <View style={{ width: "25%" }}>
+            <View style={[styles.statButton]}>
+              <View style={{ width: "100%" }}>
+                <Text style={styles.statButtonText}>Soak</Text>
+              </View>
+            </View>
+            <View style={styles.statTextUnder}>
+              <Text
+                style={{
+                  textAlign: "center",
+                  color: Colors.white,
+                  fontFamily: "monospace",
+                  fontSize: 10,
+                }}
+              >
+                {ShipData.soak}
               </Text>
             </View>
           </View>
@@ -1047,7 +1084,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: "monospace",
     fontWeight: "bold",
-    fontSize: 12,
+    fontSize: 10,
     textAlign: "center",
     alignSelf: "center",
     backgroundColor: Colors.hudDarker,

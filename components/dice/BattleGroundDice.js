@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Text,
   View,
@@ -9,7 +9,8 @@ import {
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useStarBoundContext } from "../Global/StarBoundProvider";
-
+import { useFocusEffect } from "@react-navigation/native";
+import { useDiceContext } from "../Global/DiceContext";
 export default function BattleDice({
   text,
   number1,
@@ -24,6 +25,9 @@ export default function BattleDice({
   disabledButtonOnHit: disabledOnHitProp = null,
 }) {
   const [firstDice, setFirstDice] = useState(0);
+  const [diceFaceModifier, setDiceFaceModifier] = useState(0);
+  const [numberOfDiceModifier, setNumberOfDiceModifier] = useState(0);
+  const { disableDiceModifiers } = useDiceContext();
   const {
     singleUserShip,
     hit,
@@ -49,15 +53,32 @@ export default function BattleDice({
   const disabledButtonOnHit =
     disabledOnHitProp !== null ? disabledOnHitProp : contextDisabledButtonOnHit;
 
+  useFocusEffect(
+    useCallback(() => {
+      setDiceFaceModifier(0);
+      setNumberOfDiceModifier(0);
+    }, [])
+  );
+
   const rollDice = () => {
+    const numDice = numberOfDice + numberOfDiceModifier;
+    const diceSize = number2 + diceFaceModifier;
+    let total = 0;
+    let rolls = [];
     if (numberOfDice > 1) {
       let total = 0;
-      for (let i = 0; i < numberOfDice; i++) {
-        total += Math.floor(Math.random() * (number2 - number1 + 1)) + number1;
+      for (let i = 0; i < numDice; i++) {
+        const roll =
+          Math.floor(Math.random() * (diceSize - number1 + 1)) + number1;
+        rolls.push(roll);
+        total += roll;
       }
       return total;
     } else {
-      return Math.floor(Math.random() * (number2 - number1 + 1)) + number1;
+      return (
+        Math.floor(Math.random() * (number2 + diceFaceModifier - number1 + 1)) +
+        number1
+      );
     }
   };
 
@@ -158,7 +179,7 @@ export default function BattleDice({
   };
 
   useEffect(() => {
-    if (hit === false) {
+    if (hit !== null) {
       setDisabledButtonOnHit(true);
     } else {
       setDisabledButtonOnHit(true);
@@ -173,15 +194,97 @@ export default function BattleDice({
     }
   }, [singleUserShip]);
 
+  const increaseNumberOfDiceFace = () => {
+    if (disableDiceModifiers) {
+      console.log("🔒 Modifier disabled");
+      return;
+    }
+    setDiceFaceModifier((prev) => Math.min(prev + 2, 2));
+    console.log(`Increased die face to D${number2 + diceFaceModifier + 2}`);
+  };
+
+  const decreaseNumberOfDiceFace = () => {
+    if (disableDiceModifiers) {
+      console.log("🔒 Modifier disabled");
+      return;
+    }
+    setDiceFaceModifier((prev) => {
+      if (prev - 2 >= 0) {
+        return prev - 2;
+      } else {
+        console.log(`⚠️ Can't go below base die: D${number2}`);
+        return prev;
+      }
+    });
+  };
+
+  const increaseNumberOfDice = () => {
+    if (disableDiceModifiers) {
+      console.log("🔒 Modifier disabled");
+      return;
+    }
+    setNumberOfDiceModifier((prev) => prev + 1);
+    console.log(
+      `Increased number of dice to ${numberOfDice + numberOfDiceModifier}`
+    );
+  };
+
+  const decreaseNumberOfDice = () => {
+    if (disableDiceModifiers) {
+      console.log("🔒 Modifier disabled");
+      return;
+    }
+    setNumberOfDiceModifier((prev) => {
+      const newTotal = numberOfDice + prev - 1;
+      if (newTotal >= 1) {
+        return prev - 1;
+      } else {
+        console.log(`⚠️ Can't roll fewer than 1 die`);
+        return prev;
+      }
+    });
+  };
+  //console.log("disableDiceModifiers prop:", disableDiceModifiers);
   return (
     <View
       style={{
         flexDirection: "row",
-        width: "45%",
         justifyContent: "center",
         alignContent: "center",
+        width: "50%",
       }}
     >
+      {id !== "D20" && (
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => decreaseNumberOfDiceFace()}
+            onLongPress={() => decreaseNumberOfDice()}
+            disabled={disableDiceModifiers}
+            style={{
+              justifyContent: "center",
+              borderWidth: 1,
+              borderColor: Colors.hud,
+              borderRadius: 5,
+              padding: 5,
+              backgroundColor: Colors.hudDarker,
+              alignSelf: "center",
+              width: "35%",
+            }}
+          >
+            <Text
+              style={{ color: Colors.hud, textAlign: "center", fontSize: 10 }}
+            >
+              -
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
       <View style={styles.diceContainer}>
         <Text
           style={[
@@ -214,7 +317,8 @@ export default function BattleDice({
               ) && textStyle,
             ]}
           >
-            {numberOfDice}D{number2}
+            {numberOfDice + numberOfDiceModifier || 1}D
+            {number2 + diceFaceModifier || 0}
           </Text>
           <Image
             style={[
@@ -234,6 +338,37 @@ export default function BattleDice({
           />
         </TouchableOpacity>
       </View>
+      {id !== "D20" && (
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => increaseNumberOfDiceFace()}
+            onLongPress={() => increaseNumberOfDice()}
+            disabled={disableDiceModifiers}
+            style={{
+              justifyContent: "center",
+              borderWidth: 1,
+              borderColor: Colors.hud,
+              borderRadius: 5,
+              padding: 5,
+              backgroundColor: Colors.hudDarker,
+              alignSelf: "center",
+              width: "35%",
+            }}
+          >
+            <Text
+              style={{ color: Colors.hud, textAlign: "center", fontSize: 10 }}
+            >
+              +
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
       <View
         style={[
           disabledButton ||
@@ -287,13 +422,13 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: 8,
     position: "absolute",
-    marginTop: 13,
+    marginTop: 19,
   },
   disabledRollDiceBtnText: {
     color: Colors.hudDarker,
     fontSize: 8,
     position: "absolute",
-    marginTop: 13,
+    marginTop: 19,
   },
   button: {
     alignItems: "center",
@@ -320,12 +455,12 @@ const styles = StyleSheet.create({
     alignContent: "flex-end",
   },
   image: {
-    width: 45,
-    height: 45,
+    width: 55,
+    height: 55,
   },
   imageDisabled: {
-    width: 45,
-    height: 45,
+    width: 55,
+    height: 55,
     tintColor: Colors.hudDarker,
   },
   resultContainerDisabled: {

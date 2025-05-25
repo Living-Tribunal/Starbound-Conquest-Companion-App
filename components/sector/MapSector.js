@@ -1,7 +1,6 @@
 import { TouchableOpacity, Text, View } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useMapImageContext } from "@/components/Global/MapImageContext";
-import { useEffect } from "react";
 
 export const MapSector = ({
   navigation,

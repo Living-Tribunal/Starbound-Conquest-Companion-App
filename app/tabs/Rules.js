@@ -69,6 +69,21 @@ export default function Rules() {
               />
               <Text style={[styles.textSection2]}>Special Orders</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("Faction Info");
+              }}
+              style={styles.TouchableOpacityStyleButton}
+            >
+              <Image
+                style={[
+                  styles.textContainer2,
+                  { tintColor: Colors.darker_green_toggle },
+                ]}
+                source={require("../../assets/images/hud2.png")}
+              />
+              <Text style={[styles.textSection2]}>Factions</Text>
+            </TouchableOpacity>
           </View>
 
           <View style={styles.rulesSection}>
@@ -216,19 +231,19 @@ export default function Rules() {
             <View style={styles.imageRow}>
               {Object.entries(weapons).map(([key, type], index) => (
                 <TouchableOpacity
-                key={key}
-                onPress={() => {
-                    navigation.navigate("WeaponTypes", {type, key});
+                  key={key}
+                  onPress={() => {
+                    navigation.navigate("WeaponTypes", { type, key });
                   }}
                 >
-                    <View style={styles.mainTypeContainer}>
-                      {/* Weapon Name */}
-                      <Text style={styles.weaponName}>{key}</Text>
-                      {/* Background Image */}
-                      <Image
-                        style={styles.typeContainer}
-                        source={require("../../assets/images/typecont.png")}
-                      />
+                  <View style={styles.mainTypeContainer}>
+                    {/* Weapon Name */}
+                    <Text style={styles.weaponName}>{key}</Text>
+                    {/* Background Image */}
+                    <Image
+                      style={styles.typeContainer}
+                      source={require("../../assets/images/typecont.png")}
+                    />
                   </View>
                 </TouchableOpacity>
               ))}
