@@ -21,7 +21,6 @@ import WeaponTypes from "./screens/WeaponTypes";
 import GameLore from "./screens/GameLore";
 import FactionInfoScreen from "./screens/FactionInfoScreen";
 import DiceRoller from "./tabs/Dice";
-import FactionInfoPreview from "./screens/FactionInfoPreview";
 import BattleGround from "./screens/BattleGround";
 import GameMap from "./screens/GameMap";
 import Map from "./tabs/Map";
@@ -287,15 +286,6 @@ export default function AppNavigator() {
                   component={MainTabs}
                   options={{
                     headerShown: false,
-                  }}
-                />
-                <Stack.Screen
-                  name="Preview"
-                  animation="fade"
-                  component={FactionInfoPreview}
-                  options={{
-                    headerShown: false,
-                    animation: "fade_from_bottom",
                   }}
                 />
               </Stack.Navigator>

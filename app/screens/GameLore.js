@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Colors } from "@/constants/Colors";
 import FactionAvatars from "../../constants/FactionAvatars.js";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import HeaderComponent from "@/components/header/HeaderComponent";
 
 export default function GameLore() {
   const navigation = useNavigation(); // Fix navigation issue
@@ -26,6 +27,7 @@ export default function GameLore() {
           backgroundColor: Colors.dark_gray,
         }}
       >
+        <HeaderComponent text="Factions" NavToWhere={"Rules"} />
         <View style={styles.container}>
           <Text style={styles.subHeaderText}>
             Explore the factions of Starbound Conquest below. Tap an image to

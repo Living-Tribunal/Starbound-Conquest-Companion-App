@@ -17,6 +17,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "@/FirebaseConfig";
 import { useFocusEffect } from "expo-router";
 import TileBackground from "../../components/background/Background";
+import { factionIcons } from "../../constants/shipIcons";
 import LoadingComponent from "@/components/loading/LoadingComponent";
 import { useNavigation } from "@react-navigation/native";
 import { Colors } from "@/constants/Colors";
@@ -42,8 +43,8 @@ export default function FleetMap() {
   const user = FIREBASE_AUTH.currentUser;
   const scale = useRef(new Animated.Value(1)).current;
   const scaleValue = useRef(1);
-  const WORLD_WIDTH = 1400;
-  const WORLD_HEIGHT = 2900;
+  const WORLD_WIDTH = 1400 * 2;
+  const WORLD_HEIGHT = 2900 * 2;
   const zoomRef = useRef(1);
 
   const panX = useRef(new Animated.Value(0)).current;
@@ -208,7 +209,7 @@ export default function FleetMap() {
       <ReactNativeZoomableView
         ref={zoomRef}
         maxZoom={2}
-        minZoom={0.5}
+        minZoom={0.25}
         initialZoom={0.5}
         longPressDuration={10}
         onLongPress={() => setShipPressed(null)}
@@ -266,10 +267,15 @@ export default function FleetMap() {
               {...(isUserShip ? panResponder.panHandlers : {})}
               style={[
                 styles.ship,
-
                 {
+                  transform: ship.position.getTranslateTransform(), // No rotation here
+                },
+              ]}
+            >
+              {/* Rotating Ship Image */}
+              <Animated.View
+                style={{
                   transform: [
-                    ...ship.position.getTranslateTransform(),
                     {
                       rotate: ship.rotation.interpolate({
                         inputRange: [0, 360],
@@ -277,53 +283,39 @@ export default function FleetMap() {
                       }),
                     },
                   ],
-                },
-              ]}
-            >
-              <Image
-                source={{ uri: ship.image }}
-                style={{
-                  width: ship.width / 4,
-                  height: ship.height / 4,
-                  justifyContent: "center",
-                  alignItems: "center",
                 }}
-                resizeMode="contain"
-              />
-              <BlurView experimentalBlurMethod={true} intensity={100} tint={80}>
-                <View
+              >
+                <Image
+                  source={{ uri: ship.image }}
                   style={{
-                    width: 20,
-                    height: 20,
-                    backgroundColor: ship.isToggled
-                      ? Colors.lighter_red
-                      : Colors.green_toggle,
-                    borderRadius: 10,
-                    position: "absolute",
-                    top: 2,
-                    left: 2,
+                    width: ship.width / 2,
+                    height: ship.height / 2,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    /*   borderRadius: 10,
+
+                    borderWidth: ship.id === shipPressed ? 0 : 2,
+                    borderColor: ship.isToggled
+                      ? Colors.gold
+                      : ship.factionColor || Colors.hud, */
                   }}
+                  resizeMode="contain"
                 />
                 <View
                   style={{
-                    width: 20,
-                    height: 20,
-                    backgroundColor: ship.factionColor || Colors.hud,
-                    borderRadius: 10,
-                    position: "absolute",
-                    top: 2,
-                    right: 4,
+                    left: ship.width / 4,
                   }}
-                />
-              </BlurView>
-              {shipPressed && isUserShip && ship.id === shipPressed && (
-                <>
-                  <ShipSwitch
-                    ship={ships.find((s) => s.id === shipPressed)}
-                    showFiringArcs={showFiringArcs}
-                  />
-                </>
-              )}
+                >
+                  {shipPressed && isUserShip && ship.id === shipPressed && (
+                    <>
+                      <ShipSwitch
+                        ship={ships.find((s) => s.id === shipPressed)}
+                        showFiringArcs={showFiringArcs}
+                      />
+                    </>
+                  )}
+                </View>
+              </Animated.View>
               <View
                 style={{
                   flexDirection: "column",
@@ -353,6 +345,18 @@ export default function FleetMap() {
                   shipPressed={shipPressed}
                   position={ship.position}
                   resetTrigger={distanceReset}
+                />
+                <Image
+                  source={factionIcons[ship.type.toLowerCase()]}
+                  style={{
+                    width: 35,
+                    height: 35,
+                    position: "absolute",
+                    bottom: 25,
+                    left: 75,
+                    tintColor: ship.isToggled ? Colors.gold : ship.factionColor,
+                  }}
+                  resizeMode="contain"
                 />
               </View>
             </Animated.View>

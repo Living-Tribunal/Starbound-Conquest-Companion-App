@@ -18,7 +18,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/loa_fox.png?alt=media&token=e045de71-1b0a-444c-b93b-8092c0c2b738",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_41_31%20PM.png?alt=media&token=6705c15c-f37a-4188-81d8-3b7e8d18ce3a",
       globalAlpha: 1,
       maxHP: 20,
       hp: 20,
@@ -56,7 +56,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/al_victoria.png?alt=media&token=41f7715f-a743-481e-b37a-85d680689d1d",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_27_22%20PM.png?alt=media&token=ba3c3ad0-09e5-40ff-8f1b-082e8df13706",
       globalAlpha: 1,
       maxHP: 8,
       hp: 8,
@@ -93,7 +93,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/loa_hawke.png?alt=media&token=e2282fe0-e707-4694-9bfd-7a7b0927f3b0",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_45_37%20PM.png?alt=media&token=8540477f-292d-48e5-9d51-8b19e818620f",
       globalAlpha: 1,
       maxHP: 12,
       hp: 12,
@@ -132,7 +132,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/al_macnamara.png?alt=media&token=91c354ce-859f-4975-8283-430fa1759c13d",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_43_06%20PM.png?alt=media&token=40f7b236-0ebd-48c8-8d45-bfcfec7e9f4c",
       globalAlpha: 1,
       maxHP: 14,
       hp: 14,
@@ -171,7 +171,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/loa_alastair.png?alt=media&token=c99e1f58-7322-49bb-b3ae-9080ad55ee27",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_29_52%20PM.png?alt=media&token=4477e2e4-51b0-4acc-bdc0-900cf5e48898",
       globalAlpha: 1,
       maxHP: 30,
       hp: 30,
@@ -214,7 +214,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/ms_morningstar_red.png?alt=media&token=8affea49-cebe-4074-9e20-ce3bb005b411",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2003_48_02%20PM.png?alt=media&token=8ad99515-edc9-40da-b5de-d6349150be8c",
       globalAlpha: 1,
       maxHP: 20,
       hp: 20,
@@ -252,7 +252,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/ms_elysium_red.png?alt=media&token=d24ba855-fb1c-4655-b2e8-f445112014fa",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2004_06_44%20PM.png?alt=media&token=7977b803-9e3f-4ee5-8ca1-d89d1e254b16",
       globalAlpha: 1,
       maxHP: 8,
       hp: 8,
@@ -289,7 +289,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/ms_charybdis_red.png?alt=media&token=c8c94379-8b70-41dd-ab37-6c3509467233",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2003_59_57%20PM.png?alt=media&token=2e74cfcb-02ac-4707-9d65-32e988f3bf4f",
       globalAlpha: 1,
       maxHP: 12,
       hp: 12,
@@ -328,7 +328,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/ms_vardr_red.png?alt=media&token=b32f4425-e3fb-457d-9c86-e6eab694ad4f",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2004_03_11%20PM.png?alt=media&token=854ca323-8b17-49d2-ac15-216c4791e89d",
       globalAlpha: 1,
       maxHP: 14,
       hp: 14,
@@ -367,7 +367,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/ms_skadi_red.png?alt=media&token=e823f921-aa21-485c-9cdd-a19237e96e46",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2003_45_32%20PM.png?alt=media&token=c04082eb-c0e0-4a1c-b028-6d0533c0b0e0",
       globalAlpha: 1,
       maxHP: 30,
       hp: 30,
@@ -410,7 +410,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/diableavionics_laminar.png?alt=media&token=dea06d87-9bdb-4492-8e83-f60749521255",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2012_33_05%20PM.png?alt=media&token=56510c8c-1d9e-4dfb-9b5a-53bbe6af752d",
       globalAlpha: 1,
       maxHP: 20,
       hp: 20,
@@ -447,7 +447,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/diableavionics_calm_deck.png?alt=media&token=d101d81f-e59c-4ab0-a3f0-cc7311e65dc0",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2012_13_01%20PM.png?alt=media&token=56d7049f-d1a5-43d6-a15b-815c8308874b",
       globalAlpha: 1,
       maxHP: 8,
       hp: 8,
@@ -483,7 +483,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/diableavionics_storm.png?alt=media&token=855c13c0-ad72-404c-8468-e007d44faaa1",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2012_30_01%20PM.png?alt=media&token=4ac46b54-f444-47ac-be4a-d119c265e2b1",
       globalAlpha: 1,
       maxHP: 12,
       hp: 12,
@@ -521,7 +521,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/diableavionics_maelstrom.png?alt=media&token=3ce1a2e0-e2e0-47c4-99ac-65bed80062a9",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_44_40%20AM.png?alt=media&token=2426e3a1-b1ff-4aa0-a890-379cbdc85c25",
       globalAlpha: 1,
       maxHP: 14,
       hp: 14,
@@ -559,7 +559,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/diableavionics_pandemonium.png?alt=media&token=25124de9-69d8-4af2-bc91-21160af1f2c1",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_34_15%20AM.png?alt=media&token=ca5c3322-3265-4476-8cfb-67619335f208",
       globalAlpha: 1,
       maxHP: 30,
       hp: 30,
@@ -602,7 +602,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/PLSP_meteoroid.png?alt=media&token=8b24e55a-d26c-43af-a7bd-0256a638e6ac",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_36_52%20AM.png?alt=media&token=e8c35b22-dc3c-4111-909a-b2e8fb15f5a7",
       globalAlpha: 1,
       maxHP: 20,
       hp: 20,
@@ -640,7 +640,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/PLSP_linghtcone.png?alt=media&token=48ad88e9-cfe1-45e7-a728-144e405c66a9",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_30_37%20AM.png?alt=media&token=442d40a1-ce0e-4dd7-9dcc-36feff1d9823",
       globalAlpha: 1,
       maxHP: 8,
       hp: 8,
@@ -677,7 +677,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/PLSP_axis.png?alt=media&token=0702bb1b-5573-4bba-b5b7-11a4f297fa0f",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_09_32%20AM.png?alt=media&token=e2807265-ef5e-40c6-b448-75f96a41feb3",
       globalAlpha: 1,
       maxHP: 12,
       hp: 12,
@@ -716,7 +716,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/PLSP_horizon.png?alt=media&token=c37f7b56-f07d-44ec-8b67-2d92bb3d70f4",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_27_35%20AM.png?alt=media&token=62ef9303-5904-4a42-bb8d-fe14f00551e0",
       globalAlpha: 1,
       maxHP: 14,
       hp: 14,
@@ -755,7 +755,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/PLSP_flocculus.png?alt=media&token=594e0269-0944-4e46-bf69-acbb345edb79",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_06_26%20AM.png?alt=media&token=9e5cc2fe-d83c-4091-8f17-b3c5c46bbc96",
       globalAlpha: 1,
       maxHP: 30,
       hp: 30,
@@ -798,7 +798,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/expsp_korsettes.png?alt=media&token=62e621b3-7b7d-4b4d-84b2-0b5896dd8ff1",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_05_34%20AM.png?alt=media&token=39cf58b4-98f9-43ed-aec0-53ae887f4fdf",
       globalAlpha: 1,
       maxHP: 20,
       hp: 20,
@@ -836,7 +836,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/expsp_scholarmvs.png?alt=media&token=c492487d-579c-48f2-afae-477ec718208a",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_35_07%20AM.png?alt=media&token=b3877058-7e8d-419c-924d-c0e38be57800",
       globalAlpha: 1,
       maxHP: 8,
       hp: 8,
@@ -873,7 +873,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/expsp_helena_mil.png?alt=media&token=a488e7c8-f6c5-40f4-8427-66e6514fc6c7",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_29_55%20AM.png?alt=media&token=458c3522-e757-4d7f-ac59-66877fd1f6e5",
       globalAlpha: 1,
       maxHP: 12,
       hp: 12,
@@ -912,7 +912,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/expsp_abysswalker.png?alt=media&token=a051ac62-f2a5-4962-8933-e87b033fc914",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_24_34%20AM.png?alt=media&token=6ba82900-9e66-4a7b-a5f6-329e240ced37",
       globalAlpha: 1,
       maxHP: 14,
       hp: 14,
@@ -951,7 +951,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/expsp_dragonhunter.png?alt=media&token=212773dc-fad9-45b2-8ca0-25805574359d",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_11_48%20AM.png?alt=media&token=61615d00-2131-4288-b09a-d2be847e9fb4",
       globalAlpha: 1,
       maxHP: 30,
       hp: 30,
@@ -994,7 +994,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Nightseer.png?alt=media&token=af136f07-a921-40c9-819c-9f43ff6ed95d",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_59_00%20AM.png?alt=media&token=f95a0054-cf1b-4ce9-b485-54ead870fe2f",
       globalAlpha: 1,
       maxHP: 20,
       hp: 20,
@@ -1032,7 +1032,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Soulbane.png?alt=media&token=0c2194d9-181b-478f-9573-09b02374e586",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_53_48%20AM.png?alt=media&token=e4745f68-752d-49fb-b8c9-c5bd9afe1f21",
       globalAlpha: 1,
       maxHP: 8,
       hp: 8,
@@ -1069,7 +1069,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/IHS_Orig.png?alt=media&token=28e12573-ff70-4a46-8d0c-3c45f400baf7",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_51_53%20AM.png?alt=media&token=aef2db7d-b127-4c47-bdcb-e9f0044c5817",
       globalAlpha: 1,
       maxHP: 12,
       hp: 12,
@@ -1108,7 +1108,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Kelpie.png?alt=media&token=f6d8d3f7-3e31-49c1-8d9b-32dd0c8e4870",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_48_23%20AM.png?alt=media&token=506b482a-fcef-4dd5-8bf9-22b04a19814e",
       globalAlpha: 1,
       maxHP: 14,
       hp: 14,
@@ -1147,7 +1147,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Shalom.png?alt=media&token=40e901c7-a619-4da9-a343-015d30d0995f",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_36_21%20AM.png?alt=media&token=6deda667-cc6d-49fa-8805-2dc75273e847",
       globalAlpha: 1,
       maxHP: 30,
       hp: 30,
@@ -1190,7 +1190,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/neutrino_causality.png?alt=media&token=0fbf27e4-6c8d-425d-8389-85a3fbc1d803",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2010_30_43%20AM.png?alt=media&token=ce2b461a-9b7e-4e51-acbb-4ec860693898",
       globalAlpha: 1,
       maxHP: 20,
       hp: 20,
@@ -1228,7 +1228,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/neutrino_lathe.png?alt=media&token=81451f40-1a48-4131-a813-440bfa55a700",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2010_20_03%20AM.png?alt=media&token=862a1576-a33a-47c5-ab58-5f3812f56286",
       globalAlpha: 1,
       maxHP: 8,
       hp: 8,
@@ -1265,7 +1265,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/neutrino_nirvash.png?alt=media&token=c0c644c3-03e8-4bfe-9ec6-3a51cb2e70e0",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_57_21%20AM.png?alt=media&token=bf3f7c8e-9f0d-43c9-a9c0-54ff4a02783b",
       globalAlpha: 1,
       maxHP: 12,
       hp: 12,
@@ -1304,7 +1304,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/neutrino_nausicaa.png?alt=media&token=36f3ebaf-7702-4c48-8027-f55b607fb942",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2010_26_19%20AM.png?alt=media&token=4a879f41-902a-4f56-a8d3-f21691cec427",
       globalAlpha: 1,
       maxHP: 14,
       hp: 14,
@@ -1343,7 +1343,7 @@ export const shipObject = {
       isToggled: false,
       rotation_angle: 0,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/neutrino_unsung.png?alt=media&token=05140d5e-e08c-42de-b9a5-217606cfa4b8",
+        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_47_36%20AM.png?alt=media&token=9971a23d-fa35-47da-98f8-d4e77ebd660e",
       globalAlpha: 1,
       maxHP: 30,
       hp: 30,

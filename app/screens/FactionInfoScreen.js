@@ -16,7 +16,7 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import HeaderComponent from "@/components/header/HeaderComponent";
 import { Header } from "react-native/Libraries/NewAppScreen";
 
-export default function ShipEditScreen() {
+export default function FactionInfoScreen() {
   const route = useRoute();
   const { factionName, factionImage, description, ship } = route.params || {};
   const navigation = useNavigation();
@@ -24,7 +24,7 @@ export default function ShipEditScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <HeaderComponent text="Factions" NavToWhere={"Factions"} />
+      <HeaderComponent text="Faction Lore" NavToWhere={"Game Lore"} />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,

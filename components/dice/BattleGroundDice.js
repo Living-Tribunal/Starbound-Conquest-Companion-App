@@ -32,7 +32,6 @@ export default function BattleDice({
     singleUserShip,
     hit,
     setHit,
-    damageDone,
     setDamageDone,
     disabledButton: contextDisabledButton,
     setDisabledButton,
@@ -40,13 +39,12 @@ export default function BattleDice({
     setDisabledButtonOnHit,
     rolledD20,
     setRolledD20,
-    weaponId,
     setWeaponId,
-    diceValueToShare,
     setDiceValueToShare,
   } = useStarBoundContext();
   const threatLevel = singleUserShip?.threatLevel ?? null;
   const damageThreshold = singleUserShip?.damageThreshold ?? null;
+  console.log("selectedShip in BattleDice:", singleUserShip);
 
   const disabledButton =
     disabledProp !== null ? disabledProp : contextDisabledButton;
@@ -278,7 +276,11 @@ export default function BattleDice({
             }}
           >
             <Text
-              style={{ color: Colors.hud, textAlign: "center", fontSize: 10 }}
+              style={{
+                color: Colors.hud,
+                textAlign: "center",
+                fontSize: 10,
+              }}
             >
               -
             </Text>
@@ -362,7 +364,11 @@ export default function BattleDice({
             }}
           >
             <Text
-              style={{ color: Colors.hud, textAlign: "center", fontSize: 10 }}
+              style={{
+                color: Colors.hud,
+                textAlign: "center",
+                fontSize: 10,
+              }}
             >
               +
             </Text>

@@ -95,14 +95,14 @@ export default function Map() {
           SectorName="The Deadward Coil"
           MapImagesBackground={MapImages.starsImage}
           MapImage={MapImages.breaking}
-          MapImageTop={800}
-          MapImageLeft={200}
+          MapImageTop={1800}
+          MapImageLeft={800}
           MapImage2={null}
           MapImage2Top={null}
           MapImage2Left={null}
           MapImage3={MapImages.debris}
-          MapImage3Top={500}
-          MapImage3Left={300}
+          MapImage3Top={1500}
+          MapImage3Left={1200}
         />
         <MapSector
           navigation={navigation}

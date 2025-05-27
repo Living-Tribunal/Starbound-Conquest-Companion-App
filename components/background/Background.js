@@ -18,8 +18,8 @@ export default function TileBackground({ panX, panY }) {
   } = useMapImageContext();
   const [loading, setLoading] = useState(true);
   const TILE_SIZE = tileSize;
-  const WORLD_WIDTH = 1400;
-  const WORLD_HEIGHT = 2900;
+  const WORLD_WIDTH = 1400 * 2;
+  const WORLD_HEIGHT = 2900 * 2;
   //console.log("🧱 tileSize:", tileSize);
   const rows = Math.ceil(WORLD_HEIGHT / TILE_SIZE);
   const cols = Math.ceil(WORLD_WIDTH / TILE_SIZE);
@@ -81,8 +81,8 @@ export default function TileBackground({ panX, panY }) {
         resizeMode="contain"
         style={{
           position: "absolute",
-          width: 1024,
-          height: 1024,
+          width: 1324,
+          height: 1324,
           top: MapImage2Top,
           left: MapImage2Left,
           left: 200,
@@ -98,8 +98,8 @@ export default function TileBackground({ panX, panY }) {
         resizeMode="contain"
         style={{
           position: "absolute",
-          width: 924,
-          height: 924,
+          width: 1324,
+          height: 1324,
           top: MapImageTop,
           left: MapImageLeft,
           transform: [
@@ -114,8 +114,8 @@ export default function TileBackground({ panX, panY }) {
         resizeMode="contain"
         style={{
           position: "absolute",
-          width: 900,
-          height: 900,
+          width: 1324,
+          height: 1324,
           top: MapImage3Top,
           left: MapImage3Left,
           transform: [

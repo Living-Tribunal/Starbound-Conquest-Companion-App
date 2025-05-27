@@ -40,7 +40,7 @@ export default function Rules() {
                 justifyContent: "flex-end",
                 alignItems: "center",
                 top: 5,
-                bottom: 20,
+                bottom: 10,
                 flexDirection: "row",
               }}
             >
@@ -53,7 +53,14 @@ export default function Rules() {
               </Text>
             </View>
           </View>
-          <View style={{ alignItems: "center" }}>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "row",
+              gap: 25,
+            }}
+          >
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate("SpecialOrdersScreen");
@@ -63,7 +70,11 @@ export default function Rules() {
               <Image
                 style={[
                   styles.textContainer2,
-                  { tintColor: Colors.darker_green_toggle },
+                  {
+                    tintColor: Colors.darker_green_toggle,
+                    width: 175,
+                    height: 90,
+                  },
                 ]}
                 source={require("../../assets/images/hud2.png")}
               />
@@ -71,14 +82,18 @@ export default function Rules() {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate("Faction Info");
+                navigation.navigate("Game Lore");
               }}
               style={styles.TouchableOpacityStyleButton}
             >
               <Image
                 style={[
                   styles.textContainer2,
-                  { tintColor: Colors.darker_green_toggle },
+                  {
+                    tintColor: Colors.darker_green_toggle,
+                    width: 175,
+                    height: 90,
+                  },
                 ]}
                 source={require("../../assets/images/hud2.png")}
               />
@@ -231,6 +246,7 @@ export default function Rules() {
             <View style={styles.imageRow}>
               {Object.entries(weapons).map(([key, type], index) => (
                 <TouchableOpacity
+                  style={styles.TouchableOpacityStyleButtonWeapon}
                   key={key}
                   onPress={() => {
                     navigation.navigate("WeaponTypes", { type, key });
@@ -240,10 +256,6 @@ export default function Rules() {
                     {/* Weapon Name */}
                     <Text style={styles.weaponName}>{key}</Text>
                     {/* Background Image */}
-                    <Image
-                      style={styles.typeContainer}
-                      source={require("../../assets/images/typecont.png")}
-                    />
                   </View>
                 </TouchableOpacity>
               ))}
@@ -307,9 +319,7 @@ const styles = StyleSheet.create({
   TouchableOpacityStyleButton: {
     textAlign: "center",
     justifyContent: "center",
-    left: 5,
-    right: 5,
-    width: "75%",
+    width: "40%",
   },
   textBody: {
     color: Colors.white,
@@ -371,9 +381,9 @@ const styles = StyleSheet.create({
     height: 100,
   },
   weaponName: {
-    fontSize: 9,
-    fontFamily: "monospace",
-    color: Colors.white,
+    fontSize: 12,
+    fontFamily: "LeagueSpartan-ExtraBold",
+    color: Colors.hudDarker,
     textAlign: "center",
   },
   Section: {
@@ -386,12 +396,21 @@ const styles = StyleSheet.create({
     alignContent: "center",
   },
   mainTypeContainer: {
-    marginTop: 20,
-    padding: 40,
+    padding: 5,
   },
   rulerCatHeader: {
     fontWeight: "bold",
     color: Colors.statDarker,
     fontSize: 16,
+  },
+  TouchableOpacityStyleButtonWeapon: {
+    borderWidth: 1,
+    borderColor: Colors.hudDarker,
+    borderRadius: 5,
+    padding: 5,
+    backgroundColor: Colors.hud,
+    alignSelf: "center",
+    width: "35%",
+    margin: 5,
   },
 });
