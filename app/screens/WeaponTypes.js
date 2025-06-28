@@ -44,20 +44,20 @@ export default function WeaponTypes({ route }) {
   );
 }
 const styles = StyleSheet.create({
-    image: {
-        width: 40,
-        height: 40,
-        resizeMode: "contain",
-        tintColor: Colors.white,
-        marginBottom: 20,
-        marginLeft: 20,
-        marginTop: 20,
-      },
-      text:{
-        color: Colors.white,
+  image: {
+    width: 40,
+    height: 40,
+    resizeMode: "contain",
+    tintColor: Colors.white,
+    marginBottom: 20,
+    marginLeft: 20,
+    marginTop: 20,
+  },
+  text: {
+    color: Colors.white,
     fontSize: 20,
     textAlign: "center",
     fontFamily: "leagueRegular",
     left: 40,
-      },    
+  },
 });

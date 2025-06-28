@@ -40,12 +40,17 @@ export default function FleetMap() {
   const [showFiringArcs, setShowFiringArcs] = useState(true);
   const [distanceReset, setDistanceReset] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [updatingRotation, setUpdatingRotation] = useState(false);
+  const [distance, setDistance] = useState(0);
   const user = FIREBASE_AUTH.currentUser;
   const scale = useRef(new Animated.Value(1)).current;
   const scaleValue = useRef(1);
   const WORLD_WIDTH = 1400 * 2;
   const WORLD_HEIGHT = 2900 * 2;
   const zoomRef = useRef(1);
+  const distancePerShipRef = useRef({});
+  const selectedShip = ships.find((ships) => ships.id === shipPressed);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const panX = useRef(new Animated.Value(0)).current;
   const panY = useRef(new Animated.Value(0)).current;
@@ -57,6 +62,14 @@ export default function FleetMap() {
   //console.log("GameRoom in GameMap:", gameRoom);
   //console.log("Ships in GameMap:", JSON.stringify(ships.length, null, 2));
   //console.log("ship pressed:", shipPressed);
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: shipPressed ? 1 : 0, // fade in if ship selected, fade out if not
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [shipPressed]);
 
   useEffect(() => {
     let raf;
@@ -91,9 +104,11 @@ export default function FleetMap() {
     }
   };
 
-  const handleShipRotation = async (shipId, deltaDegrees = 15) => {
+  const handleShipRotation = (shipId, deltaDegrees = 15) => {
     const shipIndex = ships.findIndex((s) => s.id === shipId);
     if (shipIndex === -1) return;
+
+    setUpdatingRotation(true);
 
     const updatedShips = [...ships];
     const ship = updatedShips[shipIndex];
@@ -105,16 +120,22 @@ export default function FleetMap() {
       toValue: next,
       duration: 150,
       useNativeDriver: false,
-    }).start();
-    await updateDoc(doc(FIREBASE_DB, "users", user.uid, "ships", shipId), {
-      rotation_angle: next,
+    }).start(async () => {
+      try {
+        await updateDoc(doc(FIREBASE_DB, "users", user.uid, "ships", shipId), {
+          rotation_angle: next,
+        });
+        setShips(updatedShips);
+      } catch (e) {
+        console.error("Error updating rotation:", e);
+      } finally {
+        setUpdatingRotation(false);
+      }
     });
-
-    setShips(updatedShips);
   };
 
   const navigateToStats = (shipId) => {
-    console.log("Navigating with shipId:", shipId);
+    //console.log("Navigating with shipId:", shipId);
     navigation.navigate("Stats", { shipId, from: "GameMap" });
   };
   const updatingPosition = async (shipId, x, y, rotation, distanceTraveled) => {
@@ -135,7 +156,7 @@ export default function FleetMap() {
 
   useFocusEffect(
     useCallback(() => {
-      console.log("Calling API with:", { gameRoom, gameSectors });
+      //console.log("Calling API with:", { gameRoom, gameSectors });
       if (!gameRoom || !gameSectors) return;
       getAllShipsInGameRoom({
         setData,
@@ -146,10 +167,10 @@ export default function FleetMap() {
     }, [gameRoom, gameSectors])
   );
 
-  useEffect(() => {
+  /*   useEffect(() => {
     console.log("panOffset updated:", panOffset);
   }, [panOffset]);
-
+ */
   useEffect(() => {
     const listener = scale.addListener(({ value }) => {
       scaleValue.current = value;
@@ -162,7 +183,7 @@ export default function FleetMap() {
     // Initialize animated values for ship positions
     const initialized = data.map((ship) => {
       const pos = new Animated.ValueXY({ x: ship.x ?? 100, y: ship.y ?? 100 });
-      const rotation = new Animated.Value(ship.rotation_angle ?? 0); // NEW
+      const rotation = new Animated.Value(ship.rotation_angle ?? 0);
       return { ...ship, position: pos, rotation };
     });
     setShips(initialized);
@@ -171,8 +192,8 @@ export default function FleetMap() {
   if (loading) {
     return <LoadingComponent whatToSay="Entering the battle..." />;
   }
-  /*   console.log("User in GameMap:", user.uid);
-  console.log("Ship ID in GameMap:", ships.id);*/
+  /*   console.log("User in GameMap:", user.uid);*/
+  //console.log("Ship ID in GameMap:", shipPressed);
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -196,6 +217,7 @@ export default function FleetMap() {
 
       <ZoomControls
         scale={scale}
+        updatingRotation={updatingRotation}
         shipPressed={shipPressed}
         handleShipRotation={handleShipRotation}
         setShowFiringArcs={setShowFiringArcs}
@@ -205,11 +227,108 @@ export default function FleetMap() {
         navigateToStats={navigateToStats}
         resetShipDistance={resetShipDistance}
       />
+      {shipPressed && (
+        <Animated.View
+          style={{
+            opacity: fadeAnim,
+            position: "absolute",
+            zIndex: 10000,
+          }}
+        >
+          <Text
+            style={{
+              borderLeftWidth: 1,
+              padding: 7,
+              borderColor: Colors.hud,
+              borderRadius: 1,
+              color: Colors.hud,
+              fontSize: 10,
+              position: "absolute",
+              fontFamily: "LeagueSpartan-Light",
+              top: 30,
+              left: 60,
+              zIndex: 10000,
+            }}
+          >
+            Ship: {selectedShip.shipId}
+          </Text>
+          <Text
+            style={{
+              color: Colors.hud,
+              borderTopWidth: 1,
+              borderLeftWidth: 1,
+              padding: 7,
+              borderColor: Colors.hud,
+              borderTopLeftRadius: 10,
+              fontSize: 10,
+              fontFamily: "LeagueSpartan-Light",
+              position: "absolute",
+              top: 10,
+              left: 60,
+              zIndex: 10000,
+            }}
+          >
+            Distance:{" "}
+            {distancePerShipRef.current[shipPressed]?.toFixed(0) ?? "0"}u
+          </Text>
+          <Text
+            style={{
+              color: Colors.hud,
+              borderLeftWidth: 1,
+              padding: 7,
+              borderColor: Colors.hud,
+              borderRadius: 1,
+              fontFamily: "LeagueSpartan-Light",
+              fontSize: 10,
+              position: "absolute",
+              top: 50,
+              left: 60,
+              zIndex: 10000,
+            }}
+          >
+            Ship: {selectedShip.hp} / {selectedShip.maxHP}
+          </Text>
+          <Text
+            style={{
+              color: Colors.hud,
+              borderLeftWidth: 1,
+              padding: 7,
+              borderColor: Colors.hud,
+              fontFamily: "LeagueSpartan-Light",
+              fontSize: 10,
+              position: "absolute",
+              top: 70,
+              left: 60,
+              zIndex: 10000,
+            }}
+          >
+            Type: {selectedShip.type}
+          </Text>
+          <Text
+            style={{
+              color: Colors.hud,
+              borderLeftWidth: 1,
+              padding: 7,
+              borderColor: Colors.hud,
+              borderBottomLeftRadius: 10,
+              fontFamily: "LeagueSpartan-Light",
+              fontSize: 10,
+              position: "absolute",
+              top: 90,
+              left: 60,
+              zIndex: 10000,
+              borderBottomWidth: 1,
+            }}
+          >
+            Rotation: {selectedShip?.rotation?.__getValue()?.toFixed(0) ?? 0}°
+          </Text>
+        </Animated.View>
+      )}
 
       <ReactNativeZoomableView
         ref={zoomRef}
         maxZoom={2}
-        minZoom={0.25}
+        minZoom={0.1}
         initialZoom={0.5}
         longPressDuration={10}
         onLongPress={() => setShipPressed(null)}
@@ -217,6 +336,7 @@ export default function FleetMap() {
         contentHeight={BACKGROUND_HEIGHT}
         bindToBorders={true}
         panBoundaryPadding={1}
+        onDoubleTapBefore={() => false}
       >
         <TileBackground panX={panX} panY={panY} />
 
@@ -268,7 +388,8 @@ export default function FleetMap() {
               style={[
                 styles.ship,
                 {
-                  transform: ship.position.getTranslateTransform(), // No rotation here
+                  transform: ship.position.getTranslateTransform(),
+                  zIndex: ship.id === shipPressed ? 1000 : 1, // No rotation here
                 },
               ]}
             >
@@ -345,6 +466,9 @@ export default function FleetMap() {
                   shipPressed={shipPressed}
                   position={ship.position}
                   resetTrigger={distanceReset}
+                  reportedDistance={(id, dist) => {
+                    distancePerShipRef.current[id] = dist;
+                  }}
                 />
                 <Image
                   source={factionIcons[ship.type.toLowerCase()]}

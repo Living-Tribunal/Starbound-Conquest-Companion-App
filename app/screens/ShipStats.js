@@ -413,7 +413,7 @@ export default function ShipStats({ route }) {
       case "Charge Ion Beams":
         //console.log("Ion Beam check - ship.hit:", ship.hit);
         console.log("Starting Charge Ion Beams Bonus");
-        if (localDiceRoll >= 11) {
+        if (localDiceRoll >= 2) {
           console.log("Bonus (Ion):", localDiceRoll);
           try {
             const shipRef = doc(
@@ -423,10 +423,11 @@ export default function ShipStats({ route }) {
               "ships",
               ship.id
             );
+            //you only need to update the weapon status if the roll was a success. not to let it shoot again
             await updateDoc(shipRef, {
               "weaponStatus.Ion Particle Beam": false,
               //hit: null,
-              hasRolledDToHit: false,
+              //hasRolledDToHit: false,
             });
 
             // ✅ Now update local state after Firestore confirmed update

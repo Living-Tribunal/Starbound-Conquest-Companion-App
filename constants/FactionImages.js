@@ -1,156 +1,121 @@
 export const FactionImages = {
   "Nova Raiders": {
     Fighter: {
-      classImage: require("../assets/images/loa_fox.png"),
-      className: "Cody",
+      classImage: require("../assets/ShipImages/NR/fighterNR.png"),
     },
     Destroyer: {
-      classImage: require("../assets/images/al_victoria.png"),
-      className: "Victoria",
+      classImage: require("../assets/ShipImages/NR/destroyerNR.png"),
     },
     Cruiser: {
-      classImage: require("../assets/images/loa_hawke.png"),
-      className: "King",
+      classImage: require("../assets/ShipImages/NR/cruiserNR.png"),
     },
     Carrier: {
-      classImage: require("../assets/images/al_macnamara.png"),
-      className: "Hawke",
+      classImage: require("../assets/ShipImages/NR/carrierNR.png"),
     },
     Dreadnought: {
-      classImage: require("../assets/images/loa_alastair.png"),
-      className: "Alastair",
+      classImage: require("../assets/ShipImages/NR/dreadNR.png"),
     },
   },
   "The Zyrrians": {
     Fighter: {
-      classImage: require("../assets/images/ms_seski_red.png"),
-      className: "Seski",
+      classImage: require("../assets/ShipImages/ZY/fighterZY.png"),
     },
     Destroyer: {
-      classImage: require("../assets/images/ms_elysium_red.png"),
-      className: "Elysium",
+      classImage: require("../assets/ShipImages/ZY/destroyerZY.png"),
     },
     Cruiser: {
-      classImage: require("../assets/images/ms_charybdis_red.png"),
-      className: "Charybdis",
+      classImage: require("../assets/ShipImages/ZY/cruiserZY.png"),
     },
     Carrier: {
-      classImage: require("../assets/images/ms_mimir_red.png"),
-      className: "Mimir",
+      classImage: require("../assets/ShipImages/ZY/carrierZY.png"),
     },
     Dreadnought: {
-      classImage: require("../assets/images/ms_skadi_red.png"),
-      className: "Skadi",
+      classImage: require("../assets/ShipImages/ZY/dreadZY.png"),
     },
   },
   "Voidborn Marauders": {
     Fighter: {
-      classImage: require("../assets/images/diableavionics_laminar.png"),
-      className: "Cody",
+      classImage: require("../assets/ShipImages/VM/fighter.png"),
     },
     Destroyer: {
-      classImage: require("../assets/images/diableavionics_calm_deck.png"),
-      className: "Victoria",
+      classImage: require("../assets/ShipImages/VM/destroyer.png"),
     },
     Cruiser: {
-      classImage: require("../assets/images/diableavionics_storm.png"),
-      className: "King",
+      classImage: require("../assets/ShipImages/VM/cruiser.png"),
     },
     Carrier: {
-      classImage: require("../assets/images/diableavionics_maelstrom.png"),
-      className: "Hawke",
+      classImage: require("../assets/ShipImages/VM/carrier.png"),
     },
     Dreadnought: {
-      classImage: require("../assets/images/diableavionics_pandemonium.png"),
-      className: "Alastair",
+      classImage: require("../assets/ShipImages/VM/dread.png"),
     },
   },
   "Star Reapers": {
     Fighter: {
-      classImage: require("../assets/images/PLSP_meteoroid.png"),
-      className: "Cody",
+      classImage: require("../assets/ShipImages/SR/fighter.png"),
     },
     Destroyer: {
-      classImage: require("../assets/images/PLSP_linghtcone.png"),
-      className: "Victoria",
+      classImage: require("../assets/ShipImages/SR/destroyer.png"),
     },
     Cruiser: {
-      classImage: require("../assets/images/PLSP_axis.png"),
-      className: "King",
+      classImage: require("../assets/ShipImages/SR/cruiser.png"),
     },
     Carrier: {
-      classImage: require("../assets/images/PLSP_horizon.png"),
-      className: "Hawke",
+      classImage: require("../assets/ShipImages/SR/carrier.png"),
     },
     Dreadnought: {
-      classImage: require("../assets/images/PLSP_flocculus.png"),
-      className: "Alastair",
+      classImage: require("../assets/ShipImages/SR/dread.png"),
     },
   },
   "Praxleon Empire": {
     Fighter: {
-      classImage: require("../assets/images/expsp_korsettes.png"),
-      className: "Cody",
+      classImage: require("../assets/ShipImages/PE/fighter.png"),
     },
     Destroyer: {
-      classImage: require("../assets/images/expsp_helena_mil.png"),
-      className: "Victoria",
+      classImage: require("../assets/ShipImages/PE/destroyer.png"),
     },
     Cruiser: {
-      classImage: require("../assets/images/expsp_scholarmvs.png"),
-      className: "King",
+      classImage: require("../assets/ShipImages/PE/cruiser.png"),
     },
     Carrier: {
-      classImage: require("../assets/images/expsp_abysswalker.png"),
-      className: "Hawke",
+      classImage: require("../assets/ShipImages/PE/carrier.png"),
     },
     Dreadnought: {
-      classImage: require("../assets/images/expsp_dragonhunter.png"),
-      className: "Alastair",
+      classImage: require("../assets/ShipImages/PE/dread.png"),
     },
   },
   "Synthon Syndicate": {
     Fighter: {
-      classImage: require("../assets/images/Pentagram.png"),
-      className: "Cody",
+      classImage: require("../assets/ShipImages/SS/fighter.png"),
     },
     Destroyer: {
-      classImage: require("../assets/images/Eidolon.png"),
-      className: "Victoria",
+      classImage: require("../assets/ShipImages/SS/destroyer.png"),
     },
     Cruiser: {
-      classImage: require("../assets/images/IHS_Orig.png"),
-      className: "King",
+      classImage: require("../assets/ShipImages/SS/cruiser.png"),
     },
     Carrier: {
-      classImage: require("../assets/images/Kelpie.png"),
-      className: "Hawke",
+      classImage: require("../assets/ShipImages/SS/carrier.png"),
     },
     Dreadnought: {
-      classImage: require("../assets/images/Abraxas.png"),
-      className: "Alastair",
+      classImage: require("../assets/ShipImages/SS/dread.png"),
     },
   },
   "The Union": {
     Fighter: {
-      classImage: require("../assets/images/neutrino_causality.png"),
-      className: "Cody",
+      classImage: require("../assets/ShipImages/UN/fighter.png"),
     },
     Destroyer: {
-      classImage: require("../assets/images/neutrino_lathe.png"),
-      className: "Victoria",
+      classImage: require("../assets/ShipImages/UN/destroyer.png"),
     },
     Cruiser: {
-      classImage: require("../assets/images/neutrino_nirvash.png"),
-      className: "King",
+      classImage: require("../assets/ShipImages/UN/cruiser.png"),
     },
     Carrier: {
-      classImage: require("../assets/images/neutrino_nausicaa.png"),
-      className: "Hawke",
+      classImage: require("../assets/ShipImages/UN/carrier.png"),
     },
     Dreadnought: {
-      classImage: require("../assets/images/neutrino_unsung.png"),
-      className: "Alastair",
+      classImage: require("../assets/ShipImages/UN/dread.png"),
     },
   },
 };

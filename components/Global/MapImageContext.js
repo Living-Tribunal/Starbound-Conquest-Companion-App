@@ -7,7 +7,7 @@ export const MapImageProvider = ({ children }) => {
   const [MapImage, setMapImage] = useState(null);
   const [MapImage2, setMapImage2] = useState(null);
   const [MapImage3, setMapImage3] = useState(null);
-  const [gameSectors, setGameSectors] = useState("Show All Ships");
+  const [gameSectors, setGameSectors] = useState(null);
   const [tileSize, setTileSize] = useState(900);
   const [MapImage3Top, setMapImage3Top] = useState(null);
   const [MapImage3Left, setMapImage3Left] = useState(null);

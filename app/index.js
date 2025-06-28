@@ -22,6 +22,7 @@ import GameLore from "./screens/GameLore";
 import FactionInfoScreen from "./screens/FactionInfoScreen";
 import DiceRoller from "./tabs/Dice";
 import BattleGround from "./screens/BattleGround";
+import PushNotifications from "../components/notifications/PushNotifications";
 import GameMap from "./screens/GameMap";
 import Map from "./tabs/Map";
 import { Colors } from "../constants/Colors";

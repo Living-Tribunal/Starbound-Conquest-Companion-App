@@ -152,6 +152,8 @@ export const shipObject = {
         "350mm Railgun": false,
         "Missile Battery": false,
       },
+
+      fighterWing: [],
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -193,6 +195,8 @@ export const shipObject = {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
+
+      fighterWing: [],
     },
   },
   "The Zyrrians": {
@@ -348,6 +352,8 @@ export const shipObject = {
         "350mm Railgun": false,
         "Missile Battery": false,
       },
+
+      fighterWing: [],
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -389,6 +395,8 @@ export const shipObject = {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
+
+      fighterWing: [],
     },
   },
   "Voidborn Marauders": {
@@ -540,6 +548,8 @@ export const shipObject = {
         "350mm Railgun": false,
         "Missile Battery": false,
       },
+
+      fighterWing: [],
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -581,6 +591,8 @@ export const shipObject = {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
+
+      fighterWing: [],
     },
   },
   "Star Reapers": {
@@ -736,6 +748,8 @@ export const shipObject = {
         "350mm Railgun": false,
         "Missile Battery": false,
       },
+
+      fighterWing: [],
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -777,6 +791,8 @@ export const shipObject = {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
+
+      fighterWing: [],
     },
   },
   "Praxleon Empire": {
@@ -932,6 +948,8 @@ export const shipObject = {
         "350mm Railgun": false,
         "Missile Battery": false,
       },
+
+      fighterWing: [],
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -973,6 +991,8 @@ export const shipObject = {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
+
+      fighterWing: [],
     },
   },
   "Synthon Syndicate": {
@@ -1128,6 +1148,8 @@ export const shipObject = {
         "350mm Railgun": false,
         "Missile Battery": false,
       },
+
+      fighterWing: [],
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -1169,6 +1191,8 @@ export const shipObject = {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
+
+      fighterWing: [],
     },
   },
   "The Union": {
@@ -1324,6 +1348,8 @@ export const shipObject = {
         "350mm Railgun": false,
         "Missile Battery": false,
       },
+
+      fighterWing: [],
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -1365,6 +1391,8 @@ export const shipObject = {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
+
+      fighterWing: [],
     },
   },
 };

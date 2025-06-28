@@ -24,6 +24,7 @@ import ViewShot from "react-native-view-shot";
 import Share from "react-native-share";
 import { useNavigation } from "@react-navigation/native";
 import DropdownComponentSectors from "../../components/dropdown/DropdownComponentSectors";
+import PushNotifications from "../../components/notifications/PushNotifications";
 import {
   collection,
   query,
@@ -42,7 +43,7 @@ import { useFocusEffect } from "expo-router";
 
 export default function Player() {
   const ref = useRef();
-  const user = getAuth().currentUser;
+  const user = FIREBASE_AUTH.currentUser;
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
   const [loading, setLoading] = useState(false);
@@ -153,7 +154,7 @@ export default function Player() {
     //console.log("Button Pressed: ", JSON.stringify(shipData, null, 2));
     //console.log("Players Faction: ", faction);
 
-    if (!user || !gameSectors || gameSectors === "Show All Ships...") {
+    if (!user || !gameSectors || gameSectors === "Show All Ships..." || null) {
       Toast.show({
         type: "error",
         text1: "Starbound Conquest",
@@ -219,41 +220,38 @@ export default function Player() {
 
   useFocusEffect(
     useCallback(() => {
-      if (gameSectors !== "Show All Ships...") {
-        //setGameSectors(null);
+      //setGameSectors(null);
 
-        const getUserData = async () => {
-          try {
-            const auth = getAuth();
-            const user = auth.currentUser;
-            if (!user) return;
+      const getUserData = async () => {
+        try {
+          const user = FIREBASE_AUTH.currentUser;
+          if (!user) return;
 
-            const shipsRef = query(
-              collection(FIREBASE_DB, "users", user.uid, "ships"),
-              where("gameRoom", "==", gameRoom)
-            );
-            const docRef = doc(FIREBASE_DB, "users", user.uid);
-            const ships = await getCountFromServer(shipsRef);
-            setNumberOfShips(ships.data().count);
-            //console.log("Ship Counts:", numberOfShips);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-              const data = docSnap.data();
-              //console.log("User Data:", data);
-              setUsername(data.displayName || "");
-              setProfile(data.photoURL || "");
-              setFaction(data.factionName || "");
-              setGameRoom(data.gameRoom || "");
-              setUserFactionColor(data.userFactionColor || "");
-              setGameValue(data.gameValue || "");
-              //console.log("Profile Image In Player:", data.gameRoom);
-            }
-          } catch (error) {
-            console.error("Failed to retrieve user data:", error);
+          const shipsRef = query(
+            collection(FIREBASE_DB, "users", user.uid, "ships"),
+            where("gameRoom", "==", gameRoom)
+          );
+          const docRef = doc(FIREBASE_DB, "users", user.uid);
+          const ships = await getCountFromServer(shipsRef);
+          setNumberOfShips(ships.data().count);
+          //console.log("Ship Counts:", numberOfShips);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            //console.log("User Data:", data);
+            setUsername(data.displayName || "");
+            setProfile(data.photoURL || "");
+            setFaction(data.factionName || "");
+            setGameRoom(data.gameRoom || "");
+            setUserFactionColor(data.userFactionColor || "");
+            setGameValue(data.gameValue || "");
+            //console.log("Profile Image In Player:", data.gameRoom);
           }
-        };
-        getUserData();
-      }
+        } catch (error) {
+          console.error("Failed to retrieve user data:", error);
+        }
+      };
+      getUserData();
     }, [])
   );
 
@@ -398,7 +396,7 @@ export default function Player() {
       }
     });
 
-    return () => unsubscribe(); // Clean up on unmount
+    return () => unsubscribe();
   }, []);
 
   const endYourTurn = async () => {
@@ -897,6 +895,7 @@ export default function Player() {
                         End your turn
                       </Text>
                     </TouchableOpacity>
+                    {/*  <PushNotifications /> */}
 
                     {/* <TouchableOpacity
                       style={styles.editContainer}

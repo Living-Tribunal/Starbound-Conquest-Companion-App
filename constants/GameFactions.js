@@ -1,4 +1,4 @@
-export const GameFactions = [
+/* export const GameFactions = [
     { label: '1', value: 'Nova Raiders' },
     { label: '2', value: 'The Zyrrians' },
     { label: '3', value: 'Voidborn Marauders' },
@@ -6,4 +6,9 @@ export const GameFactions = [
     { label: '5', value: 'Praxleon Empire' },
     { label: '6', value: 'Synthon Syndicate' },
     { label: '7', value: 'The Union' },
-  ];
+  ]; */
+
+export const GameFactions = [
+  { label: "1", value: "Synthon Syndicate" },
+  { label: "2", value: "Praxleon Empire" },
+];

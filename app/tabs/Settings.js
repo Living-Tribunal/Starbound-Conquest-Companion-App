@@ -279,7 +279,7 @@ export default function Settings() {
     try {
       console.log("Signing out...");
       await FIREBASE_AUTH.signOut();
-      await AsyncStorage.clear();
+      //await AsyncStorage.clear();
       navigation.navigate("Login");
     } catch (error) {
       console.error("Error signing out:", error);

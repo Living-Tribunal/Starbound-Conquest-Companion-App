@@ -1,4 +1,12 @@
-import { StyleSheet, View, Image, TouchableOpacity, Text } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  TouchableOpacity,
+  Text,
+  Animated,
+} from "react-native";
+import { useEffect, useRef } from "react";
 import { Colors } from "@/constants/Colors";
 
 export default function ZoomControls({
@@ -11,15 +19,30 @@ export default function ZoomControls({
   setIsDraggingShip,
   navigateToStats,
   resetShipDistance,
+  distance,
+  updatingRotation,
 }) {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: shipPressed ? 1 : 0,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  }, [shipPressed]);
+
   return (
     <View style={styles.zoomControls}>
       <View style={{ justifyContent: "center", alignItems: "center" }}>
         {shipPressed && (
-          <View style={{ flexDirection: "row", gap: 10 }}>
+          <Animated.View
+            style={{ flexDirection: "row", gap: 10, opacity: fadeAnim }}
+          >
             <TouchableOpacity
               style={[styles.zoomButton]}
-              onPress={() => handleShipRotation(shipPressed, -45)} //adjust the rotation of the ship HERE!!
+              onPress={() => handleShipRotation(shipPressed, -45)}
+              disabled={updatingRotation}
             >
               <Image
                 style={{ tintColor: Colors.hud, width: 30, height: 30 }}
@@ -28,121 +51,47 @@ export default function ZoomControls({
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.zoomButton]}
-              onPress={() => handleShipRotation(shipPressed, 45)} //adjust the rotation of the ship HERE!!
+              onPress={() => handleShipRotation(shipPressed, 45)}
+              disabled={updatingRotation}
             >
               <Image
                 style={{ tintColor: Colors.hud, width: 30, height: 30 }}
                 source={require("../../assets/icons/icons8-rotate-right-50.png")}
               />
             </TouchableOpacity>
-          </View>
+          </Animated.View>
         )}
         {shipPressed && (
-          <View style={{ flexDirection: "column", marginTop: 10 }}>
+          <Animated.View
+            style={{
+              flexDirection: "column",
+              marginTop: 10,
+              opacity: fadeAnim,
+            }}
+          >
             <TouchableOpacity
-              style={{
-                backgroundColor: Colors.hudDarker,
-                borderRadius: 5,
-                padding: 5,
-                borderWidth: 1,
-                borderColor: Colors.hud,
-                width: 100,
-              }}
+              style={styles.controlButton}
               onPress={() => navigateToStats(shipPressed)}
             >
-              <Text
-                style={{
-                  color: Colors.hud,
-                  fontFamily: "LeagueSpartan-ExtraBold",
-                  textAlign: "center",
-                  fontSize: 12,
-                }}
-              >
-                Enter Ship
-              </Text>
-            </TouchableOpacity>
-            {/*     <TouchableOpacity
-              style={{
-                backgroundColor: Colors.hudDarker,
-                borderRadius: 5,
-                padding: 5,
-                borderWidth: 1,
-                borderColor: Colors.hud,
-                marginTop: 10,
-                width: 100,
-              }}
-              onPress={() => {
-                console.log("Manually deselecting ship");
-                setShipPressed(null);
-                setIsDraggingShip(false);
-              }}
-            >
-              <Text
-                style={{
-                  color: Colors.hud,
-                  fontFamily: "LeagueSpartan-ExtraBold",
-                  textAlign: "center",
-                  fontSize: 12,
-                }}
-              >
-                Deselect
-              </Text>
-            </TouchableOpacity> */}
-            <TouchableOpacity
-              style={{
-                backgroundColor: Colors.hudDarker,
-                borderRadius: 5,
-                padding: 5,
-                borderWidth: 1,
-                borderColor: Colors.hud,
-                marginTop: 10,
-                width: 100,
-              }}
-              onPress={() => {
-                console.log("Firing Arcs:", showFiringArcs);
-                setShowFiringArcs((prev) => !prev);
-              }}
-            >
-              <Text
-                style={{
-                  color: Colors.hud,
-                  fontFamily: "LeagueSpartan-ExtraBold",
-                  textAlign: "center",
-                  fontSize: 12,
-                }}
-              >
-                Firing Arcs
-              </Text>
+              <Text style={styles.buttonText}>Enter Ship</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={{
-                backgroundColor: Colors.hudDarker,
-                borderRadius: 5,
-                padding: 5,
-                borderWidth: 1,
-                borderColor: Colors.hud,
-                marginTop: 10,
-                width: 100,
-              }}
+              style={styles.controlButton}
+              onPress={() => setShowFiringArcs((prev) => !prev)}
+            >
+              <Text style={styles.buttonText}>Firing Arcs</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.controlButton}
               onPress={() => {
-                if (shipPressed) {
-                  console.log("Resetting movement for ship:", shipPressed);
-                  resetShipDistance(shipPressed);
-                }
+                if (shipPressed) resetShipDistance(shipPressed);
               }}
             >
-              <Text
-                style={{
-                  color: Colors.hud,
-                  fontFamily: "LeagueSpartan-ExtraBold",
-                  textAlign: "center",
-                  fontSize: 8,
-                }}
-              >
+              <Text style={[styles.buttonText, { fontSize: 8 }]}>
                 Reset Movement
               </Text>
             </TouchableOpacity>
-          </View>
+          </Animated.View>
         )}
       </View>
     </View>
@@ -167,9 +116,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  zoomText: {
-    color: Colors.gold,
-    fontSize: 15,
+  controlButton: {
+    backgroundColor: Colors.hudDarker,
+    borderRadius: 5,
+    padding: 5,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    marginTop: 10,
+    width: 100,
+  },
+  buttonText: {
+    color: Colors.hud,
+    fontFamily: "LeagueSpartan-ExtraBold",
     textAlign: "center",
+    fontSize: 12,
   },
 });

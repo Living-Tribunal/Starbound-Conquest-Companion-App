@@ -1,9 +1,4 @@
 import React, { createContext, useContext, useState } from "react";
-import {
-  SHIP_CAPACITY,
-  SHIP_TOGGLES,
-  SHIP_TOGGLES_DONE,
-} from "@/constants/Ships";
 
 const StarBoundContext = createContext();
 
@@ -36,12 +31,6 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [faction, setFaction] = useState("");
   const [getAllUsersShipToggled, setGetAllUsersShipToggled] = useState([]);
   const [fromGameMap, setFromGameMap] = useState(null);
-
-  const [showFighterClass, setShowFighterClass] = useState(true);
-  const [showDestroyerClass, setShowDestroyerClass] = useState(true);
-  const [showCarrierClass, setShowCarrierClass] = useState(true);
-  const [showCruiserClass, setShowCruiserClass] = useState(true);
-  const [showDreadnoughtClass, setShowDreadnoughtClass] = useState(true);
   const [username, setUsername] = useState("");
   const [toggleToDelete, setToggleToDelete] = useState(false);
   const [setDeleting, setSetDeleting] = useState(false);
@@ -58,18 +47,6 @@ export const StarBoundProvider = ({ children, shipType }) => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const [toggleOrders, setToggleOrders] = useState(
-    Array(SHIP_TOGGLES[shipType]).fill(false)
-  );
-
-  const [toggleCapacity, setToggleCapacity] = useState(
-    Array(SHIP_CAPACITY[shipType]).fill(false)
-  );
-
-  const [toggleDoneState, setToggleDoneState] = useState(
-    Array(SHIP_TOGGLES_DONE[shipType]).fill(false)
-  );
-
   return (
     <StarBoundContext.Provider
       value={{
@@ -84,25 +61,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
         dreadnoughtImages,
         setDreadnoughtImages,
 
-        showFighterClass,
-        setShowFighterClass,
-        showDestroyerClass,
-        setShowDestroyerClass,
-        showCarrierClass,
-        setShowCarrierClass,
-        showCruiserClass,
-        setShowCruiserClass,
-        showDreadnoughtClass,
-        setShowDreadnoughtClass,
         turnTaken,
         setTurnTaken,
-
-        toggleOrders,
-        setToggleOrders,
-        toggleCapacity,
-        setToggleCapacity,
-        toggleDoneState,
-        setToggleDoneState,
 
         isModalVisible,
         setIsModalVisible,

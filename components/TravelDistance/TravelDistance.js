@@ -2,7 +2,12 @@ import { View, Text } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { Colors } from "@/constants/Colors";
 
-export default function TraveledDistance({ ship, position, resetTrigger }) {
+export default function TraveledDistance({
+  ship,
+  position,
+  resetTrigger,
+  reportedDistance,
+}) {
   const [distance, setDistance] = useState(0);
   const startX = useRef(null);
   const startY = useRef(null);
@@ -31,6 +36,10 @@ export default function TraveledDistance({ ship, position, resetTrigger }) {
       const clamped = Math.max(0, netDistance); // don't allow negative
       setDistance(clamped);
       ship.netDistance = clamped;
+
+      if (typeof reportedDistance === "function") {
+        reportedDistance(ship.id, clamped); // 🔥 Push update externally
+      }
 
       //console.log("Net from start:", clamped.toFixed(2));
     });

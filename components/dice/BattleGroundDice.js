@@ -44,7 +44,7 @@ export default function BattleDice({
   } = useStarBoundContext();
   const threatLevel = singleUserShip?.threatLevel ?? null;
   const damageThreshold = singleUserShip?.damageThreshold ?? null;
-  console.log("selectedShip in BattleDice:", singleUserShip);
+  //console.log("selectedShip in BattleDice:", singleUserShip);
 
   const disabledButton =
     disabledProp !== null ? disabledProp : contextDisabledButton;

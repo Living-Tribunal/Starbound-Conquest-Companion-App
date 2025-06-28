@@ -31,6 +31,14 @@ export default function ShipFlatList({ type, ships }) {
     Broadside: "BRS",
   };
 
+  const fighterWingStatusColor = (ship) => {
+    const wings = ship.fighterWings?.length ?? 0;
+
+    if (wings === 0) return Colors.blue_gray;
+    if (wings === 1) return Colors.hud;
+    return Colors.green_toggle;
+  };
+
   const { data, setData, toggleToDelete, setSetDeleting, hitPointsColor } =
     useStarBoundContext();
   const { gameSectors } = useMapImageContext();
@@ -159,6 +167,7 @@ export default function ShipFlatList({ type, ships }) {
                     >
                       {item.hp} / {item.maxHP} HP
                     </Text>
+
                     {item.type === "Dreadnought" ? (
                       item.weaponStatus?.["Ion Particle Beam"] === true ? (
                         <View>
@@ -189,6 +198,62 @@ export default function ShipFlatList({ type, ships }) {
                               uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fsinusoidal-beam.png?alt=media&token=96d76ac5-5426-4bbb-835c-f541f7ba3023",
                             }}
                           />
+                        </View>
+                      )
+                    ) : null}
+
+                    {item.type === "Dreadnought" || item.type === "Carrier" ? (
+                      item.capacity === 20 ? (
+                        <View style={{ flexDirection: "column" }}>
+                          <Image
+                            style={{
+                              width: 30,
+                              height: 30,
+                              alignSelf: "center",
+                              marginTop: 5,
+                              margin: 2,
+                              tintColor: fighterWingStatusColor(item),
+                            }}
+                            source={{
+                              uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
+                            }}
+                          />
+                          <Text
+                            style={{
+                              fontFamily: "monospace",
+                              fontSize: 8,
+                              textAlign: "center",
+                              color: Colors.hud,
+                            }}
+                          >
+                            {item.fighterWing.length}/2
+                          </Text>
+                        </View>
+                      ) : (
+                        <View style={{ flexDirection: "column" }}>
+                          <Image
+                            style={{
+                              width: 30,
+                              height: 30,
+                              alignSelf: "center",
+                              marginTop: 5,
+                              margin: 2,
+                              tintColor: fighterWingStatusColor(item),
+                            }}
+                            source={{
+                              uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
+                            }}
+                          />
+                          <Text
+                            style={{
+                              fontFamily: "monospace",
+                              fontSize: 8,
+                              textAlign: "center",
+                              color: Colors.hud,
+                            }}
+                          >
+                            {item.fighterWing.length}/2
+                          </Text>
                         </View>
                       )
                     ) : null}

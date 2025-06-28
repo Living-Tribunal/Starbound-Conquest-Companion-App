@@ -1,16 +1,26 @@
-import Svg, { Path, Circle, Text as SvgText, G } from "react-native-svg";
-import { View } from "react-native";
+import React, { useRef, useEffect } from "react";
+import { View, Animated } from "react-native";
+import Svg, { Path, Text as SvgText } from "react-native-svg";
 import { Colors } from "@/constants/Colors";
 import PulsingGlow from "@/components/Pusle/PulsingGlow";
 
 export default function ShipSwitch({ ship, showFiringArcs }) {
+  const animOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(animOpacity, {
+      toValue: showFiringArcs ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [showFiringArcs]);
+
   const shipSwitch = (ship) => {
     switch (ship.type) {
       case "Fighter":
-        console.log("Fighter");
         if (showFiringArcs) {
           return (
-            <View>
+            <Animated.View style={{ opacity: animOpacity }}>
               <Svg
                 width={300}
                 height={300}
@@ -29,8 +39,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-
-                {/* Normal text, unaffected by mirroring */}
                 <SvgText
                   x="0"
                   y="-85"
@@ -55,14 +63,15 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   color={Colors.plasmaCannon}
                 />
               </View>
-            </View>
+            </Animated.View>
           );
         }
         break;
+
       case "Destroyer":
         if (showFiringArcs) {
           return (
-            <View>
+            <Animated.View style={{ opacity: animOpacity }}>
               <Svg
                 width={300}
                 height={300}
@@ -81,8 +90,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-
-                {/* Normal text, unaffected by mirroring */}
                 <SvgText
                   x="0"
                   y="-85"
@@ -107,14 +114,15 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   color={Colors.plasmaCannon}
                 />
               </View>
-            </View>
+            </Animated.View>
           );
         }
         break;
+
       case "Cruiser":
         if (showFiringArcs) {
           return (
-            <View>
+            <Animated.View style={{ opacity: animOpacity }}>
               <Svg
                 width={300}
                 height={300}
@@ -133,8 +141,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-
-                {/* Normal text, unaffected by mirroring */}
                 <SvgText
                   x="0"
                   y="-85"
@@ -149,13 +155,13 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
               <Svg
                 width={300}
                 height={300}
-                viewBox="-160 -150 300 300" // Centered on (0, 0)
+                viewBox="-160 -150 300 300"
                 style={{
                   position: "absolute",
                   top: "50%",
                   left: "50%",
                   transform: [{ translateX: -240 }, { translateY: -200 }],
-                  zIndex: -1, // send behind ship image if needed
+                  zIndex: -1,
                 }}
               >
                 <Path
@@ -175,7 +181,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   Plasma Cannon
                 </SvgText>
               </Svg>
-
               <Svg
                 width={300}
                 height={300}
@@ -188,7 +193,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   zIndex: -1,
                 }}
               >
-                {/* Mirrored arc */}
                 <Path
                   d="M -106.07 106.07 A 150 150 0 0 1 -106.07 -106.07"
                   stroke={Colors.plasmaCannon}
@@ -220,14 +224,15 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   color={Colors.plasmaCannon}
                 />
               </View>
-            </View>
+            </Animated.View>
           );
         }
         break;
+
       case "Carrier":
         if (showFiringArcs) {
           return (
-            <View>
+            <Animated.View style={{ opacity: animOpacity }}>
               <View
                 style={{
                   position: "absolute",
@@ -259,8 +264,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-
-                {/* Normal text, unaffected by mirroring */}
                 <SvgText
                   x="0"
                   y="-200"
@@ -290,8 +293,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-
-                {/* Normal text, unaffected by mirroring */}
                 <SvgText
                   x="0"
                   y="-85"
@@ -322,8 +323,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-
-                {/* Normal text, unaffected by mirroring */}
                 <SvgText
                   x="0"
                   y="-160"
@@ -335,14 +334,15 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   Missle Battery
                 </SvgText>
               </Svg>
-            </View>
+            </Animated.View>
           );
         }
         break;
+
       case "Dreadnought":
         if (showFiringArcs) {
           return (
-            <View>
+            <Animated.View style={{ opacity: animOpacity }}>
               <Svg
                 width={300}
                 height={300}
@@ -352,7 +352,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   top: "50%",
                   left: "50%",
                   transform: [{ translateX: -280 }, { translateY: -200 }],
-                  zIndex: -1, // send behind ship image if needed
+                  zIndex: -1,
                 }}
               >
                 <Path
@@ -385,7 +385,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   color={Colors.plasmaCannon}
                 />
               </View>
-
               <Svg
                 width={300}
                 height={300}
@@ -398,7 +397,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   zIndex: -1,
                 }}
               >
-                {/* Mirrored arc */}
                 <Path
                   d="M -106.07 106.07 A 150 150 0 0 1 -106.07 -106.07"
                   stroke={Colors.plasmaCannon}
@@ -417,7 +415,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   Plasma Cannon
                 </SvgText>
               </Svg>
-
               <Svg
                 width={300}
                 height={300}
@@ -437,8 +434,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-
-                {/* Normal text, unaffected by mirroring */}
                 <SvgText
                   x="0"
                   y="-160"
@@ -450,7 +445,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   Ion Particle Beam
                 </SvgText>
               </Svg>
-
               <Svg
                 width={300}
                 height={300}
@@ -469,8 +463,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-
-                {/* Normal text, unaffected by mirroring */}
                 <SvgText
                   x="0"
                   y="-200"
@@ -500,8 +492,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-
-                {/* Normal text, unaffected by mirroring */}
                 <SvgText
                   x="0"
                   y="-85"
@@ -513,12 +503,15 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   350mm Railguns
                 </SvgText>
               </Svg>
-            </View>
+            </Animated.View>
           );
         }
+        break;
+
       default:
-      //console.log("No ship type found");
+        return null;
     }
   };
+
   return shipSwitch(ship, showFiringArcs);
 }

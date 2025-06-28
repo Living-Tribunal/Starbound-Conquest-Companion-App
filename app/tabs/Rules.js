@@ -103,11 +103,7 @@ export default function Rules() {
 
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
-              <Image
-                style={styles.textContainer2}
-                source={require("../../assets/images/hud2.png")}
-              />
-              <Text style={styles.textSection}>Movement Basics:</Text>
+              <Text style={styles.textSection}>Movement Basics</Text>
             </View>
             <View style={styles.textBodyContainer}>
               <Text style={styles.textBody}>
@@ -125,11 +121,7 @@ export default function Rules() {
 
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
-              <Image
-                style={styles.textContainer2}
-                source={require("../../assets/images/hud2.png")}
-              />
-              <Text style={styles.textSection}>Hit Roll:</Text>
+              <Text style={styles.textSection}>Hit Roll</Text>
             </View>
             <View style={styles.textBodyContainer}>
               <Text style={styles.textBody}>
@@ -151,11 +143,7 @@ export default function Rules() {
 
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
-              <Image
-                style={styles.textContainer2}
-                source={require("../../assets/images/hud2.png")}
-              />
-              <Text style={styles.textSection}>Damage Roll:</Text>
+              <Text style={styles.textSection}>Damage Roll</Text>
             </View>
             <View style={styles.textBodyContainer}>
               <Text style={styles.textBody}>
@@ -179,87 +167,73 @@ export default function Rules() {
           </View>
 
           {/*  ///Firings */}
-          <View style={[styles.Section]}>
-            <View style={styles.rulesSection}>
-              <View style={styles.textSectionContainer}>
+          <View style={styles.rulesSection}>
+            <View style={styles.textSectionContainer}>
+              <Text style={styles.textSection}>Range Measurement</Text>
+            </View>
+            <View style={styles.textBodyContainer}>
+              <Text style={styles.textBody}>
+                <Text style={styles.rulerCatHeader}>Weapon Firing Arcs:</Text>{" "}
+                Weapons without a 360-degree firing arc must use one of the
+                following 90-degree firing arcs: forward, aft, portside, or
+                starboard.
+              </Text>
+              <View style={styles.exampleContainer}>
                 <Image
-                  style={styles.textContainer2}
-                  source={require("../../assets/images/hud2.png")}
+                  source={require("../../assets/images/arcs/firingarc.png")}
+                  style={{ height: 150, width: 150 }}
                 />
-                <Text style={styles.textSection}>Range Measurement</Text>
               </View>
-              <View style={styles.textBodyContainer}>
-                <Text style={styles.textBody}>
-                  <Text style={styles.rulerCatHeader}>Weapon Firing Arcs:</Text>{" "}
-                  Weapons without a 360-degree firing arc must use one of the
-                  following 90-degree firing arcs: forward, aft, portside, or
-                  starboard.
-                </Text>
-                <View style={styles.exampleContainer}>
-                  <Image
-                    source={require("../../assets/images/arcs/firingarc.png")}
-                    style={{ height: 150, width: 150 }}
-                  />
-                </View>
-                <Text style={styles.textBody}>
-                  <Text style={styles.rulerCatHeader}>Range:</Text> To determine
-                  if a target is within range, measure from the center of the
-                  firing ship to the center of the target ship using the in-game
-                  ruler.
-                </Text>
-                <Text style={styles.textBody}>
-                  <Text style={styles.rulerCatHeader}>Line of Sight:</Text>{" "}
-                  Ensure there are no obstacles blocking the direct path to the
-                  target. If an obstacle is present, the shot is blocked.
-                </Text>
-              </View>
+              <Text style={styles.textBody}>
+                <Text style={styles.rulerCatHeader}>Range:</Text> To determine
+                if a target is within range, measure from the center of the
+                firing ship to the center of the target ship using the in-game
+                ruler.
+              </Text>
+              <Text style={styles.textBody}>
+                <Text style={styles.rulerCatHeader}>Line of Sight:</Text> Ensure
+                there are no obstacles blocking the direct path to the target.
+                If an obstacle is present, the shot is blocked.
+              </Text>
             </View>
           </View>
 
           {/* ///weapon types */}
-          <View style={[styles.Section]}>
-            <View style={styles.rulesSection}>
-              <View style={styles.textSectionContainer}>
-                <Image
-                  style={styles.textContainer2}
-                  source={require("../../assets/images/hud2.png")}
-                />
-                <Text style={[styles.textSection, { fontSize: 15 }]}>
-                  Weapon Ranges and Arcs
-                </Text>
-              </View>
+          <View style={styles.rulesSection}>
+            <View style={styles.textSectionContainer}>
+              <Text style={[styles.textSection]}>Weapon Ranges and Arcs</Text>
             </View>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                top: 5,
-                bottom: 5,
-                flexDirection: "row",
-              }}
-            >
-              <Text style={styles.subHeaderText}>
-                Tap a weapon type for more information.
-              </Text>
-            </View>
-            <View style={styles.imageRow}>
-              {Object.entries(weapons).map(([key, type], index) => (
-                <TouchableOpacity
-                  style={styles.TouchableOpacityStyleButtonWeapon}
-                  key={key}
-                  onPress={() => {
-                    navigation.navigate("WeaponTypes", { type, key });
-                  }}
-                >
-                  <View style={styles.mainTypeContainer}>
-                    {/* Weapon Name */}
-                    <Text style={styles.weaponName}>{key}</Text>
-                    {/* Background Image */}
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              top: 5,
+              bottom: 5,
+              flexDirection: "row",
+            }}
+          >
+            <Text style={styles.subHeaderText}>
+              Tap a weapon type for more information.
+            </Text>
+          </View>
+          <View style={styles.imageRow}>
+            {Object.entries(weapons).map(([key, type], index) => (
+              <TouchableOpacity
+                style={styles.TouchableOpacityStyleButtonWeapon}
+                key={key}
+                onPress={() => {
+                  navigation.navigate("WeaponTypes", { type, key });
+                }}
+              >
+                <View style={styles.mainTypeContainer}>
+                  {/* Weapon Name */}
+                  <Text style={styles.weaponName}>{key}</Text>
+                  {/* Background Image */}
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
         </ScrollView>
       </GestureHandlerRootView>
@@ -283,16 +257,15 @@ const styles = StyleSheet.create({
     fontFamily: "aboreto",
   },
   rulesSection: {
-    flex: 1,
-    padding: 5,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
   },
   textSection: {
-    fontFamily: "leagueRegular",
+    fontFamily: "LeagueSpartan-Light",
     color: Colors.hud,
-    alignSelf: "center",
-    fontSize: 15,
-    fontWeight: "bold",
-    position: "absolute",
+    fontSize: 14,
+    textAlign: "center",
   },
   textSection2: {
     fontFamily: "leagueRegular",
@@ -310,11 +283,13 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   textSectionContainer: {
-    textAlign: "center",
-    justifyContent: "center",
-    resizeMode: "container",
-    left: 5,
-    right: 5,
+    width: "50%",
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    backgroundColor: Colors.hudDarker,
+    padding: 5,
+    margin: 5,
   },
   TouchableOpacityStyleButton: {
     textAlign: "center",
@@ -323,9 +298,8 @@ const styles = StyleSheet.create({
   },
   textBody: {
     color: Colors.white,
-    flex: 1,
-    fontFamily: "monospace",
-    fontSize: 13,
+    fontFamily: "LeagueSpartan-Regular",
+    fontSize: 12,
   },
   textHeader: {
     color: Colors.hud,
@@ -340,10 +314,9 @@ const styles = StyleSheet.create({
     fontFamily: "aboreto",
   },
   textBodyContainer: {
-    backgroundColor: "transparent",
+    padding: 5,
   },
   exampleContainer: {
-    flex: 1,
     flexDirection: "row",
     justifyContent: "space-around",
   },
@@ -386,9 +359,6 @@ const styles = StyleSheet.create({
     color: Colors.hudDarker,
     textAlign: "center",
   },
-  Section: {
-    margin: 5,
-  },
   imageRow: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -399,9 +369,9 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   rulerCatHeader: {
-    fontWeight: "bold",
+    fontFamily: "LeagueSpartan-Regular",
     color: Colors.statDarker,
-    fontSize: 16,
+    fontSize: 12,
   },
   TouchableOpacityStyleButtonWeapon: {
     borderWidth: 1,

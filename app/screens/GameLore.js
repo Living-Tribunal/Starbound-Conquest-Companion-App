@@ -20,6 +20,7 @@ export default function GameLore() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.dark_gray }}>
+      <HeaderComponent text="Factions" NavToWhere={"Rules"} />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -27,7 +28,6 @@ export default function GameLore() {
           backgroundColor: Colors.dark_gray,
         }}
       >
-        <HeaderComponent text="Factions" NavToWhere={"Rules"} />
         <View style={styles.container}>
           <Text style={styles.subHeaderText}>
             Explore the factions of Starbound Conquest below. Tap an image to
