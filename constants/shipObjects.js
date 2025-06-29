@@ -9,17 +9,14 @@ export const shipObject = {
       type: "Fighter",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
       width: 68,
       height: 86,
       isSelected: false,
-      highlighted: false,
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_41_31%20PM.png?alt=media&token=6705c15c-f37a-4188-81d8-3b7e8d18ce3a",
-      globalAlpha: 1,
+
       maxHP: 20,
       hp: 20,
       damageThreshold: 1,
@@ -31,7 +28,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 1,
       orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Light Cannon": false,
@@ -47,17 +44,16 @@ export const shipObject = {
       type: "Destroyer",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 104,
       height: 208,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_27_22%20PM.png?alt=media&token=ba3c3ad0-09e5-40ff-8f1b-082e8df13706",
-      globalAlpha: 1,
+
       maxHP: 8,
       hp: 8,
       damageThreshold: 4,
@@ -69,7 +65,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 30,
       orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
@@ -84,17 +80,16 @@ export const shipObject = {
       type: "Cruiser",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 123,
       height: 245,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_45_37%20PM.png?alt=media&token=8540477f-292d-48e5-9d51-8b19e818620f",
-      globalAlpha: 1,
+
       maxHP: 12,
       hp: 12,
       damageThreshold: 6,
@@ -107,7 +102,7 @@ export const shipObject = {
       pointValue: 80,
       orders:
         "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Heavy Cannon": false,
@@ -123,17 +118,16 @@ export const shipObject = {
       type: "Carrier",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 104,
       height: 208,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_43_06%20PM.png?alt=media&token=40f7b236-0ebd-48c8-8d45-bfcfec7e9f4c",
-      globalAlpha: 1,
+
       maxHP: 14,
       hp: 14,
       damageThreshold: 7,
@@ -146,14 +140,15 @@ export const shipObject = {
       pointValue: 120,
       orders:
         "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "350mm Railgun": false,
         "Missile Battery": false,
       },
-
-      fighterWing: [],
+      maxCapacity: 20,
+      capacity: 20,
+      
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -164,17 +159,16 @@ export const shipObject = {
       type: "Dreadnought",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 218,
       height: 371,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_29_52%20PM.png?alt=media&token=4477e2e4-51b0-4acc-bdc0-900cf5e48898",
-      globalAlpha: 1,
+
       maxHP: 30,
       hp: 30,
       damageThreshold: 4,
@@ -188,15 +182,13 @@ export const shipObject = {
       pointValue: 240,
       orders:
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Ion Particle Beam": false,
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
-
-      fighterWing: [],
     },
   },
   "The Zyrrians": {
@@ -209,17 +201,16 @@ export const shipObject = {
       type: "Fighter",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 68,
       height: 86,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2003_48_02%20PM.png?alt=media&token=8ad99515-edc9-40da-b5de-d6349150be8c",
-      globalAlpha: 1,
+
       maxHP: 20,
       hp: 20,
       damageThreshold: 1,
@@ -231,7 +222,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 1,
       orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Light Cannon": false,
@@ -247,17 +238,16 @@ export const shipObject = {
       type: "Destroyer",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 104,
       height: 208,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2004_06_44%20PM.png?alt=media&token=7977b803-9e3f-4ee5-8ca1-d89d1e254b16",
-      globalAlpha: 1,
+
       maxHP: 8,
       hp: 8,
       damageThreshold: 4,
@@ -269,7 +259,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 30,
       orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
@@ -284,17 +274,16 @@ export const shipObject = {
       type: "Cruiser",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 123,
       height: 245,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2003_59_57%20PM.png?alt=media&token=2e74cfcb-02ac-4707-9d65-32e988f3bf4f",
-      globalAlpha: 1,
+
       maxHP: 12,
       hp: 12,
       damageThreshold: 6,
@@ -307,7 +296,7 @@ export const shipObject = {
       pointValue: 80,
       orders:
         "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Heavy Cannon": false,
@@ -323,17 +312,16 @@ export const shipObject = {
       type: "Carrier",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 104,
       height: 208,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2004_03_11%20PM.png?alt=media&token=854ca323-8b17-49d2-ac15-216c4791e89d",
-      globalAlpha: 1,
+
       maxHP: 14,
       hp: 14,
       damageThreshold: 7,
@@ -346,14 +334,14 @@ export const shipObject = {
       pointValue: 120,
       orders:
         "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "350mm Railgun": false,
         "Missile Battery": false,
       },
-
-      fighterWing: [],
+      maxCapacity: 20,
+      capacity: 20,
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -364,17 +352,16 @@ export const shipObject = {
       type: "Dreadnought",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 218,
       height: 371,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2003_45_32%20PM.png?alt=media&token=c04082eb-c0e0-4a1c-b028-6d0533c0b0e0",
-      globalAlpha: 1,
+
       maxHP: 30,
       hp: 30,
       damageThreshold: 4,
@@ -388,15 +375,13 @@ export const shipObject = {
       pointValue: 240,
       orders:
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Ion Particle Beam": false,
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
-
-      fighterWing: [],
     },
   },
   "Voidborn Marauders": {
@@ -409,17 +394,16 @@ export const shipObject = {
       type: "Fighter",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 68,
       height: 86,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2012_33_05%20PM.png?alt=media&token=56510c8c-1d9e-4dfb-9b5a-53bbe6af752d",
-      globalAlpha: 1,
+
       maxHP: 20,
       hp: 20,
       damageThreshold: 1,
@@ -431,7 +415,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 1,
       orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
-      ordersUsed: 0,
+
       weaponStatus: {
         "Light Cannon": false,
       },
@@ -446,17 +430,16 @@ export const shipObject = {
       type: "Destroyer",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 104,
       height: 208,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2012_13_01%20PM.png?alt=media&token=56d7049f-d1a5-43d6-a15b-815c8308874b",
-      globalAlpha: 1,
+
       maxHP: 8,
       hp: 8,
       damageThreshold: 4,
@@ -468,7 +451,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 30,
       orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
-      ordersUsed: 0,
+
       weaponStatus: {
         "Medium Cannon": false,
       },
@@ -482,17 +465,16 @@ export const shipObject = {
       type: "Cruiser",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 123,
       height: 245,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2012_30_01%20PM.png?alt=media&token=4ac46b54-f444-47ac-be4a-d119c265e2b1",
-      globalAlpha: 1,
+
       maxHP: 12,
       hp: 12,
       damageThreshold: 6,
@@ -505,7 +487,7 @@ export const shipObject = {
       pointValue: 80,
       orders:
         "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
-      ordersUsed: 0,
+
       weaponStatus: {
         "Heavy Cannon": false,
         "Plasma Cannon": false,
@@ -520,17 +502,16 @@ export const shipObject = {
       type: "Carrier",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 104,
       height: 208,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_44_40%20AM.png?alt=media&token=2426e3a1-b1ff-4aa0-a890-379cbdc85c25",
-      globalAlpha: 1,
+
       maxHP: 14,
       hp: 14,
       damageThreshold: 7,
@@ -543,13 +524,13 @@ export const shipObject = {
       pointValue: 120,
       orders:
         "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
-      ordersUsed: 0,
+
       weaponStatus: {
         "350mm Railgun": false,
         "Missile Battery": false,
       },
-
-      fighterWing: [],
+      maxCapacity: 20,
+      capacity: 20,
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -560,17 +541,16 @@ export const shipObject = {
       type: "Dreadnought",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 218,
       height: 371,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_34_15%20AM.png?alt=media&token=ca5c3322-3265-4476-8cfb-67619335f208",
-      globalAlpha: 1,
+
       maxHP: 30,
       hp: 30,
       damageThreshold: 4,
@@ -584,15 +564,13 @@ export const shipObject = {
       pointValue: 240,
       orders:
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
-      ordersUsed: 0,
+
       moveDistanceBonus: 0,
       weaponStatus: {
         "Ion Particle Beam": false,
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
-
-      fighterWing: [],
     },
   },
   "Star Reapers": {
@@ -605,17 +583,16 @@ export const shipObject = {
       type: "Fighter",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 68,
       height: 86,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_36_52%20AM.png?alt=media&token=e8c35b22-dc3c-4111-909a-b2e8fb15f5a7",
-      globalAlpha: 1,
+
       maxHP: 20,
       hp: 20,
       damageThreshold: 1,
@@ -627,7 +604,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 1,
       orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Light Cannon": false,
@@ -643,17 +620,16 @@ export const shipObject = {
       type: "Destroyer",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 104,
       height: 208,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_30_37%20AM.png?alt=media&token=442d40a1-ce0e-4dd7-9dcc-36feff1d9823",
-      globalAlpha: 1,
+
       maxHP: 8,
       hp: 8,
       damageThreshold: 4,
@@ -665,7 +641,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 30,
       orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
@@ -680,17 +656,16 @@ export const shipObject = {
       type: "Cruiser",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 123,
       height: 245,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_09_32%20AM.png?alt=media&token=e2807265-ef5e-40c6-b448-75f96a41feb3",
-      globalAlpha: 1,
+
       maxHP: 12,
       hp: 12,
       damageThreshold: 6,
@@ -703,7 +678,7 @@ export const shipObject = {
       pointValue: 80,
       orders:
         "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Heavy Cannon": false,
@@ -719,17 +694,16 @@ export const shipObject = {
       type: "Carrier",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 104,
       height: 208,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_27_35%20AM.png?alt=media&token=62ef9303-5904-4a42-bb8d-fe14f00551e0",
-      globalAlpha: 1,
+
       maxHP: 14,
       hp: 14,
       damageThreshold: 7,
@@ -742,14 +716,14 @@ export const shipObject = {
       pointValue: 120,
       orders:
         "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "350mm Railgun": false,
         "Missile Battery": false,
       },
-
-      fighterWing: [],
+      maxCapacity: 20,
+      capacity: 20,
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -760,17 +734,16 @@ export const shipObject = {
       type: "Dreadnought",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 218,
       height: 371,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_06_26%20AM.png?alt=media&token=9e5cc2fe-d83c-4091-8f17-b3c5c46bbc96",
-      globalAlpha: 1,
+
       maxHP: 30,
       hp: 30,
       damageThreshold: 4,
@@ -784,15 +757,13 @@ export const shipObject = {
       pointValue: 240,
       orders:
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Ion Particle Beam": false,
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
-
-      fighterWing: [],
     },
   },
   "Praxleon Empire": {
@@ -805,17 +776,16 @@ export const shipObject = {
       type: "Fighter",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 68,
       height: 86,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_05_34%20AM.png?alt=media&token=39cf58b4-98f9-43ed-aec0-53ae887f4fdf",
-      globalAlpha: 1,
+
       maxHP: 20,
       hp: 20,
       damageThreshold: 1,
@@ -827,7 +797,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 1,
       orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Light Cannon": false,
@@ -843,17 +813,16 @@ export const shipObject = {
       type: "Destroyer",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 104,
       height: 208,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_35_07%20AM.png?alt=media&token=b3877058-7e8d-419c-924d-c0e38be57800",
-      globalAlpha: 1,
+
       maxHP: 8,
       hp: 8,
       damageThreshold: 4,
@@ -865,7 +834,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 30,
       orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
@@ -880,17 +849,16 @@ export const shipObject = {
       type: "Cruiser",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 123,
       height: 245,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_29_55%20AM.png?alt=media&token=458c3522-e757-4d7f-ac59-66877fd1f6e5",
-      globalAlpha: 1,
+
       maxHP: 12,
       hp: 12,
       damageThreshold: 6,
@@ -903,7 +871,7 @@ export const shipObject = {
       pointValue: 80,
       orders:
         "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Heavy Cannon": false,
@@ -919,17 +887,16 @@ export const shipObject = {
       type: "Carrier",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 104,
       height: 208,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_24_34%20AM.png?alt=media&token=6ba82900-9e66-4a7b-a5f6-329e240ced37",
-      globalAlpha: 1,
+
       maxHP: 14,
       hp: 14,
       damageThreshold: 7,
@@ -942,14 +909,14 @@ export const shipObject = {
       pointValue: 120,
       orders:
         "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "350mm Railgun": false,
         "Missile Battery": false,
       },
-
-      fighterWing: [],
+      maxCapacity: 20,
+      capacity: 20,
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -960,17 +927,16 @@ export const shipObject = {
       type: "Dreadnought",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 218,
       height: 371,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_11_48%20AM.png?alt=media&token=61615d00-2131-4288-b09a-d2be847e9fb4",
-      globalAlpha: 1,
+
       maxHP: 30,
       hp: 30,
       damageThreshold: 4,
@@ -984,15 +950,13 @@ export const shipObject = {
       pointValue: 240,
       orders:
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Ion Particle Beam": false,
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
-
-      fighterWing: [],
     },
   },
   "Synthon Syndicate": {
@@ -1005,17 +969,16 @@ export const shipObject = {
       type: "Fighter",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 68,
       height: 86,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_59_00%20AM.png?alt=media&token=f95a0054-cf1b-4ce9-b485-54ead870fe2f",
-      globalAlpha: 1,
+
       maxHP: 20,
       hp: 20,
       damageThreshold: 1,
@@ -1027,7 +990,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 1,
       orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Light Cannon": false,
@@ -1043,17 +1006,16 @@ export const shipObject = {
       type: "Destroyer",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 104,
       height: 208,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_53_48%20AM.png?alt=media&token=e4745f68-752d-49fb-b8c9-c5bd9afe1f21",
-      globalAlpha: 1,
+
       maxHP: 8,
       hp: 8,
       damageThreshold: 4,
@@ -1065,7 +1027,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 30,
       orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
@@ -1080,17 +1042,16 @@ export const shipObject = {
       type: "Cruiser",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 123,
       height: 245,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_51_53%20AM.png?alt=media&token=aef2db7d-b127-4c47-bdcb-e9f0044c5817",
-      globalAlpha: 1,
+
       maxHP: 12,
       hp: 12,
       damageThreshold: 6,
@@ -1103,7 +1064,7 @@ export const shipObject = {
       pointValue: 80,
       orders:
         "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Heavy Cannon": false,
@@ -1119,17 +1080,16 @@ export const shipObject = {
       type: "Carrier",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 104,
       height: 208,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_48_23%20AM.png?alt=media&token=506b482a-fcef-4dd5-8bf9-22b04a19814e",
-      globalAlpha: 1,
+
       maxHP: 14,
       hp: 14,
       damageThreshold: 7,
@@ -1142,14 +1102,14 @@ export const shipObject = {
       pointValue: 120,
       orders:
         "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "350mm Railgun": false,
         "Missile Battery": false,
       },
-
-      fighterWing: [],
+      maxCapacity: 20,
+      capacity: 20,
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -1160,17 +1120,16 @@ export const shipObject = {
       type: "Dreadnought",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 218,
       height: 371,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_36_21%20AM.png?alt=media&token=6deda667-cc6d-49fa-8805-2dc75273e847",
-      globalAlpha: 1,
+
       maxHP: 30,
       hp: 30,
       damageThreshold: 4,
@@ -1184,15 +1143,13 @@ export const shipObject = {
       pointValue: 240,
       orders:
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Ion Particle Beam": false,
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
-
-      fighterWing: [],
     },
   },
   "The Union": {
@@ -1205,17 +1162,16 @@ export const shipObject = {
       type: "Fighter",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 68,
       height: 86,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2010_30_43%20AM.png?alt=media&token=ce2b461a-9b7e-4e51-acbb-4ec860693898",
-      globalAlpha: 1,
+
       maxHP: 20,
       hp: 20,
       damageThreshold: 1,
@@ -1227,7 +1183,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 1,
       orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Light Cannon": false,
@@ -1243,17 +1199,16 @@ export const shipObject = {
       type: "Destroyer",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 104,
       height: 208,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2010_20_03%20AM.png?alt=media&token=862a1576-a33a-47c5-ab58-5f3812f56286",
-      globalAlpha: 1,
+
       maxHP: 8,
       hp: 8,
       damageThreshold: 4,
@@ -1265,7 +1220,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 30,
       orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
@@ -1280,17 +1235,16 @@ export const shipObject = {
       type: "Cruiser",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 123,
       height: 245,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_57_21%20AM.png?alt=media&token=bf3f7c8e-9f0d-43c9-a9c0-54ff4a02783b",
-      globalAlpha: 1,
+
       maxHP: 12,
       hp: 12,
       damageThreshold: 6,
@@ -1303,7 +1257,7 @@ export const shipObject = {
       pointValue: 80,
       orders:
         "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Heavy Cannon": false,
@@ -1319,17 +1273,16 @@ export const shipObject = {
       type: "Carrier",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 104,
       height: 208,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2010_26_19%20AM.png?alt=media&token=4a879f41-902a-4f56-a8d3-f21691cec427",
-      globalAlpha: 1,
+
       maxHP: 14,
       hp: 14,
       damageThreshold: 7,
@@ -1342,14 +1295,14 @@ export const shipObject = {
       pointValue: 120,
       orders:
         "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "350mm Railgun": false,
         "Missile Battery": false,
       },
-
-      fighterWing: [],
+      maxCapacity: 20,
+      capacity: 20,
     },
     dreadnought: {
       id: Date.now().toString(),
@@ -1360,17 +1313,16 @@ export const shipObject = {
       type: "Dreadnought",
       x: 100,
       y: 100,
-      prevX: 0,
-      prevY: 0,
+
       width: 218,
       height: 371,
       isSelected: false,
-      highlighted: false,
+
       isToggled: false,
       rotation_angle: 0,
       image:
         "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_47_36%20AM.png?alt=media&token=9971a23d-fa35-47da-98f8-d4e77ebd660e",
-      globalAlpha: 1,
+
       maxHP: 30,
       hp: 30,
       damageThreshold: 4,
@@ -1384,15 +1336,13 @@ export const shipObject = {
       pointValue: 240,
       orders:
         "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
-      ordersUsed: 0,
+
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Ion Particle Beam": false,
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
-
-      fighterWing: [],
     },
   },
 };

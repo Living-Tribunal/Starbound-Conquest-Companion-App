@@ -1,6 +1,7 @@
-import { View, Text } from "react-native";
+import { View, Text, Dimensions } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { Colors } from "@/constants/Colors";
+import Svg, { Line, Circle } from "react-native-svg";
 
 export default function TraveledDistance({
   ship,
@@ -12,6 +13,7 @@ export default function TraveledDistance({
   const startX = useRef(null);
   const startY = useRef(null);
   const warning = distance > ship.moveDistance + ship.moveDistanceBonus;
+  const [currentPos, setCurrentPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     setDistance(0);
@@ -38,7 +40,7 @@ export default function TraveledDistance({
       ship.netDistance = clamped;
 
       if (typeof reportedDistance === "function") {
-        reportedDistance(ship.id, clamped); // 🔥 Push update externally
+        reportedDistance(ship.id, clamped);
       }
 
       //console.log("Net from start:", clamped.toFixed(2));

@@ -1,11 +1,15 @@
 import React, { useRef, useEffect } from "react";
 import { View, Animated } from "react-native";
-import Svg, { Path, Text as SvgText } from "react-native-svg";
+import Svg, { Path, Circle, Text as SvgText } from "react-native-svg";
 import { Colors } from "@/constants/Colors";
 import PulsingGlow from "@/components/Pusle/PulsingGlow";
 
 export default function ShipSwitch({ ship, showFiringArcs }) {
   const animOpacity = useRef(new Animated.Value(0)).current;
+  const radius = 400;
+  const viewBoxValue = `-${radius + 2} -${radius + 2} ${radius * 2 + 4} ${
+    radius * 2 + 3
+  }`;
 
   useEffect(() => {
     Animated.timing(animOpacity, {
@@ -20,7 +24,10 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
       case "Fighter":
         if (showFiringArcs) {
           return (
-            <Animated.View style={{ opacity: animOpacity }}>
+            <Animated.View
+              pointerEvents="none"
+              style={{ opacity: animOpacity }}
+            >
               <Svg
                 width={300}
                 height={300}
@@ -71,7 +78,10 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
       case "Destroyer":
         if (showFiringArcs) {
           return (
-            <Animated.View style={{ opacity: animOpacity }}>
+            <Animated.View
+              pointerEvents="none"
+              style={{ opacity: animOpacity }}
+            >
               <Svg
                 width={300}
                 height={300}
@@ -122,7 +132,10 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
       case "Cruiser":
         if (showFiringArcs) {
           return (
-            <Animated.View style={{ opacity: animOpacity }}>
+            <Animated.View
+              pointerEvents="none"
+              style={{ opacity: animOpacity }}
+            >
               <Svg
                 width={300}
                 height={300}
@@ -232,7 +245,10 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
       case "Carrier":
         if (showFiringArcs) {
           return (
-            <Animated.View style={{ opacity: animOpacity }}>
+            <Animated.View
+              pointerEvents="none"
+              style={{ opacity: animOpacity }}
+            >
               <View
                 style={{
                   position: "absolute",
@@ -247,61 +263,34 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                 />
               </View>
               <Svg
-                width={300}
-                height={300}
-                viewBox="-140 -220 300 300"
+                width={radius * 2}
+                height={radius * 2}
+                viewBox={viewBoxValue}
                 style={{
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -165 }, { translateY: -500 }],
+                  transform: [{ translateX: -420 }, { translateY: -440 }],
                   zIndex: -1,
                 }}
               >
-                <Path
-                  d="M -212 -100 A 320 320 0 0 1 212 -100"
-                  stroke={Colors.railguns}
-                  strokeWidth={2}
+                <Circle
+                  cx="0"
+                  cy="0"
+                  r={radius} // adjust to your desired radius
+                  stroke={Colors.hud}
+                  strokeWidth={3}
                   fill="none"
                 />
                 <SvgText
                   x="0"
-                  y="-200"
-                  fill={Colors.railguns}
+                  y="-380"
+                  fill={Colors.hud}
                   fontSize="10"
                   fontWeight="bold"
                   textAnchor="middle"
                 >
-                  350mm Railguns
-                </SvgText>
-              </Svg>
-              <Svg
-                width={300}
-                height={300}
-                viewBox="-140 -160 300 300"
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: [{ translateX: -165 }, { translateY: -270 }],
-                  zIndex: -1,
-                }}
-              >
-                <Path
-                  d="M -60 -60 A 150 150 0 0 1 60 -60"
-                  stroke={Colors.railguns}
-                  strokeWidth={2}
-                  fill="none"
-                />
-                <SvgText
-                  x="0"
-                  y="-85"
-                  fill={Colors.railguns}
-                  fontSize="10"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  350mm Railguns
+                  Fighters Max Range
                 </SvgText>
               </Svg>
               <Svg
@@ -342,7 +331,10 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
       case "Dreadnought":
         if (showFiringArcs) {
           return (
-            <Animated.View style={{ opacity: animOpacity }}>
+            <Animated.View
+              pointerEvents="none"
+              style={{ opacity: animOpacity }}
+            >
               <Svg
                 width={300}
                 height={300}

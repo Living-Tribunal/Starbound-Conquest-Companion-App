@@ -26,7 +26,6 @@ import ZoomControls from "@/components/GameMapButtons/ZoonControls";
 import TraveledDistance from "@/components/TravelDistance/TravelDistance";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
 import { useMapImageContext } from "@/components/Global/MapImageContext";
-import { BlurView } from "expo-blur";
 
 export default function FleetMap() {
   const navigation = useNavigation();

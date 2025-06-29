@@ -181,9 +181,7 @@ export default function Player() {
           username: username || "Commander",
           factionName: faction,
           isSelected: false,
-          highlighted: false,
           isToggled: false,
-          ordersUsed: 0,
           hasBeenInteractedWith: false,
           gameRoomId: gameRoom,
           factionColor: userFactionColor,
@@ -276,11 +274,11 @@ export default function Player() {
     if (!factionData) return [];
 
     return [
-      {
+      /* {
         type: "Fighter",
         fleetClass: "fleetFighter",
         ships: [factionData.fighter],
-      },
+      }, */
       {
         type: "Destroyer",
         fleetClass: "fleetDestroyer",

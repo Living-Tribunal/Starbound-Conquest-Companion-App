@@ -31,12 +31,11 @@ export default function ShipFlatList({ type, ships }) {
     Broadside: "BRS",
   };
 
-  const fighterWingStatusColor = (ship) => {
-    const wings = ship.fighterWings?.length ?? 0;
+  const launchAllFightersStatusColor = (ship) => {
+    const fightersLaunched = ship.specialOrders?.["Launch Fighters"] === true;
 
-    if (wings === 0) return Colors.blue_gray;
-    if (wings === 1) return Colors.hud;
-    return Colors.green_toggle;
+    if (fightersLaunched === true) return Colors.green_toggle;
+    return Colors.blue_gray;
   };
 
   const { data, setData, toggleToDelete, setSetDeleting, hitPointsColor } =
@@ -202,8 +201,8 @@ export default function ShipFlatList({ type, ships }) {
                       )
                     ) : null}
 
-                    {item.type === "Dreadnought" || item.type === "Carrier" ? (
-                      item.capacity === 20 ? (
+                    {item.type === "Carrier" ? (
+                      item.specialOrders?.["Launch Fighters"] === true ? (
                         <View style={{ flexDirection: "column" }}>
                           <Image
                             style={{
@@ -212,7 +211,7 @@ export default function ShipFlatList({ type, ships }) {
                               alignSelf: "center",
                               marginTop: 5,
                               margin: 2,
-                              tintColor: fighterWingStatusColor(item),
+                              tintColor: launchAllFightersStatusColor(item),
                             }}
                             source={{
                               uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
@@ -226,7 +225,7 @@ export default function ShipFlatList({ type, ships }) {
                               color: Colors.hud,
                             }}
                           >
-                            {item.fighterWing.length}/2
+                            {item.capacity}/{item.maxCapacity}
                           </Text>
                         </View>
                       ) : (
@@ -238,7 +237,7 @@ export default function ShipFlatList({ type, ships }) {
                               alignSelf: "center",
                               marginTop: 5,
                               margin: 2,
-                              tintColor: fighterWingStatusColor(item),
+                              tintColor: launchAllFightersStatusColor(item),
                             }}
                             source={{
                               uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
@@ -252,7 +251,7 @@ export default function ShipFlatList({ type, ships }) {
                               color: Colors.hud,
                             }}
                           >
-                            {item.fighterWing.length}/2
+                            {item.capacity}/{item.maxCapacity}
                           </Text>
                         </View>
                       )
