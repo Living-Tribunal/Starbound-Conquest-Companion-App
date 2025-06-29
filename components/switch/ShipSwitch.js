@@ -4,8 +4,15 @@ import Svg, { Path, Circle, Text as SvgText } from "react-native-svg";
 import { Colors } from "@/constants/Colors";
 import PulsingGlow from "@/components/Pusle/PulsingGlow";
 
-export default function ShipSwitch({ ship, showFiringArcs }) {
+export default function ShipSwitch({
+  ship,
+  showFiringArcs,
+  showAllFiringArcs,
+}) {
+  if (!ship) return null;
+  
   const animOpacity = useRef(new Animated.Value(0)).current;
+  const fightersLaunched = ship.specialOrders?.["Launch Fighters"] === true;
   const radius = 400;
   const viewBoxValue = `-${radius + 2} -${radius + 2} ${radius * 2 + 4} ${
     radius * 2 + 3
@@ -243,7 +250,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
         break;
 
       case "Carrier":
-        if (showFiringArcs) {
+        if (showFiringArcs || showAllFiringArcs) {
           return (
             <Animated.View
               pointerEvents="none"
@@ -262,37 +269,40 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   color={Colors.plasmaCannon}
                 />
               </View>
-              <Svg
-                width={radius * 2}
-                height={radius * 2}
-                viewBox={viewBoxValue}
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: [{ translateX: -420 }, { translateY: -440 }],
-                  zIndex: -1,
-                }}
-              >
-                <Circle
-                  cx="0"
-                  cy="0"
-                  r={radius} // adjust to your desired radius
-                  stroke={Colors.hud}
-                  strokeWidth={3}
-                  fill="none"
-                />
-                <SvgText
-                  x="0"
-                  y="-380"
-                  fill={Colors.hud}
-                  fontSize="10"
-                  fontWeight="bold"
-                  textAnchor="middle"
+              {fightersLaunched ? (
+                <Svg
+                  width={radius * 2}
+                  height={radius * 2}
+                  viewBox={viewBoxValue}
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: [{ translateX: -420 }, { translateY: -440 }],
+                    zIndex: -1,
+                  }}
                 >
-                  Fighters Max Range
-                </SvgText>
-              </Svg>
+                  <Circle
+                    cx="0"
+                    cy="0"
+                    r={radius} // adjust to your desired radius
+                    stroke={Colors.hud}
+                    strokeWidth={3}
+                    fill="none"
+                  />
+                  <SvgText
+                    x="0"
+                    y="-380"
+                    fill={Colors.hud}
+                    fontSize="10"
+                    fontWeight="bold"
+                    textAnchor="middle"
+                  >
+                    Fighters Max Range
+                  </SvgText>
+                </Svg>
+              ) : null}
+
               <Svg
                 width={300}
                 height={300}
@@ -505,5 +515,5 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
     }
   };
 
-  return shipSwitch(ship, showFiringArcs);
+  return shipSwitch(ship, showFiringArcs, showAllFiringArcs);
 }

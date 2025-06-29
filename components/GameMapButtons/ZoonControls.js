@@ -10,6 +10,7 @@ import { useEffect, useRef } from "react";
 import { Colors } from "@/constants/Colors";
 
 export default function ZoomControls({
+  ships,
   scale,
   shipPressed,
   handleShipRotation,
@@ -21,6 +22,8 @@ export default function ZoomControls({
   resetShipDistance,
   distance,
   updatingRotation,
+  showAllFiringArcs,
+  setShowAllFiringArcs,
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -32,6 +35,8 @@ export default function ZoomControls({
     }).start();
   }, [shipPressed]);
 
+  const selectedShip = ships.find((s) => s.id === shipPressed);
+  const shipType = selectedShip?.type === "Carrier";
   return (
     <View style={styles.zoomControls}>
       <View style={{ justifyContent: "center", alignItems: "center" }}>
@@ -91,6 +96,20 @@ export default function ZoomControls({
                 Reset Movement
               </Text>
             </TouchableOpacity>
+            {shipType && (
+              <TouchableOpacity
+                style={styles.controlButton}
+                onPress={
+                  shipType
+                    ? () => setShowAllFiringArcs((prev) => !prev)
+                    : undefined
+                }
+              >
+                <Text style={[styles.buttonText, { fontSize: 8 }]}>
+                  Fighter Range
+                </Text>
+              </TouchableOpacity>
+            )}
           </Animated.View>
         )}
       </View>

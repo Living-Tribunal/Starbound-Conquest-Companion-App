@@ -37,6 +37,7 @@ export default function FleetMap() {
   const [ships, setShips] = useState([]);
   const [shipPressed, setShipPressed] = useState(null);
   const [showFiringArcs, setShowFiringArcs] = useState(true);
+  const [showAllFiringArcs, setShowAllFiringArcs] = useState(false);
   const [distanceReset, setDistanceReset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [updatingRotation, setUpdatingRotation] = useState(false);
@@ -225,6 +226,9 @@ export default function FleetMap() {
         setIsDraggingShip={setIsDraggingShip}
         navigateToStats={navigateToStats}
         resetShipDistance={resetShipDistance}
+        showAllFiringArcs={showAllFiringArcs}
+        setShowAllFiringArcs={setShowAllFiringArcs}
+        ships={ships}
       />
       {shipPressed && (
         <Animated.View
@@ -426,11 +430,13 @@ export default function FleetMap() {
                     left: ship.width / 4,
                   }}
                 >
-                  {shipPressed && isUserShip && ship.id === shipPressed && (
+                  {((showAllFiringArcs === true && ship.type === "Carrier") ||
+                    (shipPressed && isUserShip && ship.id === shipPressed)) && (
                     <>
                       <ShipSwitch
-                        ship={ships.find((s) => s.id === shipPressed)}
+                        ship={ship}
                         showFiringArcs={showFiringArcs}
+                        showAllFiringArcs={showAllFiringArcs}
                       />
                     </>
                   )}

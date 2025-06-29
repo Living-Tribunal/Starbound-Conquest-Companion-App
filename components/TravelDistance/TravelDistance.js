@@ -13,7 +13,6 @@ export default function TraveledDistance({
   const startX = useRef(null);
   const startY = useRef(null);
   const warning = distance > ship.moveDistance + ship.moveDistanceBonus;
-  const [currentPos, setCurrentPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     setDistance(0);
