@@ -10,7 +10,7 @@ export default function ShipSwitch({
   showAllFiringArcs,
 }) {
   if (!ship) return null;
-  
+
   const animOpacity = useRef(new Animated.Value(0)).current;
   const fightersLaunched = ship.specialOrders?.["Launch Fighters"] === true;
   const radius = 400;
@@ -25,6 +25,19 @@ export default function ShipSwitch({
       useNativeDriver: true,
     }).start();
   }, [showFiringArcs]);
+
+  const fightersRange = (ship) => {
+    if (
+      ship.specialOrders?.["Launch Fighters"] === true &&
+      ship.capacity / ship.maxCapacity > 0.5
+    ) {
+      return Colors.green_toggle;
+    } else if (ship.capacity / ship.maxCapacity > 0.25) {
+      return Colors.lightened_gold;
+    } else {
+      return Colors.null;
+    }
+  };
 
   const shipSwitch = (ship) => {
     switch (ship.type) {
@@ -286,14 +299,14 @@ export default function ShipSwitch({
                     cx="0"
                     cy="0"
                     r={radius} // adjust to your desired radius
-                    stroke={Colors.hud}
+                    stroke={fightersRange(ship)}
                     strokeWidth={3}
                     fill="none"
                   />
                   <SvgText
                     x="0"
                     y="-380"
-                    fill={Colors.hud}
+                    fill={fightersRange(ship)}
                     fontSize="10"
                     fontWeight="bold"
                     textAnchor="middle"

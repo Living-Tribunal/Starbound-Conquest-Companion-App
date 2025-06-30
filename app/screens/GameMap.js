@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { getAllShipsInGameRoom } from "@/components/API/APIGameRoom";
+import Svg, { Path, Circle, Text as SvgText } from "react-native-svg";
 import { useStarBoundContext } from "@/components/Global/StarBoundProvider";
 import { doc, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "@/FirebaseConfig";
@@ -41,7 +42,14 @@ export default function FleetMap() {
   const [distanceReset, setDistanceReset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [updatingRotation, setUpdatingRotation] = useState(false);
+  const [movementDistanceCircle, setMovementDistanceCircle] = useState(null);
   const [distance, setDistance] = useState(0);
+  const [circleBorderColor, setCircleBorderColor] = useState(
+    "rgba(0,200,255,0.5)"
+  );
+  const [circleBackgroundColor, setCircleBackgroundColor] = useState(
+    "rgba(0,200,255,0.1)"
+  );
   const user = FIREBASE_AUTH.currentUser;
   const scale = useRef(new Animated.Value(1)).current;
   const scaleValue = useRef(1);
@@ -62,6 +70,10 @@ export default function FleetMap() {
   //console.log("GameRoom in GameMap:", gameRoom);
   //console.log("Ships in GameMap:", JSON.stringify(ships.length, null, 2));
   //console.log("ship pressed:", shipPressed);
+
+  const calculateDistance = (x1, y1, x2, y2) => {
+    return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+  };
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -244,35 +256,18 @@ export default function FleetMap() {
               padding: 7,
               borderColor: Colors.hud,
               borderRadius: 1,
-              color: Colors.hud,
-              fontSize: 10,
-              position: "absolute",
-              fontFamily: "LeagueSpartan-Light",
-              top: 30,
-              left: 60,
-              zIndex: 10000,
-            }}
-          >
-            Ship: {selectedShip.shipId}
-          </Text>
-          <Text
-            style={{
-              color: Colors.hud,
-              borderTopWidth: 1,
-              borderLeftWidth: 1,
-              padding: 7,
-              borderColor: Colors.hud,
               borderTopLeftRadius: 10,
+              borderTopWidth: 1,
+              color: Colors.hud,
               fontSize: 10,
-              fontFamily: "LeagueSpartan-Light",
               position: "absolute",
+              fontFamily: "LeagueSpartan-Light",
               top: 10,
               left: 60,
               zIndex: 10000,
             }}
           >
-            Distance:{" "}
-            {distancePerShipRef.current[shipPressed]?.toFixed(0) ?? "0"}u
+            Ship: {selectedShip.shipId}
           </Text>
           <Text
             style={{
@@ -284,12 +279,12 @@ export default function FleetMap() {
               fontFamily: "LeagueSpartan-Light",
               fontSize: 10,
               position: "absolute",
-              top: 50,
+              top: 30,
               left: 60,
               zIndex: 10000,
             }}
           >
-            Ship: {selectedShip.hp} / {selectedShip.maxHP}
+            HP: {selectedShip.hp} / {selectedShip.maxHP}
           </Text>
           <Text
             style={{
@@ -300,7 +295,7 @@ export default function FleetMap() {
               fontFamily: "LeagueSpartan-Light",
               fontSize: 10,
               position: "absolute",
-              top: 70,
+              top: 50,
               left: 60,
               zIndex: 10000,
             }}
@@ -317,7 +312,7 @@ export default function FleetMap() {
               fontFamily: "LeagueSpartan-Light",
               fontSize: 10,
               position: "absolute",
-              top: 90,
+              top: 70,
               left: 60,
               zIndex: 10000,
               borderBottomWidth: 1,
@@ -334,7 +329,13 @@ export default function FleetMap() {
         minZoom={0.1}
         initialZoom={0.5}
         longPressDuration={10}
-        onLongPress={() => setShipPressed(null)}
+        onLongPress={() => {
+          setShipPressed(null);
+          setMovementDistanceCircle(null);
+          // ADD THESE LINES to reset color when all ships are deselected
+          setCircleBorderColor("rgba(0,200,255,0.5)");
+          setCircleBackgroundColor("rgba(0,200,255,0.1)");
+        }}
         contentWidth={BACKGROUND_WIDTH}
         contentHeight={BACKGROUND_HEIGHT}
         bindToBorders={true}
@@ -353,16 +354,58 @@ export default function FleetMap() {
                   ship.position.extractOffset(); // Store current position
                   setIsDraggingShip(true);
                   setShipPressed(ship.id);
+
+                  const { x, y } = ship.position.__getValue();
+                  // Set the persisted circle data on grant
+                  if (!shipPressed || ship.id !== shipPressed) {
+                    setShipPressed(ship.id);
+                    setMovementDistanceCircle({
+                      x,
+                      y,
+                      moveDistance: ship.moveDistance, // Capture moveDistance here
+                    });
+                    setCircleBorderColor("rgba(0,200,255,0.5)");
+                    setCircleBackgroundColor("rgba(0,200,255,0.1)");
+                  }
+
+                  console.log("ship coordinates:", x, y);
                 },
 
                 onPanResponderMove: (e, gestureState) => {
                   const scaleFactor = zoomRef.current?.zoomLevel ?? 1;
-                  //console.log("🔥 Scale factor:", scaleFactor);
 
                   const dx = gestureState.dx / scaleFactor;
                   const dy = gestureState.dy / scaleFactor;
 
                   ship.position.setValue({ x: dx, y: dy });
+
+                  // ADD THIS BLOCK to check distance and update color
+                  if (movementDistanceCircle && shipPressed === ship.id) {
+                    const {
+                      x: circleX,
+                      y: circleY,
+                      moveDistance,
+                    } = movementDistanceCircle;
+                    const { x: currentShipX, y: currentShipY } =
+                      ship.position.__getValue();
+
+                    const distance = calculateDistance(
+                      circleX,
+                      circleY,
+                      currentShipX,
+                      currentShipY
+                    );
+                    // The radius is half of the width/height you set for the circle (moveDistance * 12 / 2)
+                    const radius = moveDistance * 6;
+
+                    if (distance > radius) {
+                      setCircleBorderColor("rgba(255,0,0,0.7)"); // Red border when outside
+                      setCircleBackgroundColor("rgba(255,0,0,0.2)"); // Red background when outside
+                    } else {
+                      setCircleBorderColor("rgba(0,200,255,0.5)"); // Blue border when inside
+                      setCircleBackgroundColor("rgba(0,200,255,0.1)"); // Blue background when inside
+                    }
+                  }
                 },
 
                 onPanResponderRelease: () => {
@@ -384,111 +427,134 @@ export default function FleetMap() {
             : undefined;
 
           return (
-            <Animated.View
-              key={ship.id}
-              pointerEvents={ship.isToggled ? "none" : "auto"}
-              {...(isUserShip ? panResponder.panHandlers : {})}
-              style={[
-                styles.ship,
-                {
-                  transform: ship.position.getTranslateTransform(),
-                  zIndex: ship.id === shipPressed ? 1000 : 1, // No rotation here
-                },
-              ]}
-            >
-              {/* Rotating Ship Image */}
-              <Animated.View
-                style={{
-                  transform: [
-                    {
-                      rotate: ship.rotation.interpolate({
-                        inputRange: [0, 360],
-                        outputRange: ["0deg", "360deg"],
-                      }),
-                    },
-                  ],
-                }}
-              >
-                <Image
-                  source={{ uri: ship.image }}
+            <React.Fragment key={ship.id}>
+              {shipPressed === ship.id && movementDistanceCircle && (
+                <View
+                  pointerEvents="none"
                   style={{
-                    width: ship.width / 2,
-                    height: ship.height / 2,
                     justifyContent: "center",
                     alignItems: "center",
-                    /*   borderRadius: 10,
+                    top: movementDistanceCircle.y - ship.moveDistance / 4,
+                    left: movementDistanceCircle.x - ship.moveDistance / 16,
+                    width: ship.moveDistance * 12,
+                    height: ship.moveDistance * 12,
+                    borderRadius: ship.moveDistance * 6,
+                    borderWidth: 2,
+                    borderColor: circleBorderColor,
+                    backgroundColor: circleBackgroundColor,
+                    zIndex: 0,
+                  }}
+                />
+              )}
+              <Animated.View
+                key={ship.id}
+                pointerEvents={ship.isToggled ? "none" : "auto"}
+                {...(isUserShip ? panResponder.panHandlers : {})}
+                style={[
+                  styles.ship,
+                  {
+                    transform: ship.position.getTranslateTransform(),
+                    zIndex: ship.id === shipPressed ? 1000 : 1, // No rotation here
+                  },
+                ]}
+              >
+                {/* Rotating Ship Image */}
+                <Animated.View
+                  style={{
+                    transform: [
+                      {
+                        rotate: ship.rotation.interpolate({
+                          inputRange: [0, 360],
+                          outputRange: ["0deg", "360deg"],
+                        }),
+                      },
+                    ],
+                  }}
+                >
+                  <Image
+                    source={{ uri: ship.image }}
+                    style={{
+                      width: ship.width / 2,
+                      height: ship.height / 2,
+                      /*   borderRadius: 10,
 
                     borderWidth: ship.id === shipPressed ? 0 : 2,
                     borderColor: ship.isToggled
                       ? Colors.gold
                       : ship.factionColor || Colors.hud, */
-                  }}
-                  resizeMode="contain"
-                />
+                    }}
+                    resizeMode="center"
+                  />
+                  <View
+                    style={{
+                      left: ship.width / 4,
+                    }}
+                  >
+                    {((showAllFiringArcs === true && ship.type === "Carrier") ||
+                      (shipPressed &&
+                        isUserShip &&
+                        ship.id === shipPressed)) && (
+                      <>
+                        <ShipSwitch
+                          ship={ship}
+                          showFiringArcs={showFiringArcs}
+                          showAllFiringArcs={showAllFiringArcs}
+                        />
+                      </>
+                    )}
+                  </View>
+                </Animated.View>
                 <View
                   style={{
-                    left: ship.width / 4,
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    top: 10,
                   }}
                 >
-                  {((showAllFiringArcs === true && ship.type === "Carrier") ||
-                    (shipPressed && isUserShip && ship.id === shipPressed)) && (
-                    <>
-                      <ShipSwitch
-                        ship={ship}
-                        showFiringArcs={showFiringArcs}
-                        showAllFiringArcs={showAllFiringArcs}
-                      />
-                    </>
-                  )}
+                  <Text
+                    style={[
+                      styles.info,
+                      {
+                        color:
+                          ship.id === shipPressed ? Colors.gold : Colors.hud,
+                        backgroundColor:
+                          ship.id === shipPressed
+                            ? Colors.goldenrod
+                            : Colors.hudDarker,
+                        borderColor:
+                          ship.id === shipPressed ? Colors.gold : Colors.hud,
+                      },
+                    ]}
+                  >
+                    {ship.shipId}
+                  </Text>
+                  {/* <TraveledDistance
+                    ship={ship}
+                    user={user}
+                    shipPressed={shipPressed}
+                    position={ship.position}
+                    resetTrigger={distanceReset}
+                    reportedDistance={(id, dist) => {
+                      distancePerShipRef.current[id] = dist;
+                    }}
+                  /> */}
+                  <Image
+                    source={factionIcons[ship.type.toLowerCase()]}
+                    style={{
+                      width: 35,
+                      height: 35,
+                      position: "absolute",
+                      bottom: 0,
+                      left: 70,
+                      tintColor: ship.isToggled
+                        ? Colors.gold
+                        : ship.factionColor,
+                    }}
+                    resizeMode="contain"
+                  />
                 </View>
               </Animated.View>
-              <View
-                style={{
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  top: 10,
-                }}
-              >
-                <Text
-                  style={[
-                    styles.info,
-                    {
-                      color: ship.id === shipPressed ? Colors.gold : Colors.hud,
-                      backgroundColor:
-                        ship.id === shipPressed
-                          ? Colors.goldenrod
-                          : Colors.hudDarker,
-                      borderColor:
-                        ship.id === shipPressed ? Colors.gold : Colors.hud,
-                    },
-                  ]}
-                >
-                  {ship.shipId}
-                </Text>
-                <TraveledDistance
-                  ship={ship}
-                  user={user}
-                  shipPressed={shipPressed}
-                  position={ship.position}
-                  resetTrigger={distanceReset}
-                  reportedDistance={(id, dist) => {
-                    distancePerShipRef.current[id] = dist;
-                  }}
-                />
-                <Image
-                  source={factionIcons[ship.type.toLowerCase()]}
-                  style={{
-                    width: 35,
-                    height: 35,
-                    position: "absolute",
-                    bottom: 25,
-                    left: 75,
-                    tintColor: ship.isToggled ? Colors.gold : ship.factionColor,
-                  }}
-                  resizeMode="contain"
-                />
-              </View>
-            </Animated.View>
+            </React.Fragment>
           );
         })}
       </ReactNativeZoomableView>
@@ -500,9 +566,6 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "black",
-  },
-  container: {
-    flex: 1,
   },
   ship: {
     position: "absolute",
