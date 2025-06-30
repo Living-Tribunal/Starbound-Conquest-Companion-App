@@ -235,7 +235,7 @@ export default function ShipStats({ route }) {
       case "All Ahead Full":
         const bonus =
           localDiceRoll >= 11 ? ship.moveDistance : ship.moveDistance / 2;
-        if (bonus >= 11) {
+        if (localDiceRoll >= 11) {
           const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
 
           updateDoc(shipRef, {
@@ -746,7 +746,8 @@ export default function ShipStats({ route }) {
                   marginTop: 2,
                 }}
               >
-                {(movementBonus || broadSideBonus || 0) + ship.moveDistance}
+                {(ship.moveDistanceBonus || ship.broadSideBonus || 0) +
+                  ship.moveDistance}
               </Text>
             </View>
           </View>

@@ -434,6 +434,7 @@ export default function Player() {
             shipInterval: increment(1),
             distanceTraveled: 0,
             broadSideBonus: 0,
+            moveDistanceBonus: 0,
           })
         );
       }

@@ -362,7 +362,10 @@ export default function FleetMap() {
                     setMovementDistanceCircle({
                       x,
                       y,
-                      moveDistance: ship.moveDistance, // Capture moveDistance here
+                      moveDistance:
+                        ship.moveDistance +
+                        ship.moveDistanceBonus +
+                        ship.broadSideBonus, // Capture moveDistance here
                     });
                     setCircleBorderColor("rgba(0,200,255,0.5)");
                     setCircleBackgroundColor("rgba(0,200,255,0.1)");
@@ -371,43 +374,85 @@ export default function FleetMap() {
                   console.log("ship coordinates:", x, y);
                 },
 
+                // Inside your PanResponder.create's onPanResponderMove function:
+
                 onPanResponderMove: (e, gestureState) => {
                   const scaleFactor = zoomRef.current?.zoomLevel ?? 1;
 
-                  const dx = gestureState.dx / scaleFactor;
-                  const dy = gestureState.dy / scaleFactor;
+                  // The ship whose pan responder is currently active.
+                  const currentPanShipId = ship.id;
 
-                  ship.position.setValue({ x: dx, y: dy });
-
-                  // ADD THIS BLOCK to check distance and update color
-                  if (movementDistanceCircle && shipPressed === ship.id) {
-                    const {
-                      x: circleX,
-                      y: circleY,
-                      moveDistance,
-                    } = movementDistanceCircle;
-                    const { x: currentShipX, y: currentShipY } =
-                      ship.position.__getValue();
-
-                    const distance = calculateDistance(
-                      circleX,
-                      circleY,
-                      currentShipX,
-                      currentShipY
-                    );
+                  // Only apply constraints and color logic if this is the currently selected ship
+                  // AND if there's an active movement circle to constrain to.
+                  if (
+                    shipPressed === currentPanShipId &&
+                    movementDistanceCircle
+                  ) {
+                    const circleX = movementDistanceCircle.x;
+                    const circleY = movementDistanceCircle.y;
                     // The radius is half of the width/height you set for the circle (moveDistance * 12 / 2)
-                    const radius = moveDistance * 6;
+                    const radius = movementDistanceCircle.moveDistance * 6;
 
-                    if (distance > radius) {
-                      setCircleBorderColor("rgba(255,0,0,0.7)"); // Red border when outside
-                      setCircleBackgroundColor("rgba(255,0,0,0.2)"); // Red background when outside
+                    // Calculate the potential absolute new position of the ship if allowed to move freely.
+                    // ship.position.x._offset holds the ship's last committed absolute position.
+                    // gestureState.dx/dy are the *total* accumulated movement from the start of the drag.
+                    const potentialShipAbsoluteX =
+                      ship.position.x._offset + gestureState.dx / scaleFactor;
+                    const potentialShipAbsoluteY =
+                      ship.position.y._offset + gestureState.dy / scaleFactor;
+
+                    // Calculate distance from the circle's center to the potential new ship position
+                    const deltaX = potentialShipAbsoluteX - circleX;
+                    const deltaY = potentialShipAbsoluteY - circleY;
+                    const distanceToCenter = Math.sqrt(
+                      deltaX * deltaX + deltaY * deltaY
+                    );
+
+                    let finalShipAbsoluteX = potentialShipAbsoluteX;
+                    let finalShipAbsoluteY = potentialShipAbsoluteY;
+
+                    if (distanceToCenter > radius) {
+                      // The ship is trying to go outside the circle.
+                      // Constrain its position to the perimeter of the circle.
+
+                      // Calculate the angle from the circle's center to the potential point
+                      const angle = Math.atan2(deltaY, deltaX);
+
+                      // Set the final position to be exactly on the circle's edge
+                      finalShipAbsoluteX = circleX + radius * Math.cos(angle);
+                      finalShipAbsoluteY = circleY + radius * Math.sin(angle);
+
+                      /*   // Set colors to indicate it hit the boundary (red)
+                      setCircleBorderColor("rgba(255,0,0,0.7)");
+                      setCircleBackgroundColor("rgba(255,0,0,0.2)");
                     } else {
-                      setCircleBorderColor("rgba(0,200,255,0.5)"); // Blue border when inside
-                      setCircleBackgroundColor("rgba(0,200,255,0.1)"); // Blue background when inside
+                      // The ship is inside or exactly on the circle.
+                      // Set colors to indicate it's within range (blue)
+                      setCircleBorderColor("rgba(0,200,255,0.5)");
+                      setCircleBackgroundColor("rgba(0,200,255,0.1)"); */
                     }
+
+                    // Convert the constrained absolute position back to relative dx, dy for Animated.setValue
+                    // Animated.setValue expects the change relative to its last offset.
+                    const constrainedDx =
+                      finalShipAbsoluteX - ship.position.x._offset;
+                    const constrainedDy =
+                      finalShipAbsoluteY - ship.position.y._offset;
+
+                    // Update the ship's animated position
+                    ship.position.setValue({
+                      x: constrainedDx,
+                      y: constrainedDy,
+                    });
+                  } else {
+                    // If this ship is not the currently selected one, or there's no circle to constrain,
+                    // allow normal movement. (Note: pointerEvents="none" for non-user ships might already prevent this)
+                    ship.position.setValue({
+                      x: gestureState.dx / scaleFactor,
+                      y: gestureState.dy / scaleFactor,
+                    });
                   }
                 },
-
                 onPanResponderRelease: () => {
                   ship.position.flattenOffset(); // Commit the new offset
                   setIsDraggingShip(false);
@@ -434,11 +479,16 @@ export default function FleetMap() {
                   style={{
                     justifyContent: "center",
                     alignItems: "center",
-                    top: movementDistanceCircle.y - ship.moveDistance / 4,
-                    left: movementDistanceCircle.x - ship.moveDistance / 16,
-                    width: ship.moveDistance * 12,
-                    height: ship.moveDistance * 12,
-                    borderRadius: ship.moveDistance * 6,
+                    top:
+                      movementDistanceCircle.y -
+                      (ship.moveDistance + ship.moveDistanceBonus) / 4,
+                    left:
+                      movementDistanceCircle.x -
+                      (ship.moveDistance + ship.moveDistanceBonus) / 16,
+                    width: (ship.moveDistance + ship.moveDistanceBonus) * 12,
+                    height: (ship.moveDistance + ship.moveDistanceBonus) * 12,
+                    borderRadius:
+                      (ship.moveDistance + ship.moveDistanceBonus) * 6,
                     borderWidth: 2,
                     borderColor: circleBorderColor,
                     backgroundColor: circleBackgroundColor,
