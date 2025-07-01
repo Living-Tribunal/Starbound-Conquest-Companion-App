@@ -22,19 +22,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
     }).start();
   }, [showFiringArcs]);
 
-  const fightersRange = (ship) => {
-    if (
-      ship.specialOrders?.["Launch Fighters"] === true &&
-      ship.capacity / ship.maxCapacity > 0.5
-    ) {
-      return Colors.green_toggle;
-    } else if (ship.capacity / ship.maxCapacity > 0.25) {
-      return Colors.lightened_gold;
-    } else {
-      return Colors.null;
-    }
-  };
-
   const shipSwitch = (ship) => {
     switch (ship.type) {
       case "Fighter":
@@ -62,16 +49,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-                <SvgText
-                  x="0"
-                  y="-85"
-                  fill={Colors.lightCannon}
-                  fontSize="10"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  Light Cannon
-                </SvgText>
               </Svg>
               <View
                 style={{
@@ -116,16 +93,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-                <SvgText
-                  x="0"
-                  y="-85"
-                  fill={Colors.mediumCannon}
-                  fontSize="10"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  Medium Cannon
-                </SvgText>
               </Svg>
               <View
                 style={{
@@ -170,16 +137,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-                <SvgText
-                  x="0"
-                  y="-85"
-                  fill={Colors.heavyCannon}
-                  fontSize="10"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  Heavy Cannon
-                </SvgText>
               </Svg>
               <Svg
                 width={300}
@@ -199,16 +156,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-                <SvgText
-                  x="-100"
-                  y="0"
-                  fill={Colors.plasmaCannon}
-                  fontSize="10"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  Plasma Cannon
-                </SvgText>
               </Svg>
               <Svg
                 width={300}
@@ -229,16 +176,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   fill="none"
                   transform="scale(-1,1)"
                 />
-                <SvgText
-                  x="100"
-                  y="0"
-                  fill={Colors.plasmaCannon}
-                  fontSize="10"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  Plasma Cannon
-                </SvgText>
               </Svg>
               <View
                 style={{
@@ -278,39 +215,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   color={Colors.plasmaCannon}
                 />
               </View>
-              {/*      {fightersLaunched ? (
-                <Svg
-                  width={radius * 2}
-                  height={radius * 2}
-                  viewBox={viewBoxValue}
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: [{ translateX: -420 }, { translateY: -440 }],
-                    zIndex: -1,
-                  }}
-                >
-                  <Circle
-                    cx="0"
-                    cy="0"
-                    r={radius} // adjust to your desired radius
-                    stroke={fightersRange(ship)}
-                    strokeWidth={3}
-                    fill="none"
-                  />
-                  <SvgText
-                    x="0"
-                    y="-380"
-                    fill={fightersRange(ship)}
-                    fontSize="10"
-                    fontWeight="bold"
-                    textAnchor="middle"
-                  >
-                    Fighters Max Range
-                  </SvgText>
-                </Svg>
-              ) : null} */}
 
               <Svg
                 width={300}
@@ -331,16 +235,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-                <SvgText
-                  x="0"
-                  y="-160"
-                  fill={Colors.missiles}
-                  fontSize="10"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  Missle Battery
-                </SvgText>
               </Svg>
             </Animated.View>
           );
@@ -372,16 +266,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-                <SvgText
-                  x="-100"
-                  y="0"
-                  fill={Colors.plasmaCannon}
-                  fontSize="10"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  Plasma Cannon
-                </SvgText>
               </Svg>
               <View
                 style={{
@@ -415,16 +299,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   fill="none"
                   transform="scale(-1,1)"
                 />
-                <SvgText
-                  x="100"
-                  y="0"
-                  fill={Colors.plasmaCannon}
-                  fontSize="10"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  Plasma Cannon
-                </SvgText>
               </Svg>
               <Svg
                 width={300}
@@ -445,16 +319,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-                <SvgText
-                  x="0"
-                  y="-160"
-                  fill={Colors.particleBeam}
-                  fontSize="10"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  Ion Particle Beam
-                </SvgText>
               </Svg>
               <Svg
                 width={300}
@@ -474,16 +338,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-                <SvgText
-                  x="0"
-                  y="-200"
-                  fill={Colors.railguns}
-                  fontSize="10"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  350mm Railguns
-                </SvgText>
               </Svg>
               <Svg
                 width={300}
@@ -503,16 +357,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   strokeWidth={2}
                   fill="none"
                 />
-                <SvgText
-                  x="0"
-                  y="-85"
-                  fill={Colors.railguns}
-                  fontSize="10"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  350mm Railguns
-                </SvgText>
               </Svg>
             </Animated.View>
           );

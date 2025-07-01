@@ -37,6 +37,8 @@ import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-vi
 import { useMapImageContext } from "@/components/Global/MapImageContext";
 import Toast from "react-native-toast-message";
 import { getFleetData } from "@/components/API/API";
+import BackIconArcs from "@/components/GameMapButtons/BackIconArcs";
+import { FONTS } from "@/constants/fonts";
 
 export default function FleetMap() {
   const navigation = useNavigation();
@@ -52,6 +54,7 @@ export default function FleetMap() {
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);
   const [shipInFighterRange, setShipInFighterRange] = useState(false);
+  const [removeAllIcons, setRemoveAllIcons] = useState(true);
   const [circleBorderColor, setCircleBorderColor] = useState(
     "rgba(0,200,255,0.5)"
   );
@@ -72,6 +75,16 @@ export default function FleetMap() {
 
   const BACKGROUND_WIDTH = WORLD_WIDTH;
   const BACKGROUND_HEIGHT = WORLD_HEIGHT;
+
+  const weaponColors = {
+    "Light Cannon": Colors.lightCannon,
+    "Medium Cannon": Colors.mediumCannon,
+    "Heavy Cannon": Colors.heavyCannon,
+    "Plasma Cannon": Colors.plasmaCannon,
+    "350mm Railgun": Colors.railguns,
+    "Missile Battery": Colors.missiles,
+    "Ion Particle Beam": Colors.particleBeam,
+  };
 
   const checkIfInFighterRange = (shipToCheck, radius, center) => {
     const { x, y } = shipToCheck.position.__getValue();
@@ -196,7 +209,6 @@ export default function FleetMap() {
     try {
       await batch.commit();
       console.log("Batch update for fighter range successful.");
-      // No need to call getFleetData here if you're using a real-time listener for 'data'
     } catch (e) {
       console.error("Error batch updating fighter range:", e);
       Toast.show({
@@ -319,64 +331,13 @@ export default function FleetMap() {
 
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate("Map")}
-        style={{
-          position: "absolute",
-          top: 10,
-          left: 10,
-          padding: 0,
-          margin: 0,
-          backgroundColor: "transparent",
-          zIndex: 10000,
-        }}
-      >
-        <Image
-          style={styles.image}
-          source={require("../../assets/icons/icons8-back-arrow-50.png")}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onLongPress={() => {
-          setTempDisableMovementRestriction((prev) => {
-            const next = !prev;
-            Toast.show({
-              type: "success",
-              text1: next
-                ? "Movement restriction disabled"
-                : "Movement restriction enabled",
-              position: "bottom",
-              visibilityTime: 1500,
-            });
-            return next;
-          });
-        }}
-        style={{
-          position: "absolute",
-          top: 50,
-          left: 10,
-          padding: 0,
-          margin: 0,
-          backgroundColor: "transparent",
-          zIndex: 10000,
-        }}
-      >
-        <Image
-          style={[
-            styles.image,
-            {
-              tintColor: tempDisableMovementRestriction
-                ? Colors.lighter_red
-                : Colors.green_toggle,
-            },
-          ]}
-          source={
-            tempDisableMovementRestriction
-              ? require("../../assets/icons/icons8-cancel-50.png")
-              : require("../../assets/icons/icons8-check-mark-50.png")
-          }
-        />
-      </TouchableOpacity>
+      <BackIconArcs
+        navigation={navigation}
+        setTempDisableMovementRestriction={setTempDisableMovementRestriction}
+        tempDisableMovementRestriction={tempDisableMovementRestriction}
+        setRemoveAllIcons={setRemoveAllIcons}
+        removeAllIcons={removeAllIcons}
+      />
 
       <ZoomControls
         scale={scale}
@@ -390,66 +351,40 @@ export default function FleetMap() {
         setShowAllFiringArcs={setShowAllFiringArcs}
         ships={ships}
       />
-      {shipPressed && (
+      {selectedShip && (
         <Animated.View
-          style={{
-            opacity: fadeAnim,
-            position: "absolute",
-            zIndex: 10000,
-            width: 150,
-            padding: 10,
-            backgroundColor: "#284b54b8",
-            height: 100,
-            top: 10,
-            left: 60,
-            justifyContent: "center",
-            flexDirection: "column",
-            alignItems: "left",
-            borderRadius: 10,
-            borderWidth: 1,
-            borderColor: Colors.hud,
-          }}
+          style={[styles.shipInfoContainer, { opacity: fadeAnim }]}
         >
-          <Text
-            style={{
-              color: Colors.hud,
-              fontSize: 12,
-              fontFamily: "LeagueSpartan-Light",
-              zIndex: 10000,
-            }}
-          >
-            Ship: {selectedShip.shipId}
-          </Text>
-          <Text
-            style={{
-              color: Colors.hud,
-              fontFamily: "LeagueSpartan-Light",
-              fontSize: 12,
-              zIndex: 10000,
-            }}
-          >
+          <Text style={styles.shipInfo}>Ship: {selectedShip.shipId}</Text>
+          <Text style={styles.shipInfo}>
             HP: {selectedShip.hp} / {selectedShip.maxHP}
           </Text>
-          <Text
-            style={{
-              color: Colors.hud,
-              fontFamily: "LeagueSpartan-Light",
-              fontSize: 12,
-              zIndex: 10000,
-            }}
-          >
-            Type: {selectedShip.type}
-          </Text>
-          <Text
-            style={{
-              color: Colors.hud,
-              fontFamily: "LeagueSpartan-Light",
-              fontSize: 12,
-              zIndex: 10000,
-            }}
-          >
+          <Text style={styles.shipInfo}>Type: {selectedShip.type}</Text>
+          <Text style={styles.shipInfo}>
             Rotation: {selectedShip?.rotation?.__getValue()?.toFixed(0) ?? 0}°
           </Text>
+          <Text style={styles.shipInfo}>Weapons:</Text>
+          {selectedShip?.weaponType?.map((weapon, index) => (
+            <Text
+              key={index}
+              style={[
+                styles.shipInfo,
+                {
+                  borderRadius: 5,
+                  padding: 2,
+                  margin: 2,
+                  fontFamilt: FONTS.leagueBold,
+                  fontWeight: "bold",
+                  fontSize: 9,
+                  textAlign: "center",
+                  color: Colors.dark_gray,
+                  backgroundColor: weaponColors[weapon] || Colors.hud,
+                },
+              ]}
+            >
+              {weapon}
+            </Text>
+          ))}
         </Animated.View>
       )}
 
@@ -518,10 +453,6 @@ export default function FleetMap() {
                         s.id !== ship.id &&
                         s.type !== "Carrier" &&
                         checkIfInFighterRange(s, radius, center)
-                    );
-                    console.log(
-                      "ships in range:",
-                      shipsInRange.map((s) => s.shipId)
                     );
                     setShipInFighterRange(shipsInRange);
                   }
@@ -721,18 +652,6 @@ export default function FleetMap() {
                           zIndex: 5,
                         }}
                       />
-                      <Text
-                        style={{
-                          fontSize: 10,
-                          color: fightersRangeStatus(ship),
-                          textAlign: "center",
-                          top: -360,
-                          position: "absolute",
-                          width: 150,
-                        }}
-                      >
-                        Max Fighter Range
-                      </Text>
                     </>
                   )}
 
@@ -772,63 +691,65 @@ export default function FleetMap() {
                     )}
                   </View>
                 </Animated.View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.info,
-                      {
-                        marginTop: 5,
-                        color:
-                          ship.id === shipPressed ? Colors.gold : Colors.hud,
-                        backgroundColor:
-                          ship.id === shipPressed
-                            ? Colors.goldenrod
-                            : Colors.hudDarker,
-                        borderColor:
-                          ship.id === shipPressed ? Colors.gold : Colors.hud,
-                      },
-                    ]}
-                  >
-                    {ship.shipId}
-                  </Text>
-                  <Image
-                    source={factionIcons[ship.type.toLowerCase()]}
+                {removeAllIcons && (
+                  <View
                     style={{
-                      width: 35,
-                      height: 35,
-                      position: "absolute",
-                      bottom: 0,
-                      marginTop: 5,
-                      left: 70,
-                      tintColor: ship.isToggled
-                        ? Colors.gold
-                        : ship.factionColor,
+                      flexDirection: "row",
+                      justifyContent: "center",
                     }}
-                    resizeMode="contain"
-                  />
-                  {ship.type !== "Carrier" && (
+                  >
+                    <Text
+                      style={[
+                        styles.info,
+                        {
+                          marginTop: 5,
+                          color:
+                            ship.id === shipPressed ? Colors.gold : Colors.hud,
+                          backgroundColor:
+                            ship.id === shipPressed
+                              ? Colors.goldenrod
+                              : Colors.hudDarker,
+                          borderColor:
+                            ship.id === shipPressed ? Colors.gold : Colors.hud,
+                        },
+                      ]}
+                    >
+                      {ship.shipId}
+                    </Text>
                     <Image
-                      resizeMode="contain"
+                      source={factionIcons[ship.type.toLowerCase()]}
                       style={{
-                        width: 30,
-                        height: 30,
-                        alignSelf: "center",
+                        width: 35,
+                        height: 35,
                         position: "absolute",
-                        left: -40,
+                        bottom: 0,
                         marginTop: 5,
-                        tintColor: checkIfShipIsInRangeShowIndicator(ship),
+                        left: 70,
+                        tintColor: ship.isToggled
+                          ? Colors.gold
+                          : ship.factionColor,
                       }}
-                      source={{
-                        uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
-                      }}
+                      resizeMode="contain"
                     />
-                  )}
-                </View>
+                    {ship.type !== "Carrier" && ship.user === user.uid && (
+                      <Image
+                        resizeMode="contain"
+                        style={{
+                          width: 30,
+                          height: 30,
+                          alignSelf: "center",
+                          position: "absolute",
+                          left: -40,
+                          marginTop: 5,
+                          tintColor: checkIfShipIsInRangeShowIndicator(ship),
+                        }}
+                        source={{
+                          uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
+                        }}
+                      />
+                    )}
+                  </View>
+                )}
               </Animated.View>
             </React.Fragment>
           );
@@ -872,5 +793,27 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     tintColor: Colors.hud,
     zIndex: 10000,
+  },
+  shipInfo: {
+    color: Colors.hud,
+    fontFamily: "LeagueSpartan-Light",
+    fontSize: 12,
+    zIndex: 10000,
+  },
+  shipInfoContainer: {
+    position: "absolute",
+    zIndex: 10000,
+    width: 150,
+    padding: 10,
+    backgroundColor: "#284b54b8",
+    height: 200,
+    top: 10,
+    left: 60,
+    justifyContent: "center",
+    flexDirection: "column",
+    alignItems: "left",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.hud,
   },
 });

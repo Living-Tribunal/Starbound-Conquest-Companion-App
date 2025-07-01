@@ -1,0 +1,134 @@
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { Colors } from "@/constants/Colors";
+import Toast from "react-native-toast-message";
+
+export default function BackIconArcs({
+  navigation,
+  setTempDisableMovementRestriction,
+  tempDisableMovementRestriction,
+  setRemoveAllIcons,
+  removeAllIcons,
+}) {
+  return (
+    <>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Map")}
+        style={{
+          position: "absolute",
+          top: 10,
+          left: 10,
+          padding: 0,
+          margin: 0,
+          backgroundColor: "transparent",
+          zIndex: 10000,
+        }}
+      >
+        <Image
+          style={styles.image}
+          source={require("../../assets/icons/icons8-back-arrow-50.png")}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        onLongPress={() => {
+          setTempDisableMovementRestriction((prev) => {
+            const next = !prev;
+            Toast.show({
+              type: "success",
+              text1: "StarBound Conquest",
+              text2: next
+                ? "Movement restriction disabled"
+                : "Movement restriction enabled",
+              position: "top",
+              visibilityTime: 2000,
+            });
+            return next;
+          });
+        }}
+        style={{
+          position: "absolute",
+          top: 50,
+          left: 10,
+          padding: 0,
+          margin: 0,
+          backgroundColor: "transparent",
+          zIndex: 10000,
+        }}
+      >
+        <Image
+          style={[
+            styles.image,
+            {
+              tintColor: tempDisableMovementRestriction
+                ? Colors.lighter_red
+                : Colors.green_toggle,
+            },
+          ]}
+          source={
+            tempDisableMovementRestriction
+              ? require("../../assets/icons/icons8-cancel-50.png")
+              : require("../../assets/icons/icons8-check-mark-50.png")
+          }
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        onLongPress={() => {
+          setRemoveAllIcons((prev) => {
+            const next = !prev;
+            Toast.show({
+              type: "success",
+              text1: "StarBound Conquest",
+              text2: next ? "Icons Enabled" : "Hiding Icons",
+              position: "top",
+              visibilityTime: 2000,
+            });
+            return next;
+          });
+        }}
+        style={{
+          position: "absolute",
+          top: 93,
+          left: 10,
+          padding: 0,
+          margin: 0,
+          backgroundColor: "transparent",
+          zIndex: 10000,
+          borderWidth: 1.5,
+          borderColor: removeAllIcons
+            ? Colors.green_toggle
+            : Colors.lighter_red,
+          borderRadius: 50,
+        }}
+      >
+        <Image
+          style={[
+            styles.image,
+
+            {
+              width: 35,
+              height: 35,
+              tintColor: removeAllIcons
+                ? Colors.green_toggle
+                : Colors.lighter_red,
+            },
+          ]}
+          source={
+            removeAllIcons
+              ? require("../../assets/icons/showicon.png")
+              : require("../../assets/icons/hideicon.png")
+          }
+        />
+      </TouchableOpacity>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  image: {
+    width: 40,
+    height: 40,
+    resizeMode: "contain",
+    tintColor: Colors.hud,
+    zIndex: 10000,
+  },
+});
