@@ -82,7 +82,7 @@ export default function FleetMap() {
   };
 
   const checkIfShipIsInRangeShowIndicator = (ship) =>
-    ship.type !== "Carrier" && ship.isInFighterRange && ship.id === user.uid
+    ship.type !== "Carrier" && ship.isInFighterRange && ship.user === user.uid
       ? Colors.green_toggle
       : Colors.blue_gray;
 
@@ -179,16 +179,18 @@ export default function FleetMap() {
 
     // Iterate through the ships whose status might have changed
     updatedShipsData.forEach((shipToUpdate) => {
-      const shipRef = doc(
-        FIREBASE_DB,
-        "users",
-        user.uid,
-        "ships",
-        shipToUpdate.id
-      );
-      batch.update(shipRef, {
-        isInFighterRange: shipToUpdate.isInFighterRange,
-      });
+      if (user.uid === shipToUpdate.user) {
+        const shipRef = doc(
+          FIREBASE_DB,
+          "users",
+          user.uid,
+          "ships",
+          shipToUpdate.id
+        );
+        batch.update(shipRef, {
+          isInFighterRange: shipToUpdate.isInFighterRange,
+        });
+      }
     });
 
     try {
@@ -208,7 +210,7 @@ export default function FleetMap() {
   useFocusEffect(
     useCallback(() => {
       getFleetData({ data, setData });
-      console.log("getFleetData in GameMap:", data);
+      //console.log("getFleetData in GameMap:", data);
     }, [])
   );
 
@@ -641,7 +643,10 @@ export default function FleetMap() {
                     .filter(Boolean); // Filter out nulls
 
                   // Update local state with the new isInFighterRange status
-                  if (shipsWithUpdatedFighterRange.length > 0) {
+                  if (
+                    shipsWithUpdatedFighterRange.length > 0 &&
+                    user.uid === ship.user
+                  ) {
                     setShips((currentShips) =>
                       currentShips.map((s) => {
                         const updatedShip = shipsWithUpdatedFighterRange.find(
