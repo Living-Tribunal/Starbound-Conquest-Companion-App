@@ -4,11 +4,7 @@ import Svg, { Path, Circle, Text as SvgText } from "react-native-svg";
 import { Colors } from "@/constants/Colors";
 import PulsingGlow from "@/components/Pusle/PulsingGlow";
 
-export default function ShipSwitch({
-  ship,
-  showFiringArcs,
-  showAllFiringArcs,
-}) {
+export default function ShipSwitch({ ship, showFiringArcs }) {
   if (!ship) return null;
 
   const animOpacity = useRef(new Animated.Value(0)).current;
@@ -263,7 +259,7 @@ export default function ShipSwitch({
         break;
 
       case "Carrier":
-        if (showFiringArcs || showAllFiringArcs) {
+        if (showFiringArcs) {
           return (
             <Animated.View
               pointerEvents="none"
@@ -282,7 +278,7 @@ export default function ShipSwitch({
                   color={Colors.plasmaCannon}
                 />
               </View>
-              {fightersLaunched ? (
+              {/*      {fightersLaunched ? (
                 <Svg
                   width={radius * 2}
                   height={radius * 2}
@@ -314,7 +310,7 @@ export default function ShipSwitch({
                     Fighters Max Range
                   </SvgText>
                 </Svg>
-              ) : null}
+              ) : null} */}
 
               <Svg
                 width={300}
@@ -528,5 +524,5 @@ export default function ShipSwitch({
     }
   };
 
-  return shipSwitch(ship, showFiringArcs, showAllFiringArcs);
+  return shipSwitch(ship, showFiringArcs);
 }

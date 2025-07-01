@@ -193,6 +193,7 @@ export default function Player() {
           moveDistanceBonus: 0,
           gameSector: gameSectors,
           broadSideBonus: 0,
+          inFighterRange: false,
         };
         // Add to Firestore
         const docRef = await addDoc(

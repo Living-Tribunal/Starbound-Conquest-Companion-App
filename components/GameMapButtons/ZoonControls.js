@@ -11,18 +11,11 @@ import { Colors } from "@/constants/Colors";
 
 export default function ZoomControls({
   ships,
-  scale,
   shipPressed,
   handleShipRotation,
   setShowFiringArcs,
-  showFiringArcs,
-  setShipPressed,
-  setIsDraggingShip,
   navigateToStats,
-  resetShipDistance,
-  distance,
   updatingRotation,
-  showAllFiringArcs,
   setShowAllFiringArcs,
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -85,16 +78,6 @@ export default function ZoomControls({
               onPress={() => setShowFiringArcs((prev) => !prev)}
             >
               <Text style={styles.buttonText}>Firing Arcs</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.controlButton}
-              onPress={() => {
-                if (shipPressed) resetShipDistance(shipPressed);
-              }}
-            >
-              <Text style={[styles.buttonText, { fontSize: 8 }]}>
-                Reset Movement
-              </Text>
             </TouchableOpacity>
             {shipType && (
               <TouchableOpacity

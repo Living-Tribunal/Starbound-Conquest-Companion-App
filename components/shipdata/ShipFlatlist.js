@@ -34,7 +34,7 @@ export default function ShipFlatList({ type, ships }) {
   const launchAllFightersStatusColor = (ship) => {
     const fightersLaunched = ship.specialOrders?.["Launch Fighters"] === true;
 
-    if (fightersLaunched === true) return Colors.green_toggle;
+    if (fightersLaunched) return Colors.green_toggle;
     return Colors.blue_gray;
   };
 
