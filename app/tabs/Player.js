@@ -190,10 +190,10 @@ export default function Player() {
           round: 0,
           trackManeuver: 0,
           shipInterval: 0,
-          moveDistanceBonus: 0,
           gameSector: gameSectors,
-          broadSideBonus: 0,
           inFighterRange: false,
+          protectedByCarrierID: null,
+          numberOfShipsProtecting: 0,
         };
         // Add to Firestore
         const docRef = await addDoc(

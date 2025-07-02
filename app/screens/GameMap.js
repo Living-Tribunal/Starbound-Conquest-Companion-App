@@ -32,13 +32,13 @@ import { useNavigation } from "@react-navigation/native";
 import { Colors } from "@/constants/Colors";
 import ShipSwitch from "@/components/switch/ShipSwitch";
 import ZoomControls from "@/components/GameMapButtons/ZoonControls";
-import TraveledDistance from "@/components/TravelDistance/TravelDistance";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
 import { useMapImageContext } from "@/components/Global/MapImageContext";
 import Toast from "react-native-toast-message";
 import { getFleetData } from "@/components/API/API";
 import BackIconArcs from "@/components/GameMapButtons/BackIconArcs";
 import { FONTS } from "@/constants/fonts";
+import { WeaponColors as weaponColors } from "@/constants/WeaponColors";
 
 export default function FleetMap() {
   const navigation = useNavigation();
@@ -51,9 +51,11 @@ export default function FleetMap() {
   const [loading, setLoading] = useState(false);
   const [updatingRotation, setUpdatingRotation] = useState(false);
   const [movementDistanceCircle, setMovementDistanceCircle] = useState(null);
+  const [fighterRangeLength, setFighterRangeLength] = useState(0);
+  const [shipInFighterRange, setShipInFighterRange] = useState(false);
+
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);
-  const [shipInFighterRange, setShipInFighterRange] = useState(false);
   const [removeAllIcons, setRemoveAllIcons] = useState(true);
   const [circleBorderColor, setCircleBorderColor] = useState(
     "rgba(0,200,255,0.5)"
@@ -75,16 +77,6 @@ export default function FleetMap() {
 
   const BACKGROUND_WIDTH = WORLD_WIDTH;
   const BACKGROUND_HEIGHT = WORLD_HEIGHT;
-
-  const weaponColors = {
-    "Light Cannon": Colors.lightCannon,
-    "Medium Cannon": Colors.mediumCannon,
-    "Heavy Cannon": Colors.heavyCannon,
-    "Plasma Cannon": Colors.plasmaCannon,
-    "350mm Railgun": Colors.railguns,
-    "Missile Battery": Colors.missiles,
-    "Ion Particle Beam": Colors.particleBeam,
-  };
 
   const checkIfInFighterRange = (shipToCheck, radius, center) => {
     const { x, y } = shipToCheck.position.__getValue();
@@ -169,6 +161,7 @@ export default function FleetMap() {
     //console.log("Navigating with shipId:", shipId);
     navigation.navigate("Stats", { shipId, from: "GameMap" });
   };
+
   const updatingPosition = async (shipId, x, y, rotation, distanceTraveled) => {
     if (!ships || !user) return;
     try {
@@ -202,6 +195,9 @@ export default function FleetMap() {
         );
         batch.update(shipRef, {
           isInFighterRange: shipToUpdate.isInFighterRange,
+          "bonuses.inFighterRangeBonus":
+            shipToUpdate.bonuses?.inFighterRangeBonus ?? 0,
+          protectedByCarrierID: shipToUpdate.protectedByCarrierID ?? null,
         });
       }
     });
@@ -432,8 +428,8 @@ export default function FleetMap() {
                       y,
                       moveDistance:
                         ship.moveDistance +
-                        ship.moveDistanceBonus +
-                        ship.broadSideBonus, // Capture moveDistance here
+                        ship.bonuses.moveDistanceBonus +
+                        ship.bonuses.broadSideBonus, // Capture moveDistance here
                     });
                     setCircleBorderColor("rgba(0,200,255,0.5)");
                     setCircleBackgroundColor("rgba(0,200,255,0.1)");
@@ -455,6 +451,7 @@ export default function FleetMap() {
                         checkIfInFighterRange(s, radius, center)
                     );
                     setShipInFighterRange(shipsInRange);
+                    //setFighterRangeBonus(inFighterRangeBonus);
                   }
                 },
 
@@ -548,26 +545,35 @@ export default function FleetMap() {
                   const shipsWithUpdatedFighterRange = ships
                     .map((s) => {
                       let newIsInFighterRange = false;
+                      let protectingCarrierID = null;
                       // Check if this ship is in range of ANY carrier that has launched fighters
                       ships.forEach((carrier) => {
                         if (
                           carrier.type === "Carrier" &&
-                          carrier.specialOrders?.["Launch Fighters"] === true
+                          carrier.specialOrders?.["Launch Fighters"] === true &&
+                          carrier.capacity > 0
                         ) {
-                          const center = carrier.position.__getValue(); // Use current animated position
-                          // Ensure you're using the correct radius for fighter range
+                          const center = carrier.position.__getValue();
                           const radius =
-                            (carrier.moveDistance + carrier.moveDistanceBonus) *
+                            (carrier.moveDistance +
+                              carrier.bonuses.moveDistanceBonus) *
                             9;
                           if (checkIfInFighterRange(s, radius, center)) {
                             newIsInFighterRange = true;
+                            protectingCarrierID = carrier.shipId;
                           }
                         }
                       });
 
                       // Only return if the status actually changed to avoid unnecessary updates
                       if (s.isInFighterRange !== newIsInFighterRange) {
-                        return { ...s, isInFighterRange: newIsInFighterRange };
+                        return {
+                          ...s,
+                          isInFighterRange: newIsInFighterRange,
+                          protectedByCarrierID: newIsInFighterRange
+                            ? protectingCarrierID
+                            : null,
+                        };
                       }
                       return null; // No change for this ship
                     })
@@ -578,6 +584,7 @@ export default function FleetMap() {
                     shipsWithUpdatedFighterRange.length > 0 &&
                     user.uid === ship.user
                   ) {
+                    setFighterRangeLength(shipsWithUpdatedFighterRange.length);
                     setShips((currentShips) =>
                       currentShips.map((s) => {
                         const updatedShip = shipsWithUpdatedFighterRange.find(
@@ -586,10 +593,17 @@ export default function FleetMap() {
                         return updatedShip ? updatedShip : s;
                       })
                     );
-                    // Now, send only the *changed* statuses to Firebase using a batch
-                    await isInFighterRangeToFirebase(
-                      shipsWithUpdatedFighterRange
-                    );
+                    const inFighterRangeBonus =
+                      shipsWithUpdatedFighterRange.map((s) => {
+                        return {
+                          ...s,
+                          bonuses: {
+                            ...s.bonuses,
+                            inFighterRangeBonus: s.isInFighterRange ? 10 : 0,
+                          },
+                        };
+                      });
+                    await isInFighterRangeToFirebase(inFighterRangeBonus);
                   }
                 },
               })
@@ -605,14 +619,16 @@ export default function FleetMap() {
                     alignItems: "center",
                     top:
                       movementDistanceCircle.y -
-                      (ship.moveDistance + ship.moveDistanceBonus) / 4,
+                      (ship.moveDistance + ship.bonuses.moveDistanceBonus) / 4,
                     left:
                       movementDistanceCircle.x -
-                      (ship.moveDistance + ship.moveDistanceBonus) / 16,
-                    width: (ship.moveDistance + ship.moveDistanceBonus) * 12,
-                    height: (ship.moveDistance + ship.moveDistanceBonus) * 12,
+                      (ship.moveDistance + ship.bonuses.moveDistanceBonus) / 16,
+                    width:
+                      (ship.moveDistance + ship.bonuses.moveDistanceBonus) * 12,
+                    height:
+                      (ship.moveDistance + ship.bonuses.moveDistanceBonus) * 12,
                     borderRadius:
-                      (ship.moveDistance + ship.moveDistanceBonus) * 6,
+                      (ship.moveDistance + ship.bonuses.moveDistanceBonus) * 6,
                     borderWidth: 2,
                     borderColor: circleBorderColor,
                     backgroundColor: circleBackgroundColor,
@@ -644,7 +660,7 @@ export default function FleetMap() {
                           height: 800,
                           borderRadius: 10000,
                           borderColor: fightersRangeStatus(ship),
-                          borderWidth: 1,
+                          borderWidth: 2,
                           top: "50%",
                           left: "50%",
                           marginTop: -400, // half of height
@@ -732,21 +748,37 @@ export default function FleetMap() {
                       resizeMode="contain"
                     />
                     {ship.type !== "Carrier" && ship.user === user.uid && (
-                      <Image
-                        resizeMode="contain"
-                        style={{
-                          width: 30,
-                          height: 30,
-                          alignSelf: "center",
-                          position: "absolute",
-                          left: -40,
-                          marginTop: 5,
-                          tintColor: checkIfShipIsInRangeShowIndicator(ship),
-                        }}
-                        source={{
-                          uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
-                        }}
-                      />
+                      <>
+                        <Image
+                          pointerEvents="none"
+                          resizeMode="contain"
+                          style={{
+                            width: 30,
+                            height: 30,
+                            alignSelf: "center",
+                            position: "absolute",
+                            left: -40,
+                            marginTop: 5,
+                            tintColor: checkIfShipIsInRangeShowIndicator(ship),
+                          }}
+                          source={{
+                            uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
+                          }}
+                        />
+                        {ship.isInFighterRange ? (
+                          <Text
+                            pointerEvents="none"
+                            style={{
+                              position: "absolute",
+                              color: checkIfShipIsInRangeShowIndicator(ship),
+                              fontSize: 10,
+                              left: -50,
+                            }}
+                          >
+                            +
+                          </Text>
+                        ) : null}
+                      </>
                     )}
                   </View>
                 )}
