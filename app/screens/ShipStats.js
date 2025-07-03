@@ -61,7 +61,11 @@ export default function ShipStats({ route }) {
   } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
   const ShipData = ship ? ShipAttributes[ship.type] : null;
-  //console.log("From in ShipStats Initially:", from);
+  const bonusNameChanged = {
+    moveDistanceBonus: "Movement Bonus",
+    broadSideBonus: "Broadside Bonus",
+    inFighterRangeBonus: "Fighter Range Bonus",
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -239,7 +243,7 @@ export default function ShipStats({ route }) {
           const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
 
           updateDoc(shipRef, {
-            moveDistanceBonus: bonus,
+            "bonuses.moveDistanceBonus": bonus,
           })
             .then(() => {
               // Update local data
@@ -740,39 +744,46 @@ export default function ShipStats({ route }) {
               <Text
                 style={{
                   textAlign: "center",
-                  color: Colors.white,
+                  color:
+                    ship.bonuses.moveDistanceBonus > 0 ||
+                    ship.bonuses.broadSideBonus
+                      ? Colors.green_toggle
+                      : Colors.white,
                   fontFamily: "monospace",
                   fontSize: 12,
                   marginTop: 2,
                 }}
               >
-                {(ship.moveDistanceBonus || ship.broadSideBonus || 0) +
-                  ship.moveDistance}
+                {(ship.bonuses.moveDistanceBonus ||
+                  ship.bonuses.broadSideBonus ||
+                  0) + ship.moveDistance}
               </Text>
             </View>
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          <View style={{ width: "25%" }}>
-            <View style={[styles.statButton]}>
-              <View style={{ width: "100%" }}>
-                <Text style={styles.statButtonText}>Capacity</Text>
+          {ship.capacity > 0 && (
+            <View style={{ width: "25%" }}>
+              <View style={[styles.statButton]}>
+                <View style={{ width: "100%" }}>
+                  <Text style={styles.statButtonText}>Capacity</Text>
+                </View>
+              </View>
+              <View style={styles.statTextUnder}>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: Colors.white,
+                    fontFamily: "monospace",
+                    fontSize: 10,
+                  }}
+                >
+                  {ShipData.capacity}
+                </Text>
               </View>
             </View>
-            <View style={styles.statTextUnder}>
-              <Text
-                style={{
-                  textAlign: "center",
-                  color: Colors.white,
-                  fontFamily: "monospace",
-                  fontSize: 10,
-                }}
-              >
-                {ShipData.capacity}
-              </Text>
-            </View>
-          </View>
-          <View style={{ width: "25%" }}>
+          )}
+          <View style={{ width: ship.capacity > 0 ? "25%" : "45%" }}>
             <View style={[styles.statButton]}>
               <View style={{ width: "100%" }}>
                 <Text style={styles.statButtonText}>Point Value</Text>
@@ -791,25 +802,80 @@ export default function ShipStats({ route }) {
               </Text>
             </View>
           </View>
-          <View style={{ width: "25%" }}>
+          <View style={{ width: ship.capacity > 0 ? "25%" : "45%" }}>
             <View style={[styles.statButton]}>
-              <View style={{ width: "100%" }}>
-                <Text style={styles.statButtonText}>Soak</Text>
-              </View>
+              <Text style={styles.statButtonText}>Soak</Text>
             </View>
             <View style={styles.statTextUnder}>
               <Text
                 style={{
                   textAlign: "center",
-                  color: Colors.white,
+                  color:
+                    ship.bonuses.inFighterRangeBonus > 0
+                      ? Colors.green_toggle
+                      : Colors.white,
                   fontFamily: "monospace",
                   fontSize: 10,
                 }}
               >
-                {ShipData.soak}
+                {ShipData.soak + ship.bonuses.inFighterRangeBonus || 0}
               </Text>
             </View>
           </View>
+        </View>
+        <View
+          style={[
+            styles.statButton,
+            {
+              width: "95%",
+              justifyContent: "center",
+              alignSelf: "center",
+            },
+          ]}
+        >
+          <Text style={styles.statButtonText}>Bonuses</Text>
+          {ship?.bonuses &&
+            Object.entries(ship.bonuses).map(
+              ([bonusName, bonusValue], index) => (
+                <View
+                  key={index}
+                  style={{
+                    justifyContent: "center",
+                    borderRadius: 5,
+                    alignItems: "center",
+                    flexDirection: "row",
+                    gap: 10,
+                    width: "100%",
+                  }}
+                >
+                  <View style={[styles.statTextUnder, { width: "45%" }]}>
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        color: Colors.white,
+                        fontFamily: "monospace",
+                        fontSize: 10,
+                      }}
+                    >
+                      {bonusNameChanged[bonusName]}
+                    </Text>
+                  </View>
+                  <View style={[styles.statTextUnder, { width: "45%" }]}>
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        color:
+                          bonusValue > 0 ? Colors.green_toggle : Colors.white,
+                        fontFamily: "monospace",
+                        fontSize: 10,
+                      }}
+                    >
+                      +{bonusValue}
+                    </Text>
+                  </View>
+                </View>
+              )
+            )}
         </View>
         <View style={styles.buttonContainer}>
           <View style={{ width: "95%" }}>
@@ -1093,8 +1159,6 @@ const styles = StyleSheet.create({
     padding: 5,
     width: "100%",
     color: Colors.hud,
-    borderRadius: 5,
-    width: "100%",
     borderWidth: 2,
     borderColor: Colors.hud,
     marginBottom: 10,

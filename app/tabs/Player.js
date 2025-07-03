@@ -191,7 +191,6 @@ export default function Player() {
           trackManeuver: 0,
           shipInterval: 0,
           gameSector: gameSectors,
-          inFighterRange: false,
           protectedByCarrierID: null,
           numberOfShipsProtecting: 0,
         };

@@ -219,7 +219,7 @@ export default function Rules() {
             </Text>
           </View>
           <View style={styles.imageRow}>
-            {Object.entries(weapons).map(([key, type], index) => (
+            {Object.entries(weapons).map(([key, type]) => (
               <TouchableOpacity
                 style={styles.TouchableOpacityStyleButtonWeapon}
                 key={key}

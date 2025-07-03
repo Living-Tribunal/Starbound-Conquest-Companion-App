@@ -16,8 +16,9 @@ import { getFleetData } from "../../components/API/API";
 import Toast from "react-native-toast-message";
 import { FactionImages } from "../../constants/FactionImages";
 import { useMapImageContext } from "../Global/MapImageContext";
+//import { Shadow } from "react-native-neomorph-shadows";
 
-export default function ShipFlatList({ type, ships }) {
+export default function ShipFlatList({ type }) {
   const specialOrderShortNames = {
     "All Ahead Full": "AHF",
     "Evasive Maneuvers": "EVM",

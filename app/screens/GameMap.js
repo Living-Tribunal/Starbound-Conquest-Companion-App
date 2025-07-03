@@ -450,7 +450,7 @@ export default function FleetMap() {
                         s.type !== "Carrier" &&
                         checkIfInFighterRange(s, radius, center)
                     );
-                    setShipInFighterRange(shipsInRange);
+                    //setShipInFighterRange(shipsInRange);
                     //setFighterRangeBonus(inFighterRangeBonus);
                   }
                 },
@@ -560,7 +560,7 @@ export default function FleetMap() {
                             9;
                           if (checkIfInFighterRange(s, radius, center)) {
                             newIsInFighterRange = true;
-                            protectingCarrierID = carrier.shipId;
+                            protectingCarrierID = carrier.id;
                           }
                         }
                       });
@@ -605,6 +605,35 @@ export default function FleetMap() {
                       });
                     await isInFighterRangeToFirebase(inFighterRangeBonus);
                   }
+                  const allInRange = [];
+
+                  ships.forEach((carrier) => {
+                    if (
+                      carrier.type === "Carrier" &&
+                      carrier.specialOrders?.["Launch Fighters"] === true &&
+                      carrier.capacity > 0
+                    ) {
+                      const center = carrier.position.__getValue();
+                      const radius =
+                        (carrier.moveDistance +
+                          carrier.bonuses.moveDistanceBonus) *
+                        9;
+
+                      const shipsInRange = ships.filter(
+                        (s) =>
+                          s.id !== carrier.id &&
+                          s.type !== "Carrier" &&
+                          checkIfInFighterRange(s, radius, center)
+                      );
+
+                      setShipInFighterRange((prev) => ({
+                        ...prev,
+                        [carrier.id]: shipsInRange,
+                      }));
+
+                      allInRange.push(...shipsInRange);
+                    }
+                  });
                 },
               })
             : undefined;
@@ -732,6 +761,31 @@ export default function FleetMap() {
                     >
                       {ship.shipId}
                     </Text>
+                    {ship.type === "Carrier" && (
+                      <Text
+                        style={[
+                          styles.info,
+                          {
+                            marginTop: 5,
+                            color:
+                              ship.id === shipPressed
+                                ? Colors.gold
+                                : Colors.hud,
+                            backgroundColor:
+                              ship.id === shipPressed
+                                ? Colors.goldenrod
+                                : Colors.hudDarker,
+                            borderColor:
+                              ship.id === shipPressed
+                                ? Colors.gold
+                                : Colors.hud,
+                          },
+                        ]}
+                      >
+                        {shipInFighterRange[ship.id]?.length ?? 0}
+                      </Text>
+                    )}
+
                     <Image
                       source={factionIcons[ship.type.toLowerCase()]}
                       style={{
