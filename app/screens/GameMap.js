@@ -127,6 +127,71 @@ export default function FleetMap() {
     return () => cancelAnimationFrame(raf);
   }, []);
 
+  // Calculate ALL ships' fighter range automatically
+  useEffect(() => {
+    if (!ships.length || !user?.uid) return;
+
+    const runFighterRangeUpdate = async () => {
+      const updatedMap = {};
+      const allInRange = [];
+
+      ships.forEach((carrier) => {
+        if (
+          carrier.type === "Carrier" &&
+          carrier.specialOrders?.["Launch Fighters"] === true &&
+          carrier.capacity > 0 &&
+          carrier.user === user.uid
+        ) {
+          const center = carrier.position.__getValue();
+          const radius =
+            (carrier.moveDistance + carrier.bonuses.moveDistanceBonus) * 9;
+
+          const shipsInRange = ships.filter(
+            (s) =>
+              s.id !== carrier.id &&
+              s.type !== "Carrier" &&
+              s.user === user.uid &&
+              checkIfInFighterRange(s, radius, center)
+          );
+
+          updatedMap[carrier.id] = shipsInRange;
+          allInRange.push(...shipsInRange);
+        }
+      });
+
+      setShipInFighterRange(updatedMap);
+      setFighterRangeLength(allInRange.length);
+
+      const batch = writeBatch(FIREBASE_DB);
+
+      Object.entries(updatedMap).forEach(([carrierId, shipsInRange]) => {
+        const carrier = ships.find((s) => s.id === carrierId);
+        if (!carrier) return;
+
+        const carrierRef = doc(
+          FIREBASE_DB,
+          "users",
+          carrier.user,
+          "ships",
+          carrier.id
+        );
+
+        batch.update(carrierRef, {
+          numberOfShipsProtecting: shipsInRange.length,
+        });
+      });
+
+      try {
+        await batch.commit();
+        console.log("🔥 Firebase batch committed for numberOfShipsProtecting");
+      } catch (e) {
+        console.error("❌ Error committing batch:", e);
+      }
+    };
+
+    runFighterRangeUpdate();
+  }, [ships, user?.uid]);
+
   const handleShipRotation = (shipId, deltaDegrees = 15) => {
     const shipIndex = ships.findIndex((s) => s.id === shipId);
     if (shipIndex === -1) return;
@@ -204,9 +269,7 @@ export default function FleetMap() {
 
     try {
       await batch.commit();
-      console.log("Batch update for fighter range successful.");
     } catch (e) {
-      console.error("Error batch updating fighter range:", e);
       Toast.show({
         type: "error",
         text1: "Failed to update fighter range",
@@ -242,10 +305,6 @@ export default function FleetMap() {
     const q = query(
       collection(FIREBASE_DB, "users", user.uid, "ships"),
       where("gameRoom", "==", gameRoom)
-      // You might add a where clause if ships are filtered by gameRoom or other criteria,
-      // but for a user's fleet, their ship collection is usually sufficient.
-      // If you need all ships in the game room, you'd listen to a different collection
-      // like `gameRooms/{gameRoom.id}/ships` if you structure it that way.
     );
 
     const unsubscribe = onSnapshot(
@@ -360,6 +419,12 @@ export default function FleetMap() {
             Rotation: {selectedShip?.rotation?.__getValue()?.toFixed(0) ?? 0}°
           </Text>
           <Text style={styles.shipInfo}>Weapons:</Text>
+          {selectedShip.type === "Carrier" && (
+            <Text style={styles.shipInfo}>
+              Protecting: {fighterRangeLength}
+            </Text>
+          )}
+
           {selectedShip?.weaponType?.map((weapon, index) => (
             <Text
               key={index}
@@ -438,7 +503,8 @@ export default function FleetMap() {
                   console.log("ship coordinates:", x, y);
                   if (
                     ship.type === "Carrier" &&
-                    ship.specialOrders?.["Launch Fighters"] === true
+                    ship.specialOrders?.["Launch Fighters"] === true &&
+                    user.uid === ship.user
                   ) {
                     const radius =
                       (ship.moveDistance + ship.moveDistanceBonus) * 9;
@@ -528,7 +594,9 @@ export default function FleetMap() {
                 },
                 // In onPanResponderRelease, after ship.position.flattenOffset() and updatingPosition:
                 onPanResponderRelease: async () => {
+                  // Flatten the position to commit the current offset
                   ship.position.flattenOffset();
+                  // Get the current position of the ship
                   const { x, y } = ship.position.__getValue();
                   const rotation = ship.rotation.__getValue();
 
@@ -543,6 +611,7 @@ export default function FleetMap() {
 
                   // --- Calculate ALL ships' fighter range status LOCALLY first ---
                   const shipsWithUpdatedFighterRange = ships
+                    .filter((s) => s.user === user.uid)
                     .map((s) => {
                       let newIsInFighterRange = false;
                       let protectingCarrierID = null;
@@ -551,7 +620,8 @@ export default function FleetMap() {
                         if (
                           carrier.type === "Carrier" &&
                           carrier.specialOrders?.["Launch Fighters"] === true &&
-                          carrier.capacity > 0
+                          carrier.capacity > 0 &&
+                          user.uid === carrier.user
                         ) {
                           const center = carrier.position.__getValue();
                           const radius =
@@ -587,6 +657,7 @@ export default function FleetMap() {
                     setFighterRangeLength(shipsWithUpdatedFighterRange.length);
                     setShips((currentShips) =>
                       currentShips.map((s) => {
+                        if (s.user !== user.uid) return s; // Only update user ships
                         const updatedShip = shipsWithUpdatedFighterRange.find(
                           (us) => us.id === s.id
                         );
@@ -611,7 +682,8 @@ export default function FleetMap() {
                     if (
                       carrier.type === "Carrier" &&
                       carrier.specialOrders?.["Launch Fighters"] === true &&
-                      carrier.capacity > 0
+                      carrier.capacity > 0 &&
+                      user.uid === carrier.user
                     ) {
                       const center = carrier.position.__getValue();
                       const radius =
@@ -623,6 +695,7 @@ export default function FleetMap() {
                         (s) =>
                           s.id !== carrier.id &&
                           s.type !== "Carrier" &&
+                          s.user === user.uid &&
                           checkIfInFighterRange(s, radius, center)
                       );
 
@@ -761,12 +834,13 @@ export default function FleetMap() {
                     >
                       {ship.shipId}
                     </Text>
-                    {ship.type === "Carrier" && (
+                    {ship.type === "Carrier" && ship.user === user.uid && (
                       <Text
                         style={[
                           styles.info,
                           {
                             marginTop: 5,
+                            marginLeft: 5,
                             color:
                               ship.id === shipPressed
                                 ? Colors.gold
@@ -794,7 +868,7 @@ export default function FleetMap() {
                         position: "absolute",
                         bottom: 0,
                         marginTop: 5,
-                        left: 70,
+                        left: 80,
                         tintColor: ship.isToggled
                           ? Colors.gold
                           : ship.factionColor,

@@ -24,7 +24,11 @@ export const shipObject = {
       weaponDamage: "1d4",
       weaponRange: 30,
       pointValue: 1,
-      orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
+      specialOrders: {
+        "Full Throttle": false,
+        "Combine Fire": false,
+        "Evasive Maneuvers": false,
+      },
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -66,7 +70,11 @@ export const shipObject = {
       weaponDamage: "1d10",
       weaponRange: 30,
       pointValue: 30,
-      orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
+      specialOrders: {
+        "Full Throttle": false,
+        "Anti-Fighter Barrage": false,
+        "Power Up Main Guns": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
@@ -100,8 +108,12 @@ export const shipObject = {
       weaponDamage: "1d8 \n1d10",
       weaponRange: "30ft \n60ft",
       pointValue: 80,
-      orders:
-        "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
+      specialOrders: {
+        "Full Throttle": false,
+        "All Systems Fire": false,
+        "Reinforce Shields": false,
+        Broadside: false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Heavy Cannon": false,
@@ -133,8 +145,12 @@ export const shipObject = {
       weaponDamage: "1d8 \n1d6",
       weaponRange: "30ft-120ft \n15ft-60ft",
       pointValue: 120,
-      orders:
-        "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
+      specialOrders: {
+        "Full Throttle": false,
+        "Reinforce Shields": false,
+        "Launch Fighters": false,
+        "All Systems Fire": false,
+      },
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -168,8 +184,12 @@ export const shipObject = {
       weaponDamage: "1d12\n1d10\n1d8",
       weaponRange: "30ft-60ft \n60ft \n30ft-120ft",
       pointValue: 240,
-      orders:
-        "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
+      specialOrders: {
+        "Full Throttle": false,
+        "Reinforce Shields": false,
+        "All Systems Fire": false,
+        "Charge Ion Beam": false,
+      },
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -212,7 +232,11 @@ export const shipObject = {
       weaponDamage: "1d4",
       weaponRange: 30,
       pointValue: 1,
-      orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
+      specialOrders: {
+        "Full Throttle": false,
+        "Combine Fire": false,
+        "Evasive Maneuvers": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Light Cannon": false,
@@ -247,7 +271,11 @@ export const shipObject = {
       weaponDamage: "1d10",
       weaponRange: 30,
       pointValue: 30,
-      orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
+      specialOrders: {
+        "Full Throttle": false,
+        "Anti-Fighter Barrage": false,
+        "Power Up Main Guns": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
@@ -281,8 +309,12 @@ export const shipObject = {
       weaponDamage: "1d8 \n1d10",
       weaponRange: "30ft \n60ft",
       pointValue: 80,
-      orders:
-        "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
+      specialOrders: {
+        "Full Throttle": false,
+        "All Systems Fire": false,
+        "Reinforce Shields": false,
+        Broadside: false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Heavy Cannon": false,
@@ -318,8 +350,12 @@ export const shipObject = {
       weaponDamage: "1d8 \n1d6",
       weaponRange: "30ft-120ft \n15ft-60ft",
       pointValue: 120,
-      orders:
-        "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
+      specialOrders: {
+        "Full Throttle": false,
+        "Reinforce Shields": false,
+        "Launch Fighters": false,
+        "All Systems Fire": false,
+      },
       hasBeenInteractedWith: false,
       maxCapacity: 20,
       capacity: 20,
@@ -353,8 +389,12 @@ export const shipObject = {
       weaponDamage: "1d12\n1d10\n1d8",
       weaponRange: "30ft-60ft \n60ft \n30ft-120ft",
       pointValue: 240,
-      orders:
-        "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
+      specialOrders: {
+        "Full Throttle": false,
+        "Reinforce Shields": false,
+        "All Systems Fire": false,
+        "Charge Ion Beam": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Ion Particle Beam": false,
@@ -392,7 +432,11 @@ export const shipObject = {
       weaponDamage: "1d4",
       weaponRange: 30,
       pointValue: 1,
-      orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
+      specialOrders: {
+        "Full Throttle": false,
+        "Combine Fire": false,
+        "Evasive Maneuvers": false,
+      },
       weaponStatus: {
         "Light Cannon": false,
       },
@@ -426,7 +470,11 @@ export const shipObject = {
       weaponDamage: "1d10",
       weaponRange: 30,
       pointValue: 30,
-      orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
+      specialOrders: {
+        "Full Throttle": false,
+        "Anti-Fighter Barrage": false,
+        "Power Up Main Guns": false,
+      },
       weaponStatus: {
         "Medium Cannon": false,
       },
@@ -454,8 +502,12 @@ export const shipObject = {
       weaponDamage: "1d8 \n1d10",
       weaponRange: "30ft \n60ft",
       pointValue: 80,
-      orders:
-        "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
+      specialOrders: {
+        "Full Throttle": false,
+        "All Systems Fire": false,
+        "Reinforce Shields": false,
+        Broadside: false,
+      },
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -489,8 +541,12 @@ export const shipObject = {
       weaponDamage: "1d8 \n1d6",
       weaponRange: "30ft-120ft \n15ft-60ft",
       pointValue: 120,
-      orders:
-        "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
+      specialOrders: {
+        "Full Throttle": false,
+        "Reinforce Shields": false,
+        "Launch Fighters": false,
+        "All Systems Fire": false,
+      },
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -530,8 +586,12 @@ export const shipObject = {
       weaponDamage: "1d12\n1d10\n1d8",
       weaponRange: "30ft-60ft \n60ft \n30ft-120ft",
       pointValue: 240,
-      orders:
-        "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
+      specialOrders: {
+        "Full Throttle": false,
+        "Reinforce Shields": false,
+        "All Systems Fire": false,
+        "Charge Ion Beam": false,
+      },
       moveDistanceBonus: 0,
       weaponStatus: {
         "Ion Particle Beam": false,
@@ -569,7 +629,11 @@ export const shipObject = {
       weaponDamage: "1d4",
       weaponRange: 30,
       pointValue: 1,
-      orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
+      specialOrders: {
+        "Full Throttle": false,
+        "Combine Fire": false,
+        "Evasive Maneuvers": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Light Cannon": false,
@@ -604,7 +668,11 @@ export const shipObject = {
       weaponDamage: "1d10",
       weaponRange: 30,
       pointValue: 30,
-      orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
+      specialOrders: {
+        "Full Throttle": false,
+        "Anti-Fighter Barrage": false,
+        "Power Up Main Guns": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
@@ -638,8 +706,12 @@ export const shipObject = {
       weaponDamage: "1d8 \n1d10",
       weaponRange: "30ft \n60ft",
       pointValue: 80,
-      orders:
-        "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
+      specialOrders: {
+        "Full Throttle": false,
+        "All Systems Fire": false,
+        "Reinforce Shields": false,
+        Broadside: false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Heavy Cannon": false,
@@ -675,8 +747,12 @@ export const shipObject = {
       weaponDamage: "1d8 \n1d6",
       weaponRange: "30ft-120ft \n15ft-60ft",
       pointValue: 120,
-      orders:
-        "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
+      specialOrders: {
+        "Full Throttle": false,
+        "Reinforce Shields": false,
+        "Launch Fighters": false,
+        "All Systems Fire": false,
+      },
       hasBeenInteractedWith: false,
       maxCapacity: 20,
       capacity: 20,
@@ -710,8 +786,12 @@ export const shipObject = {
       weaponDamage: "1d12\n1d10\n1d8",
       weaponRange: "30ft-60ft \n60ft \n30ft-120ft",
       pointValue: 240,
-      orders:
-        "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
+      specialOrders: {
+        "Full Throttle": false,
+        "Reinforce Shields": false,
+        "All Systems Fire": false,
+        "Charge Ion Beam": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Ion Particle Beam": false,
@@ -749,7 +829,11 @@ export const shipObject = {
       weaponDamage: "1d4",
       weaponRange: 30,
       pointValue: 1,
-      orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
+      specialOrders: {
+        "Full Throttle": false,
+        "Combine Fire": false,
+        "Evasive Maneuvers": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Light Cannon": false,
@@ -784,7 +868,11 @@ export const shipObject = {
       weaponDamage: "1d10",
       weaponRange: 30,
       pointValue: 30,
-      orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
+      specialOrders: {
+        "Full Throttle": false,
+        "Anti-Fighter Barrage": false,
+        "Power Up Main Guns": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
@@ -818,8 +906,12 @@ export const shipObject = {
       weaponDamage: "1d8 \n1d10",
       weaponRange: "30ft \n60ft",
       pointValue: 80,
-      orders:
-        "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
+      specialOrders: {
+        "Full Throttle": false,
+        "All Systems Fire": false,
+        "Reinforce Shields": false,
+        Broadside: false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Heavy Cannon": false,
@@ -855,8 +947,12 @@ export const shipObject = {
       weaponDamage: "1d8 \n1d6",
       weaponRange: "30ft-120ft \n15ft-60ft",
       pointValue: 120,
-      orders:
-        "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
+      specialOrders: {
+        "Full Throttle": false,
+        "Reinforce Shields": false,
+        "Launch Fighters": false,
+        "All Systems Fire": false,
+      },
       hasBeenInteractedWith: false,
       maxCapacity: 20,
       capacity: 20,
@@ -890,8 +986,12 @@ export const shipObject = {
       weaponDamage: "1d12\n1d10\n1d8",
       weaponRange: "30ft-60ft \n60ft \n30ft-120ft",
       pointValue: 240,
-      orders:
-        "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
+      specialOrders: {
+        "Full Throttle": false,
+        "Reinforce Shields": false,
+        "All Systems Fire": false,
+        "Charge Ion Beam": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Ion Particle Beam": false,
@@ -929,7 +1029,11 @@ export const shipObject = {
       weaponDamage: "1d4",
       weaponRange: 30,
       pointValue: 1,
-      orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
+      specialOrders: {
+        "Full Throttle": false,
+        "Combine Fire": false,
+        "Evasive Maneuvers": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Light Cannon": false,
@@ -964,7 +1068,11 @@ export const shipObject = {
       weaponDamage: "1d10",
       weaponRange: 30,
       pointValue: 30,
-      orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
+      specialOrders: {
+        "Full Throttle": false,
+        "Anti-Fighter Barrage": false,
+        "Power Up Main Guns": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
@@ -998,8 +1106,12 @@ export const shipObject = {
       weaponDamage: "1d8 \n1d10",
       weaponRange: "30ft \n60ft",
       pointValue: 80,
-      orders:
-        "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
+      specialOrders: {
+        "Full Throttle": false,
+        "All Systems Fire": false,
+        "Reinforce Shields": false,
+        Broadside: false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Heavy Cannon": false,
@@ -1035,8 +1147,12 @@ export const shipObject = {
       weaponDamage: "1d8 \n1d6",
       weaponRange: "30ft-120ft \n15ft-60ft",
       pointValue: 120,
-      orders:
-        "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
+      specialOrders: {
+        "Full Throttle": false,
+        "Reinforce Shields": false,
+        "Launch Fighters": false,
+        "All Systems Fire": false,
+      },
       hasBeenInteractedWith: false,
       maxCapacity: 20,
       capacity: 20,
@@ -1070,8 +1186,12 @@ export const shipObject = {
       weaponDamage: "1d12\n1d10\n1d8",
       weaponRange: "30ft-60ft \n60ft \n30ft-120ft",
       pointValue: 240,
-      orders:
-        "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
+      specialOrders: {
+        "Full Throttle": false,
+        "Reinforce Shields": false,
+        "All Systems Fire": false,
+        "Charge Ion Beam": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Ion Particle Beam": false,
@@ -1109,7 +1229,11 @@ export const shipObject = {
       weaponDamage: "1d4",
       weaponRange: 30,
       pointValue: 1,
-      orders: "Full Throttle \n Combine Fire \nEvasive Maneuvers",
+      specialOrders: {
+        "Full Throttle": false,
+        "Combine Fire": false,
+        "Evasive Maneuvers": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Light Cannon": false,
@@ -1144,7 +1268,11 @@ export const shipObject = {
       weaponDamage: "1d10",
       weaponRange: 30,
       pointValue: 30,
-      orders: "Full Throttle \nAnti-Fighter Barrage \nPower Up Main Guns",
+      specialOrders: {
+        "Full Throttle": false,
+        "Anti-Fighter Barrage": false,
+        "Power Up Main Guns": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
@@ -1178,8 +1306,12 @@ export const shipObject = {
       weaponDamage: "1d8 \n1d10",
       weaponRange: "30ft \n60ft",
       pointValue: 80,
-      orders:
-        "Full Throttle \nAll Systems Fire \nReinforce Shields \nBroadside",
+      specialOrders: {
+        "Full Throttle": false,
+        "All Systems Fire": false,
+        "Reinforce Shields": false,
+        Broadside: false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Heavy Cannon": false,
@@ -1215,8 +1347,12 @@ export const shipObject = {
       weaponDamage: "1d8 \n1d6",
       weaponRange: "30ft-120ft \n15ft-60ft",
       pointValue: 120,
-      orders:
-        "Full Throttle \nReinforce Shields Launch Fighters \nAll Systems Fire",
+      specialOrders: {
+        "Full Throttle": false,
+        "Reinforce Shields": false,
+        "Launch Fighters": false,
+        "All Systems Fire": false,
+      },
       hasBeenInteractedWith: false,
       maxCapacity: 20,
       capacity: 20,
@@ -1251,8 +1387,12 @@ export const shipObject = {
         broadSideBonus: 0,
         inFighterRangeBonus: 0,
       },
-      orders:
-        "Full Throttle \nReinforce Shields \nLaunch Fighters \nAll Systems Fire \nCharge Ion Beam",
+      specialOrders: {
+        "Full Throttle": false,
+        "Reinforce Shields": false,
+        "All Systems Fire": false,
+        "Charge Ion Beam": false,
+      },
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Ion Particle Beam": false,

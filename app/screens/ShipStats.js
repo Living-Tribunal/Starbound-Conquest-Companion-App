@@ -274,7 +274,16 @@ export default function ShipStats({ route }) {
         setMovementBonus(bonus);
         break;
       case "Reinforce Shields":
-        if (localDiceRoll >= 11 && ship.hp !== ship.maxHP) {
+        if (ship.hp === ship.maxHP) {
+          Toast.show({
+            type: "error",
+            text1: "Ship HP is already at max.",
+            text2: `No bonus added`,
+            position: "top",
+          });
+          return;
+        }
+        if (localDiceRoll >= 11) {
           const newHP = Math.max(0, Math.min(Number(ship.hp + 1), ship.maxHP));
           console.log("Reinforce Shields succeeded. New HP:", newHP);
 
@@ -303,7 +312,7 @@ export default function ShipStats({ route }) {
         } else {
           Toast.show({
             type: "error",
-            text1: "HP is already at max!",
+            text1: "Shields Reinforcement Failed!",
             text2: `No bonus added`,
             position: "top",
           });
@@ -380,14 +389,14 @@ export default function ShipStats({ route }) {
           console.log("Boardside Bonus:", broadSideBonus);
 
           updateDoc(shipRef, {
-            broadSideBonus: 15,
+            "bonuses.broadSideBonus": 15,
             hasRolledDToHit: false,
           })
             .then(() => {
               // Update local data
               setData((prevData) =>
                 prevData.map((s) =>
-                  s.id === ship.id ? { ...s, broadSideBonus: 15 } : s
+                  s.id === ship.id ? { ...s, "bonuses.broadSideBonus": 15 } : s
                 )
               );
               Toast.show({
@@ -412,7 +421,42 @@ export default function ShipStats({ route }) {
         setBroadSideBonus(15);
         break;
       case "Launch Fighters":
-        console.log("Launch Fighters");
+        console.log("Launching Fighters");
+        if (localDiceRoll >= 4) {
+          console.log("Launch Fighters Bonus:", localDiceRoll);
+          try {
+            const shipRef = doc(
+              FIREBASE_DB,
+              "users",
+              user.uid,
+              "ships",
+              ship.id
+            );
+            await updateDoc(shipRef, {
+              "specialOrders.Launch Fighters": true,
+              "bonuses.launchFighters": 10,
+            });
+            // Update local data
+            setData((prevData) =>
+              prevData.map((s) =>
+                s.id === ship.id ? { ...s, "bonuses.launchFighters": 10 } : s
+              )
+            );
+            Toast.show({
+              type: "success",
+              text1: "Launch Fighters!",
+              position: "top",
+            });
+          } catch (e) {
+            console.error("Failed to update launch fighters in Firestore:", e);
+          }
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Launch Fighters Failed!",
+            position: "top",
+          });
+        }
         break;
       case "Charge Ion Beams":
         //console.log("Ion Beam check - ship.hit:", ship.hit);
