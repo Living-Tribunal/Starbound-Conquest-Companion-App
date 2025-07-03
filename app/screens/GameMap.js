@@ -183,7 +183,7 @@ export default function FleetMap() {
 
       try {
         await batch.commit();
-        console.log("🔥 Firebase batch committed for numberOfShipsProtecting");
+        //console.log("🔥 Firebase batch committed for numberOfShipsProtecting");
       } catch (e) {
         console.error("❌ Error committing batch:", e);
       }
@@ -418,13 +418,12 @@ export default function FleetMap() {
           <Text style={styles.shipInfo}>
             Rotation: {selectedShip?.rotation?.__getValue()?.toFixed(0) ?? 0}°
           </Text>
-          <Text style={styles.shipInfo}>Weapons:</Text>
           {selectedShip.type === "Carrier" && (
             <Text style={styles.shipInfo}>
               Protecting: {fighterRangeLength}
             </Text>
           )}
-
+          <Text style={styles.shipInfo}>Weapons:</Text>
           {selectedShip?.weaponType?.map((weapon, index) => (
             <Text
               key={index}
@@ -500,7 +499,7 @@ export default function FleetMap() {
                     setCircleBackgroundColor("rgba(0,200,255,0.1)");
                   }
 
-                  console.log("ship coordinates:", x, y);
+                  //console.log("ship coordinates:", x, y);
                   if (
                     ship.type === "Carrier" &&
                     ship.specialOrders?.["Launch Fighters"] === true &&
@@ -664,13 +663,31 @@ export default function FleetMap() {
                         return updatedShip ? updatedShip : s;
                       })
                     );
+                    //check if any ship is in fighter range and update its bonus based on how many ships are protected by the carrier
                     const inFighterRangeBonus =
                       shipsWithUpdatedFighterRange.map((s) => {
+                        const protectingCarrier = ships.find(
+                          (carrier) => carrier.id === s.protectedByCarrierID
+                        );
+                        const shipsProtected = ships.filter(
+                          (otherShip) =>
+                            otherShip.protectedByCarrierID ===
+                              protectingCarrier?.id &&
+                            otherShip.user === user.uid
+                        ).length;
+                        console.log(
+                          "shipsProtected:",
+                          shipsProtected,
+                          "bonus:",
+                          bonus
+                        );
+                        // Update the ship's inF
                         return {
                           ...s,
                           bonuses: {
                             ...s.bonuses,
-                            inFighterRangeBonus: s.isInFighterRange ? 10 : 0,
+                            inFighterRangeBonus:
+                              protectingCarrier?.maxCapacity || 0,
                           },
                         };
                       });

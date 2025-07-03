@@ -60,7 +60,7 @@ export default function ShipStats({ route }) {
     setFromGameMap,
   } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
-  const ShipData = ship ? ShipAttributes[ship.type] : null;
+  const shipSpecialOrders = ship ? ShipAttributes[ship.type] : null;
   const bonusNameChanged = {
     moveDistanceBonus: "Movement Bonus",
     broadSideBonus: "Broadside Bonus",
@@ -83,7 +83,7 @@ export default function ShipStats({ route }) {
 
   //console.log(`in Ship Stats: ${JSON.stringify(diceValueToShare, null, 2)}`);
 
-  //console.log("In Ship Stats:", JSON.stringify(ShipData, null, 2));
+  //console.log("In Ship Stats:", JSON.stringify(ship, null, 2));
 
   //showing the hp bar with colors representing the health of the ship
 
@@ -422,8 +422,11 @@ export default function ShipStats({ route }) {
         break;
       case "Launch Fighters":
         console.log("Launching Fighters");
-        if (localDiceRoll >= 4) {
-          console.log("Launch Fighters Bonus:", localDiceRoll);
+        if (localDiceRoll >= 4 && ship.type === "Carrier") {
+          const bonus =
+            ship.numberOfShipsProtecting > 0
+              ? Math.floor(ship.capacity / ship.numberOfShipsProtecting)
+              : 0;
           try {
             const shipRef = doc(
               FIREBASE_DB,
@@ -434,17 +437,17 @@ export default function ShipStats({ route }) {
             );
             await updateDoc(shipRef, {
               "specialOrders.Launch Fighters": true,
-              "bonuses.launchFighters": 10,
+              maxCapacity: 20,
             });
             // Update local data
             setData((prevData) =>
               prevData.map((s) =>
-                s.id === ship.id ? { ...s, "bonuses.launchFighters": 10 } : s
+                s.id === ship.id ? { ...s, maxCapacity: 20 } : s
               )
             );
             Toast.show({
               type: "success",
-              text1: "Launch Fighters!",
+              text1: "Launched Fighters!",
               position: "top",
             });
           } catch (e) {
@@ -822,7 +825,7 @@ export default function ShipStats({ route }) {
                     fontSize: 10,
                   }}
                 >
-                  {ShipData.capacity}
+                  {ship.capacity}
                 </Text>
               </View>
             </View>
@@ -842,7 +845,7 @@ export default function ShipStats({ route }) {
                   fontSize: 10,
                 }}
               >
-                {ShipData.pointValue}
+                {ship.pointValue}
               </Text>
             </View>
           </View>
@@ -862,7 +865,7 @@ export default function ShipStats({ route }) {
                   fontSize: 10,
                 }}
               >
-                {ShipData.soak + ship.bonuses.inFighterRangeBonus || 0}
+                {ship.soak + ship.bonuses.inFighterRangeBonus || 0}
               </Text>
             </View>
           </View>
@@ -947,129 +950,131 @@ export default function ShipStats({ route }) {
                   borderRadius: 5,
                 }}
               >
-                {ShipData?.specialOrders?.map((specialOrder, index) => {
-                  const orderName = specialOrder[0];
-                  const description = specialOrder[1];
-                  const orderIcon = specialOrder[2];
-                  const activeOrdersCount = Object.values(
-                    ship.specialOrders || {}
-                  ).filter(Boolean).length;
-                  const isDisabled =
-                    ship.specialOrders?.[orderName] || activeOrdersCount >= 1;
+                {shipSpecialOrders?.specialOrders?.map(
+                  (specialOrder, index) => {
+                    const orderName = specialOrder[0];
+                    const description = specialOrder[1];
+                    const orderIcon = specialOrder[2];
+                    const activeOrdersCount = Object.values(
+                      ship.specialOrders || {}
+                    ).filter(Boolean).length;
+                    const isDisabled =
+                      ship.specialOrders?.[orderName] || activeOrdersCount >= 1;
 
-                  return (
-                    <View
-                      key={index}
-                      style={{
-                        marginBottom: 10,
-                      }}
-                    >
-                      <TouchableOpacity
-                        disabled={isDisabled}
-                        onPress={() => {
-                          setOrderName(orderName);
-                          if (
-                            orderName === "Charge Ion Beams" &&
-                            ship.weaponStatus["Ion Particle Beam"] === false
-                          ) {
-                            Toast.show({
-                              type: "error",
-                              text1: "Cannot activate",
-                              text2: "Ion Particle Beam has not fired yet!",
-                              position: "top",
-                            });
-                            return;
-                          } else if (
-                            orderName === "Reinforce Shields" &&
-                            ship.hp === ship.maxHP
-                          ) {
-                            Toast.show({
-                              type: "error",
-                              text1: "Ship HP is already at max.",
-                              position: "top",
-                            });
-                            return;
-                          } else if (
-                            orderName === "All Systems Fire" &&
-                            ship.hasRolledDToHit === false
-                          ) {
-                            Toast.show({
-                              type: "error",
-                              text1: "No weapons have been fired yet!",
-                              position: "top",
-                            });
-                            return;
-                          } else {
-                            setModalToRollADice(true);
-                            setLocalDiceRoll(0);
-                            setDiceValueToShare(0);
-                            setOrderDescription(description);
-                            setOrderIcon(orderIcon);
-                          }
+                    return (
+                      <View
+                        key={index}
+                        style={{
+                          marginBottom: 10,
                         }}
                       >
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 10,
+                        <TouchableOpacity
+                          disabled={isDisabled}
+                          onPress={() => {
+                            setOrderName(orderName);
+                            if (
+                              orderName === "Charge Ion Beams" &&
+                              ship.weaponStatus["Ion Particle Beam"] === false
+                            ) {
+                              Toast.show({
+                                type: "error",
+                                text1: "Cannot activate",
+                                text2: "Ion Particle Beam has not fired yet!",
+                                position: "top",
+                              });
+                              return;
+                            } else if (
+                              orderName === "Reinforce Shields" &&
+                              ship.hp === ship.maxHP
+                            ) {
+                              Toast.show({
+                                type: "error",
+                                text1: "Ship HP is already at max.",
+                                position: "top",
+                              });
+                              return;
+                            } else if (
+                              orderName === "All Systems Fire" &&
+                              ship.hasRolledDToHit === false
+                            ) {
+                              Toast.show({
+                                type: "error",
+                                text1: "No weapons have been fired yet!",
+                                position: "top",
+                              });
+                              return;
+                            } else {
+                              setModalToRollADice(true);
+                              setLocalDiceRoll(0);
+                              setDiceValueToShare(0);
+                              setOrderDescription(description);
+                              setOrderIcon(orderIcon);
+                            }
                           }}
                         >
-                          <Text
+                          <View
                             style={{
-                              textAlign: "center",
-                              color: ship.specialOrders?.[orderName]
-                                ? Colors.hudDarker
-                                : Colors.white,
-                              fontFamily: "monospace",
-                              fontSize: 12,
-                              marginBottom: 2,
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              gap: 10,
                             }}
                           >
-                            {orderName}
-                          </Text>
-                          {orderIcon && (
-                            <Image
-                              source={{ uri: orderIcon }}
+                            <Text
                               style={{
-                                width: 34,
-                                height: 34,
-                                tintColor: ship.specialOrders?.[orderName]
+                                textAlign: "center",
+                                color: ship.specialOrders?.[orderName]
                                   ? Colors.hudDarker
                                   : Colors.white,
-                                alignSelf: "center",
-                                opacity: ship.specialOrders?.[orderName]
-                                  ? 0.3
-                                  : 1,
-                                borderWidth: 1,
-                                borderColor: ship.specialOrders?.[orderName]
-                                  ? Colors.hudDarker
-                                  : Colors.white,
-                                borderRadius: 5,
+                                fontFamily: "monospace",
+                                fontSize: 12,
+                                marginBottom: 2,
                               }}
-                              resizeMode="contain"
-                            />
-                          )}
-                        </View>
+                            >
+                              {orderName}
+                            </Text>
+                            {orderIcon && (
+                              <Image
+                                source={{ uri: orderIcon }}
+                                style={{
+                                  width: 34,
+                                  height: 34,
+                                  tintColor: ship.specialOrders?.[orderName]
+                                    ? Colors.hudDarker
+                                    : Colors.white,
+                                  alignSelf: "center",
+                                  opacity: ship.specialOrders?.[orderName]
+                                    ? 0.3
+                                    : 1,
+                                  borderWidth: 1,
+                                  borderColor: ship.specialOrders?.[orderName]
+                                    ? Colors.hudDarker
+                                    : Colors.white,
+                                  borderRadius: 5,
+                                }}
+                                resizeMode="contain"
+                              />
+                            )}
+                          </View>
 
-                        <Text
-                          style={{
-                            fontSize: 10,
-                            color: ship.specialOrders?.[orderName]
-                              ? Colors.hudDarker
-                              : Colors.slate,
-                            textAlign: "center",
-                            fontFamily: "monospace",
-                            paddingHorizontal: 10,
-                          }}
-                        >
-                          {description}
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  );
-                })}
+                          <Text
+                            style={{
+                              fontSize: 10,
+                              color: ship.specialOrders?.[orderName]
+                                ? Colors.hudDarker
+                                : Colors.slate,
+                              textAlign: "center",
+                              fontFamily: "monospace",
+                              paddingHorizontal: 10,
+                            }}
+                          >
+                            {description}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    );
+                  }
+                )}
               </View>
             </>
           </View>

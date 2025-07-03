@@ -82,7 +82,6 @@ export const ShipAttributes = {
       [SpecialOrders[1].name, SpecialOrders[1].text, SpecialOrders[1].icon],
       [SpecialOrders[7].name, SpecialOrders[7].text, SpecialOrders[7].icon],
       [SpecialOrders[6].name, SpecialOrders[6].text, SpecialOrders[6].icon],
-      [SpecialOrders[9].name, SpecialOrders[9].text, SpecialOrders[9].icon],
       [SpecialOrders[10].name, SpecialOrders[10].text, SpecialOrders[10].icon],
     ],
     weaponType: ["350mm Railgun", "Plasma Canon", "Ion Particle Beam"],
