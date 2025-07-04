@@ -239,39 +239,50 @@ export default function ShipStats({ route }) {
       case "All Ahead Full":
         const bonus =
           localDiceRoll >= 11 ? ship.moveDistance : ship.moveDistance / 2;
-        if (localDiceRoll >= 11) {
+
+        try {
           const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
 
-          updateDoc(shipRef, {
-            "bonuses.moveDistanceBonus": bonus,
-          })
-            .then(() => {
-              // Update local data
-              setData((prevData) =>
-                prevData.map((s) =>
-                  s.id === ship.id ? { ...s, moveDistanceBonus: bonus } : s
-                )
-              );
-              Toast.show({
-                type: "success",
-                text1: "All Ahead Full!",
-                text2: "Movement speed x2.",
-                position: "top",
-              });
-            })
-            .catch((error) => {
-              console.error("Failed to update HP in Firestore:", error);
+          if (localDiceRoll >= 11) {
+            await updateDoc(shipRef, {
+              "bonuses.moveDistanceBonus": bonus,
             });
-        } else {
-          Toast.show({
-            type: "error",
-            text1: "All Ahead Full!",
-            text2: "Movement speed increased by half.",
-            position: "top",
-          });
+
+            // Update local state properly
+            setData((prevData) =>
+              prevData.map((s) =>
+                s.id === ship.id
+                  ? {
+                      ...s,
+                      bonuses: {
+                        ...(s.bonuses || {}),
+                        moveDistanceBonus: bonus,
+                      },
+                    }
+                  : s
+              )
+            );
+
+            Toast.show({
+              type: "success",
+              text1: "All Ahead Full!",
+              text2: "Movement speed x2.",
+              position: "top",
+            });
+          } else {
+            Toast.show({
+              type: "error",
+              text1: "All Ahead Full!",
+              text2: "Movement speed increased by half.",
+              position: "top",
+            });
+          }
+
+          console.log("Bonus applied:", bonus);
+          setMovementBonus(bonus);
+        } catch (error) {
+          console.error("❌ Failed to update moveDistanceBonus:", error);
         }
-        console.log("Bonus:", bonus);
-        setMovementBonus(bonus);
         break;
       case "Reinforce Shields":
         if (ship.hp === ship.maxHP) {
@@ -801,9 +812,7 @@ export default function ShipStats({ route }) {
                   marginTop: 2,
                 }}
               >
-                {(ship.bonuses.moveDistanceBonus ||
-                  ship.bonuses.broadSideBonus ||
-                  0) + ship.moveDistance}
+                {ship.bonuses.moveDistanceBonus + ship.moveDistance}
               </Text>
             </View>
           </View>
@@ -865,7 +874,7 @@ export default function ShipStats({ route }) {
                   fontSize: 10,
                 }}
               >
-                {ship.soak + ship.bonuses.inFighterRangeBonus || 0}
+                {ship.damageThreshold + ship.bonuses.inFighterRangeBonus || 0}
               </Text>
             </View>
           </View>
