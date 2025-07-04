@@ -53,7 +53,7 @@ export default function FleetMap() {
   const [movementDistanceCircle, setMovementDistanceCircle] = useState(null);
   const [fighterRangeLength, setFighterRangeLength] = useState(0);
   const [shipInFighterRange, setShipInFighterRange] = useState(false);
-
+  const MAX_PROTECTED = 4;
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);
   const [removeAllIcons, setRemoveAllIcons] = useState(true);
@@ -160,7 +160,7 @@ export default function FleetMap() {
       });
 
       setShipInFighterRange(updatedMap);
-      setFighterRangeLength(allInRange.length);
+      //setFighterRangeLength(allInRange.length);
 
       const batch = writeBatch(FIREBASE_DB);
 
@@ -243,38 +243,101 @@ export default function FleetMap() {
     }
   };
 
-  const isInFighterRangeToFirebase = async (updatedShipsData) => {
-    if (!user) return;
+  const updateFighterProtection = async (
+    ships,
+    user,
+    setShips,
+    setFighterRangeLength,
+    setShipInFighterRange
+  ) => {
+    if (!user?.uid || !ships?.length) return;
+    // Step 1: Reset all ships first
+    const updatedShips = ships.map((s) => ({
+      ...s,
+      isInFighterRange: false,
+      protectedByCarrierID: "Not being protected by a carrier",
+      bonuses: {
+        ...s.bonuses,
+        inFighterRangeBonus: 0,
+      },
+    }));
 
+    // Step 2: Loop through carriers and assign protection up to MAX_PROTECTED
+    const updatedMap = {};
+    const allInRange = [];
+
+    ships.forEach((carrier) => {
+      if (
+        carrier.type === "Carrier" &&
+        carrier.specialOrders?.["Launch Fighters"] === true &&
+        carrier.capacity > 0 &&
+        user.uid === carrier.user
+      ) {
+        const center = carrier.position.__getValue();
+        const radius =
+          (carrier.moveDistance + carrier.bonuses.moveDistanceBonus) * 9;
+
+        const candidates = updatedShips
+          .filter(
+            (s) =>
+              s.id !== carrier.id &&
+              s.type !== "Carrier" &&
+              s.user === user.uid &&
+              checkIfInFighterRange(s, radius, center)
+          )
+          .sort((a, b) => {
+            // Prioritize previously protected ships
+            const aWasProtected = a.protectedByCarrierID === carrier.id;
+            const bWasProtected = b.protectedByCarrierID === carrier.id;
+            return bWasProtected - aWasProtected; // Sort descending
+          });
+
+        updatedMap[carrier.id] = [];
+
+        for (let i = 0; i < Math.min(candidates.length, MAX_PROTECTED); i++) {
+          const s = candidates[i];
+          s.isInFighterRange = true;
+          s.protectedByCarrierID = carrier.id;
+          s.bonuses.inFighterRangeBonus = 5;
+
+          updatedMap[carrier.id].push(s);
+          allInRange.push(s);
+        }
+      }
+    });
+
+    // Update local state
+    setShips(updatedShips);
+    setFighterRangeLength(allInRange.length);
+    setShipInFighterRange(updatedMap);
+    //console.log("Updated ship in fighter range:", fighterRangeLength);
+
+    // Update Firestore in batch
     const batch = writeBatch(FIREBASE_DB);
 
-    // Iterate through the ships whose status might have changed
-    updatedShipsData.forEach((shipToUpdate) => {
-      if (user.uid === shipToUpdate.user) {
-        const shipRef = doc(
-          FIREBASE_DB,
-          "users",
-          user.uid,
-          "ships",
-          shipToUpdate.id
-        );
-        batch.update(shipRef, {
-          isInFighterRange: shipToUpdate.isInFighterRange,
-          "bonuses.inFighterRangeBonus":
-            shipToUpdate.bonuses?.inFighterRangeBonus ?? 0,
-          protectedByCarrierID: shipToUpdate.protectedByCarrierID ?? null,
-        });
-      }
+    updatedShips.forEach((s) => {
+      const ref = doc(FIREBASE_DB, "users", user.uid, "ships", s.id);
+      batch.update(ref, {
+        isInFighterRange: s.isInFighterRange,
+        protectedByCarrierID: s.protectedByCarrierID,
+        "bonuses.inFighterRangeBonus": s.bonuses.inFighterRangeBonus,
+      });
+    });
+
+    Object.entries(updatedMap).forEach(([carrierId, shipsInRange]) => {
+      const carrier = ships.find((s) => s.id === carrierId);
+      if (!carrier) return;
+      const ref = doc(FIREBASE_DB, "users", user.uid, "ships", carrier.id);
+      batch.update(ref, {
+        numberOfShipsProtecting: shipsInRange.length,
+      });
     });
 
     try {
       await batch.commit();
+      // console.log("✅ updateFighterProtection batch committed");
     } catch (e) {
-      Toast.show({
-        type: "error",
-        text1: "Failed to update fighter range",
-        text2: e.message,
-      });
+      console.error("❌ Failed batch update:", e);
     }
   };
 
@@ -299,6 +362,7 @@ export default function FleetMap() {
 
   useEffect(() => {
     if (!user) return;
+    console.log("🔥 updateFighterProtection");
 
     setLoading(true);
     // Query for ships belonging to the current user
@@ -609,121 +673,14 @@ export default function FleetMap() {
                   );
 
                   // --- Calculate ALL ships' fighter range status LOCALLY first ---
-                  const shipsWithUpdatedFighterRange = ships
-                    .filter((s) => s.user === user.uid)
-                    .map((s) => {
-                      let newIsInFighterRange = false;
-                      let protectingCarrierID = null;
-                      // Check if this ship is in range of ANY carrier that has launched fighters
-                      ships.forEach((carrier) => {
-                        if (
-                          carrier.type === "Carrier" &&
-                          carrier.specialOrders?.["Launch Fighters"] === true &&
-                          carrier.capacity > 0 &&
-                          user.uid === carrier.user
-                        ) {
-                          const center = carrier.position.__getValue();
-                          const radius =
-                            (carrier.moveDistance +
-                              carrier.bonuses.moveDistanceBonus) *
-                            9;
-                          if (checkIfInFighterRange(s, radius, center)) {
-                            newIsInFighterRange = true;
-                            protectingCarrierID = carrier.id;
-                          }
-                        }
-                      });
 
-                      // Only return if the status actually changed to avoid unnecessary updates
-                      if (s.isInFighterRange !== newIsInFighterRange) {
-                        return {
-                          ...s,
-                          isInFighterRange: newIsInFighterRange,
-                          protectedByCarrierID: newIsInFighterRange
-                            ? protectingCarrierID
-                            : null,
-                        };
-                      }
-                      return null; // No change for this ship
-                    })
-                    .filter(Boolean); // Filter out nulls
-
-                  // Update local state with the new isInFighterRange status
-                  if (
-                    shipsWithUpdatedFighterRange.length > 0 &&
-                    user.uid === ship.user
-                  ) {
-                    setFighterRangeLength(shipsWithUpdatedFighterRange.length);
-                    setShips((currentShips) =>
-                      currentShips.map((s) => {
-                        if (s.user !== user.uid) return s; // Only update user ships
-                        const updatedShip = shipsWithUpdatedFighterRange.find(
-                          (us) => us.id === s.id
-                        );
-                        return updatedShip ? updatedShip : s;
-                      })
-                    );
-                    //check if any ship is in fighter range and update its bonus based on how many ships are protected by the carrier
-                    const inFighterRangeBonus =
-                      shipsWithUpdatedFighterRange.map((s) => {
-                        const protectingCarrier = ships.find(
-                          (carrier) => carrier.id === s.protectedByCarrierID
-                        );
-                        const shipsProtected = ships.filter(
-                          (otherShip) =>
-                            otherShip.protectedByCarrierID ===
-                              protectingCarrier?.id &&
-                            otherShip.user === user.uid
-                        ).length;
-                        console.log(
-                          "shipsProtected:",
-                          shipsProtected,
-                          "bonus:",
-                          bonus
-                        );
-                        // Update the ship's inF
-                        return {
-                          ...s,
-                          bonuses: {
-                            ...s.bonuses,
-                            inFighterRangeBonus:
-                              protectingCarrier?.maxCapacity || 0,
-                          },
-                        };
-                      });
-                    await isInFighterRangeToFirebase(inFighterRangeBonus);
-                  }
-                  const allInRange = [];
-
-                  ships.forEach((carrier) => {
-                    if (
-                      carrier.type === "Carrier" &&
-                      carrier.specialOrders?.["Launch Fighters"] === true &&
-                      carrier.capacity > 0 &&
-                      user.uid === carrier.user
-                    ) {
-                      const center = carrier.position.__getValue();
-                      const radius =
-                        (carrier.moveDistance +
-                          carrier.bonuses.moveDistanceBonus) *
-                        9;
-
-                      const shipsInRange = ships.filter(
-                        (s) =>
-                          s.id !== carrier.id &&
-                          s.type !== "Carrier" &&
-                          s.user === user.uid &&
-                          checkIfInFighterRange(s, radius, center)
-                      );
-
-                      setShipInFighterRange((prev) => ({
-                        ...prev,
-                        [carrier.id]: shipsInRange,
-                      }));
-
-                      allInRange.push(...shipsInRange);
-                    }
-                  });
+                  await updateFighterProtection(
+                    ships,
+                    user,
+                    setShips,
+                    setFighterRangeLength,
+                    setShipInFighterRange
+                  );
                 },
               })
             : undefined;
@@ -851,7 +808,7 @@ export default function FleetMap() {
                     >
                       {ship.shipId}
                     </Text>
-                    {ship.type === "Carrier" && ship.user === user.uid && (
+                    {/*     {ship.type === "Carrier" && ship.user === user.uid && (
                       <Text
                         style={[
                           styles.info,
@@ -873,10 +830,10 @@ export default function FleetMap() {
                           },
                         ]}
                       >
-                        {shipInFighterRange[ship.id]?.length ?? 0}
+                        {ship.numberOfShipsProtecting}
                       </Text>
                     )}
-
+ */}
                     <Image
                       source={factionIcons[ship.type.toLowerCase()]}
                       style={{
