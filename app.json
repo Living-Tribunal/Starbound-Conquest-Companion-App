@@ -5,11 +5,11 @@
     "version": "1.1.0",
     "orientation": "portrait",
     "newArchEnabled": true,
-    "icon": "./assets/images/sbclogo.png",
+    "icon": "./assets/images/SC.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/sbclogo.png",
+      "image": "./assets/images/SC.png",
       "resizeMode": "contain",
       "backgroundColor": "#0a1d30"
     },
@@ -20,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/sbclogo.png",
+        "foregroundImage": "./assets/images/SC.png",
         "backgroundColor": "#0a1d31"
       },
       "package": "com.happybob59.StarBoundConquest",

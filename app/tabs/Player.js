@@ -15,7 +15,6 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import ShipFlatlist from "../../components/shipdata/ShipFlatlist";
 import { getFleetData } from "../../components/API/API";
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
-import { getAuth } from "firebase/auth";
 import { shipObject } from "../../constants/shipObjects";
 import Toast from "react-native-toast-message";
 import LoadingComponent from "../../components/loading/LoadingComponent";
@@ -24,7 +23,6 @@ import ViewShot from "react-native-view-shot";
 import Share from "react-native-share";
 import { useNavigation } from "@react-navigation/native";
 import DropdownComponentSectors from "../../components/dropdown/DropdownComponentSectors";
-import PushNotifications from "../../components/notifications/PushNotifications";
 import {
   collection,
   query,
@@ -116,6 +114,15 @@ export default function Player() {
     }, [])
   );
 
+  const getRandomColorForCarrier = () => {
+    return (
+      "#" +
+      Math.floor(Math.random() * 16777215)
+        .toString(16)
+        .padStart(6, "0")
+    );
+  };
+
   const saveCharacterImage = async () => {
     try {
       ref.current.capture().then(async (uri) => {
@@ -193,6 +200,7 @@ export default function Player() {
           gameSector: gameSectors,
           protectedByCarrierID: null,
           numberOfShipsProtecting: 0,
+          color: getRandomColorForCarrier(),
         };
         // Add to Firestore
         const docRef = await addDoc(

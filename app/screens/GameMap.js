@@ -256,6 +256,7 @@ export default function FleetMap() {
       ...s,
       isInFighterRange: false,
       protectedByCarrierID: "Not being protected by a carrier",
+      protectingCarriersColor: null,
       bonuses: {
         ...s.bonuses,
         inFighterRangeBonus: 0,
@@ -288,7 +289,7 @@ export default function FleetMap() {
           .sort((a, b) => {
             // Prioritize previously protected ships
             const aWasProtected = a.protectedByCarrierID === carrier.id;
-            const bWasProtected = b.protectedByCarrierID === carrier.id;
+            const bWasProtected = b.protectedByCarrierID === carrier.id; // Sort descending
             return bWasProtected - aWasProtected; // Sort descending
           });
 
@@ -298,7 +299,9 @@ export default function FleetMap() {
           const s = candidates[i];
           s.isInFighterRange = true;
           s.protectedByCarrierID = carrier.id;
+          s.protectingCarriersColor = carrier.color;
           s.bonuses.inFighterRangeBonus = 5;
+          console.log(s.protectingCarriersColor);
 
           updatedMap[carrier.id].push(s);
           allInRange.push(s);
@@ -310,7 +313,6 @@ export default function FleetMap() {
     setShips(updatedShips);
     setFighterRangeLength(allInRange.length);
     setShipInFighterRange(updatedMap);
-    //console.log("Updated ship in fighter range:", fighterRangeLength);
 
     // Update Firestore in batch
     const batch = writeBatch(FIREBASE_DB);
@@ -320,6 +322,7 @@ export default function FleetMap() {
       batch.update(ref, {
         isInFighterRange: s.isInFighterRange,
         protectedByCarrierID: s.protectedByCarrierID,
+        protectingCarriersColor: s.protectingCarriersColor,
         "bonuses.inFighterRangeBonus": s.bonuses.inFighterRangeBonus,
       });
     });
@@ -422,9 +425,8 @@ export default function FleetMap() {
       }
     );
 
-    // Clean up the listener when the component unmounts
     return () => unsubscribe();
-  }, [user, gameRoom]); // Depend on user and gameRoom if the query is dynamic
+  }, [user, gameRoom]);
 
   useEffect(() => {
     const listener = scale.addListener(({ value }) => {
@@ -483,8 +485,10 @@ export default function FleetMap() {
             Rotation: {selectedShip?.rotation?.__getValue()?.toFixed(0) ?? 0}°
           </Text>
           {selectedShip.type === "Carrier" && (
-            <Text style={styles.shipInfo}>
-              Protecting: {fighterRangeLength}
+            <Text
+              style={[styles.shipInfo, { backgroundColor: selectedShip.color }]}
+            >
+              Ship Color
             </Text>
           )}
           <Text style={styles.shipInfo}>Weapons:</Text>
@@ -557,7 +561,7 @@ export default function FleetMap() {
                       moveDistance:
                         ship.moveDistance +
                         ship.bonuses.moveDistanceBonus +
-                        ship.bonuses.broadSideBonus, // Capture moveDistance here
+                        ship.bonuses.broadSideBonus,
                     });
                     setCircleBorderColor("rgba(0,200,255,0.5)");
                     setCircleBackgroundColor("rgba(0,200,255,0.1)");
@@ -750,6 +754,15 @@ export default function FleetMap() {
                 {/* Rotating Ship Image */}
                 <Animated.View
                   style={{
+                    borderRadius: 10,
+                    borderWidth:
+                      ship.id === shipPressed && ship.protectingCarriersColor
+                        ? 2
+                        : null,
+                    borderColor:
+                      ship.id === shipPressed && ship.protectingCarriersColor
+                        ? ship.protectingCarriersColor
+                        : null,
                     transform: [
                       {
                         rotate: ship.rotation.interpolate({
@@ -768,6 +781,7 @@ export default function FleetMap() {
                     }}
                     resizeMode="center"
                   />
+
                   <View
                     style={{
                       left: ship.width / 4,
