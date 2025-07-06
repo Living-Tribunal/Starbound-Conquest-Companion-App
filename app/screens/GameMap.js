@@ -284,7 +284,9 @@ export default function FleetMap() {
               s.id !== carrier.id &&
               s.type !== "Carrier" &&
               s.user === user.uid &&
-              checkIfInFighterRange(s, radius, center)
+              checkIfInFighterRange(s, radius, center) &&
+              (s.protectedByCarrierID === "Not being protected by a carrier" ||
+                s.protectedByCarrierID === carrier.id)
           )
           .sort((a, b) => {
             // Prioritize previously protected ships
@@ -309,6 +311,18 @@ export default function FleetMap() {
       }
     });
 
+    Object.entries(updatedMap).forEach(([carrierId, shipsInRange]) => {
+      const carrierIndex = updatedShips.findIndex((s) => s.id === carrierId);
+      if (carrierIndex !== -1) {
+        const carrierType = updatedShips[carrierIndex].type;
+        //console.log("🔥 carrierIndex:", carrierIndex, "Type:", carrierType);
+        updatedShips[carrierIndex] = {
+          ...updatedShips[carrierIndex],
+          numberOfShipsProtecting: shipsInRange.length,
+        };
+      }
+    });
+
     // Update local state
     setShips(updatedShips);
     setFighterRangeLength(allInRange.length);
@@ -321,9 +335,11 @@ export default function FleetMap() {
       const ref = doc(FIREBASE_DB, "users", user.uid, "ships", s.id);
       batch.update(ref, {
         isInFighterRange: s.isInFighterRange,
-        protectedByCarrierID: s.protectedByCarrierID,
+        protectedByCarrierID:
+          s.protectedByCarrierID ?? "Not being protected by a carrier",
         protectingCarriersColor: s.protectingCarriersColor,
         "bonuses.inFighterRangeBonus": s.bonuses.inFighterRangeBonus,
+        numberOfShipsProtecting: s.numberOfShipsProtecting || 0,
       });
     });
 
@@ -474,7 +490,13 @@ export default function FleetMap() {
       />
       {selectedShip && (
         <Animated.View
-          style={[styles.shipInfoContainer, { opacity: fadeAnim }]}
+          style={[
+            styles.shipInfoContainer,
+            {
+              opacity: fadeAnim,
+              height: selectedShip.type === "Carrier" ? 210 : 200,
+            },
+          ]}
         >
           <Text style={styles.shipInfo}>Ship: {selectedShip.shipId}</Text>
           <Text style={styles.shipInfo}>
@@ -485,11 +507,21 @@ export default function FleetMap() {
             Rotation: {selectedShip?.rotation?.__getValue()?.toFixed(0) ?? 0}°
           </Text>
           {selectedShip.type === "Carrier" && (
-            <Text
-              style={[styles.shipInfo, { backgroundColor: selectedShip.color }]}
-            >
-              Ship Color
-            </Text>
+            <>
+              <Text style={[styles.shipInfo]}>
+                Protected: {selectedShip.numberOfShipsProtecting}
+              </Text>
+              <Text style={[styles.shipInfo]}>Ship Color</Text>
+              <View
+                style={{
+                  width: 100,
+                  height: 20,
+                  backgroundColor: selectedShip.color,
+                  borderRadius: 5,
+                  marginTop: 5,
+                }}
+              />
+            </>
           )}
           <Text style={styles.shipInfo}>Weapons:</Text>
           {selectedShip?.weaponType?.map((weapon, index) => (
@@ -822,7 +854,7 @@ export default function FleetMap() {
                     >
                       {ship.shipId}
                     </Text>
-                    {/*     {ship.type === "Carrier" && ship.user === user.uid && (
+                    {ship.type === "Carrier" && ship.user === user.uid && (
                       <Text
                         style={[
                           styles.info,
@@ -847,7 +879,7 @@ export default function FleetMap() {
                         {ship.numberOfShipsProtecting}
                       </Text>
                     )}
- */}
+
                     <Image
                       source={factionIcons[ship.type.toLowerCase()]}
                       style={{

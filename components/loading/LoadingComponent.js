@@ -5,11 +5,21 @@ import { Colors } from "@/constants/Colors";
 export default function LoadingComponent({ whatToSay }) {
   return (
     <View style={styles.loadingContainer}>
-      <Image
-        style={{ width: "80%", height: "22%" }}
-        source={require("../../assets/images/SC_logo1.png")}
-      />
-      <Text style={[styles.text1, { fontSize: 20 }]}>{whatToSay}</Text>
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: Colors.dark_gray,
+          width: "100%",
+          height: "100%",
+        }}
+      >
+        <Image
+          style={{ width: 315, height: 161 }}
+          source={require("../../assets/images/SC_logo1.png")}
+        />
+        <Text style={[styles.text1, { fontSize: 20 }]}>{whatToSay}</Text>
+      </View>
     </View>
   );
 }

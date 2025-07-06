@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useMemo,
+} from "react";
 import {
   View,
   Text,
@@ -74,15 +80,19 @@ export default function Player() {
     setGetAllUsersShipToggled,
   } = useStarBoundContext();
 
-  //filter all users ships to only include the current user
-  const myShips = getAllUsersShipToggled.filter(
-    (ship) => ship.user === user.uid
-  );
+  const myShips = useMemo(() => {
+    return getAllUsersShipToggled.filter((ship) => ship.user === user.uid);
+  }, [getAllUsersShipToggled, user?.uid]);
 
-  const shipInSector =
-    gameSectors === "Show All Ships..."
+  const shipInSector = useMemo(() => {
+    return gameSectors === "Show All Ships..."
       ? myShips
       : myShips.filter((ship) => ship.gameSector === gameSectors);
+  }, [myShips, gameSectors]);
+
+  useEffect(() => {
+    console.log("📦 shipInSector:", shipInSector.length);
+  }, [shipInSector]);
   //assignt that to a variable to check if there are any ships
   const hasNoShips = myShips.length === 0;
 
@@ -107,12 +117,6 @@ export default function Player() {
       );
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      getFleetDataButton();
-    }, [])
-  );
 
   const getRandomColorForCarrier = () => {
     return (
@@ -139,14 +143,6 @@ export default function Player() {
   };
 
   //console.log("Ship Length:", data);
-
-  const getFleetDataButton = async () => {
-    setLoading(true);
-    //console.log("getFleetDataButton1");
-    await getFleetData({ data, setData });
-    //console.log("getFleetDataButton2");
-    setLoading(false);
-  };
   //so ship ids arent too crazy long
   function generateShortId() {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -190,7 +186,7 @@ export default function Player() {
           isSelected: false,
           isToggled: false,
           hasBeenInteractedWith: false,
-          gameRoomId: gameRoom,
+          gameRoom: gameRoom,
           factionColor: userFactionColor,
           hit: null,
           hasRolledDToHit: false,
@@ -215,7 +211,7 @@ export default function Player() {
     } catch (e) {
       console.error("Error adding document: ", e);
     } finally {
-      await getFleetData({ data, setData });
+      getFleetData({ data, setData });
       setIsLoading(false);
     }
   };
@@ -224,42 +220,44 @@ export default function Player() {
     ? data.reduce((sum, ship) => sum + (ship.pointValue || 0), 0)
     : 0;
 
-  useFocusEffect(
-    useCallback(() => {
-      //setGameSectors(null);
+  useEffect(() => {
+    if (!user) return;
+    const userDocRef = doc(FIREBASE_DB, "users", user.uid);
+    const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setUsername(data.displayName || "");
+        setProfile(data.photoURL || "");
+        setFaction(data.factionName || "");
+        setGameRoom(data.gameRoom || "");
+        setUserFactionColor(data.userFactionColor || "");
+        setGameValue(data.gameValue || "");
+        //console.log("Profile Image In Player:", data.gameRoom);
+      }
+    });
+    return () => unsubscribe();
+  }, [user?.uid]);
 
-      const getUserData = async () => {
-        try {
-          const user = FIREBASE_AUTH.currentUser;
-          if (!user) return;
+  useEffect(() => {
+    const fetchShipCount = async () => {
+      if (!user || !gameRoom) return;
 
-          const shipsRef = query(
-            collection(FIREBASE_DB, "users", user.uid, "ships"),
-            where("gameRoom", "==", gameRoom)
-          );
-          const docRef = doc(FIREBASE_DB, "users", user.uid);
-          const ships = await getCountFromServer(shipsRef);
-          setNumberOfShips(ships.data().count);
-          //console.log("Ship Counts:", numberOfShips);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            //console.log("User Data:", data);
-            setUsername(data.displayName || "");
-            setProfile(data.photoURL || "");
-            setFaction(data.factionName || "");
-            setGameRoom(data.gameRoom || "");
-            setUserFactionColor(data.userFactionColor || "");
-            setGameValue(data.gameValue || "");
-            //console.log("Profile Image In Player:", data.gameRoom);
-          }
-        } catch (error) {
-          console.error("Failed to retrieve user data:", error);
-        }
-      };
-      getUserData();
-    }, [])
-  );
+      const shipsRef = query(
+        collection(FIREBASE_DB, "users", user.uid, "ships"),
+        where("gameRoom", "==", gameRoom)
+      );
+
+      try {
+        const countSnap = await getCountFromServer(shipsRef);
+        setNumberOfShips(countSnap.data().count);
+        console.log("Ship Counts:", numberOfShips);
+      } catch (err) {
+        console.error("Failed to get ship count:", err);
+      }
+    };
+
+    fetchShipCount();
+  }, [user?.uid, gameRoom]);
 
   const incrementShipCount = (type) => {
     setShipCounts((prev) => ({
@@ -405,6 +403,23 @@ export default function Player() {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (!user || !gameRoom) return;
+
+    const ref = query(
+      collection(FIREBASE_DB, "users", user.uid, "ships"),
+      where("gameRoom", "==", gameRoom)
+    );
+
+    const unsubscribe = onSnapshot(ref, (snap) => {
+      const userShips = snap.docs.map((doc) => doc.data());
+      setData(userShips); // live update your fleet
+      setNumberOfShips(userShips.length); // keep ship count updated
+    });
+
+    return () => unsubscribe();
+  }, [user?.uid, gameRoom]);
+
   const endYourTurn = async () => {
     if (!user || !gameRoom) return;
     setShowEndOfRound(true);
@@ -505,7 +520,7 @@ export default function Player() {
       setGetAllUsersShipTotals(0);
 
       // 🔄 Refresh local fleet state
-      await getFleetData({ data, setData });
+      getFleetData({ data, setData });
 
       setShowEndOfRound(false);
     } catch (e) {
@@ -515,47 +530,98 @@ export default function Player() {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      const fetchAndCheckShips = async () => {
-        if (!gameRoom) return;
+  useEffect(() => {
+    if (!gameRoom) return;
 
-        let allShips = [];
-        let toggledCount = 0;
+    const userShipUnsubs = [];
+    const allShipMap = {}; // temp store: { [uid]: [ship, ship, ...] }
 
-        const userSnap = await getDocs(collection(FIREBASE_DB, "users"));
+    const usersRef = collection(FIREBASE_DB, "users");
+    const unsubscribeUsers = onSnapshot(usersRef, (userSnapshot) => {
+      // Clear previous listeners
+      userShipUnsubs.forEach((unsub) => unsub());
+      userShipUnsubs.length = 0;
 
-        for (const userDoc of userSnap.docs) {
-          const uid = userDoc.id;
+      userSnapshot.docs.forEach((userDoc) => {
+        const uid = userDoc.id;
+        const shipsRef = collection(FIREBASE_DB, "users", uid, "ships");
+        const shipsQuery = query(shipsRef, where("gameRoom", "==", gameRoom));
 
-          const shipsRef = collection(FIREBASE_DB, "users", uid, "ships");
-          const shipsQuery = query(
-            shipsRef,
-            where("gameRoomId", "==", gameRoom)
-          );
-          const shipsSnapshot = await getDocs(shipsQuery);
+        const unsub = onSnapshot(shipsQuery, (shipsSnap) => {
+          const userShips = shipsSnap.docs.map((doc) => doc.data());
 
-          shipsSnapshot.forEach((shipDoc) => {
-            const ship = shipDoc.data();
-            allShips.push(ship);
-            if (ship.isToggled) toggledCount++;
+          // Update that user's ships
+          allShipMap[uid] = userShips;
+
+          // Flatten all users' ships
+          const allShips = Object.values(allShipMap).flat();
+          setGetAllUsersShipToggled(allShips);
+        });
+
+        userShipUnsubs.push(unsub);
+      });
+    });
+
+    return () => {
+      unsubscribeUsers();
+      userShipUnsubs.forEach((u) => u());
+    };
+  }, [gameRoom]);
+
+  useEffect(() => {
+    if (!getAllUsersShipToggled || getAllUsersShipToggled.length === 0) return;
+
+    const toggledCount = getAllUsersShipToggled.filter(
+      (s) => s.isToggled
+    ).length;
+
+    setGetAllUsersShipTotals(toggledCount);
+
+    if (
+      getAllUsersShipToggled.length > 0 &&
+      toggledCount === getAllUsersShipToggled.length
+    ) {
+      console.log("✅ All ships toggled — triggering end of round");
+      endYourTurn();
+      send_message_discord_end_of_round();
+    }
+  }, [getAllUsersShipToggled]);
+
+  useEffect(() => {
+    if (!gameRoom) return;
+
+    const userShipUnsubs = [];
+
+    const usersRef = collection(FIREBASE_DB, "users");
+    const unsubscribeUsers = onSnapshot(usersRef, (userSnapshot) => {
+      // clear previous listeners
+      userShipUnsubs.forEach((u) => u());
+      userShipUnsubs.length = 0;
+
+      userSnapshot.docs.forEach((userDoc) => {
+        const uid = userDoc.id;
+        const shipsRef = collection(FIREBASE_DB, "users", uid, "ships");
+        const shipsQuery = query(shipsRef, where("gameRoom", "==", gameRoom));
+
+        const unsub = onSnapshot(shipsQuery, (shipsSnap) => {
+          const currentShips = shipsSnap.docs.map((doc) => doc.data());
+
+          setGetAllUsersShipToggled((prevShips) => {
+            // Filter out old ships from this user
+            const others = prevShips.filter((s) => s.user !== uid);
+            return [...others, ...currentShips];
           });
-        }
+        });
 
-        setGetAllUsersShipToggled(allShips);
-        setGetAllUsersShipTotals(toggledCount);
+        userShipUnsubs.push(unsub);
+      });
+    });
 
-        if (allShips.length > 0 && toggledCount === allShips.length) {
-          console.log("🚀 All ships toggled — ending round...");
-          await endYourTurn();
-
-          send_message_discord_end_of_round();
-        }
-      };
-
-      fetchAndCheckShips();
-    }, [gameRoom])
-  );
+    return () => {
+      unsubscribeUsers();
+      userShipUnsubs.forEach((u) => u());
+    };
+  }, [gameRoom]);
 
   const endYourTurnPressed = () => {
     send_message_discord();
