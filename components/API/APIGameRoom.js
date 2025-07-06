@@ -18,12 +18,12 @@ export const getAllShipsInGameRoom = ({
     where("gameRoom", "==", gameRoom)
   );
 
+  // Store all ships per userId to rebuild a clean combined array
+  const allShipsMap = new Map();
+
   const unsubscribeUsers = onSnapshot(usersQuery, (userSnapshot) => {
-    // Cleanup old listeners
     shipUnsubs.forEach((u) => u());
     shipUnsubs.length = 0;
-
-    let allShips = [];
 
     userSnapshot.forEach((userDoc) => {
       const uid = userDoc.id;
@@ -44,9 +44,12 @@ export const getAllShipsInGameRoom = ({
           ...doc.data(),
         }));
 
-        // Replace any previous ships from this user
-        allShips = allShips.filter((s) => s.userId !== uid).concat(userShips);
-        setData([...allShips]);
+        // Save or update this user's ships
+        allShipsMap.set(uid, userShips);
+
+        // Combine all values from allShipsMap
+        const combinedShips = Array.from(allShipsMap.values()).flat();
+        setData(combinedShips);
         if (setLoading) setLoading(false);
       });
 

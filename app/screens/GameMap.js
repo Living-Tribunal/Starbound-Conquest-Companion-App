@@ -68,6 +68,9 @@ export default function FleetMap() {
 
   const panX = useRef(new Animated.Value(0)).current;
   const panY = useRef(new Animated.Value(0)).current;
+  const filteredShips = ships.filter(
+    (s) => s.gameRoom === gameRoom && s.gameSector === gameSectors
+  );
 
   const BACKGROUND_WIDTH = WORLD_WIDTH;
   const BACKGROUND_HEIGHT = WORLD_HEIGHT;
@@ -145,6 +148,8 @@ export default function FleetMap() {
               s.id !== carrier.id &&
               s.type !== "Carrier" &&
               s.user === user.uid &&
+              s.gameRoom === gameRoom &&
+              s.gameSector === gameSectors &&
               checkIfInFighterRange(s, radius, center)
           );
 
@@ -564,8 +569,7 @@ export default function FleetMap() {
         onDoubleTapBefore={() => false}
       >
         <TileBackground panX={panX} panY={panY} />
-
-        {ships.map((ship) => {
+        {filteredShips.map((ship) => {
           const isUserShip = user.uid === ship.user;
 
           const fightersLaunched =
@@ -609,9 +613,11 @@ export default function FleetMap() {
                       (s) =>
                         s.id !== ship.id &&
                         s.type !== "Carrier" &&
+                        s.gameRoom === gameRoom &&
+                        s.gameSector === gameSectors &&
                         checkIfInFighterRange(s, radius, center)
                     );
-                    //setShipInFighterRange(shipsInRange);
+                    setShipInFighterRange(shipsInRange);
                     //setFighterRangeBonus(inFighterRangeBonus);
                   }
                 },
