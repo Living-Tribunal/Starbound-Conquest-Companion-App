@@ -1,35 +1,41 @@
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const getFleetData = ({ data, setData }) => {
+export const getFleetData = async ({
+  data,
+  setData,
+  gameRoom,
+  gameSectors,
+}) => {
   const user = FIREBASE_AUTH.currentUser;
 
-  if (user) {
-    try {
-      const shipReference = collection(FIREBASE_DB, "users", user.uid, "ships");
+  if (!user || !gameRoom || !gameSectors) return;
 
-      const unsubscribe = onSnapshot(shipReference, async (querySnapshot) => {
-        const ships = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+  try {
+    const shipQuery = query(
+      collection(FIREBASE_DB, "users", user.uid, "ships"),
+      where("gameRoom", "==", gameRoom),
+      where("gameSector", "==", gameSectors)
+    );
 
-        //console.log("Ships: ", JSON.stringify(ships, null, 2));
-        setData(ships);
-        if (JSON.stringify(ships) !== JSON.stringify(data)) {
-          // Store in AsyncStorage
-          await AsyncStorage.setItem(
-            `fleetData_${user.uid}`,
-            JSON.stringify(ships)
-          );
-        }
-      });
-      // console.log("Saved to AsyncStorage: ", JSON.stringify(ships, null, 2));
-      return unsubscribe;
-      // console.log("Total ships: ", totalShips.data().count);
-    } catch (e) {
-      console.error("Error fetching fleet data: ", e);
+    const querySnapshot = await getDocs(shipQuery);
+
+    const ships = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    setData(ships);
+
+    // Store in AsyncStorage if changed
+    if (JSON.stringify(ships) !== JSON.stringify(data)) {
+      await AsyncStorage.setItem(
+        `fleetData_${user.uid}`,
+        JSON.stringify(ships)
+      );
     }
+  } catch (e) {
+    console.error("Error fetching fleet data: ", e);
   }
 };

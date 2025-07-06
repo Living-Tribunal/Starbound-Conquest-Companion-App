@@ -38,17 +38,14 @@ import {
   updateDoc,
   doc,
   addDoc,
-  getDoc,
   setDoc,
   increment,
   onSnapshot,
 } from "firebase/firestore";
-import { useFocusEffect } from "expo-router";
 
 export default function Player() {
   const ref = useRef();
   const user = FIREBASE_AUTH.currentUser;
-  const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -80,6 +77,10 @@ export default function Player() {
     setGetAllUsersShipToggled,
   } = useStarBoundContext();
 
+  const allToggled =
+    getAllUsersShipToggled.length > 0 &&
+    getAllUsersShipToggled.every((s) => s.isToggled);
+
   const myShips = useMemo(() => {
     return getAllUsersShipToggled.filter((ship) => ship.user === user.uid);
   }, [getAllUsersShipToggled, user?.uid]);
@@ -90,9 +91,6 @@ export default function Player() {
       : myShips.filter((ship) => ship.gameSector === gameSectors);
   }, [myShips, gameSectors]);
 
-  useEffect(() => {
-    console.log("📦 shipInSector:", shipInSector.length);
-  }, [shipInSector]);
   //assignt that to a variable to check if there are any ships
   const hasNoShips = myShips.length === 0;
 
@@ -105,7 +103,7 @@ export default function Player() {
   const onConfirmWarning = () => {
     setIsShowWarning(false);
     setToggleToDelete(true);
-    console.log("Toggled:", toggleToDelete);
+    // console.log("Toggled:", toggleToDelete);
   };
 
   const valueWarning = () => {
@@ -250,7 +248,7 @@ export default function Player() {
       try {
         const countSnap = await getCountFromServer(shipsRef);
         setNumberOfShips(countSnap.data().count);
-        console.log("Ship Counts:", numberOfShips);
+        //  console.log("Ship Counts:", numberOfShips);
       } catch (err) {
         console.error("Failed to get ship count:", err);
       }
@@ -345,7 +343,7 @@ export default function Player() {
   //reset the round for the current user IF there are no ships in the fleet from ANYONE
   const resetRoundForCurretUser = async () => {
     if (!user || !gameRoom) return;
-    console.log(hasNoShips, getAllUsersShipToggled.length);
+    //console.log(hasNoShips, getAllUsersShipToggled.length);
 
     if (!hasNoShips || getAllUsersShipToggled.length > 0) {
       Toast.show({
@@ -358,22 +356,22 @@ export default function Player() {
     }
 
     if (getAllUsersShipToggled.length <= 0)
-      console.log("Resetting round for current user");
-    try {
-      const userRef = doc(FIREBASE_DB, "users", user.uid);
-      await updateDoc(userRef, {
-        round: 0,
-      });
-      Toast.show({
-        type: "success",
-        text1: "Round reset for current user",
-        text2: "Round reset to 0",
-        position: "top",
-      });
-      console.log("Round reset for current user");
-    } catch (error) {
-      console.error("Error resetting round for current user:", error);
-    }
+      // console.log("Resetting round for current user");
+      try {
+        const userRef = doc(FIREBASE_DB, "users", user.uid);
+        await updateDoc(userRef, {
+          round: 0,
+        });
+        Toast.show({
+          type: "success",
+          text1: "Round reset for current user",
+          text2: "Round reset to 0",
+          position: "top",
+        });
+        //console.log("Round reset for current user");
+      } catch (error) {
+        console.error("Error resetting round for current user:", error);
+      }
   };
 
   //users in a game room, increment the round
@@ -581,7 +579,7 @@ export default function Player() {
       getAllUsersShipToggled.length > 0 &&
       toggledCount === getAllUsersShipToggled.length
     ) {
-      console.log("✅ All ships toggled — triggering end of round");
+      //console.log("✅ All ships toggled — triggering end of round");
       endYourTurn();
       send_message_discord_end_of_round();
     }
@@ -924,11 +922,7 @@ export default function Player() {
                     }}
                   >
                     <TouchableOpacity
-                      disabled={
-                        toggleToDelete ||
-                        getAllUsersShipToggled.length <= 0 ||
-                        myShips.length === 0
-                      }
+                      disabled={toggleToDelete || !allToggled}
                       onLongPress={endYourTurn}
                       onPress={endYourTurnPressed}
                       style={[
@@ -937,18 +931,18 @@ export default function Player() {
                           borderWidth: 1,
                           width: "35%",
                           shadowColor:
-                            toggleToDelete || getAllUsersShipToggled.length <= 0
+                            toggleToDelete || !allToggled
                               ? Colors.lighter_red
-                              : Colors.lighter_red,
+                              : Colors.hud,
                           borderColor:
-                            toggleToDelete || getAllUsersShipToggled.length <= 0
+                            toggleToDelete || !allToggled
                               ? Colors.lighter_red
-                              : Colors.lighter_red,
+                              : Colors.hud,
                           backgroundColor:
-                            toggleToDelete || getAllUsersShipToggled.length <= 0
+                            toggleToDelete || !allToggled
                               ? Colors.deep_red
-                              : Colors.deep_red,
-                          opacity: getAllUsersShipToggled.length <= 0 ? 0.5 : 1,
+                              : Colors.hudDarker,
+                          opacity: !allToggled ? 0.5 : 1,
                         },
                       ]}
                     >
@@ -957,8 +951,7 @@ export default function Player() {
                           styles.textValue,
                           {
                             color:
-                              toggleToDelete ||
-                              getAllUsersShipToggled.length <= 0
+                              toggleToDelete || !allToggled
                                 ? Colors.lighter_red
                                 : Colors.lighter_red,
                             fontSize: 12,

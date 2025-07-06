@@ -9,7 +9,27 @@ export default function BackIconArcs({
   tempDisableMovementRestriction,
   setRemoveAllIcons,
   removeAllIcons,
+  ships,
+  user,
 }) {
+  /*   console.log(
+    "backIconArcs:",
+    ships.map((s) => s.type)
+  ); */
+  const shipAbbreviations = {
+    Destroyer: "De",
+    Cruiser: "Cr",
+    Carrier: "Ca",
+    Dreadnought: "Dr",
+  };
+
+  const playerShips = ships.filter((s) => s.user === user.uid);
+
+  const typeCounts = playerShips.reduce((acc, ship) => {
+    acc[ship.type] = (acc[ship.type] || 0) + 1;
+    return acc;
+  }, {});
+
   return (
     <>
       <TouchableOpacity
@@ -119,6 +139,26 @@ export default function BackIconArcs({
           }
         />
       </TouchableOpacity>
+      {playerShips &&
+        Object.entries(typeCounts).map(([type, count], index) => (
+          <Text
+            key={type}
+            style={[
+              styles.shipTypeTag,
+              {
+                top: 135 + index * 35, // space between lines
+                borderColor: removeAllIcons
+                  ? Colors.green_toggle
+                  : Colors.lighter_red,
+                color: removeAllIcons
+                  ? Colors.green_toggle
+                  : Colors.lighter_red,
+              },
+            ]}
+          >
+            {shipAbbreviations[type]}: {count}
+          </Text>
+        ))}
     </>
   );
 }
@@ -130,5 +170,18 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     tintColor: Colors.hud,
     zIndex: 10000,
+  },
+  shipTypeTag: {
+    position: "absolute",
+    top: 135,
+    left: 10,
+    zIndex: 10000,
+    borderWidth: 1.5,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    fontSize: 10,
+    fontFamily: "monospace", // or your League Spartan if consistent
+    overflow: "hidden",
   },
 });

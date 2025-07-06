@@ -5,23 +5,19 @@ import {
   StyleSheet,
   PanResponder,
   Animated,
-  Dimensions,
   SafeAreaView,
   Text,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
 } from "react-native";
 import { getAllShipsInGameRoom } from "@/components/API/APIGameRoom";
-import Svg, { Path, Circle, Text as SvgText } from "react-native-svg";
 import { useStarBoundContext } from "@/components/Global/StarBoundProvider";
 import {
   doc,
   updateDoc,
   writeBatch,
   collection,
-  onSnapshot,
   query,
   where,
+  getDocs,
 } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "@/FirebaseConfig";
 import { useFocusEffect } from "expo-router";
@@ -34,8 +30,6 @@ import ShipSwitch from "@/components/switch/ShipSwitch";
 import ZoomControls from "@/components/GameMapButtons/ZoonControls";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
 import { useMapImageContext } from "@/components/Global/MapImageContext";
-import Toast from "react-native-toast-message";
-import { getFleetData } from "@/components/API/API";
 import BackIconArcs from "@/components/GameMapButtons/BackIconArcs";
 import { FONTS } from "@/constants/fonts";
 import { WeaponColors as weaponColors } from "@/constants/WeaponColors";
@@ -166,16 +160,8 @@ export default function FleetMap() {
 
       Object.entries(updatedMap).forEach(([carrierId, shipsInRange]) => {
         const carrier = ships.find((s) => s.id === carrierId);
-        if (!carrier) return;
-
-        const carrierRef = doc(
-          FIREBASE_DB,
-          "users",
-          carrier.user,
-          "ships",
-          carrier.id
-        );
-
+        if (!carrier && user.uid !== carrierId) return;
+        const carrierRef = doc(FIREBASE_DB, "users", user.uid, "ships", s.id);
         batch.update(carrierRef, {
           numberOfShipsProtecting: shipsInRange.length,
         });
@@ -213,7 +199,7 @@ export default function FleetMap() {
         await updateDoc(doc(FIREBASE_DB, "users", user.uid, "ships", shipId), {
           rotation_angle: next,
         });
-        setShips(updatedShips);
+        //setShips(updatedShips);
       } catch (e) {
         console.error("Error updating rotation:", e);
       } finally {
@@ -251,9 +237,16 @@ export default function FleetMap() {
     setShipInFighterRange
   ) => {
     if (!user?.uid || !ships?.length) return;
-    // Step 1: Reset all ships first
-    const updatedShips = ships.map((s) => ({
+
+    // Step 1: Separate user ships from opponent ships
+    const userShips = ships.filter((s) => s.user === user.uid);
+    const opponentShips = ships.filter((s) => s.user !== user.uid);
+
+    // Step 2: Reset only user ships
+    const updatedUserShips = userShips.map((s) => ({
       ...s,
+      position: s.position,
+      rotation: s.rotation,
       isInFighterRange: false,
       protectedByCarrierID: "Not being protected by a carrier",
       protectingCarriersColor: null,
@@ -263,11 +256,11 @@ export default function FleetMap() {
       },
     }));
 
-    // Step 2: Loop through carriers and assign protection up to MAX_PROTECTED
+    // Step 3: Loop through user carriers and assign protection up to MAX_PROTECTED
     const updatedMap = {};
     const allInRange = [];
 
-    ships.forEach((carrier) => {
+    userShips.forEach((carrier) => {
       if (
         carrier.type === "Carrier" &&
         carrier.specialOrders?.["Launch Fighters"] === true &&
@@ -278,7 +271,7 @@ export default function FleetMap() {
         const radius =
           (carrier.moveDistance + carrier.bonuses.moveDistanceBonus) * 9;
 
-        const candidates = updatedShips
+        const candidates = updatedUserShips
           .filter(
             (s) =>
               s.id !== carrier.id &&
@@ -291,8 +284,8 @@ export default function FleetMap() {
           .sort((a, b) => {
             // Prioritize previously protected ships
             const aWasProtected = a.protectedByCarrierID === carrier.id;
-            const bWasProtected = b.protectedByCarrierID === carrier.id; // Sort descending
-            return bWasProtected - aWasProtected; // Sort descending
+            const bWasProtected = b.protectedByCarrierID === carrier.id;
+            return bWasProtected - aWasProtected;
           });
 
         updatedMap[carrier.id] = [];
@@ -303,7 +296,6 @@ export default function FleetMap() {
           s.protectedByCarrierID = carrier.id;
           s.protectingCarriersColor = carrier.color;
           s.bonuses.inFighterRangeBonus = 5;
-          console.log(s.protectingCarriersColor);
 
           updatedMap[carrier.id].push(s);
           allInRange.push(s);
@@ -311,28 +303,35 @@ export default function FleetMap() {
       }
     });
 
+    // Step 4: Update carrier numberOfShipsProtecting
     Object.entries(updatedMap).forEach(([carrierId, shipsInRange]) => {
-      const carrierIndex = updatedShips.findIndex((s) => s.id === carrierId);
+      const carrierIndex = updatedUserShips.findIndex(
+        (s) => s.id === carrierId
+      );
       if (carrierIndex !== -1) {
-        const carrierType = updatedShips[carrierIndex].type;
-        //console.log("🔥 carrierIndex:", carrierIndex, "Type:", carrierType);
-        updatedShips[carrierIndex] = {
-          ...updatedShips[carrierIndex],
+        updatedUserShips[carrierIndex] = {
+          ...updatedUserShips[carrierIndex],
           numberOfShipsProtecting: shipsInRange.length,
         };
       }
     });
 
-    // Update local state
-    setShips(updatedShips);
+    // Step 5: Combine updated user ships with unchanged opponent ships
+    const finalShipsArray = [...updatedUserShips, ...opponentShips];
+    console.log("🔥 finalShipsArray:", finalShipsArray.length);
+    // Update local state with the combined array
+    // Note: You might want to uncomment this line if you need to update local state
+    setShips(finalShipsArray);
+
     setFighterRangeLength(allInRange.length);
     setShipInFighterRange(updatedMap);
 
-    // Update Firestore in batch
+    // Step 6: Update Firestore in batch (only for user ships)
     const batch = writeBatch(FIREBASE_DB);
 
-    updatedShips.forEach((s) => {
-      const ref = doc(FIREBASE_DB, "users", user.uid, "ships", s.id);
+    updatedUserShips.forEach((s) => {
+      if (s.user !== user.uid) return;
+      const ref = doc(FIREBASE_DB, "users", s.user, "ships", s.id);
       batch.update(ref, {
         isInFighterRange: s.isInFighterRange,
         protectedByCarrierID:
@@ -343,18 +342,9 @@ export default function FleetMap() {
       });
     });
 
-    Object.entries(updatedMap).forEach(([carrierId, shipsInRange]) => {
-      const carrier = ships.find((s) => s.id === carrierId);
-      if (!carrier) return;
-      const ref = doc(FIREBASE_DB, "users", user.uid, "ships", carrier.id);
-      batch.update(ref, {
-        numberOfShipsProtecting: shipsInRange.length,
-      });
-    });
-
     try {
       await batch.commit();
-      // console.log("✅ updateFighterProtection batch committed");
+      console.log("✅ updateFighterProtection batch committed");
     } catch (e) {
       console.error("❌ Failed batch update:", e);
     }
@@ -362,9 +352,37 @@ export default function FleetMap() {
 
   useFocusEffect(
     useCallback(() => {
-      getFleetData({ data, setData });
-      //console.log("getFleetData in GameMap:", data);
-    }, [])
+      if (!user || !gameRoom || !gameSectors) return;
+      setShips([]); // Clear animated ships
+      setData([]);
+
+      const fetchUserShips = async () => {
+        try {
+          const q = query(
+            collection(FIREBASE_DB, "users", user.uid, "ships"),
+            where("gameRoom", "==", gameRoom),
+            where("gameSector", "==", gameSectors)
+          );
+
+          const querySnapshot = await getDocs(q);
+          const userShips = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+          console.log(
+            "✅ User ships loaded:",
+            userShips.length,
+            "in sector" + gameSectors
+          );
+          setData(userShips);
+        } catch (e) {
+          console.error("❌ Failed to fetch user ships:", e);
+        }
+      };
+
+      fetchUserShips();
+    }, [user?.uid, gameRoom, gameSectors])
   );
 
   useFocusEffect(
@@ -380,71 +398,6 @@ export default function FleetMap() {
   );
 
   useEffect(() => {
-    if (!user) return;
-    console.log("🔥 updateFighterProtection");
-
-    setLoading(true);
-    // Query for ships belonging to the current user
-    const q = query(
-      collection(FIREBASE_DB, "users", user.uid, "ships"),
-      where("gameRoom", "==", gameRoom)
-    );
-
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const fetchedShips = snapshot.docs.map((doc) => {
-          const data = doc.data();
-          // Re-initialize Animated values only if they don't exist
-          const existingShip = ships.find((s) => s.id === doc.id);
-          const position =
-            existingShip?.position ||
-            new Animated.ValueXY({ x: data.x ?? 100, y: data.y ?? 100 });
-          const rotation =
-            existingShip?.rotation ||
-            new Animated.Value(data.rotation_angle ?? 0);
-
-          // Update existing Animated values if data changed
-          if (
-            existingShip &&
-            (existingShip.position.__getValue().x !== data.x ||
-              existingShip.position.__getValue().y !== data.y)
-          ) {
-            position.setValue({ x: data.x ?? 100, y: data.y ?? 100 });
-          }
-          if (
-            existingShip &&
-            existingShip.rotation.__getValue() !== data.rotation_angle
-          ) {
-            rotation.setValue(data.rotation_angle ?? 0);
-          }
-
-          return {
-            id: doc.id,
-            ...data,
-            position,
-            rotation,
-          };
-        });
-        setShips(fetchedShips);
-        setLoading(false);
-        console.log("Real-time ships update received.");
-      },
-      (error) => {
-        console.error("Error listening to ships:", error);
-        setLoading(false);
-        Toast.show({
-          type: "error",
-          text1: "Failed to load ship data",
-          text2: error.message,
-        });
-      }
-    );
-
-    return () => unsubscribe();
-  }, [user, gameRoom]);
-
-  useEffect(() => {
     const listener = scale.addListener(({ value }) => {
       scaleValue.current = value;
     });
@@ -453,13 +406,54 @@ export default function FleetMap() {
 
   useEffect(() => {
     if (!Array.isArray(data)) return;
-    // Initialize animated values for ship positions
-    const initialized = data.map((ship) => {
-      const pos = new Animated.ValueXY({ x: ship.x ?? 100, y: ship.y ?? 100 });
-      const rotation = new Animated.Value(ship.rotation_angle ?? 0);
-      return { ...ship, position: pos, rotation };
+
+    setShips((prevShips) => {
+      const newShipsMap = new Map(prevShips.map((ship) => [ship.id, ship]));
+
+      data.forEach((incomingShip) => {
+        const existingShip = newShipsMap.get(incomingShip.id);
+
+        if (existingShip) {
+          // Ship already exists, update its static properties
+          // but preserve the Animated.ValueXY and Animated.Value instances
+          // and update their underlying values if they've changed in Firebase.
+          if (
+            existingShip.position.__getValue().x !== incomingShip.x ||
+            existingShip.position.__getValue().y !== incomingShip.y
+          ) {
+            existingShip.position.setValue({
+              x: incomingShip.x,
+              y: incomingShip.y,
+            });
+          }
+          if (
+            existingShip.rotation.__getValue() !== incomingShip.rotation_angle
+          ) {
+            existingShip.rotation.setValue(incomingShip.rotation_angle);
+          }
+          newShipsMap.set(incomingShip.id, {
+            ...incomingShip,
+            ...existingShip,
+            position: existingShip.position, // Keep the existing Animated.ValueXY
+            rotation: existingShip.rotation, // Keep the existing Animated.Value
+          });
+        } else {
+          // New ship, create new Animated values
+          const pos = new Animated.ValueXY({
+            x: incomingShip.x ?? 100,
+            y: incomingShip.y ?? 100,
+          });
+          const rotation = new Animated.Value(incomingShip.rotation_angle ?? 0);
+          newShipsMap.set(incomingShip.id, {
+            ...incomingShip,
+            position: pos,
+            rotation,
+          });
+        }
+      });
+
+      return Array.from(newShipsMap.values());
     });
-    setShips(initialized);
   }, [data]);
 
   if (loading) {
@@ -474,6 +468,8 @@ export default function FleetMap() {
         tempDisableMovementRestriction={tempDisableMovementRestriction}
         setRemoveAllIcons={setRemoveAllIcons}
         removeAllIcons={removeAllIcons}
+        ships={data}
+        user={user}
       />
 
       <ZoomControls
@@ -722,7 +718,7 @@ export default function FleetMap() {
             : undefined;
 
           return (
-            <React.Fragment key={ship.id}>
+            <React.Fragment key={`${ship.id}-${ship.type}`}>
               {shipPressed === ship.id && movementDistanceCircle && (
                 <View
                   pointerEvents="none"
@@ -988,7 +984,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#284b54b8",
     height: 200,
     top: 10,
-    left: 60,
+    left: 100,
     justifyContent: "center",
     flexDirection: "column",
     alignItems: "left",

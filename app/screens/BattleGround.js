@@ -169,8 +169,8 @@ export default function BattleGround(props) {
       const myQuery = query(
         usersCollection,
         where("email", "!=", currentUserEmail),
-        where("gameRoom", "==", gameRoom)
-        //where("gameSector", "==", gameSectors)
+        where("gameRoom", "==", gameRoom),
+        where("gameSector", "==", gameSectors)
       );
       const querySnapshot = await getDocs(myQuery);
       const users = querySnapshot.docs.map((doc) => ({

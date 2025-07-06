@@ -1,54 +1,61 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "@/FirebaseConfig";
 
-export const getAllShipsInGameRoom = async ({
+export const getAllShipsInGameRoom = ({
   gameRoom,
+  gameSectors,
   setData,
   setLoading,
-  gameSectors,
 }) => {
   const user = FIREBASE_AUTH.currentUser;
-  //console.log("Game Sectors in API:", gameSectors);
   if (!user || !gameRoom) return;
 
-  try {
-    setLoading(true);
-    const usersQuery = query(
-      collection(FIREBASE_DB, "users"),
-      where("gameRoom", "==", gameRoom)
-    );
+  if (setLoading) setLoading(true);
+  const shipUnsubs = [];
 
-    const usersSnapshot = await getDocs(usersQuery);
-    const users = usersSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+  const usersQuery = query(
+    collection(FIREBASE_DB, "users"),
+    where("gameRoom", "==", gameRoom)
+  );
 
-    const allShips = [];
+  const unsubscribeUsers = onSnapshot(usersQuery, (userSnapshot) => {
+    // Cleanup old listeners
+    shipUnsubs.forEach((u) => u());
+    shipUnsubs.length = 0;
 
-    for (const user of users) {
-      const shipCollection = collection(FIREBASE_DB, "users", user.id, "ships");
-      const shipsSnapshot = await getDocs(shipCollection);
+    let allShips = [];
 
-      const userShips = shipsSnapshot.docs
-        .map((doc) => ({
+    userSnapshot.forEach((userDoc) => {
+      const uid = userDoc.id;
+      const userData = userDoc.data();
+
+      const shipsQuery = query(
+        collection(FIREBASE_DB, "users", uid, "ships"),
+        where("gameSector", "==", gameSectors)
+      );
+
+      const unsub = onSnapshot(shipsQuery, (shipsSnap) => {
+        const userShips = shipsSnap.docs.map((doc) => ({
           id: doc.id,
-          userId: user.id,
-          displayName: user.displayName,
-          factionName: user.factionName,
-          factionColor: user.userFactionColor,
+          userId: uid,
+          displayName: userData.displayName,
+          factionName: userData.factionName,
+          factionColor: userData.userFactionColor,
           ...doc.data(),
-        }))
-        .filter((ship) => ship.gameSector === gameSectors);
+        }));
 
-      allShips.push(...userShips);
-    }
+        // Replace any previous ships from this user
+        allShips = allShips.filter((s) => s.userId !== uid).concat(userShips);
+        setData([...allShips]);
+        if (setLoading) setLoading(false);
+      });
 
-    setData(allShips);
-    //console.log("✅ Loaded ships for all players in room:", allShips.length);
-  } catch (e) {
-    console.error("❌ Failed to get all ships:", e);
-  } finally {
-    setLoading(false);
-  }
+      shipUnsubs.push(unsub);
+    });
+  });
+
+  return () => {
+    unsubscribeUsers();
+    shipUnsubs.forEach((u) => u());
+  };
 };
