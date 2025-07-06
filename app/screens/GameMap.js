@@ -44,6 +44,7 @@ export default function FleetMap() {
   const [showAllFiringArcs, setShowAllFiringArcs] = useState(false);
   const [loading, setLoading] = useState(false);
   const [updatingRotation, setUpdatingRotation] = useState(false);
+  const [updateMovement, setUpdateMovement] = useState(false);
   const [movementDistanceCircle, setMovementDistanceCircle] = useState(null);
   const [fighterRangeLength, setFighterRangeLength] = useState(0);
   const [shipInFighterRange, setShipInFighterRange] = useState(false);
@@ -127,6 +128,7 @@ export default function FleetMap() {
   // Calculate ALL ships' fighter range automatically
   useEffect(() => {
     if (!ships.length || !user?.uid) return;
+    setLoading(true);
 
     const runFighterRangeUpdate = async () => {
       const updatedMap = {};
@@ -156,6 +158,7 @@ export default function FleetMap() {
           updatedMap[carrier.id] = shipsInRange;
           allInRange.push(...shipsInRange);
         }
+        setLoading(false);
       });
 
       setShipInFighterRange(updatedMap);
@@ -220,6 +223,7 @@ export default function FleetMap() {
 
   const updatingPosition = async (shipId, x, y, rotation, distanceTraveled) => {
     if (!ships || !user) return;
+    setUpdateMovement(true);
     try {
       const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", shipId);
       await updateDoc(shipRef, {
@@ -232,6 +236,7 @@ export default function FleetMap() {
     } catch (e) {
       console.error("Error updating document: ", e);
     }
+    setUpdateMovement(false);
   };
 
   const updateFighterProtection = async (
@@ -323,7 +328,7 @@ export default function FleetMap() {
 
     // Step 5: Combine updated user ships with unchanged opponent ships
     const finalShipsArray = [...updatedUserShips, ...opponentShips];
-    console.log("🔥 finalShipsArray:", finalShipsArray.length);
+    //console.log("🔥 finalShipsArray:", finalShipsArray.length);
     // Update local state with the combined array
     // Note: You might want to uncomment this line if you need to update local state
     setShips(finalShipsArray);
@@ -349,7 +354,7 @@ export default function FleetMap() {
 
     try {
       await batch.commit();
-      console.log("✅ updateFighterProtection batch committed");
+      //console.log("✅ updateFighterProtection batch committed");
     } catch (e) {
       console.error("❌ Failed batch update:", e);
     }
@@ -360,6 +365,7 @@ export default function FleetMap() {
       if (!user || !gameRoom || !gameSectors) return;
       setShips([]); // Clear animated ships
       setData([]);
+      setLoading(true);
 
       const fetchUserShips = async () => {
         try {
@@ -375,11 +381,11 @@ export default function FleetMap() {
             ...doc.data(),
           }));
 
-          console.log(
+          /* console.log(
             "✅ User ships loaded:",
             userShips.length,
             "in sector" + gameSectors
-          );
+          ); */
           setData(userShips);
         } catch (e) {
           console.error("❌ Failed to fetch user ships:", e);
@@ -387,6 +393,7 @@ export default function FleetMap() {
       };
 
       fetchUserShips();
+      setLoading(false);
     }, [user?.uid, gameRoom, gameSectors])
   );
 
@@ -585,7 +592,11 @@ export default function FleetMap() {
 
                   const { x, y } = ship.position.__getValue();
                   // Set the persisted circle data on grant
-                  if (!shipPressed || ship.id !== shipPressed) {
+                  if (
+                    !shipPressed ||
+                    ship.id !== shipPressed ||
+                    updateMovement
+                  ) {
                     setShipPressed(ship.id);
                     setMovementDistanceCircle({
                       x,
@@ -599,7 +610,6 @@ export default function FleetMap() {
                     setCircleBackgroundColor("rgba(0,200,255,0.1)");
                   }
 
-                  //console.log("ship coordinates:", x, y);
                   if (
                     ship.type === "Carrier" &&
                     ship.specialOrders?.["Launch Fighters"] === true &&

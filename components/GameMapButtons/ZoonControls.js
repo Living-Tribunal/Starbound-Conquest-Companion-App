@@ -40,6 +40,7 @@ export default function ZoomControls({
             <TouchableOpacity
               style={[styles.zoomButton]}
               onPress={() => handleShipRotation(shipPressed, -45)}
+              onLongPress={() => handleShipRotation(shipPressed, -90)}
               disabled={updatingRotation}
             >
               <Image
@@ -50,6 +51,7 @@ export default function ZoomControls({
             <TouchableOpacity
               style={[styles.zoomButton]}
               onPress={() => handleShipRotation(shipPressed, 45)}
+              onLongPress={() => handleShipRotation(shipPressed, 90)}
               disabled={updatingRotation}
             >
               <Image
@@ -103,7 +105,7 @@ export default function ZoomControls({
 const styles = StyleSheet.create({
   zoomControls: {
     position: "absolute",
-    top: 20,
+    top: 10,
     right: 20,
     zIndex: 100,
     gap: 10,
