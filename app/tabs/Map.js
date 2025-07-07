@@ -41,11 +41,11 @@ export default function Map() {
           SectorName="Crucible of Raths"
           MapImagesBackground={MapImages.colorStars}
           MapImage={MapImages.planetBottom}
-          MapImageTop={1800}
-          MapImageLeft={200}
+          MapImageTop={3000}
+          MapImageLeft={1000}
           MapImage2={MapImages.greenplanet}
-          MapImage2Top={400}
-          MapImage2Left={500}
+          MapImage2Top={900}
+          MapImage2Left={1000}
           MapImage3={null}
           MapImage3Top={null}
           MapImage3Left={null}
@@ -62,8 +62,8 @@ export default function Map() {
           MapImageTop={null}
           MapImageLeft={null}
           MapImage2={MapImages.largeShip}
-          MapImage2Top={1000}
-          MapImage2Left={500}
+          MapImage2Top={2000}
+          MapImage2Left={1000}
           MapImage3={null}
           MapImage3Top={null}
           MapImage3Left={null}

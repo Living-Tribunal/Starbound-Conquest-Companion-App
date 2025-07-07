@@ -487,6 +487,7 @@ export default function FleetMap() {
       <ZoomControls
         scale={scale}
         updatingRotation={updatingRotation}
+        updatingPosition={updatingPosition}
         shipPressed={shipPressed}
         handleShipRotation={handleShipRotation}
         setShowFiringArcs={setShowFiringArcs}

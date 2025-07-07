@@ -85,7 +85,6 @@ export default function TileBackground({ panX, panY }) {
           height: 1324,
           top: MapImage2Top,
           left: MapImage2Left,
-          left: 200,
           transform: [
             { translateX: Animated.multiply(panX, 0.1) },
             { translateY: Animated.multiply(panY, 0.1) },

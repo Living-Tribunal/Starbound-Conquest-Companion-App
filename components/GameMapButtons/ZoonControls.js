@@ -17,6 +17,7 @@ export default function ZoomControls({
   navigateToStats,
   updatingRotation,
   setShowAllFiringArcs,
+  updatingMovement,
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -41,7 +42,7 @@ export default function ZoomControls({
               style={[styles.zoomButton]}
               onPress={() => handleShipRotation(shipPressed, -45)}
               onLongPress={() => handleShipRotation(shipPressed, -90)}
-              disabled={updatingRotation}
+              disabled={updatingRotation || updatingMovement}
             >
               <Image
                 style={{ tintColor: Colors.hud, width: 30, height: 30 }}
@@ -52,7 +53,7 @@ export default function ZoomControls({
               style={[styles.zoomButton]}
               onPress={() => handleShipRotation(shipPressed, 45)}
               onLongPress={() => handleShipRotation(shipPressed, 90)}
-              disabled={updatingRotation}
+              disabled={updatingRotation || updatingMovement}
             >
               <Image
                 style={{ tintColor: Colors.hud, width: 30, height: 30 }}
