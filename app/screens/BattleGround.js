@@ -34,7 +34,7 @@ import { useMapImageContext } from "@/components/Global/MapImageContext.js";
 
 export default function BattleGround(props) {
   const { from } = props.route.params;
-  const { ship } = props.route.params;
+  const { ship, targetedShip, attackingShip } = props.route.params;
   const navigation = useNavigation();
   const { gameSectors } = useMapImageContext();
   const {
@@ -67,6 +67,7 @@ export default function BattleGround(props) {
   //console.log("From in BattleGround:", from);
   //console.log("from State in BattleGround:", fromGameMap);
   //console.log("Game Sector in BattleGround:", gameSectors);
+  // console.log("Data coming from Game Map:", targetedShip, attackingShip);
 
   const settingHitState = async () => {
     if (!ship || !user) return;

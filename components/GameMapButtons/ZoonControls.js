@@ -19,6 +19,7 @@ export default function ZoomControls({
   setShowAllFiringArcs,
   updatingMovement,
   targetedShip,
+  navigateToBattleGround,
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -98,6 +99,16 @@ export default function ZoomControls({
               </TouchableOpacity>
             )}
           </Animated.View>
+        )}
+        {shipPressed && !targetedShip && (
+          <TouchableOpacity
+            onPress={navigateToBattleGround}
+            style={styles.controlButton}
+          >
+            <Text style={[styles.buttonText, { fontSize: 8 }]}>
+              Enter Combat
+            </Text>
+          </TouchableOpacity>
         )}
       </View>
     </View>

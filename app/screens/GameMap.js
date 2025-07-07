@@ -35,6 +35,8 @@ import BackIconArcs from "@/components/GameMapButtons/BackIconArcs";
 import { FONTS } from "@/constants/fonts";
 import { WeaponColors as weaponColors } from "@/constants/WeaponColors";
 import Toast from "react-native-toast-message";
+import { navigate } from "expo-router/build/global-state/routing";
+import BattleModal from "@/components/BattleModal/BattleModal";
 
 export default function FleetMap() {
   const navigation = useNavigation();
@@ -42,7 +44,7 @@ export default function FleetMap() {
   const { data, setData, gameRoom } = useStarBoundContext();
   const [ships, setShips] = useState([]);
   const [shipPressed, setShipPressed] = useState(null);
-  const [showFiringArcs, setShowFiringArcs] = useState(false);
+  const [showFiringArcs, setShowFiringArcs] = useState(true);
   const [showAllFiringArcs, setShowAllFiringArcs] = useState(false);
   const [loading, setLoading] = useState(false);
   const [updatingRotation, setUpdatingRotation] = useState(false);
@@ -51,6 +53,9 @@ export default function FleetMap() {
   const [fighterRangeLength, setFighterRangeLength] = useState(0);
   const [shipInFighterRange, setShipInFighterRange] = useState(false);
   const [targetedShip, setTargetedShip] = useState(null);
+  const [pendingBattle, setPendingBattle] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [shipsEnteringBattle, setShipsEnteringBattle] = useState([]);
   const MAX_PROTECTED = 4;
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);
@@ -224,6 +229,42 @@ export default function FleetMap() {
     navigation.navigate("Stats", { shipId, from: "GameMap" });
   };
 
+  const navigateToBattleGround = () => {
+    const attackingShip = ships.find((s) => s.id === shipPressed);
+
+    if (!attackingShip || !targetedShip) return;
+
+    console.log(
+      "Navigating to BattleGround with shipId:",
+      attackingShip,
+      targetedShip
+    );
+
+    const alreadyExists = shipsEnteringBattle.some(
+      (entry) =>
+        entry.attackingShip?.id === attackingShip.id &&
+        entry.targetedShip?.id === targetedShip?.id
+    );
+
+    if (alreadyExists) return;
+
+    setShipsEnteringBattle((prev) => [
+      ...prev,
+      { attackingShip, targetedShip },
+    ]);
+
+    // Uncomment to navigate immediately:
+    /*  navigation.navigate("BattleGround", {
+      attackingShip,
+      targetedShip,
+      from: "GameMap",
+    }); */
+  };
+
+  /*   useEffect(() => {
+    console.log("Ships entering battle:", shipsEnteringBattle);
+  }, [shipsEnteringBattle]); */
+
   const updatingPosition = async (shipId, x, y, rotation, distanceTraveled) => {
     if (!ships || !user) return;
     setUpdateMovement(true);
@@ -369,7 +410,7 @@ export default function FleetMap() {
       setShips([]); // Clear animated ships
       setData([]);
       setLoading(true);
-      setTargetedShip(null);
+      //setTargetedShip(null);
       setShipPressed(null);
 
       const fetchUserShips = async () => {
@@ -423,13 +464,24 @@ export default function FleetMap() {
 
   const targetingShip = (ship) => {
     setTargetedShip(ship);
-    Toast.show({
-      type: "success",
-      text1: "Starbound Conquest",
-      text2: `Ship Targeted: ${ship.shipId} - ${ship.type}`,
-      position: "top",
-    });
+    console.log("Targeting ship:", ship.shipId);
   };
+  const attackingShip = (ship) => {
+    setShipPressed(ship.id);
+    console.log("Attacking ship:", ship.shipId);
+  };
+
+  useEffect(() => {
+    if (shipPressed && targetedShip) {
+      const attackerShip = ships.find((s) => s.id === shipPressed);
+      if (!attackerShip && attackingShip.id === targetedShip.id) return;
+      setPendingBattle({ attackingShip: attackerShip, targetedShip });
+      setShowConfirmModal(true);
+
+      setShipPressed(null);
+      setTargetedShip(null);
+    }
+  }, [shipPressed, targetedShip]);
 
   useEffect(() => {
     if (!Array.isArray(data)) return;
@@ -498,6 +550,14 @@ export default function FleetMap() {
         ships={data}
         user={user}
       />
+      <BattleModal
+        pendingBattle={pendingBattle}
+        showConfirmModal={showConfirmModal}
+        setShowConfirmModal={setShowConfirmModal}
+        navigateToBattleGround={navigateToBattleGround}
+        setShipPressed={setShipPressed}
+        setTargetedShip={setTargetedShip}
+      />
 
       <ZoomControls
         scale={scale}
@@ -512,6 +572,7 @@ export default function FleetMap() {
         setShowAllFiringArcs={setShowAllFiringArcs}
         ships={ships}
         targetedShip={targetedShip}
+        navigateToBattleGround={navigateToBattleGround}
       />
       {selectedShip && !targetedShip && (
         <Animated.View
@@ -548,7 +609,6 @@ export default function FleetMap() {
               />
             </>
           )}
-          <Text style={styles.shipInfo}>Targeting:</Text>
           <Text style={styles.shipInfo}>Weapons:</Text>
           {selectedShip?.weaponType?.map((weapon, index) => (
             <TouchableOpacity key={index} onPress={() => console.log(weapon)}>
@@ -586,7 +646,6 @@ export default function FleetMap() {
           setShipPressed(null);
           setMovementDistanceCircle(null);
           setTargetedShip(null);
-          // ADD THESE LINES to reset color when all ships are deselected
           setCircleBorderColor("rgba(0,200,255,0.5)");
           setCircleBackgroundColor("rgba(0,200,255,0.1)");
         }}
@@ -600,8 +659,6 @@ export default function FleetMap() {
         {filteredShips.map((ship) => {
           const isUserShip = user.uid === ship.user;
           const isTargetedShip = ship.user !== user.uid;
-          const isPressed = ship.id === shipPressed;
-          const isTargeted = targetedShip?.id === ship.id;
 
           const fightersLaunched =
             ship.specialOrders?.["Launch Fighters"] === true;
@@ -610,19 +667,24 @@ export default function FleetMap() {
             onStartShouldSetPanResponder: () => true,
 
             onPanResponderGrant: () => {
-              setShipPressed(ship.id);
+              {
+                /*       setShipPressed(ship.id);
               setMovementDistanceCircle(null);
               setCircleBorderColor("transparent");
-              setCircleBackgroundColor("transparent");
+              setCircleBackgroundColor("transparent"); */
+              }
 
               if (isUserShip) {
-                ship.position.extractOffset(); // Store current position
-                setShipPressed(ship.id);
-
-                const { x, y } = ship.position.__getValue();
-                // Set the persisted circle data on grant
-                if (!shipPressed || ship.id !== shipPressed || updateMovement) {
+                ship.position.extractOffset();
+                if (shipPressed !== ship.id) {
+                  // Store current position
                   setShipPressed(ship.id);
+                  attackingShip(ship);
+                  setMovementDistanceCircle(null);
+                  setCircleBorderColor("transparent");
+                  setCircleBackgroundColor("transparent");
+
+                  const { x, y } = ship.position.__getValue();
                   setMovementDistanceCircle({
                     x,
                     y,
@@ -633,30 +695,34 @@ export default function FleetMap() {
                   });
                   setCircleBorderColor("rgba(0,200,255,0.5)");
                   setCircleBackgroundColor("rgba(0,200,255,0.1)");
-                }
+                  {
+                    /*    } */
+                  }
 
-                if (
-                  ship.type === "Carrier" &&
-                  ship.specialOrders?.["Launch Fighters"] === true &&
-                  user.uid === ship.user
-                ) {
-                  const radius =
-                    (ship.moveDistance + ship.moveDistanceBonus) * 9;
-                  const center = { x, y };
-                  //filter out carriers
-                  const shipsInRange = ships.filter(
-                    (s) =>
-                      s.id !== ship.id &&
-                      s.type !== "Carrier" &&
-                      s.gameRoom === gameRoom &&
-                      s.gameSector === gameSectors &&
-                      checkIfInFighterRange(s, radius, center)
-                  );
-                  setShipInFighterRange(shipsInRange);
-                  //setFighterRangeBonus(inFighterRangeBonus);
+                  if (
+                    ship.type === "Carrier" &&
+                    ship.specialOrders?.["Launch Fighters"] === true &&
+                    user.uid === ship.user
+                  ) {
+                    const radius =
+                      (ship.moveDistance + ship.moveDistanceBonus) * 9;
+                    const center = { x, y };
+                    //filter out carriers
+                    const shipsInRange = ships.filter(
+                      (s) =>
+                        s.id !== ship.id &&
+                        s.type !== "Carrier" &&
+                        s.gameRoom === gameRoom &&
+                        s.gameSector === gameSectors &&
+                        checkIfInFighterRange(s, radius, center)
+                    );
+                    setShipInFighterRange(shipsInRange);
+                    //setFighterRangeBonus(inFighterRangeBonus);
+                  }
                 }
-              } else if (isTargetedShip) {
+              } else if (isTargetedShip && shipPressed) {
                 targetingShip(ship);
+                //attackingShip(ship);
               }
             },
 
