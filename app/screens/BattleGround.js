@@ -70,16 +70,20 @@ export default function BattleGround(props) {
   const gameMapTargetedShipId = targetedShip?.userId || isUser?.id;
 
   const selectedShipDice = liveShip ? shipBattleDiceMapping[liveShip.type] : [];
-  console.log("From in BattleGround:", from);
+  /*  console.log("From in BattleGround:", from);
 
   console.log(
     "GameMap Attacking Ship:",
     gameMapAttackingShip.id,
     targetedShip.id
-  );
+  ); */
 
-  const settingHitState = async () => {
+  const handleD20Roll = async (value, id) => {
     if (!gameMapAttackingShip || !user) return;
+
+    const isHit = value >= singleUserShip.threatLevel;
+    setHit(isHit);
+
     try {
       const shipRef = doc(
         FIREBASE_DB,
@@ -88,32 +92,22 @@ export default function BattleGround(props) {
         "ships",
         gameMapAttackingShip.id
       );
+
       await updateDoc(shipRef, {
-        hit: hit,
+        hit: isHit,
+        hasRolledDToHit: true,
+        isToggled: true,
       });
-      console.log("Updated ship hit:", hit);
+
+      console.log("✅ Ship updated with D20 roll:", {
+        hit: isHit,
+        hasRolledDToHit: true,
+        isToggled: true,
+      });
+
       setDiceValueToShare(0);
     } catch (e) {
-      console.error("Error updating document: ", e);
-    }
-  };
-
-  const changedRolledDToHit = async () => {
-    if (!gameMapAttackingShip || !user) return;
-    try {
-      const shipRef = doc(
-        FIREBASE_DB,
-        "users",
-        gameMapAttackingShip.userId,
-        "ships",
-        gameMapAttackingShip.id
-      );
-      await updateDoc(shipRef, {
-        hasRolledDToHit: true,
-      });
-      console.log("Updated ship hasRolledDToHit:", true);
-    } catch (e) {
-      console.error("Error updating RDT in Firestore:", e);
+      console.error("❌ Error updating ship after D20 roll:", e);
     }
   };
 
@@ -162,7 +156,7 @@ export default function BattleGround(props) {
   useEffect(() => {
     return () => {
       // Reset hit state when leaving the screen
-      setHit(null);
+      setHit(false);
     };
   }, []);
 
@@ -230,7 +224,9 @@ export default function BattleGround(props) {
 
     const updateUserShipHP = async () => {
       const newHP = singleUserShip.hp - damageDone;
+      console.log("New HP in BattleGround:", newHP);
       const clampedHP = Math.max(0, newHP);
+      console.log("Clamped HP in BattleGround:", clampedHP);
 
       const userShipDocRef = doc(
         FIREBASE_DB,
@@ -246,7 +242,7 @@ export default function BattleGround(props) {
           hp: clampedHP,
         });
         setNewHP(clampedHP);
-        //console.log("Auto-applied damage:", damageDone);
+        console.log("Auto-applied damage:", damageDone);
       } catch (e) {
         console.error("Failed to apply damage:", e);
       }
@@ -452,7 +448,7 @@ export default function BattleGround(props) {
                   },
                 ]}
               >
-                Result: {hit === true ? "Hit" : hit === false ? "Miss" : ""}
+                Result: {hit ? "Hit" : "Miss"}
               </Text>
             </View>
             <View style={styles.hitOrMissTextContainer}>
@@ -488,24 +484,16 @@ export default function BattleGround(props) {
                   textStyle={dice.textStyle}
                   borderColor={dice.borderColor}
                   disabledButtonOnHit={isIonParticleBeam && ipbHasBeenFired}
-                  //disabledButton={ship.hasRolledDToHit === true}
+                  disabled={hit !== true && dice.id !== "D20"}
                   onPress={() => {
                     if (!(isIonParticleBeam && ipbHasBeenFired)) {
                       setWeaponHasAttacked(dice.id);
                       setWeaponId(dice.id);
                     }
                   }}
-                  //checking if the rolled value and greater or = to the enemies TH the setting that to hit so I can show hit/miss
                   onRoll={(value, id) => {
                     if (id === "D20" && singleUserShip?.threatLevel != null) {
-                      const isHit = value >= singleUserShip.threatLevel;
-                      console.log("Hit in BattleGround:", isHit);
-                      setHit(isHit);
-                      settingHitState(isHit);
-
-                      changedRolledDToHit();
-
-                      /* console.log("Hit in BattleGround:", isHit); */
+                      handleD20Roll(value, id);
                     }
                   }}
                 />
@@ -640,7 +628,7 @@ export default function BattleGround(props) {
               )}
             </View>
           </View>
-          <View style={{ flex: 1 }}>
+          {/*     <View style={{ flex: 1 }}>
             <TouchableOpacity
               style={[
                 styles.closeButton,
@@ -666,7 +654,7 @@ export default function BattleGround(props) {
                 Choose Your Opponent
               </Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
         <Modal visible={modal} animationType="slide">
           <View style={{ flex: 1, backgroundColor: Colors.dark_gray }}>

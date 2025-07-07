@@ -560,15 +560,16 @@ export default function FleetMap() {
         ships={data}
         user={user}
       />
-      <BattleModal
-        pendingBattle={pendingBattle}
-        showConfirmModal={showConfirmModal}
-        setShowConfirmModal={setShowConfirmModal}
-        navigateToBattleGround={navigateToBattleGround}
-        setShipPressed={setShipPressed}
-        setTargetedShip={setTargetedShip}
-      />
-
+      {selectedShip?.hasRolledDToHit === false && (
+        <BattleModal
+          pendingBattle={pendingBattle}
+          showConfirmModal={showConfirmModal}
+          setShowConfirmModal={setShowConfirmModal}
+          navigateToBattleGround={navigateToBattleGround}
+          setShipPressed={setShipPressed}
+          setTargetedShip={setTargetedShip}
+        />
+      )}
       <ZoomControls
         scale={scale}
         updatingRotation={updatingRotation}
@@ -730,7 +731,11 @@ export default function FleetMap() {
                     //setFighterRangeBonus(inFighterRangeBonus);
                   }
                 }
-              } else if (isTargetedShip && shipPressed) {
+              } else if (
+                isTargetedShip &&
+                shipPressed &&
+                !ships.find((s) => s.id === shipPressed?.hasRolledDToHit)
+              ) {
                 targetingShip(ship);
                 //attackingShip(ship);
               }
@@ -929,7 +934,7 @@ export default function FleetMap() {
                       width: ship.width / 2,
                       height: ship.height / 2,
                       tintColor:
-                        ship.isToggled || ship.hasRolledDToHit
+                        ship.isToggled && ship.hasRolledDToHit
                           ? Colors.gold
                           : null,
                     }}
@@ -941,14 +946,17 @@ export default function FleetMap() {
                       left: ship.width / 4,
                     }}
                   >
-                    {shipPressed && isUserShip && ship.id === shipPressed && (
-                      <>
-                        <ShipSwitch
-                          ship={ship}
-                          showFiringArcs={showFiringArcs}
-                        />
-                      </>
-                    )}
+                    {shipPressed &&
+                      isUserShip &&
+                      ship.id === shipPressed &&
+                      ship.hasRolledDToHit === false && (
+                        <>
+                          <ShipSwitch
+                            ship={ship}
+                            showFiringArcs={showFiringArcs}
+                          />
+                        </>
+                      )}
                   </View>
                 </Animated.View>
                 {removeAllIcons && (

@@ -44,7 +44,11 @@ export default function ZoomControls({
               style={[styles.zoomButton]}
               onPress={() => handleShipRotation(shipPressed, -45)}
               onLongPress={() => handleShipRotation(shipPressed, -90)}
-              disabled={updatingRotation || updatingMovement}
+              disabled={
+                updatingRotation ||
+                updatingMovement ||
+                selectedShip?.hasRolledDToHit === true
+              }
             >
               <Image
                 style={{ tintColor: Colors.hud, width: 30, height: 30 }}
@@ -55,7 +59,11 @@ export default function ZoomControls({
               style={[styles.zoomButton]}
               onPress={() => handleShipRotation(shipPressed, 45)}
               onLongPress={() => handleShipRotation(shipPressed, 90)}
-              disabled={updatingRotation || updatingMovement}
+              disabled={
+                updatingRotation ||
+                updatingMovement ||
+                selectedShip?.hasRolledDToHit === true
+              }
             >
               <Image
                 style={{ tintColor: Colors.hud, width: 30, height: 30 }}
@@ -75,18 +83,21 @@ export default function ZoomControls({
             <TouchableOpacity
               style={styles.controlButton}
               onPress={() => navigateToStats(shipPressed)}
+              disabled={selectedShip?.hasRolledDToHit === true}
             >
               <Text style={styles.buttonText}>Enter Ship</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.controlButton}
               onPress={() => setShowFiringArcs((prev) => !prev)}
+              disabled={selectedShip?.hasRolledDToHit === true}
             >
               <Text style={styles.buttonText}>Firing Arcs</Text>
             </TouchableOpacity>
             {shipType && (
               <TouchableOpacity
                 style={styles.controlButton}
+                disabled={selectedShip?.hasRolledDToHit === true}
                 onPress={
                   shipType
                     ? () => setShowAllFiringArcs((prev) => !prev)
@@ -99,16 +110,6 @@ export default function ZoomControls({
               </TouchableOpacity>
             )}
           </Animated.View>
-        )}
-        {shipPressed && !targetedShip && (
-          <TouchableOpacity
-            onPress={navigateToBattleGround}
-            style={styles.controlButton}
-          >
-            <Text style={[styles.buttonText, { fontSize: 8 }]}>
-              Enter Combat
-            </Text>
-          </TouchableOpacity>
         )}
       </View>
     </View>

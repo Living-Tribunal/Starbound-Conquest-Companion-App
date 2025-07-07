@@ -177,11 +177,7 @@ export default function BattleDice({
   };
 
   useEffect(() => {
-    if (hit !== null) {
-      setDisabledButtonOnHit(true);
-    } else {
-      setDisabledButtonOnHit(true);
-    }
+    setDisabledButtonOnHit(hit !== null);
   }, [hit]);
 
   useEffect(() => {

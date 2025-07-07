@@ -107,7 +107,10 @@ export default function ShipFlatList({ type }) {
               FactionImages[item.factionName]?.[item.type]?.classImage;
             return (
               <TouchableOpacity
-                //disabled={item.isToggled === true}
+                disabled={
+                  !toggleToDelete &&
+                  (item.isToggled === true || item.hasRolledDToHit === true)
+                }
                 onPress={() => {
                   if (toggleToDelete) {
                     deleteShip(item);

@@ -47,20 +47,15 @@ export default function ShipStats({ route }) {
     hitPoints,
     setHitPoints,
     setHitPointsColor,
-    setSingleUserShip,
-    setSingleUser,
     setHit,
-    setRolledD20,
-    setWeaponId,
-    setDamageDone,
-    diceValueToShare,
     setDiceValueToShare,
     firstDice,
     fromGameMap,
     setFromGameMap,
   } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
-  const fromPlayer = from === "Player";
+  const fromPlayer =
+    from === "Player" || from === "GameMap" || ship?.hasRolledDToHit === true;
   const shipSpecialOrders = ship ? ShipAttributes[ship.type] : null;
   const bonusNameChanged = {
     moveDistanceBonus: "Movement Bonus",
@@ -373,9 +368,9 @@ export default function ShipStats({ route }) {
             });
 
             // ✅ Now update local state after Firestore confirmed update
-            setHit(null);
+            setHit(false);
             setData((prevData) =>
-              prevData.map((s) => (s.id === ship.id ? { ...s, hit: null } : s))
+              prevData.map((s) => (s.id === ship.id ? { ...s, hit: false } : s))
             );
 
             Toast.show({
@@ -489,15 +484,15 @@ export default function ShipStats({ route }) {
             //you only need to update the weapon status if the roll was a success. not to let it shoot again
             await updateDoc(shipRef, {
               "weaponStatus.Ion Particle Beam": false,
-              //hit: null,
+              hit: false,
               //hasRolledDToHit: false,
             });
 
             // ✅ Now update local state after Firestore confirmed update
-            setHit(null);
+            setHit(false);
             setLocalDiceRoll(firstDice);
             setData((prevData) =>
-              prevData.map((s) => (s.id === ship.id ? { ...s, hit: null } : s))
+              prevData.map((s) => (s.id === ship.id ? { ...s, hit: false } : s))
             );
 
             Toast.show({
@@ -729,46 +724,6 @@ export default function ShipStats({ route }) {
               {ship.hasRolledDToHit === true ? "Ended turn" : "Ready to engage"}
             </Text>
           </View>
-          <TouchableOpacity
-            disabled={fromPlayer || ship.hasRolledDToHit === true}
-            style={[
-              styles.button,
-              {
-                backgroundColor:
-                  ship.hasRolledDToHit === true ? Colors.hudDarker : Colors.hud,
-                borderColor:
-                  ship.hasRolledDToHit === true ? Colors.hud : Colors.hud,
-                width: "95%",
-              },
-            ]}
-            onPress={() => {
-              navigation.navigate("BattleGround", {
-                ship: ship,
-                from: "ShipStats",
-              });
-              setSingleUser(null);
-              setSingleUserShip(null);
-              setHit(null);
-              setRolledD20(false);
-              setWeaponId(null);
-              setDamageDone(0);
-            }}
-          >
-            <Text
-              style={[
-                styles.headerText,
-                {
-                  fontSize: 20,
-                  color:
-                    ship.hasRolledDToHit === true
-                      ? Colors.hud
-                      : Colors.hudDarker,
-                },
-              ]}
-            >
-              BattleGround
-            </Text>
-          </TouchableOpacity>
         </View>
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>

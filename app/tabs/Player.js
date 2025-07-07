@@ -186,7 +186,7 @@ export default function Player() {
           hasBeenInteractedWith: false,
           gameRoom: gameRoom,
           factionColor: userFactionColor,
-          hit: null,
+          hit: false,
           hasRolledDToHit: false,
           round: 0,
           trackManeuver: 0,
@@ -445,7 +445,7 @@ export default function Player() {
             isToggled: false,
             specialOrders: newSpecialOrders,
             hasBeenInteractedWith: false,
-            hit: null,
+            hit: false,
             hasRolledDToHit: false,
             shipInterval: increment(1),
             distanceTraveled: 0,
@@ -497,7 +497,7 @@ export default function Player() {
               isToggled: false,
               specialOrders: {},
               hasBeenInteractedWith: false,
-              hit: null,
+              hit: false,
               hasRolledDToHit: false,
               shipInterval: increment(1),
               distanceTraveled: 0,
@@ -561,24 +561,23 @@ export default function Player() {
     };
   }, [gameRoom]);
 
-  useEffect(() => {
-    if (!getAllUsersShipToggled || getAllUsersShipToggled.length === 0) return;
-
-    const toggledCount = getAllUsersShipToggled.filter(
-      (s) => s.isToggled
-    ).length;
-
-    setGetAllUsersShipTotals(toggledCount);
-
-    if (
+  const handleEndRoundPress = () => {
+    const allToggled =
       getAllUsersShipToggled.length > 0 &&
-      toggledCount === getAllUsersShipToggled.length
-    ) {
-      //console.log("✅ All ships toggled — triggering end of round");
+      getAllUsersShipToggled.every((s) => s.isToggled);
+
+    if (allToggled) {
       endYourTurn();
       send_message_discord_end_of_round();
+    } else {
+      Toast.show({
+        type: "info",
+        text1: "Not all ships are toggled",
+        text2: "You can only end the round when all ships are ready",
+        position: "top",
+      });
     }
-  }, [getAllUsersShipToggled]);
+  };
 
   useEffect(() => {
     if (!gameRoom) return;
@@ -917,26 +916,22 @@ export default function Player() {
                     }}
                   >
                     <TouchableOpacity
-                      disabled={toggleToDelete || !allToggled}
-                      onLongPress={endYourTurn}
-                      onPress={endYourTurnPressed}
+                      disabled={!allToggled}
+                      onPress={handleEndRoundPress}
                       style={[
                         styles.editContainer,
                         {
                           borderWidth: 1,
-                          width: "35%",
-                          shadowColor:
-                            toggleToDelete || !allToggled
-                              ? Colors.lighter_red
-                              : Colors.hud,
-                          borderColor:
-                            toggleToDelete || !allToggled
-                              ? Colors.lighter_red
-                              : Colors.hud,
-                          backgroundColor:
-                            toggleToDelete || !allToggled
-                              ? Colors.deep_red
-                              : Colors.hudDarker,
+                          width: "45%",
+                          shadowColor: !allToggled
+                            ? Colors.lighter_red
+                            : Colors.hud,
+                          borderColor: !allToggled
+                            ? Colors.lighter_red
+                            : Colors.hud,
+                          backgroundColor: !allToggled
+                            ? Colors.deep_red
+                            : Colors.hudDarker,
                           opacity: !allToggled ? 0.5 : 1,
                         },
                       ]}
@@ -945,17 +940,17 @@ export default function Player() {
                         style={[
                           styles.textValue,
                           {
-                            color:
-                              toggleToDelete || !allToggled
-                                ? Colors.lighter_red
-                                : Colors.lighter_red,
+                            color: !allToggled
+                              ? Colors.lighter_red
+                              : Colors.lighter_red,
                             fontSize: 12,
                           },
                         ]}
                       >
-                        End your turn
+                        End Round
                       </Text>
                     </TouchableOpacity>
+
                     {/*  <PushNotifications /> */}
 
                     {/* <TouchableOpacity
@@ -969,7 +964,7 @@ export default function Player() {
                         styles.editContainer,
                         {
                           borderWidth: 1,
-                          width: "35%",
+                          width: "45%",
                           borderColor: toggleToDelete
                             ? Colors.lighter_red
                             : Colors.green_toggle,
