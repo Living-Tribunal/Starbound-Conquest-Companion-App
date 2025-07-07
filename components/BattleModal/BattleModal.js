@@ -63,9 +63,11 @@ export default function BattleModal({
                   pendingBattle.attackingShip,
                   pendingBattle.targetedShip
                 );
-                setShowConfirmModal(false);
-                setShipPressed(null);
-                setTargetedShip(null);
+
+                setTimeout(() => {
+                  setShipPressed(null);
+                  setTargetedShip(null);
+                }, 500);
               }}
               style={styles.zoomButton}
             >

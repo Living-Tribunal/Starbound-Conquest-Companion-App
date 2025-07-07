@@ -70,6 +70,13 @@ export default function BattleGround(props) {
   const gameMapTargetedShipId = targetedShip?.userId || isUser?.id;
 
   const selectedShipDice = liveShip ? shipBattleDiceMapping[liveShip.type] : [];
+  console.log("From in BattleGround:", from);
+
+  console.log(
+    "GameMap Attacking Ship:",
+    gameMapAttackingShip.id,
+    targetedShip.id
+  );
 
   const settingHitState = async () => {
     if (!gameMapAttackingShip || !user) return;
@@ -369,7 +376,7 @@ export default function BattleGround(props) {
       <HeaderComponent
         text="BattleGround"
         NavToWhere={{
-          name: fromGameMap ? "Stats" : "GameMap",
+          name: fromGameMap ? "GameMap" : "Stats",
           params: { shipId: gameMapAttackingShip?.id || null },
         }}
         onPress={() => {

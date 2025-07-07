@@ -240,11 +240,11 @@ export default function FleetMap() {
     //console.log("Attacking ship in navigateToBattleGround:", attackingShip);
     //console.log("Targeted ship in navigateToBattleGround:", targetedShip);
 
-    console.log(
+    /*   console.log(
       "Navigating to BattleGround with shipId:",
       attackingShip.id,
       targetedShip.id
-    );
+    ); */
 
     const alreadyExists = shipsEnteringBattle.some(
       (entry) =>
@@ -259,6 +259,11 @@ export default function FleetMap() {
       { attackingShip, targetedShip },
     ]);
 
+    setShipPressed(null);
+    setTargetedShip(null);
+    setShowConfirmModal(false);
+    setPendingBattle(null);
+
     // Uncomment to navigate immediately:
     navigation.navigate("BattleGround", {
       attackingShip: removeNonSerializableProperties(attackingShip),
@@ -266,10 +271,6 @@ export default function FleetMap() {
       from: "GameMap",
     });
   };
-
-  /*   useEffect(() => {
-    console.log("Ships entering battle:", shipsEnteringBattle);
-  }, [shipsEnteringBattle]); */
 
   const updatingPosition = async (shipId, x, y, rotation, distanceTraveled) => {
     if (!ships || !user) return;
@@ -412,12 +413,16 @@ export default function FleetMap() {
 
   useFocusEffect(
     useCallback(() => {
+      setShipsEnteringBattle([]);
+      setShipPressed(null);
+      setTargetedShip(null);
+      setPendingBattle(null);
+      setShowConfirmModal(false);
+
       if (!user || !gameRoom || !gameSectors) return;
       setShips([]); // Clear animated ships
       setData([]);
       setLoading(true);
-      //setTargetedShip(null);
-      setShipPressed(null);
 
       const fetchUserShips = async () => {
         try {
@@ -480,12 +485,11 @@ export default function FleetMap() {
   useEffect(() => {
     if (shipPressed && targetedShip) {
       const attackerShip = ships.find((s) => s.id === shipPressed);
+      console.log("Attacker Ship in UseEffect:", attackerShip.id);
+      console.log("Targeted Ship in UseEffect:", targetedShip.id);
       if (!attackerShip && attackingShip.id === targetedShip.id) return;
       setPendingBattle({ attackingShip: attackerShip, targetedShip });
       setShowConfirmModal(true);
-
-      setShipPressed(null);
-      setTargetedShip(null);
     }
   }, [shipPressed, targetedShip]);
 
