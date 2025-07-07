@@ -19,6 +19,7 @@ export default function ZoomControls({
   setShowAllFiringArcs,
   updatingMovement,
   targetedShip,
+  updatingMovement,
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
