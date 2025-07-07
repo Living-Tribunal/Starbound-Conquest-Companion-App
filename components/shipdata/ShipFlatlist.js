@@ -218,16 +218,6 @@ export default function ShipFlatList({ type }) {
                               uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
                             }}
                           />
-                          <Text
-                            style={{
-                              fontFamily: "monospace",
-                              fontSize: 8,
-                              textAlign: "center",
-                              color: Colors.hud,
-                            }}
-                          >
-                            {item.capacity}/{item.maxCapacity}
-                          </Text>
                         </View>
                       ) : (
                         <View style={{ flexDirection: "column" }}>
@@ -244,16 +234,6 @@ export default function ShipFlatList({ type }) {
                               uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
                             }}
                           />
-                          <Text
-                            style={{
-                              fontFamily: "monospace",
-                              fontSize: 8,
-                              textAlign: "center",
-                              color: Colors.hud,
-                            }}
-                          >
-                            {item.capacity}/{item.maxCapacity}
-                          </Text>
                         </View>
                       )
                     ) : null}

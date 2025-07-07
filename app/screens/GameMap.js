@@ -229,15 +229,21 @@ export default function FleetMap() {
     navigation.navigate("Stats", { shipId, from: "GameMap" });
   };
 
-  const navigateToBattleGround = () => {
-    const attackingShip = ships.find((s) => s.id === shipPressed);
+  const removeNonSerializableProperties = (ship) => {
+    const { position, rotation, ...safeShip } = ship;
+    return safeShip;
+  };
 
+  const navigateToBattleGround = (attackingShip, targetedShip) => {
     if (!attackingShip || !targetedShip) return;
+
+    //console.log("Attacking ship in navigateToBattleGround:", attackingShip);
+    //console.log("Targeted ship in navigateToBattleGround:", targetedShip);
 
     console.log(
       "Navigating to BattleGround with shipId:",
-      attackingShip,
-      targetedShip
+      attackingShip.id,
+      targetedShip.id
     );
 
     const alreadyExists = shipsEnteringBattle.some(
@@ -254,11 +260,11 @@ export default function FleetMap() {
     ]);
 
     // Uncomment to navigate immediately:
-    /*  navigation.navigate("BattleGround", {
-      attackingShip,
-      targetedShip,
+    navigation.navigate("BattleGround", {
+      attackingShip: removeNonSerializableProperties(attackingShip),
+      targetedShip: removeNonSerializableProperties(targetedShip),
       from: "GameMap",
-    }); */
+    });
   };
 
   /*   useEffect(() => {
@@ -641,7 +647,7 @@ export default function FleetMap() {
         maxZoom={2}
         minZoom={0.2}
         initialZoom={0.5}
-        longPressDuration={10}
+        longPressDuration={5}
         onLongPress={() => {
           setShipPressed(null);
           setMovementDistanceCircle(null);
@@ -730,6 +736,7 @@ export default function FleetMap() {
 
             onPanResponderMove: (e, gestureState) => {
               if (!isUserShip) return;
+              if (ship.hasRolledDToHit === true) return;
               const scaleFactor = zoomRef.current?.zoomLevel ?? 1;
 
               // The ship whose pan responder is currently active.
@@ -917,6 +924,10 @@ export default function FleetMap() {
                     style={{
                       width: ship.width / 2,
                       height: ship.height / 2,
+                      tintColor:
+                        ship.isToggled || ship.hasRolledDToHit
+                          ? Colors.gold
+                          : null,
                     }}
                     resizeMode="center"
                   />
@@ -953,7 +964,7 @@ export default function FleetMap() {
                             targetedShip?.id === ship.id
                               ? Colors.green_toggle
                               : targetedShip?.id === ship.id
-                              ? Colors.lighter_red
+                              ? Colors.green_toggle
                               : ship.id === shipPressed
                               ? Colors.gold
                               : Colors.hud,
@@ -962,7 +973,7 @@ export default function FleetMap() {
                             targetedShip?.id === ship.id
                               ? Colors.darker_green_toggle
                               : targetedShip?.id === ship.id
-                              ? Colors.deep_red
+                              ? Colors.darker_green_toggle
                               : ship.id === shipPressed
                               ? Colors.goldenrod
                               : Colors.hudDarker,
@@ -971,7 +982,7 @@ export default function FleetMap() {
                             targetedShip?.id === ship.id
                               ? Colors.green_toggle
                               : targetedShip?.id === ship.id
-                              ? Colors.lighter_red
+                              ? Colors.green_toggle
                               : ship.id === shipPressed
                               ? Colors.gold
                               : Colors.hud,

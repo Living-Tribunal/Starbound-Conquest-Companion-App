@@ -60,6 +60,7 @@ export default function ShipStats({ route }) {
     setFromGameMap,
   } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
+  const fromPlayer = from === "Player";
   const shipSpecialOrders = ship ? ShipAttributes[ship.type] : null;
   const bonusNameChanged = {
     moveDistanceBonus: "Movement Bonus",
@@ -729,7 +730,7 @@ export default function ShipStats({ route }) {
             </Text>
           </View>
           <TouchableOpacity
-            disabled={ship.hasRolledDToHit === true}
+            disabled={fromPlayer || ship.hasRolledDToHit === true}
             style={[
               styles.button,
               {

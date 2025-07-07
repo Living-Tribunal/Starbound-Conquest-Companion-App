@@ -9,7 +9,10 @@ export default function BattleModal({
   navigateToBattleGround,
   setShipPressed,
   setTargetedShip,
+  setPendingBattle,
 }) {
+  const [confirming, setConfirming] = useState(false);
+
   return (
     <Modal
       animationType="fade"
@@ -20,34 +23,46 @@ export default function BattleModal({
       <View style={styles.modalBackground}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Confirm Battle</Text>
-          <Text>Attacker: {pendingBattle?.attackingShip.displayName}</Text>
-          <Text>
+          <Text style={styles.modalText}>
+            Attacker: {pendingBattle?.attackingShip.displayName}
+          </Text>
+          <Text style={styles.modalTextInfo}>
             {" "}
-            Ship: {pendingBattle?.attackingShip.shipId}{" "}
+            Ship: {pendingBattle?.attackingShip.shipId}
+            {" - "}
             {pendingBattle?.attackingShip.type}
           </Text>
-          <Text>Target: {pendingBattle?.targetedShip.displayName}</Text>
-          <Text>
+          <Text style={styles.modalText}>
+            Target: {pendingBattle?.targetedShip.displayName}
+          </Text>
+          <Text style={styles.modalTextInfo}>
             {" "}
-            Ship: {pendingBattle?.targetedShip.shipId}{" "}
+            Ship: {pendingBattle?.targetedShip.shipId} {" - "}
             {pendingBattle?.targetedShip.type}
           </Text>
 
-          <View style={{ flexDirection: "row", marginTop: 20 }}>
+          <View style={{ flexDirection: "row", marginTop: 20, gap: 10 }}>
             <TouchableOpacity
               onPress={() => {
                 setShowConfirmModal(false);
                 setShipPressed(null);
                 setTargetedShip(null);
               }}
-              style={styles.zoomButton}
+              style={[styles.zoomButton, { backgroundColor: Colors.hudDarker }]}
             >
-              <Text style={styles.buttonText}>Cancel</Text>
+              <Text style={[styles.buttonText, { color: Colors.hud }]}>
+                Cancel
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => {
-                navigateToBattleGround(pendingBattle.attackingShip.id);
+                if (confirming) return;
+                setConfirming(true);
+                navigateToBattleGround(
+                  pendingBattle.attackingShip,
+                  pendingBattle.targetedShip
+                );
                 setShowConfirmModal(false);
                 setShipPressed(null);
                 setTargetedShip(null);
@@ -72,9 +87,11 @@ const styles = StyleSheet.create({
   modalContent: {
     width: 300,
     padding: 20,
-    backgroundColor: Colors.hudDarker,
+    backgroundColor: Colors.dark_gray,
     borderRadius: 10,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: Colors.hud,
   },
   modalTitle: {
     fontSize: 18,
@@ -82,8 +99,8 @@ const styles = StyleSheet.create({
     color: Colors.gold,
   },
   zoomButton: {
-    backgroundColor: Colors.hudDarker,
-    width: 40,
+    backgroundColor: Colors.hud,
+    width: 100,
     height: 40,
     borderRadius: 8,
     borderWidth: 1,
@@ -92,9 +109,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: Colors.hud,
+    color: Colors.hudDarker,
     fontFamily: "LeagueSpartan-ExtraBold",
     textAlign: "center",
     fontSize: 12,
+  },
+  modalText: {
+    color: Colors.hud,
+    fontFamily: "LeagueSpartan-ExtraBold",
+    textAlign: "center",
+    fontSize: 18,
+  },
+  modalTextInfo: {
+    color: Colors.hud,
+    fontFamily: "LeagueSpartan-Light",
+    textAlign: "center",
+    fontSize: 12,
+    backgroundColor: Colors.hudDarker,
+    padding: 5,
+    borderRadius: 5,
+    marginTop: 5,
   },
 });

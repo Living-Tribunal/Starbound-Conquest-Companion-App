@@ -63,16 +63,24 @@ export default function BattleGround(props) {
   const [liveShip, setLiveShip] = useState(null);
   const user = FIREBASE_AUTH.currentUser;
 
-  const selectedShipDice = liveShip ? shipBattleDiceMapping[ship.type] : [];
-  //console.log("From in BattleGround:", from);
-  //console.log("from State in BattleGround:", fromGameMap);
-  //console.log("Game Sector in BattleGround:", gameSectors);
-  // console.log("Data coming from Game Map:", targetedShip, attackingShip);
+  const fromGameMap = from === "GameMap";
+  const disableChoose = !!(attackingShip && targetedShip);
+  const gameMapAttackingShip = attackingShip || ship;
+  const gameMapTargetedShip = targetedShip || singleUserShip;
+  const gameMapTargetedShipId = targetedShip?.userId || isUser?.id;
+
+  const selectedShipDice = liveShip ? shipBattleDiceMapping[liveShip.type] : [];
 
   const settingHitState = async () => {
-    if (!ship || !user) return;
+    if (!gameMapAttackingShip || !user) return;
     try {
-      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+      const shipRef = doc(
+        FIREBASE_DB,
+        "users",
+        gameMapAttackingShip.userId,
+        "ships",
+        gameMapAttackingShip.id
+      );
       await updateDoc(shipRef, {
         hit: hit,
       });
@@ -84,9 +92,15 @@ export default function BattleGround(props) {
   };
 
   const changedRolledDToHit = async () => {
-    if (!ship || !user) return;
+    if (!gameMapAttackingShip || !user) return;
     try {
-      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+      const shipRef = doc(
+        FIREBASE_DB,
+        "users",
+        gameMapAttackingShip.userId,
+        "ships",
+        gameMapAttackingShip.id
+      );
       await updateDoc(shipRef, {
         hasRolledDToHit: true,
       });
@@ -97,10 +111,16 @@ export default function BattleGround(props) {
   };
 
   const setWeaponHasAttacked = async (weaponId) => {
-    if (!ship || !user) return;
+    if (!gameMapAttackingShip || !user) return;
 
     try {
-      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+      const shipRef = doc(
+        FIREBASE_DB,
+        "users",
+        gameMapAttackingShip.userId,
+        "ships",
+        gameMapAttackingShip.id
+      );
 
       const shipSnap = await getDoc(shipRef);
       const latestShipData = shipSnap.exists() ? shipSnap.data() : null;
@@ -120,7 +140,9 @@ export default function BattleGround(props) {
       // Update local state
       setData((prevData) =>
         prevData.map((s) =>
-          s.id === ship.id ? { ...s, weaponStatus: updatedWeaponStatus } : s
+          s.id === gameMapAttackingShip.id
+            ? { ...s, weaponStatus: updatedWeaponStatus }
+            : s
         )
       );
     } catch (e) {
@@ -145,9 +167,15 @@ export default function BattleGround(props) {
   }, [weaponId]);
 
   useEffect(() => {
-    if (!ship || !user) return;
+    if (!gameMapAttackingShip || !user) return;
 
-    const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+    const shipRef = doc(
+      FIREBASE_DB,
+      "users",
+      gameMapAttackingShip.userId,
+      "ships",
+      gameMapAttackingShip.id
+    );
     const unsubscribe = onSnapshot(shipRef, (docSnap) => {
       if (docSnap.exists()) {
         setLiveShip({ id: docSnap.id, ...docSnap.data() });
@@ -155,7 +183,7 @@ export default function BattleGround(props) {
     });
 
     return () => unsubscribe();
-  }, [ship?.id, user?.uid]);
+  }, [gameMapAttackingShip?.id, user?.uid]);
 
   //function to get all users EXCEPT current user from firestore
   const getAllUsers = async () => {
@@ -170,8 +198,8 @@ export default function BattleGround(props) {
       const myQuery = query(
         usersCollection,
         where("email", "!=", currentUserEmail),
-        where("gameRoom", "==", gameRoom),
-        where("gameSector", "==", gameSectors)
+        where("gameRoom", "==", gameRoom)
+        //where("gameSector", "==", gameSectors)
       );
       const querySnapshot = await getDocs(myQuery);
       const users = querySnapshot.docs.map((doc) => ({
@@ -200,9 +228,9 @@ export default function BattleGround(props) {
       const userShipDocRef = doc(
         FIREBASE_DB,
         "users",
-        isUser.id,
+        gameMapTargetedShipId,
         "ships",
-        singleUserShip.id
+        gameMapTargetedShip.id
       );
 
       try {
@@ -228,9 +256,9 @@ export default function BattleGround(props) {
     const userShipDocRef = doc(
       FIREBASE_DB,
       "users",
-      isUser.id,
+      gameMapTargetedShipId,
       "ships",
-      singleUserShip.id
+      gameMapTargetedShip.id
     );
     const unsubscribe = onSnapshot(userShipDocRef, (doc) => {
       if (doc.exists) {
@@ -265,7 +293,7 @@ export default function BattleGround(props) {
         const shipCollection = collection(
           FIREBASE_DB,
           "users",
-          user.id,
+          gameMapTargetedShipId,
           "ships"
         );
 
@@ -304,6 +332,15 @@ export default function BattleGround(props) {
     setNewHP(clampedHP);
   }, [singleUserShip, damageDone]);
 
+  useEffect(() => {
+    if (attackingShip && targetedShip) {
+      setLiveShip(attackingShip);
+      setSingleUserShip(targetedShip);
+      setIsUser({ id: targetedShip.userId });
+      setSingleUser({ displayName: targetedShip.username || "unknown user" });
+    }
+  }, [attackingShip?.id, targetedShip?.id]);
+
   if (!liveShip) return <Text>Loading...</Text>;
 
   //simple success message to show when a ship is selected in the battleGround
@@ -331,7 +368,10 @@ export default function BattleGround(props) {
     <SafeAreaView style={styles.mainContainer}>
       <HeaderComponent
         text="BattleGround"
-        NavToWhere={{ name: "Stats", params: { shipId: ship.id } }}
+        NavToWhere={{
+          name: fromGameMap ? "Stats" : "GameMap",
+          params: { shipId: gameMapAttackingShip?.id || null },
+        }}
         onPress={() => {
           setDiceValueToShare(0);
         }}
@@ -352,12 +392,12 @@ export default function BattleGround(props) {
               {user.displayName}'s Ship
             </Text>
             <Text style={styles.text}>
-              {ship.type} - {ship.shipId}
+              {gameMapAttackingShip?.type} - {gameMapAttackingShip?.shipId}
             </Text>
           </View>
           <View style={{ justifyContent: "center", alignItems: "center" }}>
             <Image
-              source={{ uri: ship.image }}
+              source={{ uri: gameMapAttackingShip?.image }}
               style={{ width: 150, height: 150, resizeMode: "contain" }}
             />
           </View>
@@ -477,7 +517,7 @@ export default function BattleGround(props) {
             <Text style={styles.text}>
               {!singleUser
                 ? `Your opponents ship`
-                : `${singleUser}'s ${singleUserShip?.type} - ${singleUserShip?.shipId}.`}
+                : `${singleUser?.displayName}'s ${singleUserShip?.type} - ${singleUserShip?.shipId}.`}
             </Text>
 
             <View style={styles.opponentContainer}>
@@ -602,7 +642,7 @@ export default function BattleGround(props) {
                   borderColor: hit !== null ? Colors.hud : Colors.hudDarker,
                 },
               ]}
-              disabled={hit !== null}
+              disabled={disableChoose || hit !== null}
               onPress={() => {
                 setModal(true);
                 setExpandUserShipList({});
@@ -676,7 +716,7 @@ export default function BattleGround(props) {
                                     const shipDocRef = doc(
                                       FIREBASE_DB,
                                       "users",
-                                      item.id,
+                                      ship.userId,
                                       "ships",
                                       ship.id
                                     );
@@ -697,7 +737,7 @@ export default function BattleGround(props) {
                                     const shipDocRef = doc(
                                       FIREBASE_DB,
                                       "users",
-                                      item.id,
+                                      ship.userId,
                                       "ships",
                                       ship.id
                                     );
@@ -735,7 +775,7 @@ export default function BattleGround(props) {
                               >
                                 {ship.image && (
                                   <Image
-                                    source={{ uri: ship.image }}
+                                    source={{ uri: ship?.image }}
                                     style={{
                                       width: 40,
                                       height: 40,
