@@ -7,6 +7,7 @@ import {
   Animated,
   SafeAreaView,
   Text,
+  TouchableOpacity,
 } from "react-native";
 import { getAllShipsInGameRoom } from "@/components/API/APIGameRoom";
 import { useStarBoundContext } from "@/components/Global/StarBoundProvider";
@@ -33,6 +34,7 @@ import { useMapImageContext } from "@/components/Global/MapImageContext";
 import BackIconArcs from "@/components/GameMapButtons/BackIconArcs";
 import { FONTS } from "@/constants/fonts";
 import { WeaponColors as weaponColors } from "@/constants/WeaponColors";
+import Toast from "react-native-toast-message";
 
 export default function FleetMap() {
   const navigation = useNavigation();
@@ -48,6 +50,7 @@ export default function FleetMap() {
   const [movementDistanceCircle, setMovementDistanceCircle] = useState(null);
   const [fighterRangeLength, setFighterRangeLength] = useState(0);
   const [shipInFighterRange, setShipInFighterRange] = useState(false);
+  const [targetedShip, setTargetedShip] = useState(null);
   const MAX_PROTECTED = 4;
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);
@@ -366,6 +369,8 @@ export default function FleetMap() {
       setShips([]); // Clear animated ships
       setData([]);
       setLoading(true);
+      setTargetedShip(null);
+      setShipPressed(null);
 
       const fetchUserShips = async () => {
         try {
@@ -415,6 +420,16 @@ export default function FleetMap() {
     });
     return () => scale.removeListener(listener);
   }, []);
+
+  const targetingShip = (ship) => {
+    setTargetedShip(ship);
+    Toast.show({
+      type: "success",
+      text1: "Starbound Conquest",
+      text2: `Ship Targeted: ${ship.shipId} - ${ship.type}`,
+      position: "top",
+    });
+  };
 
   useEffect(() => {
     if (!Array.isArray(data)) return;
@@ -487,6 +502,7 @@ export default function FleetMap() {
       <ZoomControls
         scale={scale}
         updatingRotation={updatingRotation}
+        updatingPosition={updatingPosition}
         shipPressed={shipPressed}
         handleShipRotation={handleShipRotation}
         setShowFiringArcs={setShowFiringArcs}
@@ -495,8 +511,9 @@ export default function FleetMap() {
         navigateToStats={navigateToStats}
         setShowAllFiringArcs={setShowAllFiringArcs}
         ships={ships}
+        targetedShip={targetedShip}
       />
-      {selectedShip && (
+      {selectedShip && !targetedShip && (
         <Animated.View
           style={[
             styles.shipInfoContainer,
@@ -531,27 +548,30 @@ export default function FleetMap() {
               />
             </>
           )}
+          <Text style={styles.shipInfo}>Targeting:</Text>
           <Text style={styles.shipInfo}>Weapons:</Text>
           {selectedShip?.weaponType?.map((weapon, index) => (
-            <Text
-              key={index}
-              style={[
-                styles.shipInfo,
-                {
-                  borderRadius: 5,
-                  padding: 2,
-                  margin: 2,
-                  fontFamilt: FONTS.leagueBold,
-                  fontWeight: "bold",
-                  fontSize: 9,
-                  textAlign: "center",
-                  color: Colors.dark_gray,
-                  backgroundColor: weaponColors[weapon] || Colors.hud,
-                },
-              ]}
-            >
-              {weapon}
-            </Text>
+            <TouchableOpacity key={index} onPress={() => console.log(weapon)}>
+              <Text
+                key={index}
+                style={[
+                  styles.shipInfo,
+                  {
+                    borderRadius: 5,
+                    padding: 2,
+                    margin: 2,
+                    fontFamilt: FONTS.leagueBold,
+                    fontWeight: "bold",
+                    fontSize: 9,
+                    textAlign: "center",
+                    color: Colors.dark_gray,
+                    backgroundColor: weaponColors[weapon] || Colors.hud,
+                  },
+                ]}
+              >
+                {weapon}
+              </Text>
+            </TouchableOpacity>
           ))}
         </Animated.View>
       )}
@@ -559,12 +579,13 @@ export default function FleetMap() {
       <ReactNativeZoomableView
         ref={zoomRef}
         maxZoom={2}
-        minZoom={0.1}
+        minZoom={0.2}
         initialZoom={0.5}
         longPressDuration={10}
         onLongPress={() => {
           setShipPressed(null);
           setMovementDistanceCircle(null);
+          setTargetedShip(null);
           // ADD THESE LINES to reset color when all ships are deselected
           setCircleBorderColor("rgba(0,200,255,0.5)");
           setCircleBackgroundColor("rgba(0,200,255,0.1)");
@@ -578,160 +599,168 @@ export default function FleetMap() {
         <TileBackground panX={panX} panY={panY} />
         {filteredShips.map((ship) => {
           const isUserShip = user.uid === ship.user;
+          const isTargetedShip = ship.user !== user.uid;
+          const isPressed = ship.id === shipPressed;
+          const isTargeted = targetedShip?.id === ship.id;
 
           const fightersLaunched =
             ship.specialOrders?.["Launch Fighters"] === true;
 
-          const panResponder = isUserShip
-            ? PanResponder.create({
-                onStartShouldSetPanResponder: () => true,
+          const panResponder = PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
 
-                onPanResponderGrant: () => {
-                  ship.position.extractOffset(); // Store current position
+            onPanResponderGrant: () => {
+              setShipPressed(ship.id);
+              setMovementDistanceCircle(null);
+              setCircleBorderColor("transparent");
+              setCircleBackgroundColor("transparent");
+
+              if (isUserShip) {
+                ship.position.extractOffset(); // Store current position
+                setShipPressed(ship.id);
+
+                const { x, y } = ship.position.__getValue();
+                // Set the persisted circle data on grant
+                if (!shipPressed || ship.id !== shipPressed || updateMovement) {
                   setShipPressed(ship.id);
-
-                  const { x, y } = ship.position.__getValue();
-                  // Set the persisted circle data on grant
-                  if (
-                    !shipPressed ||
-                    ship.id !== shipPressed ||
-                    updateMovement
-                  ) {
-                    setShipPressed(ship.id);
-                    setMovementDistanceCircle({
-                      x,
-                      y,
-                      moveDistance:
-                        ship.moveDistance +
-                        ship.bonuses.moveDistanceBonus +
-                        ship.bonuses.broadSideBonus,
-                    });
-                    setCircleBorderColor("rgba(0,200,255,0.5)");
-                    setCircleBackgroundColor("rgba(0,200,255,0.1)");
-                  }
-
-                  if (
-                    ship.type === "Carrier" &&
-                    ship.specialOrders?.["Launch Fighters"] === true &&
-                    user.uid === ship.user
-                  ) {
-                    const radius =
-                      (ship.moveDistance + ship.moveDistanceBonus) * 9;
-                    const center = { x, y };
-                    //filter out carriers
-                    const shipsInRange = ships.filter(
-                      (s) =>
-                        s.id !== ship.id &&
-                        s.type !== "Carrier" &&
-                        s.gameRoom === gameRoom &&
-                        s.gameSector === gameSectors &&
-                        checkIfInFighterRange(s, radius, center)
-                    );
-                    setShipInFighterRange(shipsInRange);
-                    //setFighterRangeBonus(inFighterRangeBonus);
-                  }
-                },
-
-                // Inside your PanResponder.create's onPanResponderMove function:
-
-                onPanResponderMove: (e, gestureState) => {
-                  const scaleFactor = zoomRef.current?.zoomLevel ?? 1;
-
-                  // The ship whose pan responder is currently active.
-                  const currentPanShipId = ship.id;
-
-                  // Only apply constraints and color logic if this is the currently selected ship
-                  // AND if there's an active movement circle to constrain to.
-                  if (
-                    shipPressed === currentPanShipId &&
-                    movementDistanceCircle &&
-                    !tempDisableMovementRestriction
-                  ) {
-                    const circleX = movementDistanceCircle.x;
-                    const circleY = movementDistanceCircle.y;
-                    // The radius is half of the width/height you set for the circle (moveDistance * 12 / 2)
-                    const radius = movementDistanceCircle.moveDistance * 6;
-
-                    // Calculate the potential absolute new position of the ship if allowed to move freely.
-                    // ship.position.x._offset holds the ship's last committed absolute position.
-                    // gestureState.dx/dy are the *total* accumulated movement from the start of the drag.
-                    const potentialShipAbsoluteX =
-                      ship.position.x._offset + gestureState.dx / scaleFactor;
-                    const potentialShipAbsoluteY =
-                      ship.position.y._offset + gestureState.dy / scaleFactor;
-
-                    // Calculate distance from the circle's center to the potential new ship position
-                    const deltaX = potentialShipAbsoluteX - circleX;
-                    const deltaY = potentialShipAbsoluteY - circleY;
-                    const distanceToCenter = Math.sqrt(
-                      deltaX * deltaX + deltaY * deltaY
-                    );
-
-                    let finalShipAbsoluteX = potentialShipAbsoluteX;
-                    let finalShipAbsoluteY = potentialShipAbsoluteY;
-
-                    if (distanceToCenter > radius) {
-                      // The ship is trying to go outside the circle.
-                      // Constrain its position to the perimeter of the circle.
-
-                      // Calculate the angle from the circle's center to the potential point
-                      const angle = Math.atan2(deltaY, deltaX);
-
-                      // Set the final position to be exactly on the circle's edge
-                      finalShipAbsoluteX = circleX + radius * Math.cos(angle);
-                      finalShipAbsoluteY = circleY + radius * Math.sin(angle);
-                    }
-
-                    // Convert the constrained absolute position back to relative dx, dy for Animated.setValue
-                    // Animated.setValue expects the change relative to its last offset.
-                    const constrainedDx =
-                      finalShipAbsoluteX - ship.position.x._offset;
-                    const constrainedDy =
-                      finalShipAbsoluteY - ship.position.y._offset;
-
-                    // Update the ship's animated position
-                    ship.position.setValue({
-                      x: constrainedDx,
-                      y: constrainedDy,
-                    });
-                  } else {
-                    // If this ship is not the currently selected one, or there's no circle to constrain,
-                    // allow normal movement. (Note: pointerEvents="none" for non-user ships might already prevent this)
-                    ship.position.setValue({
-                      x: gestureState.dx / scaleFactor,
-                      y: gestureState.dy / scaleFactor,
-                    });
-                  }
-                },
-                // In onPanResponderRelease, after ship.position.flattenOffset() and updatingPosition:
-                onPanResponderRelease: async () => {
-                  // Flatten the position to commit the current offset
-                  ship.position.flattenOffset();
-                  // Get the current position of the ship
-                  const { x, y } = ship.position.__getValue();
-                  const rotation = ship.rotation.__getValue();
-
-                  // Update the current ship's position in Firebase
-                  await updatingPosition(
-                    ship.id,
+                  setMovementDistanceCircle({
                     x,
                     y,
-                    rotation,
-                    ship.netDistance ?? 0
-                  );
+                    moveDistance:
+                      ship.moveDistance +
+                      ship.bonuses.moveDistanceBonus +
+                      ship.bonuses.broadSideBonus,
+                  });
+                  setCircleBorderColor("rgba(0,200,255,0.5)");
+                  setCircleBackgroundColor("rgba(0,200,255,0.1)");
+                }
 
-                  // --- Calculate ALL ships' fighter range status LOCALLY first ---
-
-                  await updateFighterProtection(
-                    ships,
-                    user,
-                    setShips,
-                    setFighterRangeLength,
-                    setShipInFighterRange
+                if (
+                  ship.type === "Carrier" &&
+                  ship.specialOrders?.["Launch Fighters"] === true &&
+                  user.uid === ship.user
+                ) {
+                  const radius =
+                    (ship.moveDistance + ship.moveDistanceBonus) * 9;
+                  const center = { x, y };
+                  //filter out carriers
+                  const shipsInRange = ships.filter(
+                    (s) =>
+                      s.id !== ship.id &&
+                      s.type !== "Carrier" &&
+                      s.gameRoom === gameRoom &&
+                      s.gameSector === gameSectors &&
+                      checkIfInFighterRange(s, radius, center)
                   );
-                },
-              })
-            : undefined;
+                  setShipInFighterRange(shipsInRange);
+                  //setFighterRangeBonus(inFighterRangeBonus);
+                }
+              } else if (isTargetedShip) {
+                targetingShip(ship);
+              }
+            },
+
+            // Inside your PanResponder.create's onPanResponderMove function:
+
+            onPanResponderMove: (e, gestureState) => {
+              if (!isUserShip) return;
+              const scaleFactor = zoomRef.current?.zoomLevel ?? 1;
+
+              // The ship whose pan responder is currently active.
+              const currentPanShipId = ship.id;
+
+              // Only apply constraints and color logic if this is the currently selected ship
+              // AND if there's an active movement circle to constrain to.
+              if (
+                shipPressed === currentPanShipId &&
+                movementDistanceCircle &&
+                !tempDisableMovementRestriction
+              ) {
+                const circleX = movementDistanceCircle.x;
+                const circleY = movementDistanceCircle.y;
+                // The radius is half of the width/height you set for the circle (moveDistance * 12 / 2)
+                const radius = movementDistanceCircle.moveDistance * 6;
+
+                // Calculate the potential absolute new position of the ship if allowed to move freely.
+                // ship.position.x._offset holds the ship's last committed absolute position.
+                // gestureState.dx/dy are the *total* accumulated movement from the start of the drag.
+                const potentialShipAbsoluteX =
+                  ship.position.x._offset + gestureState.dx / scaleFactor;
+                const potentialShipAbsoluteY =
+                  ship.position.y._offset + gestureState.dy / scaleFactor;
+
+                // Calculate distance from the circle's center to the potential new ship position
+                const deltaX = potentialShipAbsoluteX - circleX;
+                const deltaY = potentialShipAbsoluteY - circleY;
+                const distanceToCenter = Math.sqrt(
+                  deltaX * deltaX + deltaY * deltaY
+                );
+
+                let finalShipAbsoluteX = potentialShipAbsoluteX;
+                let finalShipAbsoluteY = potentialShipAbsoluteY;
+
+                if (distanceToCenter > radius) {
+                  // The ship is trying to go outside the circle.
+                  // Constrain its position to the perimeter of the circle.
+
+                  // Calculate the angle from the circle's center to the potential point
+                  const angle = Math.atan2(deltaY, deltaX);
+
+                  // Set the final position to be exactly on the circle's edge
+                  finalShipAbsoluteX = circleX + radius * Math.cos(angle);
+                  finalShipAbsoluteY = circleY + radius * Math.sin(angle);
+                }
+
+                // Convert the constrained absolute position back to relative dx, dy for Animated.setValue
+                // Animated.setValue expects the change relative to its last offset.
+                const constrainedDx =
+                  finalShipAbsoluteX - ship.position.x._offset;
+                const constrainedDy =
+                  finalShipAbsoluteY - ship.position.y._offset;
+
+                // Update the ship's animated position
+                ship.position.setValue({
+                  x: constrainedDx,
+                  y: constrainedDy,
+                });
+              } else {
+                // If this ship is not the currently selected one, or there's no circle to constrain,
+                // allow normal movement. (Note: pointerEvents="none" for non-user ships might already prevent this)
+                ship.position.setValue({
+                  x: gestureState.dx / scaleFactor,
+                  y: gestureState.dy / scaleFactor,
+                });
+              }
+            },
+            // In onPanResponderRelease, after ship.position.flattenOffset() and updatingPosition:
+            onPanResponderRelease: async () => {
+              if (!isUserShip) return;
+              // Flatten the position to commit the current offset
+              ship.position.flattenOffset();
+              // Get the current position of the ship
+              const { x, y } = ship.position.__getValue();
+              const rotation = ship.rotation.__getValue();
+
+              // Update the current ship's position in Firebase
+              await updatingPosition(
+                ship.id,
+                x,
+                y,
+                rotation,
+                ship.netDistance ?? 0
+              );
+
+              // --- Calculate ALL ships' fighter range status LOCALLY first ---
+
+              await updateFighterProtection(
+                ships,
+                user,
+                setShips,
+                setFighterRangeLength,
+                setShipInFighterRange
+              );
+            },
+          });
 
           return (
             <React.Fragment key={`${ship.id}-${ship.type}`}>
@@ -762,8 +791,8 @@ export default function FleetMap() {
               )}
               <Animated.View
                 key={ship.id}
-                pointerEvents={ship.isToggled ? "none" : "auto"}
-                {...(isUserShip ? panResponder.panHandlers : {})}
+                {...panResponder.panHandlers}
+                pointerEvents="auto"
                 style={[
                   styles.ship,
                   {
@@ -854,13 +883,32 @@ export default function FleetMap() {
                         {
                           marginTop: 5,
                           color:
-                            ship.id === shipPressed ? Colors.gold : Colors.hud,
+                            ship.id === shipPressed &&
+                            targetedShip?.id === ship.id
+                              ? Colors.green_toggle
+                              : targetedShip?.id === ship.id
+                              ? Colors.lighter_red
+                              : ship.id === shipPressed
+                              ? Colors.gold
+                              : Colors.hud,
                           backgroundColor:
-                            ship.id === shipPressed
+                            ship.id === shipPressed &&
+                            targetedShip?.id === ship.id
+                              ? Colors.darker_green_toggle
+                              : targetedShip?.id === ship.id
+                              ? Colors.deep_red
+                              : ship.id === shipPressed
                               ? Colors.goldenrod
                               : Colors.hudDarker,
                           borderColor:
-                            ship.id === shipPressed ? Colors.gold : Colors.hud,
+                            ship.id === shipPressed &&
+                            targetedShip?.id === ship.id
+                              ? Colors.green_toggle
+                              : targetedShip?.id === ship.id
+                              ? Colors.lighter_red
+                              : ship.id === shipPressed
+                              ? Colors.gold
+                              : Colors.hud,
                         },
                       ]}
                     >

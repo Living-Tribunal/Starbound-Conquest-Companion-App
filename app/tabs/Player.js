@@ -278,11 +278,6 @@ export default function Player() {
     if (!factionData) return [];
 
     return [
-      /* {
-        type: "Fighter",
-        fleetClass: "fleetFighter",
-        ships: [factionData.fighter],
-      }, */
       {
         type: "Destroyer",
         fleetClass: "fleetDestroyer",

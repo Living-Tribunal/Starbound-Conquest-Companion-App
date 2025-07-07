@@ -16,7 +16,6 @@ export default function TileBackground({ panX, panY }) {
     MapImage2Left,
     MapImage2Top,
   } = useMapImageContext();
-  const [loading, setLoading] = useState(true);
   const TILE_SIZE = tileSize;
   const WORLD_WIDTH = 1400 * 2;
   const WORLD_HEIGHT = 2900 * 2;
@@ -85,7 +84,6 @@ export default function TileBackground({ panX, panY }) {
           height: 1324,
           top: MapImage2Top,
           left: MapImage2Left,
-          left: 200,
           transform: [
             { translateX: Animated.multiply(panX, 0.1) },
             { translateY: Animated.multiply(panY, 0.1) },

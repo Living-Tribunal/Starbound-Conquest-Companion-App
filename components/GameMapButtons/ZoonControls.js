@@ -17,6 +17,8 @@ export default function ZoomControls({
   navigateToStats,
   updatingRotation,
   setShowAllFiringArcs,
+  updatingMovement,
+  targetedShip,
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -33,7 +35,7 @@ export default function ZoomControls({
   return (
     <View style={styles.zoomControls}>
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        {shipPressed && (
+        {shipPressed && !targetedShip && (
           <Animated.View
             style={{ flexDirection: "row", gap: 10, opacity: fadeAnim }}
           >
@@ -41,7 +43,7 @@ export default function ZoomControls({
               style={[styles.zoomButton]}
               onPress={() => handleShipRotation(shipPressed, -45)}
               onLongPress={() => handleShipRotation(shipPressed, -90)}
-              disabled={updatingRotation}
+              disabled={updatingRotation || updatingMovement}
             >
               <Image
                 style={{ tintColor: Colors.hud, width: 30, height: 30 }}
@@ -52,7 +54,7 @@ export default function ZoomControls({
               style={[styles.zoomButton]}
               onPress={() => handleShipRotation(shipPressed, 45)}
               onLongPress={() => handleShipRotation(shipPressed, 90)}
-              disabled={updatingRotation}
+              disabled={updatingRotation || updatingMovement}
             >
               <Image
                 style={{ tintColor: Colors.hud, width: 30, height: 30 }}
@@ -61,7 +63,7 @@ export default function ZoomControls({
             </TouchableOpacity>
           </Animated.View>
         )}
-        {shipPressed && (
+        {shipPressed && !targetedShip && (
           <Animated.View
             style={{
               flexDirection: "column",
