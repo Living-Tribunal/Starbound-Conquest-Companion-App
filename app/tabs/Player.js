@@ -305,21 +305,6 @@ export default function Player() {
 
   /* console.log(JSON.stringify(totalFleetValue) + " In Player"); */
 
-  function send_message_discord() {
-    const request = new XMLHttpRequest();
-    request.open(
-      "POST",
-      "https://discord.com/api/webhooks/1334142368613400598/ByDe3g5n2lUlWW_dpj1tYV5JggI6XMbWpaldCsn53EJF5P1vJ3IU1Tg0-IqZ4cnWuOn_"
-    );
-    request.setRequestHeader("Content-Type", "application/json");
-    const params = {
-      username: "Starbound Conquest",
-      avatar_url: "",
-      content: `${username} has ended their turn in ${gameRoom}.`,
-    };
-    request.send(JSON.stringify(params));
-  }
-
   function send_message_discord_end_of_round() {
     const request = new XMLHttpRequest();
     request.open(
@@ -395,6 +380,11 @@ export default function Player() {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const count = getAllUsersShipToggled.filter((s) => s.isToggled).length;
+    setGetAllUsersShipTotals(count);
+  }, [getAllUsersShipToggled]);
 
   useEffect(() => {
     if (!user || !gameRoom) return;
@@ -615,21 +605,16 @@ export default function Player() {
     };
   }, [gameRoom]);
 
-  const endYourTurnPressed = () => {
-    send_message_discord();
+  const getLoadingMessage = () => {
+    if (showEndOfRound) return "Round has ended. Resetting your ships...";
+    if (loading) return "Summoning your fleet...";
+    if (isLoading) return "Adding ships to your Fleet...";
+    return null;
   };
 
-  if (showEndOfRound) {
-    return (
-      <LoadingComponent whatToSay="Round has ended. Resetting your ships..." />
-    );
-  }
-  if (loading) {
-    return <LoadingComponent whatToSay="Summoning your fleet..." />;
-  }
-
-  if (isLoading) {
-    return <LoadingComponent whatToSay="Adding ships to your Fleet..." />;
+  const loadingMessage = getLoadingMessage();
+  if (loadingMessage) {
+    return <LoadingComponent whatToSay={loadingMessage} />;
   }
 
   if (isShowWarning) {
@@ -758,9 +743,9 @@ export default function Player() {
                       borderColor: toggleToDelete
                         ? Colors.lighter_red
                         : userFactionColor || Colors.hud,
-                      shadowColor: toggleToDelete
-                        ? Colors.lighter_red
-                        : userFactionColor || Colors.hud,
+                      boxShadow: `0px 0px 10px ${
+                        toggleToDelete ? Colors.lighter_red : userFactionColor
+                      }`,
                     },
                   ]}
                 >
@@ -925,13 +910,13 @@ export default function Player() {
                           width: "45%",
                           shadowColor: !allToggled
                             ? Colors.lighter_red
-                            : Colors.hud,
+                            : Colors.gold,
                           borderColor: !allToggled
                             ? Colors.lighter_red
-                            : Colors.hud,
+                            : Colors.gold,
                           backgroundColor: !allToggled
                             ? Colors.deep_red
-                            : Colors.hudDarker,
+                            : Colors.goldenrod,
                           opacity: !allToggled ? 0.5 : 1,
                         },
                       ]}
@@ -942,7 +927,7 @@ export default function Player() {
                           {
                             color: !allToggled
                               ? Colors.lighter_red
-                              : Colors.lighter_red,
+                              : Colors.gold,
                             fontSize: 12,
                           },
                         ]}
@@ -1123,7 +1108,11 @@ export default function Player() {
             </View>
 
             <View style={{ flexDirection: "column" }}>
-              <ShipFlatlist toggleToDelete={toggleToDelete} type={item.type} />
+              <ShipFlatlist
+                toggleToDelete={toggleToDelete}
+                type={item.type}
+                usersColor={userFactionColor}
+              />
             </View>
           </View>
         )}

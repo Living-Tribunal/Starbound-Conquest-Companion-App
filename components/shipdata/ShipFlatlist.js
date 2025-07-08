@@ -18,7 +18,7 @@ import { FactionImages } from "../../constants/FactionImages";
 import { useMapImageContext } from "../Global/MapImageContext";
 //import { Shadow } from "react-native-neomorph-shadows";
 
-export default function ShipFlatList({ type }) {
+export default function ShipFlatList({ type, usersColor }) {
   const specialOrderShortNames = {
     "All Ahead Full": "AHF",
     "Evasive Maneuvers": "EVM",
@@ -39,7 +39,7 @@ export default function ShipFlatList({ type }) {
     return Colors.blue_gray;
   };
 
-  const { data, setData, toggleToDelete, setSetDeleting, hitPointsColor } =
+  const { data, setData, toggleToDelete, setSetDeleting } =
     useStarBoundContext();
   const { gameSectors } = useMapImageContext();
   const user = FIREBASE_AUTH.currentUser;
@@ -107,9 +107,16 @@ export default function ShipFlatList({ type }) {
               FactionImages[item.factionName]?.[item.type]?.classImage;
             return (
               <TouchableOpacity
+                style={{
+                  /* backgroundColor:
+                    item.hp === 0 ? Colors.deep_red : "transparent", */
+                  backgroundColor: "transparent",
+                  margin: 5,
+                }}
                 disabled={
-                  !toggleToDelete &&
-                  (item.isToggled === true || item.hasRolledDToHit === true)
+                  item.hp === 0 ||
+                  (!toggleToDelete &&
+                    (item.isToggled === true || item.hasRolledDToHit === true))
                 }
                 onPress={() => {
                   if (toggleToDelete) {
@@ -129,13 +136,14 @@ export default function ShipFlatList({ type }) {
                     width: "100%",
                     justifyContent: "center",
                     alignItems: "center",
+                    backgroundColor: "transparent",
                   }}
                 >
                   <View
                     style={{
                       height: 5,
                       width: "80%",
-                      backgroundColor: "gray", // the empty bar background
+                      backgroundColor: Colors.blue_gray, // the empty bar background
                       borderRadius: 2,
                     }}
                   >
@@ -158,6 +166,7 @@ export default function ShipFlatList({ type }) {
                       justifyContent: "center",
                       alignItems: "center",
                       flexDirection: "row",
+                      backgroundColor: "transparent",
                     }}
                   >
                     <Text
@@ -252,8 +261,15 @@ export default function ShipFlatList({ type }) {
                     padding: 2,
                     borderRadius: 5,
                     borderWidth: 1,
+                    boxShadow: `0px 0px 10px ${
+                      item.hp === 0 ? Colors.lighter_red : usersColor
+                    }`,
                     borderColor:
-                      item.isToggled === true ? Colors.gold : Colors.hud,
+                      item.hp === 0
+                        ? Colors.lighter_red // dead ship
+                        : item.isToggled
+                        ? Colors.gold // alive + toggled
+                        : Colors.hud,
                     backgroundColor: Colors.dark_gray,
                     marginVertical: 5,
                   }}
@@ -274,7 +290,11 @@ export default function ShipFlatList({ type }) {
                         width: 80,
                         height: 20,
                         tintColor:
-                          item.isToggled === true ? Colors.gold : Colors.hud,
+                          item.hp === 0
+                            ? Colors.lighter_red // dead ship
+                            : item.isToggled
+                            ? Colors.gold // alive + toggled
+                            : Colors.hud,
                       }}
                     />
                     <Text
@@ -288,6 +308,7 @@ export default function ShipFlatList({ type }) {
                     >
                       {item.shipId}
                     </Text>
+
                     <Image
                       resizeMode="contain"
                       source={localImage}
@@ -295,7 +316,9 @@ export default function ShipFlatList({ type }) {
                         width: 60,
                         height: 60,
                         alignSelf: "center",
+                        borderRadius: 10,
                         marginTop: 5,
+                        tintColor: item.hp === 0 ? Colors.lighter_red : null,
                       }}
                     />
                   </View>

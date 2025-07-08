@@ -481,9 +481,9 @@ export default function ShipStats({ route }) {
               "ships",
               ship.id
             );
-            //you only need to update the weapon status if the roll was a success. not to let it shoot again
             await updateDoc(shipRef, {
               "weaponStatus.Ion Particle Beam": false,
+              "specialOrders.Charge Ion Beam": true,
               hit: false,
               //hasRolledDToHit: false,
             });

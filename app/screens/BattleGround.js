@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
 import BattleDice from "@/components/dice/BattleGroundDice.js";
 import {
@@ -31,6 +31,7 @@ import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import { useNavigation } from "@react-navigation/native";
 import { getDoc } from "firebase/firestore";
 import { useMapImageContext } from "@/components/Global/MapImageContext.js";
+import { useFocusEffect } from "expo-router";
 
 export default function BattleGround(props) {
   const { from } = props.route.params;
@@ -50,6 +51,7 @@ export default function BattleGround(props) {
     setExpandUserShipList,
     hit,
     damageDone,
+    setDamageDone,
     weaponId,
     setDiceValueToShare,
     gameRoom,
@@ -70,6 +72,7 @@ export default function BattleGround(props) {
   const gameMapTargetedShipId = targetedShip?.userId || isUser?.id;
 
   const selectedShipDice = liveShip ? shipBattleDiceMapping[liveShip.type] : [];
+  const hitState = hit === null ? false : hit;
   /*  console.log("From in BattleGround:", from);
 
   console.log(
@@ -153,12 +156,11 @@ export default function BattleGround(props) {
 
   //console.log("Weapon Fired In BattleGround:", weaponId);
   //resetting sethit state when leaving the screen
-  useEffect(() => {
+  /*  useEffect(() => {
     return () => {
-      // Reset hit state when leaving the screen
       setHit(false);
     };
-  }, []);
+  }, []); */
 
   useEffect(() => {
     if (weaponId) {
@@ -276,9 +278,16 @@ export default function BattleGround(props) {
     return () => unsubscribe();
   }, [singleUserShip?.id, isUser?.id]);
 
-  useEffect(() => {
-    //console.log("Live ship updated:", liveShip);
-  }, [liveShip]);
+  useFocusEffect(
+    useCallback(() => {
+      setHit(null);
+      setDiceValueToShare(0);
+      setWeaponId(null);
+      setDamageDone(0);
+    }, [])
+  );
+
+  console.log("Hit in BattleGround:", hit);
 
   /*   console.log(
     "Selected Weapon ID Status in Battleground:",
@@ -377,6 +386,7 @@ export default function BattleGround(props) {
         }}
         onPress={() => {
           setDiceValueToShare(0);
+          setHit(null);
         }}
       />
       <ScrollView>
@@ -435,21 +445,30 @@ export default function BattleGround(props) {
                 },
               ]}
             >
-              <Text
-                style={[
-                  styles.hitOrMissText,
-                  {
-                    color:
-                      hit === false
-                        ? Colors.lighter_red
-                        : hit === true
-                        ? Colors.green_toggle
-                        : Colors.hud,
-                  },
-                ]}
-              >
-                Result: {hit ? "Hit" : "Miss"}
-              </Text>
+              {hit !== null ? (
+                <Text
+                  style={[
+                    styles.hitOrMissText,
+                    {
+                      color:
+                        hit === true ? Colors.green_toggle : Colors.lighter_red,
+                    },
+                  ]}
+                >
+                  Result: {hit === true ? "Hit" : "Miss"}
+                </Text>
+              ) : (
+                <Text
+                  style={[
+                    styles.hitOrMissText,
+                    {
+                      color: hitState ? Colors.green_toggle : Colors.hud,
+                    },
+                  ]}
+                >
+                  Roll the D20 to begin.
+                </Text>
+              )}
             </View>
             <View style={styles.hitOrMissTextContainer}>
               <Text style={styles.damageDone}>
@@ -483,8 +502,10 @@ export default function BattleGround(props) {
                   tintColor={dice.tintColor}
                   textStyle={dice.textStyle}
                   borderColor={dice.borderColor}
-                  disabledButtonOnHit={isIonParticleBeam && ipbHasBeenFired}
-                  disabled={hit !== true && dice.id !== "D20"}
+                  disabledButtonOnHit={
+                    isIonParticleBeam && ipbHasBeenFired && hit
+                  }
+                  disabled={hit === null}
                   onPress={() => {
                     if (!(isIonParticleBeam && ipbHasBeenFired)) {
                       setWeaponHasAttacked(dice.id);

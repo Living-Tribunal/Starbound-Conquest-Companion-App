@@ -147,12 +147,8 @@ export default function BackIconArcs({
               styles.shipTypeTag,
               {
                 top: 135 + index * 35, // space between lines
-                borderColor: removeAllIcons
-                  ? Colors.green_toggle
-                  : Colors.lighter_red,
-                color: removeAllIcons
-                  ? Colors.green_toggle
-                  : Colors.lighter_red,
+                borderColor: Colors.green_toggle,
+                color: Colors.green_toggle,
               },
             ]}
           >

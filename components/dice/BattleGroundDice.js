@@ -176,9 +176,7 @@ export default function BattleDice({
     rollDiceAnimation();
   };
 
-  useEffect(() => {
-    setDisabledButtonOnHit(hit !== null);
-  }, [hit]);
+  const isDisabled = disabledButton || (id !== "D20" && hit === null);
 
   useEffect(() => {
     if (singleUserShip === null) {
@@ -286,33 +284,25 @@ export default function BattleDice({
       <View style={styles.diceContainer}>
         <Text
           style={[
-            disabledButton || (id !== "D20" && disabledButtonOnHit)
+            disabledButton || (id !== "D20" && hit === null)
               ? styles.weaponDisabled
               : styles.weapon,
-            !(disabledButton || (id !== "D20" && disabledButtonOnHit)) &&
-              textStyle,
+            !(disabledButton || (id !== "D20" && hit === null)) && textStyle,
           ]}
         >
           {text}
         </Text>
         <TouchableOpacity
-          disabled={
-            disabledButton ||
-            (id !== "D20" && (!rolledD20 || disabledButtonOnHit))
-          }
+          disabled={isDisabled}
           onPress={rollingBothDice}
           style={[styles.button]}
         >
           <Text
             style={[
-              disabledButton ||
-              (id !== "D20" && (!rolledD20 || disabledButtonOnHit))
+              isDisabled
                 ? styles.disabledRollDiceBtnText
                 : styles.rollDiceBtnText,
-              !(
-                disabledButton ||
-                (id !== "D20" && (!rolledD20 || disabledButtonOnHit))
-              ) && textStyle,
+              !isDisabled && textStyle,
             ]}
           >
             {numberOfDice + numberOfDiceModifier || 1}D
@@ -320,16 +310,9 @@ export default function BattleDice({
           </Text>
           <Image
             style={[
-              disabledButton ||
-              (id !== "D20" && (!rolledD20 || disabledButtonOnHit))
-                ? styles.imageDisabled
-                : styles.image,
+              isDisabled ? styles.imageDisabled : styles.image,
               {
-                tintColor:
-                  disabledButton ||
-                  (id !== "D20" && (!rolledD20 || disabledButtonOnHit))
-                    ? Colors.hudDarker
-                    : tintColor,
+                tintColor: isDisabled ? Colors.hudDarker : tintColor,
               },
             ]}
             source={require("../../assets/images/inchud.png")}
@@ -373,26 +356,14 @@ export default function BattleDice({
       )}
       <View
         style={[
-          disabledButton ||
-          (id !== "D20" && (!rolledD20 || disabledButtonOnHit))
-            ? styles.resultContainerDisabled
-            : styles.resultContainer,
-          !(
-            disabledButton ||
-            (id !== "D20" && (!rolledD20 || disabledButtonOnHit))
-          ) && borderColor,
+          isDisabled ? styles.resultContainerDisabled : styles.resultContainer,
+          !isDisabled && borderColor,
         ]}
       >
         <Text
           style={[
-            disabledButton ||
-            (id !== "D20" && (!rolledD20 || disabledButtonOnHit))
-              ? styles.diceTextDisabled
-              : styles.diceText,
-            !(
-              disabledButton ||
-              (id !== "D20" && (!rolledD20 || disabledButtonOnHit))
-            ) && textStyle,
+            isDisabled ? styles.diceTextDisabled : styles.diceText,
+            !isDisabled && textStyle,
           ]}
         >
           {firstDice}

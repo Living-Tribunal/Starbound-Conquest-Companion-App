@@ -66,6 +66,7 @@ export default function FleetMap() {
   const [circleBackgroundColor, setCircleBackgroundColor] = useState(
     "rgba(0,200,255,0.1)"
   );
+  const [protectedShipColor, setProtectedShipColor] = useState(null);
   const user = FIREBASE_AUTH.currentUser;
   const scale = useRef(new Animated.Value(1)).current;
   const scaleValue = useRef(1);
@@ -871,215 +872,236 @@ export default function FleetMap() {
                   }}
                 />
               )}
-              <Animated.View
-                key={ship.id}
-                {...panResponder.panHandlers}
-                pointerEvents="auto"
-                style={[
-                  styles.ship,
-                  {
-                    transform: ship.position.getTranslateTransform(),
-                    zIndex: ship.id === shipPressed ? 1000 : 1, // No rotation here
-                  },
-                ]}
-              >
-                {ship.type === "Carrier" &&
-                  (showAllFiringArcs ||
-                    (ship.id === shipPressed && fightersLaunched)) && (
-                    <>
-                      <View
-                        pointerEvents="none"
-                        style={{
-                          position: "absolute",
-                          width: 800, // diameter
-                          height: 800,
-                          borderRadius: 10000,
-                          borderColor: fightersRangeStatus(ship),
-                          borderWidth: 2,
-                          top: "50%",
-                          left: "50%",
-                          marginTop: -400, // half of height
-                          marginLeft: -400, // half of width
-                          zIndex: 5,
-                        }}
-                      />
-                    </>
-                  )}
-
-                {/* Rotating Ship Image */}
+              {ship.hp !== 0 && (
                 <Animated.View
-                  style={{
-                    borderRadius: 10,
-                    borderWidth:
-                      ship.id === shipPressed && ship.protectingCarriersColor
-                        ? 2
-                        : null,
-                    borderColor:
-                      ship.id === shipPressed && ship.protectingCarriersColor
-                        ? ship.protectingCarriersColor
-                        : null,
-                    transform: [
-                      {
-                        rotate: ship.rotation.interpolate({
-                          inputRange: [0, 360],
-                          outputRange: ["0deg", "360deg"],
-                        }),
-                      },
-                    ],
-                  }}
+                  key={ship.id}
+                  {...panResponder.panHandlers}
+                  pointerEvents="auto"
+                  style={[
+                    styles.ship,
+                    {
+                      transform: ship.position.getTranslateTransform(),
+                      zIndex: ship.id === shipPressed ? 1000 : 1, // No rotation here
+                    },
+                  ]}
                 >
-                  <Image
-                    source={{ uri: ship.image }}
-                    style={{
-                      width: ship.width / 2,
-                      height: ship.height / 2,
-                      tintColor:
-                        ship.isToggled && ship.hasRolledDToHit
-                          ? Colors.gold
-                          : null,
-                    }}
-                    resizeMode="center"
-                  />
+                  {ship.type === "Carrier" &&
+                    (showAllFiringArcs ||
+                      (ship.id === shipPressed && fightersLaunched)) && (
+                      <>
+                        <View
+                          pointerEvents="none"
+                          style={{
+                            position: "absolute",
+                            width: 800, // diameter
+                            height: 800,
+                            borderRadius: 10000,
+                            borderColor: fightersRangeStatus(ship),
+                            borderWidth: 2,
+                            top: "50%",
+                            left: "50%",
+                            marginTop: -400, // half of height
+                            marginLeft: -400, // half of width
+                            zIndex: 5,
+                          }}
+                        />
+                      </>
+                    )}
+                  {/* Rotating Ship Image */}
 
-                  <View
+                  <Animated.View
                     style={{
-                      left: ship.width / 4,
-                    }}
-                  >
-                    {shipPressed &&
-                      isUserShip &&
-                      ship.id === shipPressed &&
-                      ship.hasRolledDToHit === false && (
-                        <>
-                          <ShipSwitch
-                            ship={ship}
-                            showFiringArcs={showFiringArcs}
-                          />
-                        </>
-                      )}
-                  </View>
-                </Animated.View>
-                {removeAllIcons && (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Text
-                      style={[
-                        styles.info,
+                      borderRadius: 10,
+                      transform: [
                         {
-                          marginTop: 5,
-                          color:
-                            ship.id === shipPressed &&
-                            targetedShip?.id === ship.id
+                          rotate: ship.rotation.interpolate({
+                            inputRange: [0, 360],
+                            outputRange: ["0deg", "360deg"],
+                          }),
+                        },
+                      ],
+                    }}
+                  >
+                    <Image
+                      source={{ uri: ship.image }}
+                      style={{
+                        borderRadius: 20,
+                        width: ship.width / 2,
+                        height: ship.height / 2,
+                        tintColor:
+                          ship.isToggled && ship.hasRolledDToHit
+                            ? Colors.gold
+                            : null,
+                      }}
+                      resizeMode="center"
+                    />
+
+                    <View
+                      style={{
+                        left: ship.width / 4,
+                      }}
+                    >
+                      {shipPressed &&
+                        isUserShip &&
+                        ship.id === shipPressed &&
+                        ship.hasRolledDToHit === false && (
+                          <>
+                            <ShipSwitch
+                              ship={ship}
+                              showFiringArcs={showFiringArcs}
+                            />
+                          </>
+                        )}
+                    </View>
+                  </Animated.View>
+                  {removeAllIcons && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.info,
+                          {
+                            fontFamily: "LeagueSpartan-Bold",
+                            marginTop: 5,
+                            color: ship.protectingCarriersColor
+                              ? Colors.white
+                              : ship.id === shipPressed &&
+                                targetedShip?.id === ship.id
                               ? Colors.green_toggle
                               : targetedShip?.id === ship.id
                               ? Colors.green_toggle
                               : ship.id === shipPressed
                               ? Colors.gold
                               : Colors.hud,
-                          backgroundColor:
-                            ship.id === shipPressed &&
-                            targetedShip?.id === ship.id
+
+                            backgroundColor: ship.protectingCarriersColor
+                              ? ship.protectingCarriersColor // or some specific background if needed
+                              : ship.id === shipPressed &&
+                                targetedShip?.id === ship.id
                               ? Colors.darker_green_toggle
                               : targetedShip?.id === ship.id
                               ? Colors.darker_green_toggle
                               : ship.id === shipPressed
                               ? Colors.goldenrod
                               : Colors.hudDarker,
-                          borderColor:
-                            ship.id === shipPressed &&
-                            targetedShip?.id === ship.id
+
+                            borderColor: ship.protectingCarriersColor
+                              ? ship.protectingCarriersColor
+                              : ship.id === shipPressed &&
+                                targetedShip?.id === ship.id
                               ? Colors.green_toggle
                               : targetedShip?.id === ship.id
                               ? Colors.green_toggle
                               : ship.id === shipPressed
                               ? Colors.gold
                               : Colors.hud,
-                        },
-                      ]}
-                    >
-                      {ship.shipId}
-                    </Text>
-                    {ship.type === "Carrier" && ship.user === user.uid && (
-                      <Text
-                        style={[
-                          styles.info,
-                          {
-                            marginTop: 5,
-                            marginLeft: 5,
-                            color:
-                              ship.id === shipPressed
-                                ? Colors.gold
-                                : Colors.hud,
-                            backgroundColor:
-                              ship.id === shipPressed
-                                ? Colors.goldenrod
-                                : Colors.hudDarker,
-                            borderColor:
-                              ship.id === shipPressed
-                                ? Colors.gold
-                                : Colors.hud,
                           },
                         ]}
                       >
-                        {ship.numberOfShipsProtecting}
+                        {ship.shipId}
                       </Text>
-                    )}
-
-                    <Image
-                      source={factionIcons[ship.type.toLowerCase()]}
-                      style={{
-                        width: 35,
-                        height: 35,
-                        position: "absolute",
-                        bottom: 0,
-                        marginTop: 5,
-                        left: 80,
-                        tintColor: ship.isToggled
-                          ? Colors.gold
-                          : ship.factionColor,
-                      }}
-                      resizeMode="contain"
-                    />
-                    {ship.type !== "Carrier" && ship.user === user.uid && (
-                      <>
-                        <Image
-                          pointerEvents="none"
-                          resizeMode="contain"
-                          style={{
-                            width: 30,
-                            height: 30,
-                            alignSelf: "center",
-                            position: "absolute",
-                            left: -40,
-                            marginTop: 5,
-                            tintColor: checkIfShipIsInRangeShowIndicator(ship),
-                          }}
-                          source={{
-                            uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
-                          }}
-                        />
-                        {ship.isInFighterRange ? (
-                          <Text
+                      {ship.type === "Carrier" && ship.user === user.uid && (
+                        <Text
+                          style={[
+                            styles.info,
+                            {
+                              marginTop: 5,
+                              marginLeft: 5,
+                              color:
+                                ship.id === shipPressed
+                                  ? Colors.gold
+                                  : Colors.hud,
+                              backgroundColor:
+                                ship.id === shipPressed
+                                  ? Colors.goldenrod
+                                  : Colors.hudDarker,
+                              borderColor:
+                                ship.id === shipPressed
+                                  ? Colors.gold
+                                  : Colors.hud,
+                            },
+                          ]}
+                        >
+                          {ship.numberOfShipsProtecting}
+                        </Text>
+                      )}
+                      {ship.type === "Dreadnought" &&
+                        ship.weaponStatus?.["Ion Particle Beam"] === false &&
+                        ship.user === user.uid && (
+                          <Image
                             pointerEvents="none"
+                            resizeMode="contain"
                             style={{
+                              width: 30,
+                              height: 30,
+                              alignSelf: "center",
                               position: "absolute",
-                              color: checkIfShipIsInRangeShowIndicator(ship),
-                              fontSize: 10,
-                              left: -50,
+                              left: -80,
+                              marginTop: 5,
+                              tintColor: Colors.green_toggle,
                             }}
-                          >
-                            +
-                          </Text>
-                        ) : null}
-                      </>
-                    )}
-                  </View>
-                )}
-              </Animated.View>
+                            source={{
+                              uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fsinusoidal-beam.png?alt=media&token=96d76ac5-5426-4bbb-835c-f541f7ba3023",
+                            }}
+                          />
+                        )}
+                      <Image
+                        source={factionIcons[ship.type.toLowerCase()]}
+                        style={{
+                          width: 35,
+                          height: 35,
+                          position: "absolute",
+                          bottom: 0,
+                          marginTop: 5,
+                          left: 85,
+                          tintColor: ship.isToggled
+                            ? Colors.gold
+                            : ship.factionColor,
+                        }}
+                        resizeMode="contain"
+                      />
+                      {ship.type !== "Carrier" && ship.user === user.uid && (
+                        <>
+                          <Image
+                            pointerEvents="none"
+                            resizeMode="contain"
+                            style={{
+                              width: 30,
+                              height: 30,
+                              alignSelf: "center",
+                              position: "absolute",
+                              left: -40,
+                              marginTop: 5,
+                              tintColor:
+                                checkIfShipIsInRangeShowIndicator(ship),
+                            }}
+                            source={{
+                              uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
+                            }}
+                          />
+                          {ship.isInFighterRange ? (
+                            <Text
+                              pointerEvents="none"
+                              style={{
+                                position: "absolute",
+                                color: checkIfShipIsInRangeShowIndicator(ship),
+                                fontSize: 10,
+                                left: -50,
+                              }}
+                            >
+                              +
+                            </Text>
+                          ) : null}
+                        </>
+                      )}
+                    </View>
+                  )}
+                </Animated.View>
+              )}
             </React.Fragment>
           );
         })}
