@@ -428,12 +428,7 @@ export default function ShipStats({ route }) {
         setBroadSideBonus(15);
         break;
       case "Launch Fighters":
-        console.log("Launching Fighters");
-        if (localDiceRoll >= 4 && ship.type === "Carrier") {
-          const bonus =
-            ship.numberOfShipsProtecting > 0
-              ? Math.floor(ship.capacity / ship.numberOfShipsProtecting)
-              : 0;
+        if (localDiceRoll >= 11 && ship.type === "Carrier") {
           try {
             const shipRef = doc(
               FIREBASE_DB,
@@ -590,11 +585,11 @@ export default function ShipStats({ route }) {
               },
             ]}
             onPress={async () => {
-              await toggleSpecialOrdersButton(orderName);
               setModalToRollADice(false);
-              specialOrderBonuses(orderName, ship, localDiceRoll);
+              await specialOrderBonuses(orderName, ship, localDiceRoll); // check dice first
               getFleetData({ data, setData });
               setLocalDiceRoll(0);
+              setDiceValueToShare(0);
             }}
           >
             <Text
@@ -1187,6 +1182,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     backgroundColor: Colors.hud,
     width: "80%",
+    marginBottom: 5,
   },
 
   buttonContainer: {
