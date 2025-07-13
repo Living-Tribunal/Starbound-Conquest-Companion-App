@@ -239,7 +239,7 @@ export default function ShipStats({ route }) {
         try {
           const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
 
-          if (localDiceRoll >= 11) {
+          if (bonus !== 0) {
             await updateDoc(shipRef, {
               "bonuses.moveDistanceBonus": bonus,
             });
