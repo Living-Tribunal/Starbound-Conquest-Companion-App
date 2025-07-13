@@ -143,7 +143,7 @@ export default function BattleDice({
     const newWeaponRolledValue = value;
     setFirstDice(newWeaponRolledValue);
     setWeaponId(id);
-    console.log("weaponId:", id);
+    //console.log("weaponId:", id);
     //console.log(`🎲 Weapon Damage Roll ${newWeaponRolledValue}`);
 
     if (damageThreshold === null) {

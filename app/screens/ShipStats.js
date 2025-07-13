@@ -54,8 +54,6 @@ export default function ShipStats({ route }) {
     setFromGameMap,
   } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
-  const fromPlayer =
-    from === "Player" || from === "GameMap" || ship?.hasRolledDToHit === true;
   const shipSpecialOrders = ship ? ShipAttributes[ship.type] : null;
   const bonusNameChanged = {
     moveDistanceBonus: "Movement Bonus",
@@ -370,7 +368,9 @@ export default function ShipStats({ route }) {
             // ✅ Now update local state after Firestore confirmed update
             setHit(false);
             setData((prevData) =>
-              prevData.map((s) => (s.id === ship.id ? { ...s, hit: false } : s))
+              prevData.map((s) =>
+                s.id === ship.id ? { ...s, hasRolledDToHit: false } : s
+              )
             );
 
             Toast.show({
@@ -564,12 +564,10 @@ export default function ShipStats({ route }) {
           tintColor={Colors.goldenrod}
           textStyle={{ color: Colors.gold }}
           borderColor={{ borderColor: Colors.goldenrod }}
+          disabledButtonOnHit={ship.hasRolledDToHit}
           disabledButton={localDiceRoll > 0}
           onRoll={(value, diceId) => {
             setLocalDiceRoll(value);
-            /*  if (diceId === "D20") {
-              changedRolledDToHit();
-            } */
           }}
         />
         <View style={styles.buttonContainer}>

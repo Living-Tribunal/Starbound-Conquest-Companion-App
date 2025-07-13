@@ -1057,7 +1057,7 @@ export default function FleetMap() {
                           position: "absolute",
                           bottom: 0,
                           marginTop: 5,
-                          left: 85,
+                          left: ship.type !== "Carrier" ? 50 : 85,
                           tintColor: ship.isToggled
                             ? Colors.gold
                             : ship.factionColor,

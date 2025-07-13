@@ -18,7 +18,7 @@ import { FactionImages } from "../../constants/FactionImages";
 import { useMapImageContext } from "../Global/MapImageContext";
 //import { Shadow } from "react-native-neomorph-shadows";
 
-export default function ShipFlatList({ type, usersColor }) {
+export default function ShipFlatList({ type, usersColor, toggleToDelete }) {
   const specialOrderShortNames = {
     "All Ahead Full": "AHF",
     "Evasive Maneuvers": "EVM",
@@ -39,8 +39,7 @@ export default function ShipFlatList({ type, usersColor }) {
     return Colors.blue_gray;
   };
 
-  const { data, setData, toggleToDelete, setSetDeleting } =
-    useStarBoundContext();
+  const { data, setData, setSetDeleting } = useStarBoundContext();
   const { gameSectors } = useMapImageContext();
   const user = FIREBASE_AUTH.currentUser;
   const navigation = useNavigation();
@@ -114,9 +113,10 @@ export default function ShipFlatList({ type, usersColor }) {
                   margin: 5,
                 }}
                 disabled={
-                  item.hp === 0 ||
-                  (!toggleToDelete &&
-                    (item.isToggled === true || item.hasRolledDToHit === true))
+                  !toggleToDelete &&
+                  (!item.hp === 0 ||
+                    item.isToggled === true ||
+                    item.hasRolledDToHit === true)
                 }
                 onPress={() => {
                   if (toggleToDelete) {
