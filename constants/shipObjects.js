@@ -25,7 +25,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 1,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Combine Fire": false,
         "Evasive Maneuvers": false,
       },
@@ -71,7 +71,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 30,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Anti-Fighter Barrage": false,
         "Power Up Main Guns": false,
       },
@@ -109,7 +109,7 @@ export const shipObject = {
       weaponRange: "30ft \n60ft",
       pointValue: 80,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "All Systems Fire": false,
         "Reinforce Shields": false,
         Broadside: false,
@@ -146,7 +146,7 @@ export const shipObject = {
       weaponRange: "30ft-120ft \n15ft-60ft",
       pointValue: 120,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Reinforce Shields": false,
         "Launch Fighters": false,
         "All Systems Fire": false,
@@ -184,7 +184,7 @@ export const shipObject = {
       weaponRange: "30ft-60ft \n60ft \n30ft-120ft",
       pointValue: 240,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Reinforce Shields": false,
         "All Systems Fire": false,
         "Charge Ion Beam": false,
@@ -232,7 +232,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 1,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Combine Fire": false,
         "Evasive Maneuvers": false,
       },
@@ -271,7 +271,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 30,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Anti-Fighter Barrage": false,
         "Power Up Main Guns": false,
       },
@@ -309,7 +309,7 @@ export const shipObject = {
       weaponRange: "30ft \n60ft",
       pointValue: 80,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "All Systems Fire": false,
         "Reinforce Shields": false,
         Broadside: false,
@@ -350,7 +350,7 @@ export const shipObject = {
       weaponRange: "30ft-120ft \n15ft-60ft",
       pointValue: 120,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Reinforce Shields": false,
         "Launch Fighters": false,
         "All Systems Fire": false,
@@ -388,7 +388,7 @@ export const shipObject = {
       weaponRange: "30ft-60ft \n60ft \n30ft-120ft",
       pointValue: 240,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Reinforce Shields": false,
         "All Systems Fire": false,
         "Charge Ion Beam": false,
@@ -431,7 +431,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 1,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Combine Fire": false,
         "Evasive Maneuvers": false,
       },
@@ -469,7 +469,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 30,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Anti-Fighter Barrage": false,
         "Power Up Main Guns": false,
       },
@@ -501,7 +501,7 @@ export const shipObject = {
       weaponRange: "30ft \n60ft",
       pointValue: 80,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "All Systems Fire": false,
         "Reinforce Shields": false,
         Broadside: false,
@@ -540,7 +540,7 @@ export const shipObject = {
       weaponRange: "30ft-120ft \n15ft-60ft",
       pointValue: 120,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Reinforce Shields": false,
         "Launch Fighters": false,
         "All Systems Fire": false,
@@ -584,7 +584,7 @@ export const shipObject = {
       weaponRange: "30ft-60ft \n60ft \n30ft-120ft",
       pointValue: 240,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Reinforce Shields": false,
         "All Systems Fire": false,
         "Charge Ion Beam": false,
@@ -627,7 +627,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 1,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Combine Fire": false,
         "Evasive Maneuvers": false,
       },
@@ -666,7 +666,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 30,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Anti-Fighter Barrage": false,
         "Power Up Main Guns": false,
       },
@@ -704,7 +704,7 @@ export const shipObject = {
       weaponRange: "30ft \n60ft",
       pointValue: 80,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "All Systems Fire": false,
         "Reinforce Shields": false,
         Broadside: false,
@@ -745,7 +745,7 @@ export const shipObject = {
       weaponRange: "30ft-120ft \n15ft-60ft",
       pointValue: 120,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Reinforce Shields": false,
         "Launch Fighters": false,
         "All Systems Fire": false,
@@ -783,7 +783,7 @@ export const shipObject = {
       weaponRange: "30ft-60ft \n60ft \n30ft-120ft",
       pointValue: 240,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Reinforce Shields": false,
         "All Systems Fire": false,
         "Charge Ion Beam": false,
@@ -826,7 +826,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 1,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Combine Fire": false,
         "Evasive Maneuvers": false,
       },
@@ -865,7 +865,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 30,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Anti-Fighter Barrage": false,
         "Power Up Main Guns": false,
       },
@@ -903,7 +903,7 @@ export const shipObject = {
       weaponRange: "30ft \n60ft",
       pointValue: 80,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "All Systems Fire": false,
         "Reinforce Shields": false,
         Broadside: false,
@@ -944,7 +944,7 @@ export const shipObject = {
       weaponRange: "30ft-120ft \n15ft-60ft",
       pointValue: 120,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Reinforce Shields": false,
         "Launch Fighters": false,
         "All Systems Fire": false,
@@ -982,7 +982,7 @@ export const shipObject = {
       weaponRange: "30ft-60ft \n60ft \n30ft-120ft",
       pointValue: 240,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Reinforce Shields": false,
         "All Systems Fire": false,
         "Charge Ion Beam": false,
@@ -1025,7 +1025,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 1,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Combine Fire": false,
         "Evasive Maneuvers": false,
       },
@@ -1064,7 +1064,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 30,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Anti-Fighter Barrage": false,
         "Power Up Main Guns": false,
       },
@@ -1102,7 +1102,7 @@ export const shipObject = {
       weaponRange: "30ft \n60ft",
       pointValue: 80,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "All Systems Fire": false,
         "Reinforce Shields": false,
         Broadside: false,
@@ -1143,7 +1143,7 @@ export const shipObject = {
       weaponRange: "30ft-120ft \n15ft-60ft",
       pointValue: 120,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Reinforce Shields": false,
         "Launch Fighters": false,
         "All Systems Fire": false,
@@ -1181,7 +1181,7 @@ export const shipObject = {
       weaponRange: "30ft-60ft \n60ft \n30ft-120ft",
       pointValue: 240,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Reinforce Shields": false,
         "All Systems Fire": false,
         "Charge Ion Beam": false,
@@ -1224,7 +1224,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 1,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Combine Fire": false,
         "Evasive Maneuvers": false,
       },
@@ -1263,7 +1263,7 @@ export const shipObject = {
       weaponRange: 30,
       pointValue: 30,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Anti-Fighter Barrage": false,
         "Power Up Main Guns": false,
       },
@@ -1301,7 +1301,7 @@ export const shipObject = {
       weaponRange: "30ft \n60ft",
       pointValue: 80,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "All Systems Fire": false,
         "Reinforce Shields": false,
         Broadside: false,
@@ -1342,7 +1342,7 @@ export const shipObject = {
       weaponRange: "30ft-120ft \n15ft-60ft",
       pointValue: 120,
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Reinforce Shields": false,
         "Launch Fighters": false,
         "All Systems Fire": false,
@@ -1381,7 +1381,7 @@ export const shipObject = {
         inFighterRangeBonus: 0,
       },
       specialOrders: {
-        "Full Throttle": false,
+        "All Ahead Full": false,
         "Reinforce Shields": false,
         "All Systems Fire": false,
         "Charge Ion Beam": false,
