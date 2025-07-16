@@ -119,6 +119,7 @@ export default function BattleDice({
 
     if (id === "D20") {
       setRolledD20(true);
+      setDisabledButton(true);
       if (newRolledValue >= threatLevel) {
         console.log(
           `✅ Dice ${id} rolled ${newRolledValue} — HIT (≥ ${threatLevel})`
@@ -126,6 +127,10 @@ export default function BattleDice({
         setHit(true);
         setDisabledButtonOnHit(false);
         setDisabledButton(false);
+        /*  console.log("hit:", hit);
+        console.log("disabledButton:", disabledButton);
+        console.log("disabledButtonOnHit:", disabledButtonOnHit);
+        console.log("id:", id); */
       } else {
         console.log(
           `❌ Dice ${id} rolled ${newRolledValue} — MISS (< ${threatLevel})`
@@ -143,7 +148,7 @@ export default function BattleDice({
     const newWeaponRolledValue = value;
     setFirstDice(newWeaponRolledValue);
     setWeaponId(id);
-    //console.log("weaponId:", id);
+    console.log("weaponId:", id);
     //console.log(`🎲 Weapon Damage Roll ${newWeaponRolledValue}`);
 
     if (damageThreshold === null) {
@@ -176,7 +181,8 @@ export default function BattleDice({
     rollDiceAnimation();
   };
 
-  const isDisabled = disabledButton || (id !== "D20" && hit === null);
+  const isDisabled =
+    disabledButton || disabledButtonOnHit || (id !== "D20" && hit !== true);
 
   useEffect(() => {
     if (singleUserShip === null) {
@@ -284,10 +290,12 @@ export default function BattleDice({
       <View style={styles.diceContainer}>
         <Text
           style={[
-            disabledButton || (id !== "D20" && hit === null)
+            disabledButton || (id !== "D20" && hit !== true)
               ? styles.weaponDisabled
               : styles.weapon,
-            !(disabledButton || (id !== "D20" && hit === null)) && textStyle,
+            disabledButtonOnHit /*  || (id !== "D20" && hit !== true) */
+              ? styles.weaponDisabled
+              : textStyle,
           ]}
         >
           {text}

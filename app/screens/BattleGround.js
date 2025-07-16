@@ -386,7 +386,7 @@ export default function BattleGround(props) {
         }}
         onPress={() => {
           setDiceValueToShare(0);
-          setHit(null);
+          setHit(false);
         }}
       />
       <ScrollView>
@@ -490,6 +490,9 @@ export default function BattleGround(props) {
               const isIonParticleBeam = dice.id === "Ion Particle Beam";
               const ipbHasBeenFired =
                 liveShip.weaponStatus?.["Ion Particle Beam"] === true;
+              const anyWeaponFired = Object.values(
+                liveShip.weaponStatus || {}
+              ).some((fired) => fired === true);
 
               return (
                 <BattleDice
@@ -502,10 +505,12 @@ export default function BattleGround(props) {
                   tintColor={dice.tintColor}
                   textStyle={dice.textStyle}
                   borderColor={dice.borderColor}
+                  //for d20 dice
                   disabledButtonOnHit={
-                    isIonParticleBeam && ipbHasBeenFired && hit
+                    dice.id === "D20" && liveShip.hasRolledDToHit
                   }
-                  disabled={hit === null}
+                  //for weapon ONLY dice
+                  disabledButton={anyWeaponFired}
                   onPress={() => {
                     if (!(isIonParticleBeam && ipbHasBeenFired)) {
                       setWeaponHasAttacked(dice.id);
