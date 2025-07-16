@@ -357,7 +357,9 @@ export default function FleetMap() {
           s.isInFighterRange = true;
           s.protectedByCarrierID = carrier.id;
           s.protectingCarriersColor = carrier.color;
-          s.bonuses.inFighterRangeBonus = 5;
+          s.bonuses.inFighterRangeBonus =
+            Math.floor(carrier.maxCapacity / carrier.numberOfShipsProtecting) ||
+            0;
 
           updatedMap[carrier.id].push(s);
           allInRange.push(s);
@@ -1090,10 +1092,11 @@ export default function FleetMap() {
                                 position: "absolute",
                                 color: checkIfShipIsInRangeShowIndicator(ship),
                                 fontSize: 10,
-                                left: -50,
+                                left: -40,
+                                bottom: 40,
                               }}
                             >
-                              +
+                              +{ship.bonuses.inFighterRangeBonus} hp
                             </Text>
                           ) : null}
                         </>

@@ -466,7 +466,7 @@ export default function BattleGround(props) {
                     },
                   ]}
                 >
-                  Roll the D20 to begin.
+                  Roll the D20 to Begin.
                 </Text>
               )}
             </View>

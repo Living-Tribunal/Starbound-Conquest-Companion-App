@@ -92,7 +92,7 @@ export default function BackIconArcs({
         />
       </TouchableOpacity>
       <TouchableOpacity
-        onLongPress={() => {
+        onPress={() => {
           setRemoveAllIcons((prev) => {
             const next = !prev;
             Toast.show({

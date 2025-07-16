@@ -439,12 +439,12 @@ export default function ShipStats({ route }) {
             );
             await updateDoc(shipRef, {
               "specialOrders.Launch Fighters": true,
-              maxCapacity: 20,
+              maxCapacity: 25,
             });
             // Update local data
             setData((prevData) =>
               prevData.map((s) =>
-                s.id === ship.id ? { ...s, maxCapacity: 20 } : s
+                s.id === ship.id ? { ...s, maxCapacity: 25 } : s
               )
             );
             Toast.show({
@@ -637,6 +637,9 @@ export default function ShipStats({ route }) {
     );
   }
 
+  const shipHpRemaining = ship.hp + ship.bonuses.inFighterRangeBonus;
+  const shipHpRemainingPercent = Math.round(shipHpRemaining);
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <StatusBar />
@@ -728,7 +731,26 @@ export default function ShipStats({ route }) {
                 <View style={{ width: "100%" }}>
                   <Text style={styles.statButtonText}>Hit Point</Text>
                 </View>
-                <View style={styles.statTextUnder}>
+                <View
+                  style={[
+                    styles.statTextUnder,
+                    { flexDirection: "row", justifyContent: "center" },
+                  ]}
+                >
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color:
+                        ship.bonuses.inFighterRangeBonus > 0
+                          ? Colors.green_toggle
+                          : Colors.hud,
+                      fontFamily: "monospace",
+                      fontSize: 12,
+                      marginTop: 2,
+                    }}
+                  >
+                    {ship.hp + ship.bonuses.inFighterRangeBonus || 0}
+                  </Text>
                   <Text
                     style={{
                       textAlign: "center",
@@ -738,7 +760,7 @@ export default function ShipStats({ route }) {
                       marginTop: 2,
                     }}
                   >
-                    {ship.hp}/{ship.maxHP}
+                    /{ship.maxHP}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -819,14 +841,14 @@ export default function ShipStats({ route }) {
                 style={{
                   textAlign: "center",
                   color:
-                    ship.bonuses.inFighterRangeBonus > 0
+                    /*  ship.bonuses.inFighterRangeBonus > 0
                       ? Colors.green_toggle
-                      : Colors.white,
+                      : */ Colors.white,
                   fontFamily: "monospace",
                   fontSize: 10,
                 }}
               >
-                {ship.damageThreshold + ship.bonuses.inFighterRangeBonus || 0}
+                {ship.damageThreshold}
               </Text>
             </View>
           </View>

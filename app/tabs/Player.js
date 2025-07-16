@@ -42,6 +42,7 @@ import {
   increment,
   onSnapshot,
 } from "firebase/firestore";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function Player() {
   const ref = useRef();
@@ -80,6 +81,10 @@ export default function Player() {
   const allToggled =
     getAllUsersShipToggled.length > 0 &&
     getAllUsersShipToggled.every((s) => s.isToggled);
+
+  const allToggledOrHpZero =
+    getAllUsersShipToggled.length > 0 &&
+    getAllUsersShipToggled.every((ship) => ship.isToggled || ship.hp <= 0);
 
   const myShips = useMemo(() => {
     return getAllUsersShipToggled.filter((ship) => ship.user === user.uid);
@@ -552,11 +557,7 @@ export default function Player() {
   }, [gameRoom]);
 
   const handleEndRoundPress = () => {
-    const allToggled =
-      getAllUsersShipToggled.length > 0 &&
-      getAllUsersShipToggled.every((s) => s.isToggled);
-
-    if (allToggled) {
+    if (allToggledOrHpZero) {
       endYourTurn();
       send_message_discord_end_of_round();
     } else {
@@ -901,23 +902,23 @@ export default function Player() {
                     }}
                   >
                     <TouchableOpacity
-                      disabled={!allToggled}
+                      disabled={!allToggledOrHpZero}
                       onPress={handleEndRoundPress}
                       style={[
                         styles.editContainer,
                         {
                           borderWidth: 1,
                           width: "45%",
-                          shadowColor: !allToggled
+                          shadowColor: !allToggledOrHpZero
                             ? Colors.lighter_red
                             : Colors.gold,
-                          borderColor: !allToggled
+                          borderColor: !allToggledOrHpZero
                             ? Colors.lighter_red
                             : Colors.gold,
-                          backgroundColor: !allToggled
+                          backgroundColor: !allToggledOrHpZero
                             ? Colors.deep_red
                             : Colors.goldenrod,
-                          opacity: !allToggled ? 0.5 : 1,
+                          opacity: !allToggledOrHpZero ? 0.5 : 1,
                         },
                       ]}
                     >
@@ -925,7 +926,7 @@ export default function Player() {
                         style={[
                           styles.textValue,
                           {
-                            color: !allToggled
+                            color: !allToggledOrHpZero
                               ? Colors.lighter_red
                               : Colors.gold,
                             fontSize: 12,
