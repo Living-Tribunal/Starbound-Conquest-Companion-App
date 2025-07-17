@@ -226,9 +226,9 @@ export default function BattleGround(props) {
 
     const updateUserShipHP = async () => {
       const newHP = singleUserShip.hp - damageDone;
-      console.log("New HP in BattleGround:", newHP);
+      //console.log("New HP in BattleGround:", newHP);
       const clampedHP = Math.max(0, newHP);
-      console.log("Clamped HP in BattleGround:", clampedHP);
+      //console.log("Clamped HP in BattleGround:", clampedHP);
 
       const userShipDocRef = doc(
         FIREBASE_DB,
@@ -244,7 +244,7 @@ export default function BattleGround(props) {
           hp: clampedHP,
         });
         setNewHP(clampedHP);
-        console.log("Auto-applied damage:", damageDone);
+        // console.log("Auto-applied damage:", damageDone);
       } catch (e) {
         console.error("Failed to apply damage:", e);
       }
@@ -286,8 +286,6 @@ export default function BattleGround(props) {
       setDamageDone(0);
     }, [])
   );
-
-  console.log("Hit in BattleGround:", hit);
 
   /*   console.log(
     "Selected Weapon ID Status in Battleground:",

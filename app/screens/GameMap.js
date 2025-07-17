@@ -56,7 +56,7 @@ export default function FleetMap() {
   const [pendingBattle, setPendingBattle] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [shipsEnteringBattle, setShipsEnteringBattle] = useState([]);
-  const MAX_PROTECTED = 4;
+
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);
   const [removeAllIcons, setRemoveAllIcons] = useState(true);
@@ -72,6 +72,7 @@ export default function FleetMap() {
   const scaleValue = useRef(1);
   const WORLD_WIDTH = 1400 * 2;
   const WORLD_HEIGHT = 2900 * 2;
+  const MAX_PROTECTED = 4;
   const zoomRef = useRef(1);
   const selectedShip = ships.find((ships) => ships.id === shipPressed);
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -981,7 +982,7 @@ export default function FleetMap() {
                               : Colors.hud,
 
                             backgroundColor: ship.protectingCarriersColor
-                              ? ship.protectingCarriersColor // or some specific background if needed
+                              ? ship.protectingCarriersColor
                               : ship.id === shipPressed &&
                                 targetedShip?.id === ship.id
                               ? Colors.darker_green_toggle

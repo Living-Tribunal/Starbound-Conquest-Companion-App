@@ -12,7 +12,7 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import { Colors } from "../../constants/Colors.js";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
 import { FONTS } from "../../constants/fonts.js";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
@@ -39,6 +39,7 @@ export default function ShipStats({ route }) {
   const [selectedFaction, setSelectedFaction] = useState("Nova Raiders");
   const [movementBonus, setMovementBonus] = useState(0);
   const [broadSideBonus, setBroadSideBonus] = useState(0);
+  const diceRollRef = useRef(0);
   const { disableDiceModifiers, setDisableDiceModifiers } = useDiceContext();
   const {
     faction,
@@ -111,7 +112,7 @@ export default function ShipStats({ route }) {
 
   //console.log("In ship stats:" + JSON.stringify(data, null, 2));
   //console.log("SPecial Orders Length: " + specialOrders.isToggled.length);
-  const toggleSpecialOrdersButton = async (orderName) => {
+  /*   const toggleSpecialOrdersButton = async (orderName) => {
     if (!ship || !user) return;
 
     try {
@@ -127,7 +128,7 @@ export default function ShipStats({ route }) {
 
       const isCurrentlyActive = currentOrders[orderName];
 
-      // Check if trying to turn ON a third order
+      // Check if trying to turn ON a second order
       if (!isCurrentlyActive && activeOrdersCount >= 1) {
         return; // stop, don't allow more than 1
       }
@@ -149,7 +150,7 @@ export default function ShipStats({ route }) {
     } catch (e) {
       console.error("Error toggling special order:", e);
     }
-  };
+  }; */
 
   const toggleTurn = () => {
     setData((prevData) =>
@@ -391,33 +392,37 @@ export default function ShipStats({ route }) {
         break;
       case "Broadside":
         if (localDiceRoll >= 11) {
-          console.log("Broadside Rolled:", localDiceRoll);
-          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-          console.log("Boardside Bonus:", broadSideBonus);
+          try {
+            const shipRef = doc(
+              FIREBASE_DB,
+              "users",
+              user.uid,
+              "ships",
+              ship.id
+            );
 
-          updateDoc(shipRef, {
-            "bonuses.broadSideBonus": 15,
-            hasRolledDToHit: false,
-          })
-            .then(() => {
-              // Update local data
-              setData((prevData) =>
-                prevData.map((s) =>
-                  s.id === ship.id ? { ...s, "bonuses.broadSideBonus": 15 } : s
-                )
-              );
-              Toast.show({
-                type: "success",
-                text1: "Systems have been reinitialized.",
-                position: "top",
-              });
-            })
-            .catch((error) => {
-              console.error(
-                "Failed to update broadSideBonus in Firestore:",
-                error
-              );
+            //await toggleSpecialOrdersButton(orderName);
+            updateDoc(shipRef, {
+              "bonuses.broadSideBonus": 15,
+              hasRolledDToHit: false,
             });
+            // Update local data
+            setData((prevData) =>
+              prevData.map((s) =>
+                s.id === ship.id ? { ...s, "bonuses.broadSideBonus": 15 } : s
+              )
+            );
+            Toast.show({
+              type: "success",
+              text1: "Systems have been reinitialized.",
+              position: "top",
+            });
+          } catch (error) {
+            console.error(
+              "Failed to update broadSideBonus in Firestore:",
+              error
+            );
+          }
         } else {
           Toast.show({
             type: "error",
@@ -428,7 +433,8 @@ export default function ShipStats({ route }) {
         setBroadSideBonus(15);
         break;
       case "Launch Fighters":
-        if (localDiceRoll >= 11 && ship.type === "Carrier") {
+        if (Number(localDiceRoll) >= 19 && ship.type === "Carrier") {
+          console.log(localDiceRoll);
           try {
             const shipRef = doc(
               FIREBASE_DB,
@@ -438,27 +444,55 @@ export default function ShipStats({ route }) {
               ship.id
             );
             await updateDoc(shipRef, {
-              "specialOrders.Launch Fighters": true,
-              maxCapacity: 25,
+              [`specialOrders.${orderName}`]: true,
+              maxCapacity: 20,
             });
             // Update local data
             setData((prevData) =>
               prevData.map((s) =>
-                s.id === ship.id ? { ...s, maxCapacity: 25 } : s
+                s.id === ship.id
+                  ? {
+                      ...s,
+                      maxCapacity: 20,
+                      specialOrders: {
+                        ...(s.specialOrders || {}),
+                        [orderName]: true,
+                      },
+                    }
+                  : s
               )
             );
             Toast.show({
               type: "success",
-              text1: "Launched Fighters!",
+              text1: "Starbound Conquest",
+              text2: "Launched Fighters!",
               position: "top",
             });
           } catch (e) {
             console.error("Failed to update launch fighters in Firestore:", e);
           }
         } else {
+          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+          await updateDoc(shipRef, {
+            [`specialOrdersAttempted.${orderName}`]: true,
+          });
+          setData((prevData) =>
+            prevData.map((s) =>
+              s.id === ship.id
+                ? {
+                    ...s,
+                    specialOrdersAttempted: {
+                      ...(s.specialOrdersAttempted || {}),
+                      [orderName]: true,
+                    },
+                  }
+                : s
+            )
+          );
           Toast.show({
             type: "error",
-            text1: "Launch Fighters Failed!",
+            text1: "Starbound Conquest",
+            text2: "Launch Fighters Failed!",
             position: "top",
           });
         }
@@ -565,7 +599,9 @@ export default function ShipStats({ route }) {
           textStyle={{ color: Colors.gold }}
           borderColor={{ borderColor: Colors.goldenrod }}
           disabledButton={localDiceRoll > 0}
+          disabledButtonOnHit={false}
           onRoll={(value, diceId) => {
+            diceRollRef.current = value;
             setLocalDiceRoll(value);
             /*  if (diceId === "D20") {
               changedRolledDToHit();
@@ -585,10 +621,13 @@ export default function ShipStats({ route }) {
               },
             ]}
             onPress={async () => {
-              await toggleSpecialOrdersButton(orderName);
+              const currentRoll = diceRollRef.current;
               setModalToRollADice(false);
-              await specialOrderBonuses(orderName, ship, localDiceRoll);
-              await getFleetData({ data, setData });
+              await specialOrderBonuses(orderName, ship, currentRoll);
+              //await toggleSpecialOrdersButton(orderName);
+              setTimeout(() => {
+                getFleetData({ data, setData });
+              }, 500);
               setLocalDiceRoll(0);
               await setDiceValueToShare(0);
             }}
@@ -938,11 +977,16 @@ export default function ShipStats({ route }) {
                     const orderName = specialOrder[0];
                     const description = specialOrder[1];
                     const orderIcon = specialOrder[2];
-                    const activeOrdersCount = Object.values(
-                      ship.specialOrders || {}
-                    ).filter(Boolean).length;
-                    const isDisabled =
-                      ship.specialOrders?.[orderName] || activeOrdersCount >= 1;
+                    const anySpecialOrdersUsed =
+                      Object.values(ship.specialOrders || {}).some(Boolean) ||
+                      Object.values(ship.specialOrdersAttempted || {}).some(
+                        Boolean
+                      );
+
+                    const isDisabled = anySpecialOrdersUsed;
+                    const isUsed = ship.specialOrders?.[orderName];
+                    const isAttempted =
+                      ship.specialOrdersAttempted?.[orderName];
 
                     return (
                       <View
@@ -1006,9 +1050,10 @@ export default function ShipStats({ route }) {
                             <Text
                               style={{
                                 textAlign: "center",
-                                color: ship.specialOrders?.[orderName]
-                                  ? Colors.hudDarker
-                                  : Colors.white,
+                                color:
+                                  isAttempted || isUsed
+                                    ? Colors.hudDarker
+                                    : Colors.white,
                                 fontFamily: "monospace",
                                 fontSize: 12,
                                 marginBottom: 2,
@@ -1022,17 +1067,17 @@ export default function ShipStats({ route }) {
                                 style={{
                                   width: 34,
                                   height: 34,
-                                  tintColor: ship.specialOrders?.[orderName]
-                                    ? Colors.hudDarker
-                                    : Colors.white,
+                                  tintColor:
+                                    isAttempted || isUsed
+                                      ? Colors.hudDarker
+                                      : Colors.white,
                                   alignSelf: "center",
-                                  opacity: ship.specialOrders?.[orderName]
-                                    ? 0.3
-                                    : 1,
+                                  opacity: isAttempted || isUsed ? 0.3 : 1,
                                   borderWidth: 1,
-                                  borderColor: ship.specialOrders?.[orderName]
-                                    ? Colors.hudDarker
-                                    : Colors.white,
+                                  borderColor:
+                                    isAttempted || isUsed
+                                      ? Colors.hudDarker
+                                      : Colors.white,
                                   borderRadius: 5,
                                 }}
                                 resizeMode="contain"
@@ -1043,9 +1088,10 @@ export default function ShipStats({ route }) {
                           <Text
                             style={{
                               fontSize: 10,
-                              color: ship.specialOrders?.[orderName]
-                                ? Colors.hudDarker
-                                : Colors.slate,
+                              color:
+                                isAttempted || isUsed
+                                  ? Colors.hudDarker
+                                  : Colors.slate,
                               textAlign: "center",
                               fontFamily: "monospace",
                               paddingHorizontal: 10,

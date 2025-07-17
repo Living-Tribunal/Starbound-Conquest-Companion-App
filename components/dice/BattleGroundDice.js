@@ -113,7 +113,7 @@ export default function BattleDice({
     setDiceValueToShare(newRolledValue);
 
     if (threatLevel === null) {
-      console.log("No ship selected.");
+      //console.log("No ship selected.");
       return null;
     }
 
@@ -121,9 +121,9 @@ export default function BattleDice({
       setRolledD20(true);
       setDisabledButton(true);
       if (newRolledValue >= threatLevel) {
-        console.log(
+        /* console.log(
           `✅ Dice ${id} rolled ${newRolledValue} — HIT (≥ ${threatLevel})`
-        );
+        ); */
         setHit(true);
         setDisabledButtonOnHit(false);
         setDisabledButton(false);
@@ -132,15 +132,16 @@ export default function BattleDice({
         console.log("disabledButtonOnHit:", disabledButtonOnHit);
         console.log("id:", id); */
       } else {
-        console.log(
+        /* console.log(
           `❌ Dice ${id} rolled ${newRolledValue} — MISS (< ${threatLevel})`
-        );
+        ); */
         setHit(false);
         setDisabledButtonOnHit(true);
         setDisabledButton(true);
       }
     } else {
       console.log(`🎲 Dice ${id} rolled ${newRolledValue} (no hit check)`);
+      return null;
     }
   };
 
@@ -152,7 +153,7 @@ export default function BattleDice({
     //console.log(`🎲 Weapon Damage Roll ${newWeaponRolledValue}`);
 
     if (damageThreshold === null) {
-      console.log("No ship selected.");
+      //console.log("No ship selected.");
       return null;
     }
     if (id !== "Ion Particle Beam") {

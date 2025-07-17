@@ -439,13 +439,16 @@ export default function Player() {
           updateDoc(myShipDocRef, {
             isToggled: false,
             specialOrders: newSpecialOrders,
+            specialOrdersAttempted: {},
             hasBeenInteractedWith: false,
             hit: false,
             hasRolledDToHit: false,
             shipInterval: increment(1),
             distanceTraveled: 0,
-            broadSideBonus: 0,
-            moveDistanceBonus: 0,
+            bonuses: {
+              broadSideBonus: 0,
+              inFighterRangeBonus: 0,
+            },
           })
         );
       }
