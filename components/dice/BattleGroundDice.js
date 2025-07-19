@@ -23,11 +23,11 @@ export default function BattleDice({
   onRoll,
   disabledButton: disabledProp = null,
   disabledButtonOnHit: disabledOnHitProp = null,
+  disableDiceModifiers,
 }) {
   const [firstDice, setFirstDice] = useState(0);
   const [diceFaceModifier, setDiceFaceModifier] = useState(0);
   const [numberOfDiceModifier, setNumberOfDiceModifier] = useState(0);
-  const { disableDiceModifiers } = useDiceContext();
   const {
     singleUserShip,
     hit,
@@ -127,14 +127,7 @@ export default function BattleDice({
         setHit(true);
         setDisabledButtonOnHit(false);
         setDisabledButton(false);
-        /*  console.log("hit:", hit);
-        console.log("disabledButton:", disabledButton);
-        console.log("disabledButtonOnHit:", disabledButtonOnHit);
-        console.log("id:", id); */
       } else {
-        /* console.log(
-          `❌ Dice ${id} rolled ${newRolledValue} — MISS (< ${threatLevel})`
-        ); */
         setHit(false);
         setDisabledButtonOnHit(true);
         setDisabledButton(true);

@@ -200,6 +200,7 @@ export default function Player() {
           protectedByCarrierID: null,
           numberOfShipsProtecting: 0,
           color: getRandomColorForCarrier(),
+          specialOrdersAttempted: {},
         };
         // Add to Firestore
         const docRef = await addDoc(
@@ -499,6 +500,7 @@ export default function Player() {
               hasRolledDToHit: false,
               shipInterval: increment(1),
               distanceTraveled: 0,
+              specialOrdersAttempted: {},
             })
           );
         }

@@ -486,6 +486,9 @@ export default function BattleGround(props) {
           >
             {selectedShipDice.map((dice, index) => {
               const isIonParticleBeam = dice.id === "Ion Particle Beam";
+              const destroyerPowerUpMainGuns =
+                liveShip.specialOrders?.["Power Up Main Guns"] === true &&
+                liveShip.type === "Destroyer";
               const ipbHasBeenFired =
                 liveShip.weaponStatus?.["Ion Particle Beam"] === true;
               const anyWeaponFired = Object.values(
@@ -502,6 +505,7 @@ export default function BattleGround(props) {
                   number2={dice.number2}
                   tintColor={dice.tintColor}
                   textStyle={dice.textStyle}
+                  disableDiceModifiers={!destroyerPowerUpMainGuns}
                   borderColor={dice.borderColor}
                   //for d20 dice
                   disabledButtonOnHit={

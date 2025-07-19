@@ -36,11 +36,7 @@ export default function ShipStats({ route }) {
   const [orderName, setOrderName] = useState("");
   const [orderIcon, setOrderIcon] = useState("");
   const [orderDescription, setOrderDescription] = useState("");
-  const [selectedFaction, setSelectedFaction] = useState("Nova Raiders");
-  const [movementBonus, setMovementBonus] = useState(0);
-  const [broadSideBonus, setBroadSideBonus] = useState(0);
   const diceRollRef = useRef(0);
-  const { disableDiceModifiers, setDisableDiceModifiers } = useDiceContext();
   const {
     faction,
     data,
@@ -57,6 +53,9 @@ export default function ShipStats({ route }) {
   const ship = data.find((s) => s.id === shipId);
   const fromPlayer =
     from === "Player" || from === "GameMap" || ship?.hasRolledDToHit === true;
+  const destroyerPowerUpMainGuns =
+    ship?.specialOrders?.["Power Up Main Guns"] === true &&
+    ship.type === "Destroyer";
   const shipSpecialOrders = ship ? ShipAttributes[ship.type] : null;
   const bonusNameChanged = {
     moveDistanceBonus: "Movement Bonus",
@@ -72,20 +71,6 @@ export default function ShipStats({ route }) {
       }
     }, [from, setFromGameMap])
   );
-
-  useEffect(() => {
-    setSelectedFaction(faction);
-    /* console.log(faction); */
-  }, [faction, from]);
-
-  //console.log(`in Ship Stats: ${JSON.stringify(diceValueToShare, null, 2)}`);
-
-  //console.log("In Ship Stats:", JSON.stringify(ship, null, 2));
-
-  //showing the hp bar with colors representing the health of the ship
-
-  //console.log("In Ship Stats:", JSON.stringify(orderIcon, null, 2));
-  //console.log("In Ship Stats:", JSON.stringify(localDiceRoll, null, 2));
 
   useFocusEffect(
     useCallback(() => {
@@ -109,48 +94,6 @@ export default function ShipStats({ route }) {
       [ship.id]: newColor,
     }));
   }, [ship]);
-
-  //console.log("In ship stats:" + JSON.stringify(data, null, 2));
-  //console.log("SPecial Orders Length: " + specialOrders.isToggled.length);
-  /*   const toggleSpecialOrdersButton = async (orderName) => {
-    if (!ship || !user) return;
-
-    try {
-      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", shipId);
-
-      // Existing special orders
-      const currentOrders = ship.specialOrders || {};
-
-      // Count how many are currently ON (true)
-      const activeOrdersCount = Object.values(currentOrders).filter(
-        (v) => v
-      ).length;
-
-      const isCurrentlyActive = currentOrders[orderName];
-
-      // Check if trying to turn ON a second order
-      if (!isCurrentlyActive && activeOrdersCount >= 1) {
-        return; // stop, don't allow more than 1
-      }
-
-      const updatedOrders = {
-        ...currentOrders,
-        [orderName]: !currentOrders[orderName],
-      };
-      await updateDoc(shipRef, {
-        specialOrders: updatedOrders,
-      });
-
-      // Update local data
-      setData((prevData) =>
-        prevData.map((s) =>
-          s.id === shipId ? { ...s, specialOrders: updatedOrders } : s
-        )
-      );
-    } catch (e) {
-      console.error("Error toggling special order:", e);
-    }
-  }; */
 
   const toggleTurn = () => {
     setData((prevData) =>
@@ -227,22 +170,22 @@ export default function ShipStats({ route }) {
  */
   //console.log("In Ship Stats:", JSON.stringify(ship.hit, null, 2));
   const specialOrderBonuses = async (orderName, ship, localDiceRoll) => {
-    //console.log("Special Order Bonuses: ", orderName);
     if (!ship || localDiceRoll === undefined) {
-      console.warn("specialOrderBonuses called without ship or diceRoll");
       return;
     }
     switch (orderName) {
       case "All Ahead Full":
-        const bonus =
-          localDiceRoll >= 11 ? ship.moveDistance : ship.moveDistance / 2;
-
         try {
           const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
 
-          if (bonus !== 0) {
+          if (localDiceRoll >= 18) {
+            const bonus = ship.moveDistance;
+            console.log("Bonus applied:", bonus);
+            console.log("Local Dice Roll:", localDiceRoll);
             await updateDoc(shipRef, {
-              "bonuses.moveDistanceBonus": bonus,
+              [`bonuses.${orderName}`]: bonus,
+              [`specialOrders.${orderName}`]: true,
+              [`specialOrdersAttempted.${orderName}`]: true,
             });
 
             // Update local state properly
@@ -254,6 +197,14 @@ export default function ShipStats({ route }) {
                       bonuses: {
                         ...(s.bonuses || {}),
                         moveDistanceBonus: bonus,
+                      },
+                      specialOrders: {
+                        ...(s.specialOrders || {}),
+                        [orderName]: true,
+                      },
+                      specialOrdersAttempted: {
+                        ...(s.specialOrdersAttempted || {}),
+                        [orderName]: true,
                       },
                     }
                   : s
@@ -267,6 +218,37 @@ export default function ShipStats({ route }) {
               position: "top",
             });
           } else {
+            const bonus = ship.moveDistance / 2;
+            console.log("Bonus applied:", bonus);
+            await updateDoc(shipRef, {
+              [`bonuses.${orderName}`]: bonus,
+              [`specialOrders.${orderName}`]: true,
+              [`specialOrdersAttempted.${orderName}`]: true,
+            });
+            console.log("Updating local state for ship:", ship);
+
+            // Update local state properly
+            setData((prevData) =>
+              prevData.map((s) =>
+                s.id === ship.id
+                  ? {
+                      ...s,
+                      bonuses: {
+                        ...(s.bonuses || {}),
+                        moveDistanceBonus: bonus,
+                      },
+                      specialOrders: {
+                        ...(s.specialOrders || {}),
+                        [orderName]: true,
+                      },
+                      specialOrdersAttempted: {
+                        ...(s.specialOrdersAttempted || {}),
+                        [orderName]: true,
+                      },
+                    }
+                  : s
+              )
+            );
             Toast.show({
               type: "error",
               text1: "All Ahead Full!",
@@ -274,9 +256,6 @@ export default function ShipStats({ route }) {
               position: "top",
             });
           }
-
-          console.log("Bonus applied:", bonus);
-          setMovementBonus(bonus);
         } catch (error) {
           console.error("❌ Failed to update moveDistanceBonus:", error);
         }
@@ -291,39 +270,76 @@ export default function ShipStats({ route }) {
           });
           return;
         }
-        if (localDiceRoll >= 11) {
-          const newHP = Math.max(0, Math.min(Number(ship.hp + 1), ship.maxHP));
-          console.log("Reinforce Shields succeeded. New HP:", newHP);
-
+        try {
           const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
 
-          updateDoc(shipRef, {
-            hp: newHP,
-          })
-            .then(() => {
-              // Update local data
-              setData((prevData) =>
-                prevData.map((s) =>
-                  s.id === ship.id ? { ...s, hp: newHP } : s
-                )
-              );
-              Toast.show({
-                type: "success",
-                text1: "Shields Reinforced!",
-                text2: `+1 HP (now at ${newHP}/${ship.maxHP})`,
-                position: "top",
-              });
-            })
-            .catch((error) => {
-              console.error("Failed to update HP in Firestore:", error);
+          if (localDiceRoll >= 11) {
+            const newHP = Math.max(
+              0,
+              Math.min(Number(ship.hp + 1), ship.maxHP)
+            );
+
+            updateDoc(shipRef, {
+              hp: newHP,
+              [`specialOrders.${orderName}`]: true,
+              [`specialOrdersAttempted.${orderName}`]: true,
             });
-        } else {
-          Toast.show({
-            type: "error",
-            text1: "Shields Reinforcement Failed!",
-            text2: `No bonus added`,
-            position: "top",
-          });
+            // Update local data
+            setData((prevData) =>
+              prevData.map((s) =>
+                s.id === ship.id
+                  ? {
+                      ...s,
+                      hp: newHP,
+                      specialOrders: {
+                        ...(s.specialOrders || {}),
+                        [orderName]: true,
+                      },
+                      specialOrdersAttempted: {
+                        ...(s.specialOrdersAttempted || {}),
+                        [orderName]: true,
+                      },
+                    }
+                  : s
+              )
+            );
+            Toast.show({
+              type: "success",
+              text1: "Shields Reinforced!",
+              text2: `+1 HP (now at ${newHP}/${ship.maxHP})`,
+              position: "top",
+            });
+          } else {
+            await updateDoc(shipRef, {
+              [`specialOrders.${orderName}`]: true,
+              [`specialOrdersAttempted.${orderName}`]: true,
+            });
+            setData((prevData) =>
+              prevData.map((s) =>
+                s.id === ship.id
+                  ? {
+                      ...s,
+                      specialOrders: {
+                        ...(s.specialOrders || {}),
+                        [orderName]: true,
+                      },
+                      specialOrdersAttempted: {
+                        ...(s.specialOrdersAttempted || {}),
+                        [orderName]: true,
+                      },
+                    }
+                  : s
+              )
+            );
+            Toast.show({
+              type: "error",
+              text1: "Shields Reinforcement Failed!",
+              text2: `No bonus added`,
+              position: "top",
+            });
+          }
+        } catch (error) {
+          console.error("❌ Failed to update shields in Firestore:", error);
         }
         break;
       case "Evasive Maneuvers":
@@ -336,20 +352,66 @@ export default function ShipStats({ route }) {
         console.log("Anti-Fighter Barrage");
         break;
       case "Power Up Main Guns":
-        if (localDiceRoll >= 11 && ship.type === "Destroyer") {
-          console.log({ "ship type in switch": ship.type });
-          setDisableDiceModifiers(false);
-          Toast.show({
-            type: "success",
-            text1: "Power Up Main Guns!",
-            position: "top",
-          });
-        } else {
-          Toast.show({
-            type: "error",
-            text1: "Power Up Main Guns Failed!",
-            position: "top",
-          });
+        try {
+          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+          if (localDiceRoll >= 11 && ship.type === "Destroyer") {
+            await updateDoc(shipRef, {
+              [`specialOrders.${orderName}`]: true,
+              [`specialOrdersAttempted.${orderName}`]: true,
+            });
+            setData((prevData) =>
+              prevData.map((s) =>
+                s.id === ship.id
+                  ? {
+                      ...s,
+                      specialOrders: {
+                        ...(s.specialOrders || {}),
+                        [orderName]: true,
+                      },
+                      specialOrdersAttempted: {
+                        ...(s.specialOrdersAttempted || {}),
+                        [orderName]: true,
+                      },
+                    }
+                  : s
+              )
+            );
+
+            Toast.show({
+              type: "success",
+              text1: "Power Up Main Guns!",
+              position: "top",
+            });
+          } else {
+            await updateDoc(shipRef, {
+              [`specialOrders.${orderName}`]: true,
+              [`specialOrdersAttempted.${orderName}`]: true,
+            });
+            setData((prevData) =>
+              prevData.map((s) =>
+                s.id === ship.id
+                  ? {
+                      ...s,
+                      specialOrders: {
+                        ...(s.specialOrders || {}),
+                        [orderName]: true,
+                      },
+                      specialOrdersAttempted: {
+                        ...(s.specialOrdersAttempted || {}),
+                        [orderName]: true,
+                      },
+                    }
+                  : s
+              )
+            );
+            Toast.show({
+              type: "error",
+              text1: "Power Up Main Guns Failed!",
+              position: "top",
+            });
+          }
+        } catch (error) {
+          console.error("❌ Failed to update moveDistanceBonus:", error);
         }
         break;
       case "All Systems Fire":
@@ -430,11 +492,9 @@ export default function ShipStats({ route }) {
             position: "top",
           });
         }
-        setBroadSideBonus(15);
         break;
       case "Launch Fighters":
         if (Number(localDiceRoll) >= 19 && ship.type === "Carrier") {
-          console.log(localDiceRoll);
           try {
             const shipRef = doc(
               FIREBASE_DB,
@@ -683,11 +743,6 @@ export default function ShipStats({ route }) {
     <SafeAreaView style={styles.mainContainer}>
       <StatusBar />
       <HeaderComponent
-        onPress={() => {
-          setMovementBonus(0);
-          setBroadSideBonus(0);
-          setDisableDiceModifiers(true);
-        }}
         text="Ship Stats"
         NavToWhere={fromGameMap === "GameMap" ? "GameMap" : "Player"}
       />
