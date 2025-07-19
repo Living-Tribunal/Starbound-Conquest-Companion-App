@@ -330,6 +330,44 @@ export default function Settings() {
                 <ColorPickerComponent />
                 <DropdownComponentFactions />
                 <DropdownComponentCampaigns />
+                <View
+                  style={{
+                    flexDirection: "row",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <View style={{ width: "68%", position: "relative" }}>
+                    {renderLabel()}
+                    <TextInput
+                      autoCorrect={false}
+                      spellCheck={false}
+                      style={styles.textInput}
+                      onChangeText={(text) => {
+                        setUsername(text.trimStart());
+                      }}
+                      placeholder={!isFocus ? "Username" : ""}
+                      value={username}
+                      onFocus={() => setIsFocus(true)}
+                      onBlur={() => setIsFocus(false)}
+                    />
+                  </View>
+                  <View style={{ width: "25%", position: "relative" }}>
+                    {renderLabelGameValue()}
+                    <TextInput
+                      maxLength={12}
+                      keyboardType="numeric"
+                      style={styles.textInput}
+                      onChangeText={(text) => {
+                        setGameValue(text.trimStart());
+                      }}
+                      placeholder={!isFocusValue ? "Max Value" : ""}
+                      value={gameValue}
+                      onFocus={() => setIsFocusValue(true)}
+                      onBlur={() => setIsFocusValue(false)}
+                    />
+                  </View>
+                </View>
               </View>
             ) : (
               <View
@@ -346,7 +384,7 @@ export default function Settings() {
               </View>
             )}
 
-            <View style={{ flexDirection: "row", gap: 10 }}>
+            {/* <View style={{ flexDirection: "row", gap: 10 }}>
               <View style={{ width: "68%", position: "relative" }}>
                 {renderLabel()}
                 <TextInput
@@ -377,16 +415,21 @@ export default function Settings() {
                   onBlur={() => setIsFocusValue(false)}
                 />
               </View>
-            </View>
+            </View> */}
 
             <View style={styles.heroModalContainerButtons}>
               <TouchableOpacity
-                style={styles.button}
+                disabled={data.length > 0}
+                style={data.length > 0 ? styles.buttonDisabled : styles.button}
                 onPress={() => {
                   checkForUsernamePhotoFaction();
                 }}
               >
-                <Text style={styles.title}>Save User Info</Text>
+                <Text
+                  style={data.length > 0 ? styles.titleDisabled : styles.title}
+                >
+                  Save User Info
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -594,5 +637,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: Colors.dark_gray,
+  },
+  buttonDisabled: {
+    width: "50%",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    borderRadius: 3,
+    backgroundColor: Colors.hudDarker,
+  },
+  titleDisabled: {
+    color: Colors.hud,
+    fontSize: 15,
+    textAlign: "center",
+    fontFamily: "LeagueSpartan-Bold",
   },
 });
