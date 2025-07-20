@@ -83,7 +83,11 @@ export default function ZoomControls({
             <TouchableOpacity
               style={styles.controlButton}
               onPress={() => navigateToStats(shipPressed)}
-              disabled={selectedShip?.hasRolledDToHit === true}
+              disabled={
+                (selectedShip?.hasRolledDToHit === true &&
+                  selectedShip?.type !== "Dreadnought" && selectedShip?.att) ||
+                selectedShip?.specialOrders?.["All Systems Fire"] === true
+              }
             >
               <Text style={styles.buttonText}>Enter Ship</Text>
             </TouchableOpacity>

@@ -51,11 +51,6 @@ export default function ShipStats({ route }) {
     setFromGameMap,
   } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
-  const fromPlayer =
-    from === "Player" || from === "GameMap" || ship?.hasRolledDToHit === true;
-  const destroyerPowerUpMainGuns =
-    ship?.specialOrders?.["Power Up Main Guns"] === true &&
-    ship.type === "Destroyer";
   const shipSpecialOrders = ship ? ShipAttributes[ship.type] : null;
   const bonusNameChanged = {
     moveDistanceBonus: "Movement Bonus",
@@ -162,13 +157,6 @@ export default function ShipStats({ route }) {
     setIsModalVisible(true);
   };
   //switch case to apply bonuses based on which special order is selected
-
-  /*  console.log(
-    "Selected Weapon ID Status in shipStats:",
-    ship.weaponStatus["Ion Particle Beam"]
-  );
- */
-  //console.log("In Ship Stats:", JSON.stringify(ship.hit, null, 2));
   const specialOrderBonuses = async (orderName, ship, localDiceRoll) => {
     if (!ship || localDiceRoll === undefined) {
       return;
@@ -178,7 +166,7 @@ export default function ShipStats({ route }) {
         try {
           const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
 
-          if (localDiceRoll >= 18) {
+          if (localDiceRoll >= 11) {
             const bonus = ship.moveDistance;
             console.log("Bonus applied:", bonus);
             console.log("Local Dice Roll:", localDiceRoll);
@@ -416,24 +404,43 @@ export default function ShipStats({ route }) {
         break;
       case "All Systems Fire":
         console.log("All Systems Fire Bonus");
-        if (localDiceRoll >= 11) {
-          console.log("All Systems Fire:", localDiceRoll);
-          try {
-            const shipRef = doc(
-              FIREBASE_DB,
-              "users",
-              user.uid,
-              "ships",
-              ship.id
-            );
+        try {
+          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+          if (localDiceRoll >= 11) {
+            console.log("All Systems Fire:", localDiceRoll);
+            const weaponStatuses = ship.weaponStatus || {};
+            const weaponStatusesUpdated = {};
+            for (const weaponName in weaponStatuses) {
+              weaponStatusesUpdated[`weaponStatus.${weaponName}`] = false;
+            }
             await updateDoc(shipRef, {
+              ...weaponStatusesUpdated,
+              [`specialOrders.${orderName}`]: true,
+              [`specialOrdersAttempted.${orderName}`]: true,
               hasRolledDToHit: false,
+              hit: false,
+              isToggled: false,
             });
 
-            // ✅ Now update local state after Firestore confirmed update
-            setHit(false);
             setData((prevData) =>
-              prevData.map((s) => (s.id === ship.id ? { ...s, hit: false } : s))
+              prevData.map((s) =>
+                s.id === ship.id
+                  ? {
+                      ...s,
+                      hit: false,
+                      hasRolledDToHit: false,
+                      isToggled: false,
+                      specialOrders: {
+                        ...(s.specialOrders || {}),
+                        [orderName]: true,
+                      },
+                      specialOrdersAttempted: {
+                        ...(s.specialOrdersAttempted || {}),
+                        [orderName]: true,
+                      },
+                    }
+                  : s
+              )
             );
 
             Toast.show({
@@ -441,16 +448,43 @@ export default function ShipStats({ route }) {
               text1: "All systems, ready to fire!",
               position: "top",
             });
-          } catch (error) {
-            console.error("Failed to update hit in Firestore:", error);
+          } else {
+            await updateDoc(shipRef, {
+              [`specialOrdersAttempted.${orderName}`]: true,
+              hasRolledDToHit: true,
+              hit: true,
+              isToggled: true,
+            });
+            setData((prevData) =>
+              prevData.map((s) =>
+                s.id === ship.id
+                  ? {
+                      ...s,
+                      hasRolledDToHit: true,
+                      hit: true,
+                      isToggled: true,
+                      specialOrders: {
+                        ...(s.specialOrders || {}),
+                        [orderName]: true,
+                      },
+                      specialOrdersAttempted: {
+                        ...(s.specialOrdersAttempted || {}),
+                        [orderName]: true,
+                      },
+                    }
+                  : s
+              )
+            );
+            Toast.show({
+              type: "error",
+              text1: "Unable to reintialize systems.",
+              position: "top",
+            });
           }
-        } else {
-          Toast.show({
-            type: "error",
-            text1: "Unable to reintialize systems.",
-            position: "top",
-          });
+        } catch (error) {
+          console.error("Failed to update hit in Firestore:", error);
         }
+
         break;
       case "Broadside":
         if (localDiceRoll >= 11) {
@@ -576,9 +610,6 @@ export default function ShipStats({ route }) {
               hit: false,
               //hasRolledDToHit: false,
             });
-
-            // ✅ Now update local state after Firestore confirmed update
-            setHit(false);
             setLocalDiceRoll(firstDice);
             setData((prevData) =>
               prevData.map((s) => (s.id === ship.id ? { ...s, hit: false } : s))

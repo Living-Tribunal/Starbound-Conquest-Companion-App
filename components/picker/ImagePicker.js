@@ -11,7 +11,7 @@ import {
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 import { updateProfile, deleteUser } from "firebase/auth";
 
-export default function ImagePickerExample() {
+export default function ImagePickerExample({ factionColor }) {
   const { userProfilePicture, setUserProfilePicture, profile } =
     useStarBoundContext();
   const user = FIREBASE_AUTH.currentUser;
@@ -89,7 +89,13 @@ export default function ImagePickerExample() {
         <Text style={styles.text}>Choose Your Profile Picture</Text>
       </TouchableOpacity>
       <Image
-        style={styles.image}
+        style={[
+          styles.image,
+          {
+            boxShadow: `0px 0px 10px ${factionColor}`,
+            borderColor: Colors.gold,
+          },
+        ]}
         source={
           userProfilePicture ? { uri: userProfilePicture } : { uri: profile }
         }
@@ -105,11 +111,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 5,
     marginTop: 10,
+    marginBottom: 10,
   },
   image: {
     width: 200,
     height: 200,
     borderRadius: 10,
+    borderWidth: 1,
   },
   button: {
     backgroundColor: Colors.hud,
@@ -117,7 +125,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.hudDarker,
     borderRadius: 10,
     padding: 5,
-    marginBottom: 5,
+    marginBottom: 15,
     width: "80%",
   },
   text: {

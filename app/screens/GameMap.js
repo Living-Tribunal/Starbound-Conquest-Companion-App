@@ -481,6 +481,7 @@ export default function FleetMap() {
     setTargetedShip(ship);
     console.log("Targeting ship:", ship.shipId);
   };
+  
   const attackingShip = (ship) => {
     setShipPressed(ship.id);
     console.log("Attacking ship:", ship.shipId);
@@ -1060,7 +1061,7 @@ export default function FleetMap() {
                           position: "absolute",
                           bottom: 0,
                           marginTop: 5,
-                          left: ship.type !== "Carrier" ? 50 : 85,
+                          left: ship.type !== "Carrier" ? 60 : 85,
                           tintColor: ship.isToggled
                             ? Colors.gold
                             : ship.factionColor,

@@ -124,7 +124,7 @@ export default function Settings() {
             setGameValue(data.gameValue || "");
             setGameRoom(data.gameRoom || "");
             setUserFactionColor(data.userFactionColor || "");
-            console.log("User in Settings:", JSON.stringify(data, null, 2));
+            //console.log("User in Settings:", JSON.stringify(data, null, 2));
           }
         } catch (error) {
           console.error("Failed to retrieve user data:", error);
@@ -318,7 +318,7 @@ export default function Settings() {
                 Game Room not selected, head over to Settings to pick one
               </Text>
             )}
-            <ImagePicker />
+            <ImagePicker factionColor={userFactionColor} />
             {!data.length ? (
               <View
                 width="100%"

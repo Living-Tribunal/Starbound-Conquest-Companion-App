@@ -494,6 +494,10 @@ export default function BattleGround(props) {
               const anyWeaponFired = Object.values(
                 liveShip.weaponStatus || {}
               ).some((fired) => fired === true);
+              console.log(
+                "Ship in BattleGround:",
+                JSON.stringify(liveShip.hasRolledDToHit, null, 2)
+              );
 
               return (
                 <BattleDice
