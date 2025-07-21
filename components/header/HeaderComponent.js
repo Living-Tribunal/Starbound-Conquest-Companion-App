@@ -5,7 +5,12 @@ import { FONTS } from "@/constants/fonts";
 import { useNavigation } from "@react-navigation/native";
 import { useMapImageContext } from "@/components/Global/MapImageContext";
 
-export default function HeaderComponent({ text, NavToWhere, onPress }) {
+export default function HeaderComponent({
+  text,
+  NavToWhere,
+  onPress,
+  disabled,
+}) {
   const navigation = useNavigation();
   const { gameSectors } = useMapImageContext();
   //console.log("Game Sectors in HeaderComponent:", gameSectors);
@@ -22,6 +27,7 @@ export default function HeaderComponent({ text, NavToWhere, onPress }) {
       }}
     >
       <TouchableOpacity
+        disabled={disabled}
         onPress={() => {
           goBack();
           onPress?.();

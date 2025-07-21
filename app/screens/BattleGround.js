@@ -63,10 +63,10 @@ export default function BattleGround(props) {
   const [newHP, setNewHP] = useState(0);
   const [isUser, setIsUser] = useState(null);
   const [liveShip, setLiveShip] = useState(null);
+  const [isDisableBackButton, setIsDisableBackButton] = useState(false);
   const user = FIREBASE_AUTH.currentUser;
 
   const fromGameMap = from === "GameMap";
-  const disableChoose = !!(attackingShip && targetedShip);
   const gameMapAttackingShip = attackingShip || ship;
   const gameMapTargetedShip = targetedShip || singleUserShip;
   const gameMapTargetedShipId = targetedShip?.userId || isUser?.id;
@@ -84,9 +84,6 @@ export default function BattleGround(props) {
   const handleD20Roll = async (value, id) => {
     if (!gameMapAttackingShip || !user) return;
 
-    const isHit = value >= singleUserShip.threatLevel;
-    setHit(isHit);
-
     try {
       const shipRef = doc(
         FIREBASE_DB,
@@ -95,20 +92,46 @@ export default function BattleGround(props) {
         "ships",
         gameMapAttackingShip.id
       );
+      const isHit = value >= singleUserShip.threatLevel;
+      if (isHit) {
+        await updateDoc(shipRef, {
+          hit: isHit,
+          hasRolledDToHit: true,
+          isToggled: true,
+          miss: false,
+        });
 
-      await updateDoc(shipRef, {
-        hit: isHit,
-        hasRolledDToHit: true,
-        isToggled: true,
-      });
-
-      console.log("✅ Ship updated with D20 roll:", {
-        hit: isHit,
-        hasRolledDToHit: true,
-        isToggled: true,
-      });
-
-      setDiceValueToShare(0);
+        setData((prevData) =>
+          prevData.map((s) =>
+            s.id === singleUserShip.id
+              ? {
+                  ...s,
+                  miss: false,
+                }
+              : s
+          )
+        );
+        setIsDisableBackButton(true);
+        setDiceValueToShare(0);
+      } else {
+        await updateDoc(shipRef, {
+          miss: true,
+          hit: false,
+          isToggled: true,
+        });
+        setData((prevData) =>
+          prevData.map((s) =>
+            s.id === singleUserShip.id
+              ? {
+                  ...s,
+                  miss: true,
+                  isToggled: true,
+                  hit: false,
+                }
+              : s
+          )
+        );
+      }
     } catch (e) {
       console.error("❌ Error updating ship after D20 roll:", e);
     }
@@ -149,6 +172,7 @@ export default function BattleGround(props) {
             : s
         )
       );
+      setIsDisableBackButton(false);
     } catch (e) {
       console.error("Error toggling weapon:", e);
     }
@@ -377,7 +401,8 @@ export default function BattleGround(props) {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <HeaderComponent
-        text="BattleGround"
+        disabled={isDisableBackButton}
+        text={isDisableBackButton ? "Battle Has Started" : "BattleGround"}
         NavToWhere={{
           name: fromGameMap ? "GameMap" : "Stats",
           params: { shipId: gameMapAttackingShip?.id || null },
@@ -513,7 +538,8 @@ export default function BattleGround(props) {
                   borderColor={dice.borderColor}
                   //for d20 dice
                   disabledButtonOnHit={
-                    dice.id === "D20" && liveShip.hasRolledDToHit
+                    (dice.id === "D20" && liveShip.hasRolledDToHit) ||
+                    liveShip.miss
                   }
                   //for weapon ONLY dice
                   disabledButton={anyWeaponFired}

@@ -171,7 +171,7 @@ export default function ShipStats({ route }) {
             console.log("Bonus applied:", bonus);
             console.log("Local Dice Roll:", localDiceRoll);
             await updateDoc(shipRef, {
-              [`bonuses.${orderName}`]: bonus,
+              [`bonuses.moveDistanceBonus`]: bonus,
               [`specialOrders.${orderName}`]: true,
               [`specialOrdersAttempted.${orderName}`]: true,
             });
@@ -209,7 +209,7 @@ export default function ShipStats({ route }) {
             const bonus = ship.moveDistance / 2;
             console.log("Bonus applied:", bonus);
             await updateDoc(shipRef, {
-              [`bonuses.${orderName}`]: bonus,
+              [`bonuses.moveDistanceBonus`]: bonus,
               [`specialOrders.${orderName}`]: true,
               [`specialOrdersAttempted.${orderName}`]: true,
             });
