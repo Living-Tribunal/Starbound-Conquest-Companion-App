@@ -481,7 +481,7 @@ export default function FleetMap() {
     setTargetedShip(ship);
     console.log("Targeting ship:", ship.shipId);
   };
-  
+
   const attackingShip = (ship) => {
     setShipPressed(ship.id);
     console.log("Attacking ship:", ship.shipId);
@@ -751,6 +751,7 @@ export default function FleetMap() {
             onPanResponderMove: (e, gestureState) => {
               if (!isUserShip) return;
               if (ship.hasRolledDToHit === true) return;
+              if (ship.miss === true) return;
               const scaleFactor = zoomRef.current?.zoomLevel ?? 1;
 
               // The ship whose pan responder is currently active.
@@ -933,7 +934,7 @@ export default function FleetMap() {
                         width: ship.width / 2,
                         height: ship.height / 2,
                         tintColor:
-                          ship.isToggled && ship.hasRolledDToHit
+                          (ship.isToggled && ship.hasRolledDToHit) || ship.miss
                             ? Colors.gold
                             : null,
                       }}

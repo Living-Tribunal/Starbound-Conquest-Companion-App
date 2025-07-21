@@ -116,7 +116,8 @@ export default function ShipFlatList({ type, usersColor, toggleToDelete }) {
                   !toggleToDelete &&
                   (!item.hp === 0 ||
                     item.isToggled === true ||
-                    item.hasRolledDToHit === true)
+                    item.hasRolledDToHit === true ||
+                    item.miss === true)
                 }
                 onPress={() => {
                   if (toggleToDelete) {
