@@ -24,6 +24,7 @@ import { useNavigation } from "@react-navigation/native";
 import BattleDice from "@/components/dice/BattleGroundDice.js";
 import { getFleetData } from "@/components/API/API.js";
 import { useDiceContext } from "@/components/Global/DiceContext.js";
+import { FactionImages } from "@/constants/FactionImages.js";
 
 export default function ShipStats({ route }) {
   const navigation = useNavigation();
@@ -51,6 +52,10 @@ export default function ShipStats({ route }) {
     setFromGameMap,
   } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
+  const localImage =
+    ship?.factionName && ship?.type
+      ? FactionImages[ship.factionName]?.[ship.type]?.classImage
+      : null;
   const shipSpecialOrders = ship ? ShipAttributes[ship.type] : null;
   const bonusNameChanged = {
     moveDistanceBonus: "Movement Bonus",
@@ -804,7 +809,7 @@ export default function ShipStats({ route }) {
             <Image
               resizeMode={"center"}
               style={[styles.icon]}
-              source={{ uri: ship.image }}
+              source={localImage}
             />
           </View>
         </View>

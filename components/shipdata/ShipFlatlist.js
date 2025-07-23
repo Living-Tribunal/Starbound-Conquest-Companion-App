@@ -114,7 +114,7 @@ export default function ShipFlatList({ type, usersColor, toggleToDelete }) {
                 }}
                 disabled={
                   !toggleToDelete &&
-                  (!item.hp === 0 ||
+                  (item.hp === 0 ||
                     item.isToggled === true ||
                     item.hasRolledDToHit === true ||
                     item.miss === true)
@@ -263,7 +263,11 @@ export default function ShipFlatList({ type, usersColor, toggleToDelete }) {
                     borderRadius: 5,
                     borderWidth: 1,
                     boxShadow: `0px 0px 10px ${
-                      item.hp === 0 ? Colors.lighter_red : usersColor
+                      item.hp === 0
+                        ? Colors.lighter_red // dead ship
+                        : item.isToggled
+                        ? Colors.gold // alive + toggled
+                        : Colors.hud
                     }`,
                     borderColor:
                       item.hp === 0
@@ -319,7 +323,6 @@ export default function ShipFlatList({ type, usersColor, toggleToDelete }) {
                         alignSelf: "center",
                         borderRadius: 10,
                         marginTop: 5,
-                        tintColor: item.hp === 0 ? Colors.lighter_red : null,
                       }}
                     />
                   </View>

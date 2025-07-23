@@ -21,6 +21,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "@/FirebaseConfig";
+import { FactionImages } from "@/constants/FactionImages";
 import { useFocusEffect } from "expo-router";
 import TileBackground from "../../components/background/Background";
 import { factionIcons } from "../../constants/shipIcons";
@@ -672,7 +673,12 @@ export default function FleetMap() {
         onDoubleTapBefore={() => false}
       >
         <TileBackground panX={panX} panY={panY} />
+
         {filteredShips.map((ship) => {
+          const localImage =
+            ship?.factionName && ship?.type
+              ? FactionImages[ship.factionName]?.[ship.type]?.classImage
+              : null;
           const isUserShip = user.uid === ship.user;
           const isTargetedShip = ship.user !== user.uid;
 
@@ -928,7 +934,7 @@ export default function FleetMap() {
                     }}
                   >
                     <Image
-                      source={{ uri: ship.image }}
+                      source={localImage}
                       style={{
                         borderRadius: 20,
                         width: ship.width / 2,
