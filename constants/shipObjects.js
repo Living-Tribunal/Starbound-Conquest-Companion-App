@@ -38,6 +38,11 @@ export const shipObject = {
       weaponStatus: {
         "Light Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
 
     destroyer: {
@@ -79,6 +84,11 @@ export const shipObject = {
       weaponStatus: {
         "Medium Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
     cruiser: {
       factionName: "Nova Raiders",
@@ -119,6 +129,11 @@ export const shipObject = {
         "Heavy Cannon": false,
         "Plasma Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
     carrier: {
       factionName: "Nova Raiders",
@@ -150,6 +165,11 @@ export const shipObject = {
         "Reinforce Shields": false,
         "Launch Fighters": false,
         "All Systems Fire": false,
+      },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
       },
       bonuses: {
         moveDistanceBonus: 0,
@@ -200,6 +220,11 @@ export const shipObject = {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
   },
   "The Zyrrians": {
@@ -240,6 +265,11 @@ export const shipObject = {
       weaponStatus: {
         "Light Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
 
     destroyer: {
@@ -278,6 +308,11 @@ export const shipObject = {
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
+      },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
       },
     },
     cruiser: {
@@ -319,6 +354,11 @@ export const shipObject = {
         "Heavy Cannon": false,
         "Plasma Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
     carrier: {
       factionName: "The Zyrrians",
@@ -357,6 +397,11 @@ export const shipObject = {
       },
       hasBeenInteractedWith: false,
       capacity: 20,
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
     dreadnought: {
       factionName: "The Zyrrians",
@@ -399,6 +444,11 @@ export const shipObject = {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
   },
   "Voidborn Marauders": {
@@ -438,6 +488,11 @@ export const shipObject = {
       weaponStatus: {
         "Light Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
 
     destroyer: {
@@ -475,6 +530,11 @@ export const shipObject = {
       },
       weaponStatus: {
         "Medium Cannon": false,
+      },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
       },
     },
     cruiser: {
@@ -515,6 +575,11 @@ export const shipObject = {
         "Heavy Cannon": false,
         "Plasma Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
     carrier: {
       factionName: "Voidborn Marauders",
@@ -553,6 +618,11 @@ export const shipObject = {
       weaponType: ["Missile Battery"],
       weaponStatus: { "Missile Battery": false },
       capacity: 20,
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
     dreadnought: {
       factionName: "Voidborn Marauders",
@@ -595,6 +665,11 @@ export const shipObject = {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
   },
   "Star Reapers": {
@@ -635,6 +710,11 @@ export const shipObject = {
       weaponStatus: {
         "Light Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
 
     destroyer: {
@@ -673,6 +753,11 @@ export const shipObject = {
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
+      },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
       },
     },
     cruiser: {
@@ -714,6 +799,11 @@ export const shipObject = {
         "Heavy Cannon": false,
         "Plasma Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
     carrier: {
       factionName: "Star Reapers",
@@ -752,6 +842,11 @@ export const shipObject = {
       },
       hasBeenInteractedWith: false,
       capacity: 20,
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
     dreadnought: {
       factionName: "Star Reapers",
@@ -794,6 +889,11 @@ export const shipObject = {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
   },
   "Praxleon Empire": {
@@ -834,6 +934,11 @@ export const shipObject = {
       weaponStatus: {
         "Light Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
 
     destroyer: {
@@ -872,6 +977,11 @@ export const shipObject = {
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
+      },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
       },
     },
     cruiser: {
@@ -913,6 +1023,11 @@ export const shipObject = {
         "Heavy Cannon": false,
         "Plasma Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
     carrier: {
       factionName: "Praxleon Empire",
@@ -951,6 +1066,11 @@ export const shipObject = {
       },
       hasBeenInteractedWith: false,
       capacity: 20,
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
     dreadnought: {
       factionName: "Praxleon Empire",
@@ -993,6 +1113,11 @@ export const shipObject = {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
   },
   "Synthon Syndicate": {
@@ -1033,6 +1158,11 @@ export const shipObject = {
       weaponStatus: {
         "Light Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
 
     destroyer: {
@@ -1071,6 +1201,11 @@ export const shipObject = {
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
+      },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
       },
     },
     cruiser: {
@@ -1112,6 +1247,11 @@ export const shipObject = {
         "Heavy Cannon": false,
         "Plasma Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
     carrier: {
       factionName: "Synthon Syndicate",
@@ -1150,6 +1290,11 @@ export const shipObject = {
       },
       hasBeenInteractedWith: false,
       capacity: 20,
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
     dreadnought: {
       factionName: "Synthon Syndicate",
@@ -1192,6 +1337,11 @@ export const shipObject = {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
   },
   "The Union": {
@@ -1232,6 +1382,11 @@ export const shipObject = {
       weaponStatus: {
         "Light Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
 
     destroyer: {
@@ -1270,6 +1425,11 @@ export const shipObject = {
       hasBeenInteractedWith: false,
       weaponStatus: {
         "Medium Cannon": false,
+      },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
       },
     },
     cruiser: {
@@ -1311,6 +1471,11 @@ export const shipObject = {
         "Heavy Cannon": false,
         "Plasma Cannon": false,
       },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
     carrier: {
       factionName: "The Union",
@@ -1349,6 +1514,11 @@ export const shipObject = {
       },
       hasBeenInteractedWith: false,
       capacity: 20,
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
+      },
     },
     dreadnought: {
       factionName: "The Union",
@@ -1391,6 +1561,11 @@ export const shipObject = {
         "Ion Particle Beam": false,
         "Plasma Cannon": false,
         "350mm Railgun": false,
+      },
+      shipActions: {
+        move: false,
+        attack: false,
+        specialOrder: false,
       },
     },
   },

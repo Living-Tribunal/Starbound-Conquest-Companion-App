@@ -106,6 +106,9 @@ export default function BattleGround(props) {
             s.id === singleUserShip.id
               ? {
                   ...s,
+                  hit: isHit,
+                  hasRolledDToHit: true,
+                  isToggled: true,
                   miss: false,
                 }
               : s
@@ -116,9 +119,10 @@ export default function BattleGround(props) {
       } else {
         await updateDoc(shipRef, {
           miss: true,
-          hit: false,
           isToggled: true,
+          hit: false,
         });
+
         setData((prevData) =>
           prevData.map((s) =>
             s.id === singleUserShip.id

@@ -202,6 +202,7 @@ export default function Player() {
           numberOfShipsProtecting: 0,
           color: getRandomColorForCarrier(),
           specialOrdersAttempted: {},
+          isPendingDestruction: false,
         };
         // Add to Firestore
         const docRef = await addDoc(
@@ -432,11 +433,19 @@ export default function Player() {
         );
 
         let newSpecialOrders = {};
+        let newShipActions = {};
+
         if (myShipData.specialOrders) {
           Object.keys(myShipData.specialOrders).forEach((order) => {
             newSpecialOrders[order] = false;
           });
         }
+        if (myShipData.shipActions) {
+          Object.keys(myShipData.shipActions).forEach((key) => {
+            newShipActions[key] = false;
+          });
+        }
+
         allResetPromises.push(
           updateDoc(myShipDocRef, {
             isToggled: false,
@@ -448,9 +457,11 @@ export default function Player() {
             hasRolledDToHit: false,
             shipInterval: increment(1),
             distanceTraveled: 0,
+            shipActions: newShipActions,
             bonuses: {
               broadSideBonus: 0,
               inFighterRangeBonus: 0,
+              moveDistanceBonus: 0,
             },
           })
         );
@@ -487,9 +498,16 @@ export default function Player() {
           );
 
           let newSpecialOrders = {};
+          let newShipActions = {};
+
           if (shipData.specialOrders) {
             Object.keys(shipData.specialOrders).forEach((key) => {
               newSpecialOrders[key] = false;
+            });
+          }
+          if (shipData.shipActions) {
+            Object.keys(shipData.shipActions).forEach((key) => {
+              newShipActions[key] = false;
             });
           }
 
@@ -504,6 +522,13 @@ export default function Player() {
               shipInterval: increment(1),
               distanceTraveled: 0,
               specialOrdersAttempted: {},
+              shipActions: newShipActions,
+              specialOrders: newSpecialOrders,
+              bonuses: {
+                broadSideBonus: 0,
+                inFighterRangeBonus: 0,
+                moveDistanceBonus: 0,
+              },
             })
           );
         }

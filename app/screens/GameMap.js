@@ -877,7 +877,7 @@ export default function FleetMap() {
                   }}
                 />
               )}
-              {ship.hp !== 0 && (
+              {ship.hp !== 0 && ship.isPendingDestruction === false && (
                 <Animated.View
                   key={ship.id}
                   {...panResponder.panHandlers}
