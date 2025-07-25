@@ -11,9 +11,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_41_31%20PM.png?alt=media&token=6705c15c-f37a-4188-81d8-3b7e8d18ce3a",
-
+      image: "assets/ShipImages/NR/fighterNR.png",
       maxHP: 20,
       hp: 20,
       damageThreshold: 1,
@@ -58,8 +56,7 @@ export const shipObject = {
 
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_27_22%20PM.png?alt=media&token=ba3c3ad0-09e5-40ff-8f1b-082e8df13706",
+      image: "assets/ShipImages/NR/destroyerNR.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -106,8 +103,7 @@ export const shipObject = {
       },
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_45_37%20PM.png?alt=media&token=8540477f-292d-48e5-9d51-8b19e818620f",
+      image: "assets/ShipImages/NR/cruiserNR.png",
       maxHP: 12,
       hp: 12,
       damageThreshold: 6,
@@ -147,8 +143,7 @@ export const shipObject = {
 
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_43_06%20PM.png?alt=media&token=40f7b236-0ebd-48c8-8d45-bfcfec7e9f4c",
+      image: "assets/ShipImages/NR/carrierNR.png",
       maxHP: 14,
       hp: 14,
       damageThreshold: 7,
@@ -190,9 +185,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction7%2FChatGPT%20Image%20May%2026%2C%202025%2C%2002_29_52%20PM.png?alt=media&token=4477e2e4-51b0-4acc-bdc0-900cf5e48898",
-      maxHP: 30,
+      image: "assets/ShipImages/NR/dreadNR.png",
       hp: 30,
       damageThreshold: 4,
       threatLevel: 8,
@@ -244,8 +237,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2003_48_02%20PM.png?alt=media&token=8ad99515-edc9-40da-b5de-d6349150be8c",
+      image: "assets/ShipImages/ZY/fighterZY.png",
       maxHP: 20,
       hp: 20,
       damageThreshold: 1,
@@ -283,8 +275,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2004_06_44%20PM.png?alt=media&token=7977b803-9e3f-4ee5-8ca1-d89d1e254b16",
+      image: "assets/ShipImages/ZY/destroyerZY.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -326,8 +317,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2003_59_57%20PM.png?alt=media&token=2e74cfcb-02ac-4707-9d65-32e988f3bf4f",
+      image: "assets/ShipImages/ZY/cruiserZY.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -371,8 +361,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2004_03_11%20PM.png?alt=media&token=854ca323-8b17-49d2-ac15-216c4791e89d",
+      image: "assets/ShipImages/ZY/carrierZY.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -414,8 +403,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction4%2FChatGPT%20Image%20May%2026%2C%202025%2C%2003_45_32%20PM.png?alt=media&token=c04082eb-c0e0-4a1c-b028-6d0533c0b0e0",
+      image: "assets/ShipImages/ZY/dreadZY.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -463,8 +451,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2012_33_05%20PM.png?alt=media&token=56510c8c-1d9e-4dfb-9b5a-53bbe6af752d",
+      image: "assets/ShipImages/VM/fighter.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -506,8 +493,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2012_13_01%20PM.png?alt=media&token=56d7049f-d1a5-43d6-a15b-815c8308874b",
+      image: "assets/ShipImages/VM/destroyer.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -548,8 +534,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2012_30_01%20PM.png?alt=media&token=4ac46b54-f444-47ac-be4a-d119c265e2b1",
+      image: "assets/ShipImages/VM/cruiser.png",
       maxHP: 12,
       hp: 12,
       damageThreshold: 6,
@@ -593,8 +578,7 @@ export const shipObject = {
 
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_44_40%20AM.png?alt=media&token=2426e3a1-b1ff-4aa0-a890-379cbdc85c25",
+      image: "assets/ShipImages/VM/carrier.png",
       maxHP: 14,
       hp: 14,
       damageThreshold: 7,
@@ -635,8 +619,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction5%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_34_15%20AM.png?alt=media&token=ca5c3322-3265-4476-8cfb-67619335f208",
+      image: "assets/ShipImages/VM/dread.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -684,8 +667,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_36_52%20AM.png?alt=media&token=e8c35b22-dc3c-4111-909a-b2e8fb15f5a7",
+      image: "assets/ShipImages/SR/fighter.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -728,8 +710,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_30_37%20AM.png?alt=media&token=442d40a1-ce0e-4dd7-9dcc-36feff1d9823",
+      image: "assets/ShipImages/SR/destroyer.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -771,8 +752,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_09_32%20AM.png?alt=media&token=e2807265-ef5e-40c6-b448-75f96a41feb3",
+      image: "assets/ShipImages/SR/cruiser.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -816,8 +796,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_27_35%20AM.png?alt=media&token=62ef9303-5904-4a42-bb8d-fe14f00551e0",
+      image: "assets/ShipImages/SR/carrier.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -859,8 +838,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction1%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_06_26%20AM.png?alt=media&token=9e5cc2fe-d83c-4091-8f17-b3c5c46bbc96",
+      image: "assets/ShipImages/SR/dread.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -908,8 +886,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_05_34%20AM.png?alt=media&token=39cf58b4-98f9-43ed-aec0-53ae887f4fdf",
+      image: "assets/ShipImages/PE/fighter.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -952,8 +929,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_35_07%20AM.png?alt=media&token=b3877058-7e8d-419c-924d-c0e38be57800",
+      image: "assets/ShipImages/PE/destroyer.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -995,8 +971,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_29_55%20AM.png?alt=media&token=458c3522-e757-4d7f-ac59-66877fd1f6e5",
+      image: "assets/ShipImages/PE/cruiser.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -1040,8 +1015,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_24_34%20AM.png?alt=media&token=6ba82900-9e66-4a7b-a5f6-329e240ced37",
+      image: "assets/ShipImages/PE/carrier.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -1083,8 +1057,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction2%2FChatGPT%20Image%20May%2026%2C%202025%2C%2011_11_48%20AM.png?alt=media&token=61615d00-2131-4288-b09a-d2be847e9fb4",
+      image: "assets/ShipImages/PE/dread.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -1132,8 +1105,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_59_00%20AM.png?alt=media&token=f95a0054-cf1b-4ce9-b485-54ead870fe2f",
+      image: "assets/ShipImages/SS/fighter.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -1176,8 +1148,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_53_48%20AM.png?alt=media&token=e4745f68-752d-49fb-b8c9-c5bd9afe1f21",
+      image: "assets/ShipImages/SS/destroyer.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -1219,8 +1190,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_51_53%20AM.png?alt=media&token=aef2db7d-b127-4c47-bdcb-e9f0044c5817",
+      image: "assets/ShipImages/SS/cruiser.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -1264,8 +1234,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_48_23%20AM.png?alt=media&token=506b482a-fcef-4dd5-8bf9-22b04a19814e",
+      image: "assets/ShipImages/SS/carrier.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -1307,8 +1276,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction3%2FChatGPT%20Image%20May%2027%2C%202025%2C%2009_36_21%20AM.png?alt=media&token=6deda667-cc6d-49fa-8805-2dc75273e847",
+      image: "assets/ShipImages/SS/dread.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -1356,8 +1324,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2010_30_43%20AM.png?alt=media&token=ce2b461a-9b7e-4e51-acbb-4ec860693898",
+      image: "assets/ShipImages/UN/fighter.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -1400,8 +1367,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2010_20_03%20AM.png?alt=media&token=862a1576-a33a-47c5-ab58-5f3812f56286",
+      image: "assets/ShipImages/UN/destroyer.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -1443,8 +1409,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_57_21%20AM.png?alt=media&token=bf3f7c8e-9f0d-43c9-a9c0-54ff4a02783b",
+      image: "assets/ShipImages/UN/cruiser.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -1488,8 +1453,7 @@ export const shipObject = {
       isSelected: false,
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2010_26_19%20AM.png?alt=media&token=4a879f41-902a-4f56-a8d3-f21691cec427",
+      image: "assets/ShipImages/UN/carrier.png",
       bonuses: {
         moveDistanceBonus: 0,
         broadSideBonus: 0,
@@ -1532,8 +1496,7 @@ export const shipObject = {
 
       isToggled: false,
       rotation_angle: 0,
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/Faction6%2FChatGPT%20Image%20May%2026%2C%202025%2C%2009_47_36%20AM.png?alt=media&token=9971a23d-fa35-47da-98f8-d4e77ebd660e",
+      image: "assets/ShipImages/UN/dread.png",
       maxHP: 30,
       hp: 30,
       damageThreshold: 4,
