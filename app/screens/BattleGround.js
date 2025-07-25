@@ -99,6 +99,7 @@ export default function BattleGround(props) {
           hasRolledDToHit: true,
           isToggled: true,
           miss: false,
+          "shipActions.attack": true,
         });
 
         setData((prevData) =>
@@ -110,6 +111,10 @@ export default function BattleGround(props) {
                   hasRolledDToHit: true,
                   isToggled: true,
                   miss: false,
+                  shipActions: {
+                    ...(s.shipActions || {}),
+                    attack: true,
+                  },
                 }
               : s
           )
@@ -121,6 +126,7 @@ export default function BattleGround(props) {
           miss: true,
           isToggled: true,
           hit: false,
+          "shipActions.attack": true,
         });
 
         setData((prevData) =>
@@ -131,6 +137,10 @@ export default function BattleGround(props) {
                   miss: true,
                   isToggled: true,
                   hit: false,
+                  shipActions: {
+                    ...(s.shipActions || {}),
+                    attack: true,
+                  },
                 }
               : s
           )
