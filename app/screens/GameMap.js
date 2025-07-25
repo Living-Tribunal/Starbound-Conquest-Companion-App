@@ -286,11 +286,41 @@ export default function FleetMap() {
         rotation_angle: rotation,
         distanceTraveled: distanceTraveled,
       });
-      //console.log("Updated ship position:", x, y);
     } catch (e) {
       console.error("Error updating document: ", e);
     }
     setUpdateMovement(false);
+  };
+
+  const updateShipMoveAction = async (selectedShip) => {
+    if (!selectedShip || !user) return;
+    try {
+      const shipRef = doc(
+        FIREBASE_DB,
+        "users",
+        user.uid,
+        "ships",
+        selectedShip.id
+      );
+      await updateDoc(shipRef, {
+        "shipActions.move": true,
+      });
+      setData((prevData) =>
+        prevData.map((s) =>
+          s.id === selectedShip.id
+            ? {
+                ...s,
+                shipActions: {
+                  ...(s.shipActions || {}),
+                  move: true,
+                },
+              }
+            : s
+        )
+      );
+    } catch (e) {
+      console.error("Error updating document: ", e);
+    }
   };
 
   const updateFighterProtection = async (
@@ -471,6 +501,23 @@ export default function FleetMap() {
     }, [gameRoom, gameSectors])
   );
 
+  /*  useEffect(() => {
+    if (!gameRoom || !gameSectors) return;
+
+    const unsubscribe = getAllShipsInGameRoom({
+      setData,
+      setLoading,
+      gameSectors,
+      gameRoom,
+    });
+
+    return () => {
+      if (typeof unsubscribe === "function") {
+        unsubscribe();
+      }
+    };
+  }, [gameRoom, gameSectors]); */
+
   useEffect(() => {
     const listener = scale.addListener(({ value }) => {
       scaleValue.current = value;
@@ -527,10 +574,10 @@ export default function FleetMap() {
             existingShip.rotation.setValue(incomingShip.rotation_angle);
           }
           newShipsMap.set(incomingShip.id, {
-            ...incomingShip,
-            ...existingShip,
-            position: existingShip.position, // Keep the existing Animated.ValueXY
-            rotation: existingShip.rotation, // Keep the existing Animated.Value
+            ...existingShip, // preserve Animated values
+            ...incomingShip, // incoming Firestore data should overwrite stale local data
+            position: existingShip.position,
+            rotation: existingShip.rotation,
           });
         } else {
           // New ship, create new Animated values
@@ -659,7 +706,17 @@ export default function FleetMap() {
         minZoom={0.2}
         initialZoom={0.5}
         longPressDuration={5}
-        onLongPress={() => {
+        onLongPress={async () => {
+          // Confirm movement if it hasn't been done and the ship moved
+          if (
+            selectedShip &&
+            !selectedShip.shipActions?.move &&
+            selectedShip.position.__getValue().x !== movementDistanceCircle.x &&
+            selectedShip.position.__getValue().y !== movementDistanceCircle.y
+          ) {
+            await updateShipMoveAction(selectedShip);
+          }
+
           setShipPressed(null);
           setMovementDistanceCircle(null);
           setTargetedShip(null);
@@ -689,12 +746,10 @@ export default function FleetMap() {
             onStartShouldSetPanResponder: () => true,
 
             onPanResponderGrant: () => {
-              {
-                /*       setShipPressed(ship.id);
-              setMovementDistanceCircle(null);
-              setCircleBorderColor("transparent");
-              setCircleBackgroundColor("transparent"); */
-              }
+              /*   if (!isUserShip) return;
+              if (ship.shipActions?.move === true) return;
+              if (ship.hasRolledDToHit === true) return;
+              if (ship.miss === true) return; */
 
               if (isUserShip) {
                 ship.position.extractOffset();
@@ -756,6 +811,7 @@ export default function FleetMap() {
 
             onPanResponderMove: (e, gestureState) => {
               if (!isUserShip) return;
+              if (ship.shipActions?.move === true) return;
               if (ship.hasRolledDToHit === true) return;
               if (ship.miss === true) return;
               const scaleFactor = zoomRef.current?.zoomLevel ?? 1;
@@ -829,6 +885,9 @@ export default function FleetMap() {
             // In onPanResponderRelease, after ship.position.flattenOffset() and updatingPosition:
             onPanResponderRelease: async () => {
               if (!isUserShip) return;
+              if (ship.shipActions?.move === true) return;
+              if (ship.hasRolledDToHit === true) return;
+              if (ship.miss === true) return;
               // Flatten the position to commit the current offset
               ship.position.flattenOffset();
               // Get the current position of the ship
@@ -1051,8 +1110,7 @@ export default function FleetMap() {
                               height: 30,
                               alignSelf: "center",
                               position: "absolute",
-                              left: -80,
-                              marginTop: 5,
+                              left: ship.width / 3,
                               tintColor: Colors.green_toggle,
                             }}
                             source={{
@@ -1066,7 +1124,7 @@ export default function FleetMap() {
                           width: 35,
                           height: 35,
                           position: "absolute",
-                          bottom: 0,
+                          bottom: ship.height / 2,
                           marginTop: 5,
                           left: ship.type !== "Carrier" ? 60 : 85,
                           tintColor: ship.isToggled
@@ -1075,25 +1133,44 @@ export default function FleetMap() {
                         }}
                         resizeMode="contain"
                       />
-                      {ship.type !== "Carrier" && ship.user === user.uid && (
+                      {ship.user === user.uid && (
                         <>
-                          <Image
-                            pointerEvents="none"
-                            resizeMode="contain"
-                            style={{
-                              width: 30,
-                              height: 30,
-                              alignSelf: "center",
-                              position: "absolute",
-                              left: -40,
-                              marginTop: 5,
-                              tintColor:
-                                checkIfShipIsInRangeShowIndicator(ship),
-                            }}
-                            source={{
-                              uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
-                            }}
-                          />
+                          {ship.type !== "Carrier" && (
+                            <Image
+                              pointerEvents="none"
+                              resizeMode="contain"
+                              style={{
+                                width: 30,
+                                height: 30,
+                                alignSelf: "center",
+                                position: "absolute",
+                                left: -ship.width / 4,
+                                tintColor:
+                                  checkIfShipIsInRangeShowIndicator(ship),
+                              }}
+                              source={{
+                                uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
+                              }}
+                            />
+                          )}
+                          {ship?.shipActions?.move ? (
+                            <Image
+                              style={{
+                                width: 35,
+                                height: 35,
+                                position: "absolute",
+                                bottom: 0,
+                                left: -40,
+                                bottom: ship.height / 2,
+                                marginTop: 5,
+                                tintColor: Colors.lighter_red,
+                                backgroundColor: Colors.deep_red,
+                                borderRadius: 50,
+                                zIndex: 100,
+                              }}
+                              source={require("../../assets/icons/icons8-cancel-50.png")}
+                            />
+                          ) : null}
                           {ship.isInFighterRange ? (
                             <Text
                               pointerEvents="none"
