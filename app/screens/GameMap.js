@@ -38,6 +38,7 @@ import { WeaponColors as weaponColors } from "@/constants/WeaponColors";
 import Toast from "react-native-toast-message";
 import { navigate } from "expo-router/build/global-state/routing";
 import BattleModal from "@/components/BattleModal/BattleModal";
+import PulsingGlow from "@/components/Pusle/PulsingGlow";
 
 export default function FleetMap() {
   const navigation = useNavigation();
@@ -389,9 +390,14 @@ export default function FleetMap() {
           s.isInFighterRange = true;
           s.protectedByCarrierID = carrier.id;
           s.protectingCarriersColor = carrier.color;
-          s.bonuses.inFighterRangeBonus =
-            Math.floor(carrier.maxCapacity / carrier.numberOfShipsProtecting) ||
-            0;
+
+          if (carrier.numberOfShipsProtecting > 0) {
+            s.bonuses.inFighterRangeBonus = Math.floor(
+              carrier.maxCapacity / carrier.numberOfShipsProtecting
+            );
+          } else {
+            s.bonuses.inFighterRangeBonus = 0;
+          }
 
           updatedMap[carrier.id].push(s);
           allInRange.push(s);
@@ -649,8 +655,19 @@ export default function FleetMap() {
           ]}
         >
           <Text style={styles.shipInfo}>Ship: {selectedShip.shipId}</Text>
-          <Text style={styles.shipInfo}>
-            HP: {selectedShip.hp} / {selectedShip.maxHP}
+          <Text
+            style={[
+              styles.shipInfo,
+              {
+                color: selectedShip.bonuses.inFighterRangeBonus
+                  ? Colors.green_toggle
+                  : Colors.hud,
+              },
+            ]}
+          >
+            HP:{" "}
+            {selectedShip.hp + selectedShip.bonuses.inFighterRangeBonus || 0} /{" "}
+            {selectedShip.maxHP}
           </Text>
           <Text style={styles.shipInfo}>Type: {selectedShip.type}</Text>
           <Text style={styles.shipInfo}>
@@ -659,7 +676,7 @@ export default function FleetMap() {
           {selectedShip.type === "Carrier" && (
             <>
               <Text style={[styles.shipInfo]}>
-                Protected: {selectedShip.numberOfShipsProtecting}
+                Protecting: {selectedShip.numberOfShipsProtecting}
               </Text>
               <Text style={[styles.shipInfo]}>Ship Color</Text>
               <View
@@ -709,6 +726,7 @@ export default function FleetMap() {
         onLongPress={async () => {
           // Confirm movement if it hasn't been done and the ship moved
           if (
+            !tempDisableMovementRestriction &&
             selectedShip &&
             !selectedShip.shipActions?.move &&
             selectedShip.position.__getValue().x !== movementDistanceCircle.x &&
@@ -749,7 +767,8 @@ export default function FleetMap() {
               /*   if (!isUserShip) return;
               if (ship.shipActions?.move === true) return;
               if (ship.hasRolledDToHit === true) return;
-              if (ship.miss === true) return; */
+              if (ship.miss === true) return;
+              if (updateMovement) return; */
 
               if (isUserShip) {
                 ship.position.extractOffset();
@@ -772,9 +791,6 @@ export default function FleetMap() {
                   });
                   setCircleBorderColor("rgba(0,200,255,0.5)");
                   setCircleBackgroundColor("rgba(0,200,255,0.1)");
-                  {
-                    /*    } */
-                  }
 
                   if (
                     ship.type === "Carrier" &&
@@ -981,7 +997,6 @@ export default function FleetMap() {
 
                   <Animated.View
                     style={{
-                      borderRadius: 10,
                       transform: [
                         {
                           rotate: ship.rotation.interpolate({
@@ -998,14 +1013,19 @@ export default function FleetMap() {
                         borderRadius: 20,
                         width: ship.width / 2,
                         height: ship.height / 2,
-                        tintColor:
-                          (ship.isToggled && ship.hasRolledDToHit) || ship.miss
-                            ? Colors.gold
-                            : null,
+                        opacity:
+                          (ship.isToggled &&
+                            ship.hasRolledDToHit &&
+                            ship.user === user.uid) ||
+                          ship.miss
+                            ? 0.75
+                            : 1,
                       }}
                       resizeMode="center"
                     />
-
+                    {/* {ship.user === user.uid && removeAllIcons && (
+                      <PulsingGlow ship={ship} size={120} color={"#00f"} />
+                    )} */}
                     <View
                       style={{
                         left: ship.width / 4,
@@ -1031,74 +1051,6 @@ export default function FleetMap() {
                         justifyContent: "center",
                       }}
                     >
-                      <Text
-                        style={[
-                          styles.info,
-                          {
-                            fontFamily: "LeagueSpartan-Bold",
-                            marginTop: 5,
-                            color: ship.protectingCarriersColor
-                              ? Colors.white
-                              : ship.id === shipPressed &&
-                                targetedShip?.id === ship.id
-                              ? Colors.green_toggle
-                              : targetedShip?.id === ship.id
-                              ? Colors.green_toggle
-                              : ship.id === shipPressed
-                              ? Colors.gold
-                              : Colors.hud,
-
-                            backgroundColor: ship.protectingCarriersColor
-                              ? ship.protectingCarriersColor
-                              : ship.id === shipPressed &&
-                                targetedShip?.id === ship.id
-                              ? Colors.darker_green_toggle
-                              : targetedShip?.id === ship.id
-                              ? Colors.darker_green_toggle
-                              : ship.id === shipPressed
-                              ? Colors.goldenrod
-                              : Colors.hudDarker,
-
-                            borderColor: ship.protectingCarriersColor
-                              ? ship.protectingCarriersColor
-                              : ship.id === shipPressed &&
-                                targetedShip?.id === ship.id
-                              ? Colors.green_toggle
-                              : targetedShip?.id === ship.id
-                              ? Colors.green_toggle
-                              : ship.id === shipPressed
-                              ? Colors.gold
-                              : Colors.hud,
-                          },
-                        ]}
-                      >
-                        {ship.shipId}
-                      </Text>
-                      {ship.type === "Carrier" && ship.user === user.uid && (
-                        <Text
-                          style={[
-                            styles.info,
-                            {
-                              marginTop: 5,
-                              marginLeft: 5,
-                              color:
-                                ship.id === shipPressed
-                                  ? Colors.gold
-                                  : Colors.hud,
-                              backgroundColor:
-                                ship.id === shipPressed
-                                  ? Colors.goldenrod
-                                  : Colors.hudDarker,
-                              borderColor:
-                                ship.id === shipPressed
-                                  ? Colors.gold
-                                  : Colors.hud,
-                            },
-                          ]}
-                        >
-                          {ship.numberOfShipsProtecting}
-                        </Text>
-                      )}
                       {ship.type === "Dreadnought" &&
                         ship.weaponStatus?.["Ion Particle Beam"] === false &&
                         ship.user === user.uid && (
@@ -1110,7 +1062,7 @@ export default function FleetMap() {
                               height: 30,
                               alignSelf: "center",
                               position: "absolute",
-                              left: ship.width / 3,
+                              left: ship.width / 4,
                               tintColor: Colors.green_toggle,
                             }}
                             source={{
@@ -1118,73 +1070,28 @@ export default function FleetMap() {
                             }}
                           />
                         )}
-                      <Image
-                        source={factionIcons[ship.type.toLowerCase()]}
-                        style={{
-                          width: 35,
-                          height: 35,
-                          position: "absolute",
-                          bottom: ship.height / 2,
-                          marginTop: 5,
-                          left: ship.type !== "Carrier" ? 60 : 85,
-                          tintColor: ship.isToggled
-                            ? Colors.gold
-                            : ship.factionColor,
-                        }}
-                        resizeMode="contain"
-                      />
                       {ship.user === user.uid && (
                         <>
-                          {ship.type !== "Carrier" && (
-                            <Image
-                              pointerEvents="none"
-                              resizeMode="contain"
-                              style={{
-                                width: 30,
-                                height: 30,
-                                alignSelf: "center",
-                                position: "absolute",
-                                left: -ship.width / 4,
-                                tintColor:
-                                  checkIfShipIsInRangeShowIndicator(ship),
-                              }}
-                              source={{
-                                uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
-                              }}
-                            />
-                          )}
-                          {ship?.shipActions?.move ? (
-                            <Image
-                              style={{
-                                width: 35,
-                                height: 35,
-                                position: "absolute",
-                                bottom: 0,
-                                left: -40,
-                                bottom: ship.height / 2,
-                                marginTop: 5,
-                                tintColor: Colors.lighter_red,
-                                backgroundColor: Colors.deep_red,
-                                borderRadius: 50,
-                                zIndex: 100,
-                              }}
-                              source={require("../../assets/icons/icons8-cancel-50.png")}
-                            />
-                          ) : null}
-                          {ship.isInFighterRange ? (
-                            <Text
-                              pointerEvents="none"
-                              style={{
-                                position: "absolute",
-                                color: checkIfShipIsInRangeShowIndicator(ship),
-                                fontSize: 10,
-                                left: -40,
-                                bottom: 40,
-                              }}
-                            >
-                              +{ship.bonuses.inFighterRangeBonus} hp
-                            </Text>
-                          ) : null}
+                          <Image
+                            style={{
+                              width: 35,
+                              height: 35,
+                              position: "absolute",
+                              bottom: 0,
+                              left: -40,
+                              bottom: ship.height / 2,
+                              marginTop: 5,
+                              tintColor: ship.shipActions.move
+                                ? Colors.lighter_red
+                                : Colors.green_toggle,
+                              backgroundColor: ship.shipActions.move
+                                ? Colors.deep_red
+                                : Colors.darker_green_toggle,
+                              borderRadius: 50,
+                              zIndex: 100,
+                            }}
+                            source={require("../../assets/icons/icons8-move-50.png")}
+                          />
                         </>
                       )}
                     </View>

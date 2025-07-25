@@ -12,12 +12,6 @@ export default async function SpecialOrderBonuses({
   setLocalDiceRoll,
   firstDice,
 }) {
-  console.log("🛠️ specialOrderBonuses fired with:", {
-    orderName,
-    ship,
-    localDiceRoll,
-  });
-
   if (!ship || localDiceRoll === undefined) {
     return;
   }
@@ -471,11 +465,12 @@ export default async function SpecialOrderBonuses({
       }
       break;
     case "Launch Fighters":
-      if (Number(localDiceRoll) >= 19 && ship.type === "Carrier") {
+      if (Number(localDiceRoll) >= 11 && ship.type === "Carrier") {
         try {
           const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
           await updateDoc(shipRef, {
             [`specialOrders.${orderName}`]: true,
+            "shipActions.specialOrder": true,
             maxCapacity: 20,
           });
           // Update local data
@@ -510,6 +505,7 @@ export default async function SpecialOrderBonuses({
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
         await updateDoc(shipRef, {
           [`specialOrdersAttempted.${orderName}`]: true,
+          "shipActions.specialOrder": true,
         });
         setData((prevData) =>
           prevData.map((s) =>
@@ -546,6 +542,7 @@ export default async function SpecialOrderBonuses({
           await updateDoc(shipRef, {
             "weaponStatus.Ion Particle Beam": false,
             "specialOrders.Charge Ion Beam": true,
+            "shipActions.specialOrder": true,
             hit: false,
           });
           setLocalDiceRoll(firstDice);

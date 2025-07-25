@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
 import BattleDice from "@/components/dice/BattleGroundDice.js";
+import { FactionImages } from "@/constants/FactionImages.js";
 import {
   View,
   Text,
@@ -32,6 +33,7 @@ import { useNavigation } from "@react-navigation/native";
 import { getDoc } from "firebase/firestore";
 import { useMapImageContext } from "@/components/Global/MapImageContext.js";
 import { useFocusEffect } from "expo-router";
+import PulsingGlow from "@/components/Pusle/PulsingGlow.js";
 
 export default function BattleGround(props) {
   const { from } = props.route.params;
@@ -70,6 +72,18 @@ export default function BattleGround(props) {
   const gameMapAttackingShip = attackingShip || ship;
   const gameMapTargetedShip = targetedShip || singleUserShip;
   const gameMapTargetedShipId = targetedShip?.userId || isUser?.id;
+  const localImage =
+    gameMapAttackingShip?.factionName && gameMapAttackingShip?.type
+      ? FactionImages[gameMapAttackingShip.factionName]?.[
+          gameMapAttackingShip.type
+        ]?.classImage
+      : null;
+  const localEnemyImage =
+    gameMapTargetedShip?.factionName && gameMapTargetedShip?.type
+      ? FactionImages[gameMapTargetedShip.factionName]?.[
+          gameMapTargetedShip.type
+        ]?.classImage
+      : null;
 
   const selectedShipDice = liveShip ? shipBattleDiceMapping[liveShip.type] : [];
   const hitState = hit === null ? false : hit;
@@ -447,7 +461,7 @@ export default function BattleGround(props) {
           </View>
           <View style={{ justifyContent: "center", alignItems: "center" }}>
             <Image
-              source={{ uri: gameMapAttackingShip?.image }}
+              source={localImage}
               style={{ width: 150, height: 150, resizeMode: "contain" }}
             />
           </View>
@@ -525,6 +539,7 @@ export default function BattleGround(props) {
           >
             {selectedShipDice.map((dice, index) => {
               const isIonParticleBeam = dice.id === "Ion Particle Beam";
+
               const destroyerPowerUpMainGuns =
                 liveShip.specialOrders?.["Power Up Main Guns"] === true &&
                 liveShip.miss === false;
@@ -534,10 +549,12 @@ export default function BattleGround(props) {
               const anyWeaponFired = Object.values(
                 liveShip.weaponStatus || {}
               ).some((fired) => fired === true);
-              console.log(
+              {
+                /* console.log(
                 "Ship in BattleGround:",
                 JSON.stringify(liveShip.hasRolledDToHit, null, 2)
-              );
+              ); */
+              }
 
               return (
                 <BattleDice
@@ -598,9 +615,18 @@ export default function BattleGround(props) {
                       alignItems: "center",
                     }}
                   >
+                    <PulsingGlow
+                      ship={singleUserShip}
+                      size={100}
+                      color={"#00f"}
+                    />
                     <Image
-                      source={{ uri: singleUserShip?.image }}
-                      style={{ width: 150, height: 150, resizeMode: "contain" }}
+                      source={localEnemyImage}
+                      style={{
+                        width: 150,
+                        height: 150,
+                        resizeMode: "contain",
+                      }}
                     />
                   </View>
                   <View
@@ -610,34 +636,6 @@ export default function BattleGround(props) {
                       justifyContent: "space-around",
                     }}
                   >
-                    <View style={styles.statContainerHolder}>
-                      <View style={styles.statContainerHeader}>
-                        <Text
-                          style={[
-                            styles.text,
-                            {
-                              color: Colors.hudDarker,
-                              fontSize: 13,
-                              fontFamily: "LeagueSpartan-Bold",
-                            },
-                          ]}
-                        >
-                          Hit Points
-                        </Text>
-                      </View>
-
-                      <View style={styles.statContainer}>
-                        <Text
-                          style={[
-                            styles.text,
-                            { color: Colors.white, fontSize: 15 },
-                          ]}
-                        >
-                          {singleUserShip?.hp} / {singleUserShip?.maxHP}
-                        </Text>
-                      </View>
-                    </View>
-
                     <View style={styles.statContainerHolder}>
                       <View style={styles.statContainerHeader}>
                         <Text
