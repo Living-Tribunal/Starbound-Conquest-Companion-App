@@ -7,12 +7,11 @@ import PulsingGlow from "@/components/Pusle/PulsingGlow";
 export default function ShipSwitch({ ship, showFiringArcs }) {
   if (!ship) return null;
 
+  //console.log("Ship in ShipSwitch:", ship.bonuses.broadSideBonus);
+
   const animOpacity = useRef(new Animated.Value(0)).current;
   const fightersLaunched = ship.specialOrders?.["Launch Fighters"] === true;
   const radius = 400;
-  const viewBoxValue = `-${radius + 2} -${radius + 2} ${radius * 2 + 4} ${
-    radius * 2 + 3
-  }`;
 
   useEffect(() => {
     Animated.timing(animOpacity, {
@@ -21,6 +20,8 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
       useNativeDriver: true,
     }).start();
   }, [showFiringArcs]);
+
+  const shipBroadSideBonus = ship.bonuses.broadSideBonus;
 
   const shipSwitch = (ship) => {
     switch (ship.type) {
@@ -146,7 +147,10 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -240 }, { translateY: -200 }],
+                  transform: [
+                    { translateX: -240 - shipBroadSideBonus },
+                    { translateY: -200 },
+                  ],
                   zIndex: -1,
                 }}
               >
@@ -165,7 +169,10 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -120 }, { translateY: -200 }],
+                  transform: [
+                    { translateX: -120 + shipBroadSideBonus },
+                    { translateY: -200 },
+                  ],
                   zIndex: -1,
                 }}
               >

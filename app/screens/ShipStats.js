@@ -25,6 +25,7 @@ import BattleDice from "@/components/dice/BattleGroundDice.js";
 import { getFleetData } from "@/components/API/API.js";
 import { useDiceContext } from "@/components/Global/DiceContext.js";
 import { FactionImages } from "@/constants/FactionImages.js";
+import LoadingComponent from "@/components/loading/LoadingComponent.js";
 
 export default function ShipStats({ route }) {
   const navigation = useNavigation();
@@ -38,6 +39,7 @@ export default function ShipStats({ route }) {
   const [orderIcon, setOrderIcon] = useState("");
   const [orderDescription, setOrderDescription] = useState("");
   const diceRollRef = useRef(0);
+  const hasNavigationRef = useRef(false);
   const {
     faction,
     data,
@@ -173,8 +175,8 @@ export default function ShipStats({ route }) {
 
           if (localDiceRoll >= 11) {
             const bonus = ship.moveDistance;
-            console.log("Bonus applied:", bonus);
-            console.log("Local Dice Roll:", localDiceRoll);
+            //console.log("Bonus applied:", bonus);
+            //console.log("Local Dice Roll:", localDiceRoll);
             await updateDoc(shipRef, {
               [`bonuses.moveDistanceBonus`]: bonus,
               [`specialOrders.${orderName}`]: true,
@@ -492,44 +494,80 @@ export default function ShipStats({ route }) {
 
         break;
       case "Broadside":
-        if (localDiceRoll >= 11) {
-          try {
-            const shipRef = doc(
-              FIREBASE_DB,
-              "users",
-              user.uid,
-              "ships",
-              ship.id
-            );
-
-            //await toggleSpecialOrdersButton(orderName);
+        try {
+          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+          if (localDiceRoll >= 11) {
             updateDoc(shipRef, {
-              "bonuses.broadSideBonus": 15,
+              "bonuses.broadSideBonus": 50,
               hasRolledDToHit: false,
+              [`specialOrders.${orderName}`]: true,
+              [`specialOrdersAttempted.${orderName}`]: true,
             });
             // Update local data
             setData((prevData) =>
               prevData.map((s) =>
-                s.id === ship.id ? { ...s, "bonuses.broadSideBonus": 15 } : s
+                s.id === ship.id
+                  ? {
+                      ...s,
+                      bonuses: {
+                        ...(s.bonuses || {}),
+                        broadSideBonus: 50,
+                      },
+                      specialOrders: {
+                        ...(s.specialOrders || {}),
+                        [orderName]: true,
+                      },
+                      specialOrdersAttempted: {
+                        ...(s.specialOrdersAttempted || {}),
+                        [orderName]: true,
+                      },
+                    }
+                  : s
               )
             );
             Toast.show({
               type: "success",
-              text1: "Systems have been reinitialized.",
+              text1: "Starbound Conquest",
+              text2: "Plasma Cannons range increased by 50%.",
               position: "top",
             });
-          } catch (error) {
-            console.error(
-              "Failed to update broadSideBonus in Firestore:",
-              error
+          } else {
+            await updateDoc(shipRef, {
+              "bonuses.broadSideBonus": 25,
+              [`specialOrders.${orderName}`]: true,
+              [`specialOrdersAttempted.${orderName}`]: true,
+            });
+
+            setData((prevData) =>
+              prevData.map((s) =>
+                s.id === ship.id
+                  ? {
+                      ...s,
+                      bonuses: {
+                        ...(s.bonuses || {}),
+                        broadSideBonus: 25,
+                      },
+                      specialOrders: {
+                        ...(s.specialOrders || {}),
+                        [orderName]: true,
+                      },
+                      specialOrdersAttempted: {
+                        ...(s.specialOrdersAttempted || {}),
+                        [orderName]: true,
+                      },
+                    }
+                  : s
+              )
             );
+            Toast.show({
+              type: "error",
+              text1: "Starbound Conquest",
+              text2: "Plasma Cannons range increased by 25%.",
+              position: "top",
+            });
           }
-        } else {
-          Toast.show({
-            type: "error",
-            text1: "Unable to reintialize systems!",
-            position: "top",
-          });
+        } catch (error) {
+          console.error("Failed to update broadSideBonus in Firestore:", error);
         }
         break;
       case "Launch Fighters":
@@ -641,17 +679,23 @@ export default function ShipStats({ route }) {
     }
   };
 
-  if (!ship) {
-    return (
-      <SafeAreaView style={styles.mainContainer}>
-        <Text
-          style={{ color: Colors.white, textAlign: "center", marginTop: 50 }}
-        >
-          Loading ship data...
-        </Text>
-      </SafeAreaView>
-    );
-  }
+  useEffect(() => {
+    // Only navigate if no ship, fromGameMap is valid, and we haven't navigated already
+    if (!ship && fromGameMap && !hasNavigationRef.current) {
+      hasNavigationRef.current = true;
+      setTimeout(() => {
+        navigation.navigate(fromGameMap === "GameMap" ? "GameMap" : "Player");
+      }, 500);
+    }
+  }, [ship, fromGameMap]);
+
+  useEffect(() => {
+    if (!ship) {
+      setHitPoints(0);
+      setDiceValueToShare(0);
+      setHit(false);
+    }
+  }, [ship]);
 
   if (modalToRollADice) {
     return (
@@ -772,7 +816,15 @@ export default function ShipStats({ route }) {
     );
   }
 
-  const shipHpRemaining = ship.hp + ship.bonuses.inFighterRangeBonus;
+  if (!ship) {
+    return (
+      <SafeAreaView style={styles.mainContainer}>
+        <LoadingComponent whatToSay="Loading ship data..." />
+      </SafeAreaView>
+    );
+  }
+
+  const shipHpRemaining = ship.hp + ship.bonuses.inFighterRangeBonus || 0;
   const shipHpRemainingPercent = Math.round(shipHpRemaining);
 
   return (
@@ -857,7 +909,10 @@ export default function ShipStats({ route }) {
         <View style={styles.buttonContainer}>
           <View style={{ width: "45%" }}>
             <View style={[styles.statButton]}>
-              <TouchableOpacity onPress={openHPModal}>
+              <TouchableOpacity
+                disabled={from !== "GameMap"}
+                onPress={openHPModal}
+              >
                 <View style={{ width: "100%" }}>
                   <Text style={styles.statButtonText}>Hit Point</Text>
                 </View>
@@ -907,8 +962,7 @@ export default function ShipStats({ route }) {
                 style={{
                   textAlign: "center",
                   color:
-                    ship.bonuses.moveDistanceBonus > 0 ||
-                    ship.bonuses.broadSideBonus
+                    ship.bonuses.moveDistanceBonus > 0
                       ? Colors.green_toggle
                       : Colors.white,
                   fontFamily: "monospace",
@@ -916,7 +970,7 @@ export default function ShipStats({ route }) {
                   marginTop: 2,
                 }}
               >
-                {ship.bonuses.moveDistanceBonus + ship.moveDistance}
+                {ship.bonuses.moveDistanceBonus || 0 + ship.moveDistance}
               </Text>
             </View>
           </View>
@@ -1096,8 +1150,9 @@ export default function ShipStats({ route }) {
                             ) {
                               Toast.show({
                                 type: "error",
-                                text1: "Cannot activate",
-                                text2: "Ion Particle Beam has not fired yet!",
+                                text1: "Starbound Conquest",
+                                text2:
+                                  "Cannot activate, Ion Particle Beam has not fired.",
                                 position: "top",
                               });
                               return;
@@ -1107,7 +1162,8 @@ export default function ShipStats({ route }) {
                             ) {
                               Toast.show({
                                 type: "error",
-                                text1: "Ship HP is already at max.",
+                                text1: "Starbound Conquest",
+                                text2: "Ship HP is already at max.",
                                 position: "top",
                               });
                               return;
@@ -1117,7 +1173,8 @@ export default function ShipStats({ route }) {
                             ) {
                               Toast.show({
                                 type: "error",
-                                text1: "No weapons have been fired yet!",
+                                text1: "Starbound Conquest",
+                                text2: "No weapons have been fired yet!",
                                 position: "top",
                               });
                               return;
