@@ -813,11 +813,10 @@ export default function FleetMap() {
                     //setFighterRangeBonus(inFighterRangeBonus);
                   }
                 }
-              } else if (
-                isTargetedShip &&
-                shipPressed &&
-                !ships.find((s) => s.id === shipPressed?.hasRolledDToHit)
-              ) {
+              } else if (isTargetedShip && shipPressed) {
+                const attackingShip = ships.find((s) => s.id === shipPressed);
+                if (attackingShip?.miss === true) return;
+                if (attackingShip?.hasRolledDToHit === true) return;
                 targetingShip(ship);
                 //attackingShip(ship);
               }
@@ -829,7 +828,7 @@ export default function FleetMap() {
               if (!isUserShip) return;
               if (ship.shipActions?.move === true) return;
               if (ship.hasRolledDToHit === true) return;
-              if (ship.miss === true) return;
+              //if (ship.miss === true) return;
               const scaleFactor = zoomRef.current?.zoomLevel ?? 1;
 
               // The ship whose pan responder is currently active.
@@ -1058,12 +1057,18 @@ export default function FleetMap() {
                             pointerEvents="none"
                             resizeMode="contain"
                             style={{
-                              width: 30,
-                              height: 30,
+                              width: 35,
+                              height: 35,
                               alignSelf: "center",
                               position: "absolute",
-                              left: ship.width / 4,
+                              left: 10,
+                              bottom: ship.height / 2,
                               tintColor: Colors.green_toggle,
+                              borderWidth: 1,
+                              borderColor: Colors.green_toggle,
+                              borderRadius: 10,
+                              padding: 5,
+                              backgroundColor: Colors.darker_green_toggle,
                             }}
                             source={{
                               uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fsinusoidal-beam.png?alt=media&token=96d76ac5-5426-4bbb-835c-f541f7ba3023",
@@ -1077,10 +1082,8 @@ export default function FleetMap() {
                               width: 35,
                               height: 35,
                               position: "absolute",
-                              bottom: 0,
                               left: -40,
                               bottom: ship.height / 2,
-                              marginTop: 5,
                               tintColor: ship.shipActions.move
                                 ? Colors.lighter_red
                                 : Colors.green_toggle,

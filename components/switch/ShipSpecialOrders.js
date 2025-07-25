@@ -129,7 +129,7 @@ export default async function SpecialOrderBonuses({
         if (localDiceRoll >= 11) {
           const newHP = Math.max(0, Math.min(Number(ship.hp + 1), ship.maxHP));
 
-          updateDoc(shipRef, {
+          await updateDoc(shipRef, {
             hp: newHP,
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
@@ -382,7 +382,7 @@ export default async function SpecialOrderBonuses({
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
         if (localDiceRoll >= 11) {
-          updateDoc(shipRef, {
+          await updateDoc(shipRef, {
             "bonuses.broadSideBonus": 50,
             hasRolledDToHit: false,
             [`specialOrders.${orderName}`]: true,
@@ -470,6 +470,7 @@ export default async function SpecialOrderBonuses({
           const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
           await updateDoc(shipRef, {
             [`specialOrders.${orderName}`]: true,
+            [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
             maxCapacity: 20,
           });
@@ -480,6 +481,10 @@ export default async function SpecialOrderBonuses({
                 ? {
                     ...s,
                     maxCapacity: 20,
+                    specialOrdersAttempted: {
+                      ...(s.specialOrdersAttempted || {}),
+                      [orderName]: true,
+                    },
                     specialOrders: {
                       ...(s.specialOrders || {}),
                       [orderName]: true,
@@ -533,18 +538,20 @@ export default async function SpecialOrderBonuses({
       }
       break;
     case "Charge Ion Beams":
-      //console.log("Ion Beam check - ship.hit:", ship.hit);
       console.log("Starting Charge Ion Beams Bonus");
-      if (localDiceRoll >= 2) {
-        console.log("Bonus (Ion):", localDiceRoll);
+
+      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+
+      if (localDiceRoll >= 11) {
         try {
-          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
           await updateDoc(shipRef, {
             "weaponStatus.Ion Particle Beam": false,
-            "specialOrders.Charge Ion Beam": true,
+            [`specialOrders.${orderName}`]: true,
             "shipActions.specialOrder": true,
+            [`specialOrdersAttempted.${orderName}`]: true,
             hit: false,
           });
+
           setLocalDiceRoll(firstDice);
           setData((prevData) =>
             prevData.map((s) =>
@@ -552,6 +559,14 @@ export default async function SpecialOrderBonuses({
                 ? {
                     ...s,
                     hit: false,
+                    specialOrders: {
+                      ...(s.specialOrders || {}),
+                      [orderName]: true,
+                    },
+                    specialOrdersAttempted: {
+                      ...(s.specialOrdersAttempted || {}),
+                      [orderName]: true,
+                    },
                     shipActions: {
                       ...(s.shipActions || {}),
                       specialOrder: true,
@@ -567,7 +582,10 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         } catch (error) {
-          console.error("Failed to update hit in Firestore:", error);
+          console.error(
+            "Failed to update Ion Beam recharge in Firestore:",
+            error
+          );
         }
       } else {
         Toast.show({
@@ -576,6 +594,30 @@ export default async function SpecialOrderBonuses({
           position: "top",
         });
       }
+
+      // ✅ Always log attempt, regardless of success/failure
+      try {
+        await updateDoc(shipRef, {
+          [`specialOrdersAttempted.${orderName}`]: true,
+        });
+
+        setData((prevData) =>
+          prevData.map((s) =>
+            s.id === ship.id
+              ? {
+                  ...s,
+                  specialOrdersAttempted: {
+                    ...(s.specialOrdersAttempted || {}),
+                    [orderName]: true,
+                  },
+                }
+              : s
+          )
+        );
+      } catch (err) {
+        console.error("Failed to mark special order attempt:", err);
+      }
+
       break;
     default:
       console.log("No special order selected");
