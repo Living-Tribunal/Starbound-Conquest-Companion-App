@@ -38,7 +38,7 @@ import { WeaponColors as weaponColors } from "@/constants/WeaponColors";
 import Toast from "react-native-toast-message";
 import { navigate } from "expo-router/build/global-state/routing";
 import BattleModal from "@/components/BattleModal/BattleModal";
-import PulsingGlow from "@/components/Pusle/PulsingGlow";
+import { updateShipIsToggled } from "../Functions/updateShipIsToggled";
 
 export default function FleetMap() {
   const navigation = useNavigation();
@@ -319,6 +319,7 @@ export default function FleetMap() {
             : s
         )
       );
+      await updateShipIsToggled(user, selectedShip);
     } catch (e) {
       console.error("Error updating document: ", e);
     }
@@ -766,11 +767,12 @@ export default function FleetMap() {
             onStartShouldSetPanResponder: () => true,
 
             onPanResponderGrant: () => {
-              /*   if (!isUserShip) return;
-              if (ship.shipActions?.move === true) return;
-              if (ship.hasRolledDToHit === true) return;
-              if (ship.miss === true) return;
-              if (updateMovement) return; */
+              const { move, attack, specialOrder } = ship.shipActions || {};
+              const actionsTaken = [move, attack, specialOrder].filter(
+                Boolean
+              ).length;
+
+              if (actionsTaken >= 2) return;
 
               if (isUserShip) {
                 ship.position.extractOffset();
@@ -1115,6 +1117,46 @@ export default function FleetMap() {
                               zIndex: 100,
                             }}
                             source={require("../../assets/icons/icons8-move-50.png")}
+                          />
+                          <Image
+                            style={{
+                              width: 35,
+                              height: 35,
+                              position: "absolute",
+                              left: 10,
+                              bottom: ship.height / 2,
+                              tintColor: ship.shipActions.attack
+                                ? Colors.lighter_red
+                                : Colors.green_toggle,
+                              backgroundColor: ship.shipActions.attack
+                                ? Colors.deep_red
+                                : Colors.darker_green_toggle,
+                              borderRadius: 50,
+                              zIndex: 100,
+                            }}
+                            source={{
+                              uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Flaser-blast.png?alt=media&token=60405496-c93c-4f35-82ce-cd3892bdd02f",
+                            }}
+                          />
+                          <Image
+                            style={{
+                              width: 35,
+                              height: 35,
+                              position: "absolute",
+                              left: 55,
+                              bottom: ship.height / 2,
+                              tintColor: ship.shipActions.specialOrder
+                                ? Colors.lighter_red
+                                : Colors.green_toggle,
+                              backgroundColor: ship.shipActions.specialOrder
+                                ? Colors.deep_red
+                                : Colors.darker_green_toggle,
+                              borderRadius: 50,
+                              zIndex: 100,
+                            }}
+                            source={{
+                              uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fandroid-mask.png?alt=media&token=16b59217-6754-4ca2-b324-fd3ed1246555",
+                            }}
                           />
                         </>
                       )}

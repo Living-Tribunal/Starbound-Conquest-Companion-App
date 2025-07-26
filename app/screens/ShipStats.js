@@ -470,7 +470,7 @@ export default function ShipStats({ route }) {
               >
                 {cruiserBroadSideBonus
                   ? ship.bonuses.broadSideBonus
-                  : ship.bonuses.moveDistanceBonus || 0 + ship.moveDistance}
+                  : ship?.bonuses?.moveDistanceBonus + ship?.moveDistance}
               </Text>
             </View>
           </View>
