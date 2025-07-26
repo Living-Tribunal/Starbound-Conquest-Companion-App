@@ -381,13 +381,23 @@ export default async function SpecialOrderBonuses({
     case "Broadside":
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-        if (localDiceRoll >= 11) {
+        if (localDiceRoll >= 2) {
+          const weaponStatuses = ship.weaponStatus || {};
+          const weaponStatusesUpdated = {};
+          for (const weaponName in weaponStatuses) {
+            weaponStatusesUpdated[`weaponStatus.${weaponName}`] = false;
+          }
           await updateDoc(shipRef, {
-            "bonuses.broadSideBonus": 50,
+            ...weaponStatusesUpdated,
+            "bonuses.broadSideBonus": 15,
             hasRolledDToHit: false,
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
+            "shipActions.move": false,
+            hasRolledDToHit: false,
+            hit: false,
+            isToggled: false,
           });
           // Update local data
           setData((prevData) =>
@@ -395,9 +405,12 @@ export default async function SpecialOrderBonuses({
               s.id === ship.id
                 ? {
                     ...s,
+                    hit: false,
+                    hasRolledDToHit: false,
+                    isToggled: false,
                     bonuses: {
                       ...(s.bonuses || {}),
-                      broadSideBonus: 50,
+                      broadSideBonus: 15,
                     },
                     specialOrders: {
                       ...(s.specialOrders || {}),
@@ -417,15 +430,14 @@ export default async function SpecialOrderBonuses({
           );
           Toast.show({
             type: "success",
-            text1: "Starbound Conquest",
-            text2: "Plasma Cannons range increased by 50%.",
+            text1: "Systems have been reinitialized.",
             position: "top",
           });
         } else {
           await updateDoc(shipRef, {
-            "bonuses.broadSideBonus": 25,
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
+            "shipActions.specialOrder": true,
           });
 
           setData((prevData) =>
@@ -433,10 +445,6 @@ export default async function SpecialOrderBonuses({
               s.id === ship.id
                 ? {
                     ...s,
-                    bonuses: {
-                      ...(s.bonuses || {}),
-                      broadSideBonus: 25,
-                    },
                     specialOrders: {
                       ...(s.specialOrders || {}),
                       [orderName]: true,
@@ -455,8 +463,7 @@ export default async function SpecialOrderBonuses({
           );
           Toast.show({
             type: "error",
-            text1: "Starbound Conquest",
-            text2: "Plasma Cannons range increased by 25%.",
+            text1: "Unable to reintialize systems!",
             position: "top",
           });
         }
@@ -538,8 +545,6 @@ export default async function SpecialOrderBonuses({
       }
       break;
     case "Charge Ion Beams":
-      console.log("Starting Charge Ion Beams Bonus");
-
       const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
 
       if (localDiceRoll >= 11) {

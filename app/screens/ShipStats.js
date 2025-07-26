@@ -65,6 +65,10 @@ export default function ShipStats({ route }) {
     broadSideBonus: "Broadside Bonus",
     inFighterRangeBonus: "Fighter Range Bonus",
   };
+  const cruiserBroadSideBonus =
+    ship?.type === "Cruiser" &&
+    ship?.bonuses?.broadSideBonus &&
+    ship.specialOrders?.["Broadside"] === true;
 
   useFocusEffect(
     useCallback(() => {
@@ -464,7 +468,9 @@ export default function ShipStats({ route }) {
                   marginTop: 2,
                 }}
               >
-                {ship.bonuses.moveDistanceBonus || 0 + ship.moveDistance}
+                {cruiserBroadSideBonus
+                  ? ship.bonuses.broadSideBonus
+                  : ship.bonuses.moveDistanceBonus || 0 + ship.moveDistance}
               </Text>
             </View>
           </View>
@@ -669,6 +675,17 @@ export default function ShipStats({ route }) {
                                 type: "error",
                                 text1: "Starbound Conquest",
                                 text2: "No weapons have been fired yet!",
+                                position: "top",
+                              });
+                              return;
+                            } else if (
+                              orderName === "Broadside" &&
+                              ship.shipActions.move !== true
+                            ) {
+                              Toast.show({
+                                type: "error",
+                                text1: "Starbound Conquest",
+                                text2: "Ship must move before using Broadside.",
                                 position: "top",
                               });
                               return;

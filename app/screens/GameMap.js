@@ -591,6 +591,8 @@ export default function FleetMap() {
             x: incomingShip.x ?? 100,
             y: incomingShip.y ?? 100,
           });
+          pos.setOffset({ x: 0, y: 0 });
+          pos.setValue({ x: incomingShip.x ?? 100, y: incomingShip.y ?? 100 });
           const rotation = new Animated.Value(incomingShip.rotation_angle ?? 0);
           newShipsMap.set(incomingShip.id, {
             ...incomingShip,
@@ -784,10 +786,9 @@ export default function FleetMap() {
                   setMovementDistanceCircle({
                     x,
                     y,
-                    moveDistance:
-                      ship.moveDistance +
-                      ship.bonuses.moveDistanceBonus +
-                      ship.bonuses.broadSideBonus,
+                    moveDistance: ship.specialOrders?.["Broadside"]
+                      ? ship.bonuses.broadSideBonus
+                      : ship.moveDistance + ship.bonuses.moveDistanceBonus,
                   });
                   setCircleBorderColor("rgba(0,200,255,0.5)");
                   setCircleBackgroundColor("rgba(0,200,255,0.1)");
@@ -940,16 +941,36 @@ export default function FleetMap() {
                     alignItems: "center",
                     top:
                       movementDistanceCircle.y -
-                      (ship.moveDistance + ship.bonuses.moveDistanceBonus) / 4,
+                      (ship.specialOrders?.["Broadside"]
+                        ? ship.bonuses.broadSideBonus
+                        : ship.moveDistance + ship.bonuses.moveDistanceBonus) /
+                        4,
+
                     left:
                       movementDistanceCircle.x -
-                      (ship.moveDistance + ship.bonuses.moveDistanceBonus) / 16,
+                      (ship.specialOrders?.["Broadside"]
+                        ? ship.bonuses.broadSideBonus
+                        : ship.moveDistance + ship.bonuses.moveDistanceBonus) /
+                        16,
+
                     width:
-                      (ship.moveDistance + ship.bonuses.moveDistanceBonus) * 12,
+                      (ship.specialOrders?.["Broadside"]
+                        ? ship.bonuses.broadSideBonus
+                        : ship.moveDistance + ship.bonuses.moveDistanceBonus) *
+                      12,
+
                     height:
-                      (ship.moveDistance + ship.bonuses.moveDistanceBonus) * 12,
+                      (ship.specialOrders?.["Broadside"]
+                        ? ship.bonuses.broadSideBonus
+                        : ship.moveDistance + ship.bonuses.moveDistanceBonus) *
+                      12,
+
                     borderRadius:
-                      (ship.moveDistance + ship.bonuses.moveDistanceBonus) * 6,
+                      (ship.specialOrders?.["Broadside"]
+                        ? ship.bonuses.broadSideBonus
+                        : ship.moveDistance + ship.bonuses.moveDistanceBonus) *
+                      6,
+
                     borderWidth: 2,
                     borderColor: circleBorderColor,
                     backgroundColor: circleBackgroundColor,

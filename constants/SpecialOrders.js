@@ -36,7 +36,7 @@ export const SpecialOrders = {
   },
   8: {
     name: "Broadside",
-    text: `Roll 1d20. On a result greater than 11, gain a 50% range bonus when firing a side arc weapon. On a result of 11 or less, gain a 25% range bonus instead.`,
+    text: "Roll 1d20, on an 11 or higher, you can move 15ft in the direction you're facing, rotate 90 degrees and fire a weapon with a firing arc that faces the sides.",
     icon: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fmissile-pod.png?alt=media&token=29c9ad3c-093c-4fb8-8448-7a20e78e697a",
   },
   9: {
