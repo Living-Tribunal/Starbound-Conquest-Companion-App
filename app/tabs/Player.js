@@ -195,7 +195,6 @@ export default function Player() {
           miss: false,
           hasRolledDToHit: false,
           round: 0,
-          trackManeuver: 0,
           shipInterval: 0,
           gameSector: gameSectors,
           protectedByCarrierID: null,

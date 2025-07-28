@@ -27,6 +27,7 @@ import { useDiceContext } from "@/components/Global/DiceContext.js";
 import { FactionImages } from "@/constants/FactionImages.js";
 import LoadingComponent from "@/components/loading/LoadingComponent.js";
 import SpecialOrderBonuses from "@/components/switch/ShipSpecialOrders.js";
+import { updateShipIsToggled } from "../Functions/updateShipIsToggled.js";
 
 export default function ShipStats({ route }) {
   const navigation = useNavigation();
@@ -169,7 +170,7 @@ export default function ShipStats({ route }) {
   };
   //switch case to apply bonuses based on which special order is selected
 
-  useEffect(() => {
+  /*   useEffect(() => {
     // Only navigate if no ship, fromGameMap is valid, and we haven't navigated already
     if (!ship && fromGameMap && !hasNavigationRef.current) {
       hasNavigationRef.current = true;
@@ -177,7 +178,7 @@ export default function ShipStats({ route }) {
         navigation.navigate(fromGameMap === "GameMap" ? "GameMap" : "Player");
       }, 500);
     }
-  }, [ship, fromGameMap]);
+  }, [ship, fromGameMap]); */
 
   useEffect(() => {
     if (!ship) {

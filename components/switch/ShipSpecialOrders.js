@@ -2,6 +2,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB } from "../../FirebaseConfig";
 import { useStarBoundContext } from "@/components/Global/StarBoundProvider";
 import Toast from "react-native-toast-message";
+import { updateShipIsToggled } from "../../app/Functions/updateShipIsToggled";
 
 export default async function SpecialOrderBonuses({
   orderName,
@@ -109,6 +110,7 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         }
+        await updateShipIsToggled(user, ship);
       } catch (error) {
         console.error("❌ Failed to update moveDistanceBonus:", error);
       }
@@ -198,6 +200,7 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         }
+        await updateShipIsToggled(user, ship);
       } catch (error) {
         console.error("❌ Failed to update shields in Firestore:", error);
       }
@@ -280,6 +283,7 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         }
+        await updateShipIsToggled(user, ship);
       } catch (error) {
         console.error("❌ Failed to update moveDistanceBonus:", error);
       }
@@ -373,6 +377,7 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         }
+        await updateShipIsToggled(user, ship);
       } catch (error) {
         console.error("Failed to update hit in Firestore:", error);
       }
@@ -381,7 +386,7 @@ export default async function SpecialOrderBonuses({
     case "Broadside":
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-        if (localDiceRoll >= 2) {
+        if (localDiceRoll >= 11) {
           const weaponStatuses = ship.weaponStatus || {};
           const weaponStatusesUpdated = {};
           for (const weaponName in weaponStatuses) {
@@ -389,7 +394,7 @@ export default async function SpecialOrderBonuses({
           }
           await updateDoc(shipRef, {
             ...weaponStatusesUpdated,
-            "bonuses.broadSideBonus": 15,
+            "bonuses.broadSideBonus": 30,
             hasRolledDToHit: false,
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
@@ -467,14 +472,15 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         }
+        await updateShipIsToggled(user, ship);
       } catch (error) {
         console.error("Failed to update broadSideBonus in Firestore:", error);
       }
       break;
     case "Launch Fighters":
-      if (Number(localDiceRoll) >= 11 && ship.type === "Carrier") {
-        try {
-          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+      try {
+        const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+        if (Number(localDiceRoll) >= 11 && ship.type === "Carrier") {
           await updateDoc(shipRef, {
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
@@ -510,38 +516,39 @@ export default async function SpecialOrderBonuses({
             text2: "Launched Fighters!",
             position: "top",
           });
-        } catch (e) {
-          console.error("Failed to update launch fighters in Firestore:", e);
+        } else {
+          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+          await updateDoc(shipRef, {
+            [`specialOrdersAttempted.${orderName}`]: true,
+            "shipActions.specialOrder": true,
+          });
+          setData((prevData) =>
+            prevData.map((s) =>
+              s.id === ship.id
+                ? {
+                    ...s,
+                    specialOrdersAttempted: {
+                      ...(s.specialOrdersAttempted || {}),
+                      [orderName]: true,
+                    },
+                    shipActions: {
+                      ...(s.shipActions || {}),
+                      specialOrder: true,
+                    },
+                  }
+                : s
+            )
+          );
+          Toast.show({
+            type: "error",
+            text1: "Starbound Conquest",
+            text2: "Launch Fighters Failed!",
+            position: "top",
+          });
         }
-      } else {
-        const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-        await updateDoc(shipRef, {
-          [`specialOrdersAttempted.${orderName}`]: true,
-          "shipActions.specialOrder": true,
-        });
-        setData((prevData) =>
-          prevData.map((s) =>
-            s.id === ship.id
-              ? {
-                  ...s,
-                  specialOrdersAttempted: {
-                    ...(s.specialOrdersAttempted || {}),
-                    [orderName]: true,
-                  },
-                  shipActions: {
-                    ...(s.shipActions || {}),
-                    specialOrder: true,
-                  },
-                }
-              : s
-          )
-        );
-        Toast.show({
-          type: "error",
-          text1: "Starbound Conquest",
-          text2: "Launch Fighters Failed!",
-          position: "top",
-        });
+        await updateShipIsToggled(user, ship);
+      } catch (e) {
+        console.error("Failed to update launch fighters in Firestore:", e);
       }
       break;
     case "Charge Ion Beams":
@@ -619,6 +626,7 @@ export default async function SpecialOrderBonuses({
               : s
           )
         );
+        await updateShipIsToggled(user, ship);
       } catch (err) {
         console.error("Failed to mark special order attempt:", err);
       }

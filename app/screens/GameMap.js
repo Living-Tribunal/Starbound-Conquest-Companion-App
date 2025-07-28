@@ -39,6 +39,7 @@ import Toast from "react-native-toast-message";
 import { navigate } from "expo-router/build/global-state/routing";
 import BattleModal from "@/components/BattleModal/BattleModal";
 import { updateShipIsToggled } from "../Functions/updateShipIsToggled";
+import ShipInfo from "@/components/shipdata/ShipInfo";
 
 export default function FleetMap() {
   const navigation = useNavigation();
@@ -77,8 +78,6 @@ export default function FleetMap() {
   const MAX_PROTECTED = 4;
   const zoomRef = useRef(1);
   const selectedShip = ships.find((ships) => ships.id === shipPressed);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
   const panX = useRef(new Animated.Value(0)).current;
   const panY = useRef(new Animated.Value(0)).current;
   const filteredShips = ships.filter(
@@ -94,6 +93,12 @@ export default function FleetMap() {
     const dy = y - center.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
     return distance <= radius;
+  };
+
+  const getShipsActionsTakenCount = (ship) => {
+    const { move, attack, specialOrder } = ship.shipActions || {};
+    const actionsTaken = [move, attack, specialOrder].filter(Boolean).length;
+    return actionsTaken;
   };
 
   const checkIfShipIsInRangeShowIndicator = (ship) =>
@@ -114,13 +119,32 @@ export default function FleetMap() {
     }
   };
 
-  useEffect(() => {
+  const shipHasUsedItsTwoMoves = (ship, index) => {
+    if (ship.user === user.uid) {
+      const actions = [
+        ship.shipActions?.move,
+        ship.shipActions?.attack,
+        ship.shipActions?.specialOrder,
+      ];
+
+      const totalUsed = actions.filter(Boolean).length;
+
+      if (actions[index]) {
+        return totalUsed >= 2 ? Colors.gold : Colors.green_toggle;
+      } else {
+        return Colors.blue_gray; // unused slot
+      }
+    }
+    return Colors.dark_gray; // for enemy or unknown
+  };
+
+  /*   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: shipPressed ? 1 : 0, // fade in if ship selected, fade out if not
       duration: 300,
       useNativeDriver: true,
     }).start();
-  }, [shipPressed]);
+  }, [shipPressed]); */
 
   useEffect(() => {
     let raf;
@@ -239,16 +263,12 @@ export default function FleetMap() {
   };
 
   const navigateToBattleGround = (attackingShip, targetedShip) => {
-    if (!attackingShip || !targetedShip) return;
-
-    //console.log("Attacking ship in navigateToBattleGround:", attackingShip);
-    //console.log("Targeted ship in navigateToBattleGround:", targetedShip);
-
-    /*   console.log(
-      "Navigating to BattleGround with shipId:",
-      attackingShip.id,
-      targetedShip.id
-    ); */
+    if (
+      getShipsActionsTakenCount(attackingShip) >= 2 ||
+      !attackingShip ||
+      !targetedShip
+    )
+      return;
 
     const alreadyExists = shipsEnteringBattle.some(
       (entry) =>
@@ -622,16 +642,17 @@ export default function FleetMap() {
         ships={data}
         user={user}
       />
-      {selectedShip?.hasRolledDToHit === false && (
-        <BattleModal
-          pendingBattle={pendingBattle}
-          showConfirmModal={showConfirmModal}
-          setShowConfirmModal={setShowConfirmModal}
-          navigateToBattleGround={navigateToBattleGround}
-          setShipPressed={setShipPressed}
-          setTargetedShip={setTargetedShip}
-        />
-      )}
+      {selectedShip?.hasRolledDToHit === false &&
+        getShipsActionsTakenCount(selectedShip) < 2 && (
+          <BattleModal
+            pendingBattle={pendingBattle}
+            showConfirmModal={showConfirmModal}
+            setShowConfirmModal={setShowConfirmModal}
+            navigateToBattleGround={navigateToBattleGround}
+            setShipPressed={setShipPressed}
+            setTargetedShip={setTargetedShip}
+          />
+        )}
       <ZoomControls
         scale={scale}
         updatingRotation={updatingRotation}
@@ -648,76 +669,7 @@ export default function FleetMap() {
         navigateToBattleGround={navigateToBattleGround}
       />
       {selectedShip && !targetedShip && (
-        <Animated.View
-          style={[
-            styles.shipInfoContainer,
-            {
-              opacity: fadeAnim,
-              height: selectedShip.type === "Carrier" ? 210 : 200,
-            },
-          ]}
-        >
-          <Text style={styles.shipInfo}>Ship: {selectedShip.shipId}</Text>
-          <Text
-            style={[
-              styles.shipInfo,
-              {
-                color: selectedShip.bonuses.inFighterRangeBonus
-                  ? Colors.green_toggle
-                  : Colors.hud,
-              },
-            ]}
-          >
-            HP:{" "}
-            {selectedShip.hp + selectedShip.bonuses.inFighterRangeBonus || 0} /{" "}
-            {selectedShip.maxHP}
-          </Text>
-          <Text style={styles.shipInfo}>Type: {selectedShip.type}</Text>
-          <Text style={styles.shipInfo}>
-            Rotation: {selectedShip?.rotation?.__getValue()?.toFixed(0) ?? 0}°
-          </Text>
-          {selectedShip.type === "Carrier" && (
-            <>
-              <Text style={[styles.shipInfo]}>
-                Protecting: {selectedShip.numberOfShipsProtecting}
-              </Text>
-              <Text style={[styles.shipInfo]}>Ship Color</Text>
-              <View
-                style={{
-                  width: 100,
-                  height: 20,
-                  backgroundColor: selectedShip.color,
-                  borderRadius: 5,
-                  marginTop: 5,
-                }}
-              />
-            </>
-          )}
-          <Text style={styles.shipInfo}>Weapons:</Text>
-          {selectedShip?.weaponType?.map((weapon, index) => (
-            <TouchableOpacity key={index} onPress={() => console.log(weapon)}>
-              <Text
-                key={index}
-                style={[
-                  styles.shipInfo,
-                  {
-                    borderRadius: 5,
-                    padding: 2,
-                    margin: 2,
-                    fontFamilt: FONTS.leagueBold,
-                    fontWeight: "bold",
-                    fontSize: 9,
-                    textAlign: "center",
-                    color: Colors.dark_gray,
-                    backgroundColor: weaponColors[weapon] || Colors.hud,
-                  },
-                ]}
-              >
-                {weapon}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </Animated.View>
+        <ShipInfo selectedShip={selectedShip} shipPressed={shipPressed} />
       )}
 
       <ReactNativeZoomableView
@@ -767,13 +719,6 @@ export default function FleetMap() {
             onStartShouldSetPanResponder: () => true,
 
             onPanResponderGrant: () => {
-              const { move, attack, specialOrder } = ship.shipActions || {};
-              const actionsTaken = [move, attack, specialOrder].filter(
-                Boolean
-              ).length;
-
-              if (actionsTaken >= 2) return;
-
               if (isUserShip) {
                 ship.position.extractOffset();
                 if (shipPressed !== ship.id) {
@@ -828,6 +773,9 @@ export default function FleetMap() {
             // Inside your PanResponder.create's onPanResponderMove function:
 
             onPanResponderMove: (e, gestureState) => {
+              const actionsTaken = getShipsActionsTakenCount(ship);
+
+              if (actionsTaken >= 2) return;
               if (!isUserShip) return;
               if (ship.shipActions?.move === true) return;
               if (ship.hasRolledDToHit === true) return;
@@ -1035,19 +983,30 @@ export default function FleetMap() {
                         borderRadius: 20,
                         width: ship.width / 2,
                         height: ship.height / 2,
-                        opacity:
-                          (ship.isToggled &&
-                            ship.hasRolledDToHit &&
-                            ship.user === user.uid) ||
-                          ship.miss
-                            ? 0.75
-                            : 1,
                       }}
                       resizeMode="center"
                     />
-                    {/* {ship.user === user.uid && removeAllIcons && (
-                      <PulsingGlow ship={ship} size={120} color={"#00f"} />
-                    )} */}
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        position: "absolute",
+                        bottom: 0,
+                        left: ship.width / 2, // center under ship
+                      }}
+                    >
+                      {[...Array(3)].map((_, i) => (
+                        <View
+                          key={i}
+                          style={{
+                            width: 10,
+                            height: 10,
+                            marginHorizontal: 1,
+                            backgroundColor: shipHasUsedItsTwoMoves(ship, i),
+                            borderRadius: 1,
+                          }}
+                        />
+                      ))}
+                    </View>
                     <View
                       style={{
                         left: ship.width / 4,
@@ -1074,7 +1033,7 @@ export default function FleetMap() {
                       }}
                     >
                       {ship.type === "Dreadnought" &&
-                        ship.weaponStatus?.["Ion Particle Beam"] === false &&
+                        ship.weaponStatus?.["Ion Particle Beam"] !== false &&
                         ship.user === user.uid && (
                           <Image
                             pointerEvents="none"
@@ -1084,82 +1043,20 @@ export default function FleetMap() {
                               height: 35,
                               alignSelf: "center",
                               position: "absolute",
-                              left: 10,
-                              bottom: ship.height / 2,
+                              left: ship.width / 4,
                               tintColor: Colors.green_toggle,
                               borderWidth: 1,
                               borderColor: Colors.green_toggle,
                               borderRadius: 10,
                               padding: 5,
                               backgroundColor: Colors.darker_green_toggle,
+                              bottom: ship.height / 10,
                             }}
                             source={{
                               uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fsinusoidal-beam.png?alt=media&token=96d76ac5-5426-4bbb-835c-f541f7ba3023",
                             }}
                           />
                         )}
-                      {ship.user === user.uid && (
-                        <>
-                          <Image
-                            style={{
-                              width: 35,
-                              height: 35,
-                              position: "absolute",
-                              left: -40,
-                              bottom: ship.height / 2,
-                              tintColor: ship.shipActions.move
-                                ? Colors.lighter_red
-                                : Colors.green_toggle,
-                              backgroundColor: ship.shipActions.move
-                                ? Colors.deep_red
-                                : Colors.darker_green_toggle,
-                              borderRadius: 50,
-                              zIndex: 100,
-                            }}
-                            source={require("../../assets/icons/icons8-move-50.png")}
-                          />
-                          <Image
-                            style={{
-                              width: 35,
-                              height: 35,
-                              position: "absolute",
-                              left: 10,
-                              bottom: ship.height / 2,
-                              tintColor: ship.shipActions.attack
-                                ? Colors.lighter_red
-                                : Colors.green_toggle,
-                              backgroundColor: ship.shipActions.attack
-                                ? Colors.deep_red
-                                : Colors.darker_green_toggle,
-                              borderRadius: 50,
-                              zIndex: 100,
-                            }}
-                            source={{
-                              uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Flaser-blast.png?alt=media&token=60405496-c93c-4f35-82ce-cd3892bdd02f",
-                            }}
-                          />
-                          <Image
-                            style={{
-                              width: 35,
-                              height: 35,
-                              position: "absolute",
-                              left: 55,
-                              bottom: ship.height / 2,
-                              tintColor: ship.shipActions.specialOrder
-                                ? Colors.lighter_red
-                                : Colors.green_toggle,
-                              backgroundColor: ship.shipActions.specialOrder
-                                ? Colors.deep_red
-                                : Colors.darker_green_toggle,
-                              borderRadius: 50,
-                              zIndex: 100,
-                            }}
-                            source={{
-                              uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fandroid-mask.png?alt=media&token=16b59217-6754-4ca2-b324-fd3ed1246555",
-                            }}
-                          />
-                        </>
-                      )}
                     </View>
                   )}
                 </Animated.View>
