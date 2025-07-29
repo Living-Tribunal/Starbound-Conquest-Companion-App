@@ -2,7 +2,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB } from "../../FirebaseConfig";
 import { useStarBoundContext } from "@/components/Global/StarBoundProvider";
 import Toast from "react-native-toast-message";
-import { updateShipIsToggled } from "../../app/Functions/updateShipIsToggled";
+import { updateShipIsToggled } from "../Functions/updateShipIsToggled";
 
 export default async function SpecialOrderBonuses({
   orderName,
@@ -31,6 +31,7 @@ export default async function SpecialOrderBonuses({
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
+            "shipActions.move": false,
           });
 
           // Update local state properly
@@ -54,6 +55,7 @@ export default async function SpecialOrderBonuses({
                     shipActions: {
                       ...(s.shipActions || {}),
                       specialOrder: true,
+                      move: false,
                     },
                   }
                 : s
@@ -74,6 +76,7 @@ export default async function SpecialOrderBonuses({
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
+            "shipActions.move": false,
           });
           console.log("Updating local state for ship:", ship);
 
@@ -98,6 +101,7 @@ export default async function SpecialOrderBonuses({
                     shipActions: {
                       ...(s.shipActions || {}),
                       specialOrder: true,
+                      move: false,
                     },
                   }
                 : s
@@ -110,7 +114,7 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         }
-        await updateShipIsToggled(user, ship);
+        await updateShipIsToggled(user, ship, setData);
       } catch (error) {
         console.error("❌ Failed to update moveDistanceBonus:", error);
       }
@@ -200,7 +204,7 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         }
-        await updateShipIsToggled(user, ship);
+        await updateShipIsToggled(user, ship, setData);
       } catch (error) {
         console.error("❌ Failed to update shields in Firestore:", error);
       }
@@ -283,7 +287,7 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         }
-        await updateShipIsToggled(user, ship);
+        await updateShipIsToggled(user, ship, setData);
       } catch (error) {
         console.error("❌ Failed to update moveDistanceBonus:", error);
       }
@@ -377,7 +381,7 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         }
-        await updateShipIsToggled(user, ship);
+        await updateShipIsToggled(user, ship, setData);
       } catch (error) {
         console.error("Failed to update hit in Firestore:", error);
       }
@@ -472,7 +476,7 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         }
-        await updateShipIsToggled(user, ship);
+        await updateShipIsToggled(user, ship, setData);
       } catch (error) {
         console.error("Failed to update broadSideBonus in Firestore:", error);
       }
@@ -546,7 +550,7 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         }
-        await updateShipIsToggled(user, ship);
+        await updateShipIsToggled(user, ship, setData);
       } catch (e) {
         console.error("Failed to update launch fighters in Firestore:", e);
       }
@@ -626,7 +630,7 @@ export default async function SpecialOrderBonuses({
               : s
           )
         );
-        await updateShipIsToggled(user, ship);
+        await updateShipIsToggled(user, ship, setData);
       } catch (err) {
         console.error("Failed to mark special order attempt:", err);
       }

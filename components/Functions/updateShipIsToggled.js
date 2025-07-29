@@ -1,7 +1,7 @@
 import { doc, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB } from "../../FirebaseConfig";
 
-export const updateShipIsToggled = async (user, selectedShip) => {
+export const updateShipIsToggled = async (user, selectedShip, setData) => {
   if (!selectedShip || !user) return;
   try {
     const { move, attack, specialOrder } = selectedShip.shipActions || {};

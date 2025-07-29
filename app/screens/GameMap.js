@@ -38,7 +38,7 @@ import { WeaponColors as weaponColors } from "@/constants/WeaponColors";
 import Toast from "react-native-toast-message";
 import { navigate } from "expo-router/build/global-state/routing";
 import BattleModal from "@/components/BattleModal/BattleModal";
-import { updateShipIsToggled } from "../Functions/updateShipIsToggled";
+import { updateShipIsToggled } from "../../components/Functions/updateShipIsToggled";
 import ShipInfo from "@/components/shipdata/ShipInfo";
 
 export default function FleetMap() {
@@ -115,7 +115,7 @@ export default function FleetMap() {
     } else if (ship.capacity / ship.maxCapacity > 0.25) {
       return Colors.lightened_gold;
     } else {
-      return Colors.null;
+      return "transparent";
     }
   };
 
@@ -339,7 +339,7 @@ export default function FleetMap() {
             : s
         )
       );
-      await updateShipIsToggled(user, selectedShip);
+      await updateShipIsToggled(user, selectedShip, setData);
     } catch (e) {
       console.error("Error updating document: ", e);
     }
@@ -952,7 +952,7 @@ export default function FleetMap() {
                             width: 800, // diameter
                             height: 800,
                             borderRadius: 10000,
-                            borderColor: fightersRangeStatus(ship),
+                            borderColor: fightersRangeStatus(ship) || null,
                             borderWidth: 2,
                             top: "50%",
                             left: "50%",
@@ -986,27 +986,29 @@ export default function FleetMap() {
                       }}
                       resizeMode="center"
                     />
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        position: "absolute",
-                        bottom: 0,
-                        left: ship.width / 2, // center under ship
-                      }}
-                    >
-                      {[...Array(3)].map((_, i) => (
-                        <View
-                          key={i}
-                          style={{
-                            width: 10,
-                            height: 10,
-                            marginHorizontal: 1,
-                            backgroundColor: shipHasUsedItsTwoMoves(ship, i),
-                            borderRadius: 1,
-                          }}
-                        />
-                      ))}
-                    </View>
+                    {ship.user === user.uid && (
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          position: "absolute",
+                          bottom: 0,
+                          left: ship.width / 2, // center under ship
+                        }}
+                      >
+                        {[...Array(3)].map((_, i) => (
+                          <View
+                            key={i}
+                            style={{
+                              width: 10,
+                              height: 10,
+                              marginHorizontal: 1,
+                              backgroundColor: shipHasUsedItsTwoMoves(ship, i),
+                              borderRadius: 1,
+                            }}
+                          />
+                        ))}
+                      </View>
+                    )}
                     <View
                       style={{
                         left: ship.width / 4,
@@ -1025,40 +1027,6 @@ export default function FleetMap() {
                         )}
                     </View>
                   </Animated.View>
-                  {removeAllIcons && (
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {ship.type === "Dreadnought" &&
-                        ship.weaponStatus?.["Ion Particle Beam"] !== false &&
-                        ship.user === user.uid && (
-                          <Image
-                            pointerEvents="none"
-                            resizeMode="contain"
-                            style={{
-                              width: 35,
-                              height: 35,
-                              alignSelf: "center",
-                              position: "absolute",
-                              left: ship.width / 4,
-                              tintColor: Colors.green_toggle,
-                              borderWidth: 1,
-                              borderColor: Colors.green_toggle,
-                              borderRadius: 10,
-                              padding: 5,
-                              backgroundColor: Colors.darker_green_toggle,
-                              bottom: ship.height / 10,
-                            }}
-                            source={{
-                              uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fsinusoidal-beam.png?alt=media&token=96d76ac5-5426-4bbb-835c-f541f7ba3023",
-                            }}
-                          />
-                        )}
-                    </View>
-                  )}
                 </Animated.View>
               )}
             </React.Fragment>

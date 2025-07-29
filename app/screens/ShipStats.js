@@ -23,11 +23,9 @@ import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import BattleDice from "@/components/dice/BattleGroundDice.js";
 import { getFleetData } from "@/components/API/API.js";
-import { useDiceContext } from "@/components/Global/DiceContext.js";
 import { FactionImages } from "@/constants/FactionImages.js";
 import LoadingComponent from "@/components/loading/LoadingComponent.js";
 import SpecialOrderBonuses from "@/components/switch/ShipSpecialOrders.js";
-import { updateShipIsToggled } from "../Functions/updateShipIsToggled.js";
 
 export default function ShipStats({ route }) {
   const navigation = useNavigation();
@@ -41,7 +39,6 @@ export default function ShipStats({ route }) {
   const [orderIcon, setOrderIcon] = useState("");
   const [orderDescription, setOrderDescription] = useState("");
   const diceRollRef = useRef(0);
-  const hasNavigationRef = useRef(false);
   const {
     faction,
     data,

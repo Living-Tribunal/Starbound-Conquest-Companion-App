@@ -11,7 +11,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
 
   const animOpacity = useRef(new Animated.Value(0)).current;
   const fightersLaunched = ship.specialOrders?.["Launch Fighters"] === true;
-  const radius = 400;
+  const radius = 300;
 
   useEffect(() => {
     Animated.timing(animOpacity, {
@@ -22,6 +22,7 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
   }, [showFiringArcs]);
 
   const shipBroadSideBonus = ship.bonuses.broadSideBonus;
+  const strokeWidth = 4;
 
   const shipSwitch = (ship) => {
     switch (ship.type) {
@@ -47,8 +48,10 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                 <Path
                   d="M -60 -60 A 150 150 0 0 1 60 -60"
                   stroke={Colors.lightCannon}
-                  strokeWidth={2}
+                  strokeWidth={strokeWidth}
                   fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </Svg>
               <View
@@ -91,8 +94,10 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                 <Path
                   d="M -60 -60 A 150 150 0 0 1 60 -60"
                   stroke={Colors.mediumCannon}
-                  strokeWidth={2}
+                  strokeWidth={strokeWidth}
                   fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </Svg>
               <View
@@ -135,8 +140,10 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                 <Path
                   d="M -60 -60 A 150 150 0 0 1 60 -60"
                   stroke={Colors.heavyCannon}
-                  strokeWidth={2}
+                  strokeWidth={strokeWidth}
                   fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </Svg>
               <Svg
@@ -157,8 +164,10 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                 <Path
                   d="M -106.07 106.07 A 150 150 0 0 1 -106.07 -106.07"
                   stroke={Colors.plasmaCannon}
-                  strokeWidth={2}
+                  strokeWidth={strokeWidth}
                   fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </Svg>
               <Svg
@@ -179,9 +188,11 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                 <Path
                   d="M -106.07 106.07 A 150 150 0 0 1 -106.07 -106.07"
                   stroke={Colors.plasmaCannon}
-                  strokeWidth={2}
+                  strokeWidth={strokeWidth}
                   fill="none"
                   transform="scale(-1,1)"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </Svg>
               <View
@@ -224,22 +235,23 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
               </View>
 
               <Svg
-                width={300}
-                height={300}
-                viewBox="-140 -180 300 300"
+                width={radius * 2}
+                height={1200}
+                viewBox={`${-520} ${-520} ${520 * 2} ${520 * 2}`}
                 style={{
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -165 }, { translateY: -290 }],
+                  transform: [{ translateX: -radius }, { translateY: -radius }],
                   zIndex: -1,
                 }}
               >
-                <Path
-                  transform="rotate(90 0 0)"
-                  d="M -106.07 106.07 A 150 150 0 0 1 -106.07 -106.07"
+                <Circle
+                  cx={-50}
+                  cy={-1147}
+                  r={400}
                   stroke={Colors.missiles}
-                  strokeWidth={2}
+                  strokeWidth={strokeWidth}
                   fill="none"
                 />
               </Svg>
@@ -270,8 +282,10 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                 <Path
                   d="M -106.07 106.07 A 150 150 0 0 1 -106.07 -106.07"
                   stroke={Colors.plasmaCannon}
-                  strokeWidth={2}
+                  strokeWidth={strokeWidth}
                   fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </Svg>
               <View
@@ -302,9 +316,11 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                 <Path
                   d="M -106.07 106.07 A 150 150 0 0 1 -106.07 -106.07"
                   stroke={Colors.plasmaCannon}
-                  strokeWidth={2}
+                  strokeWidth={strokeWidth}
                   fill="none"
                   transform="scale(-1,1)"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </Svg>
               <Svg
@@ -323,27 +339,31 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                   transform="rotate(90 0 0)"
                   d="M -106.07 106.07 A 150 150 0 0 1 -106.07 -106.07"
                   stroke={Colors.particleBeam}
-                  strokeWidth={2}
+                  strokeWidth={strokeWidth}
                   fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </Svg>
               <Svg
-                width={300}
+                width={500}
                 height={300}
-                viewBox="-140 -220 300 300"
+                viewBox="-250 -200 500 300"
                 style={{
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: [{ translateX: -190 }, { translateY: -480 }],
+                  transform: [{ translateX: -295 }, { translateY: -480 }],
                   zIndex: -1,
                 }}
               >
                 <Path
                   d="M -212 -100 A 320 320 0 0 1 212 -100"
                   stroke={Colors.railguns}
-                  strokeWidth={2}
+                  strokeWidth={strokeWidth}
                   fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </Svg>
               <Svg
@@ -359,10 +379,12 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
                 }}
               >
                 <Path
-                  d="M -60 -60 A 150 150 0 0 1 60 -60"
+                  d="M -60 -60 A 150 220 0 0 1 60 -60"
                   stroke={Colors.railguns}
-                  strokeWidth={2}
+                  strokeWidth={strokeWidth}
                   fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </Svg>
             </Animated.View>

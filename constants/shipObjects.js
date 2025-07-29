@@ -41,6 +41,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
 
     destroyer: {
@@ -86,6 +87,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     cruiser: {
       factionName: "Nova Raiders",
@@ -130,6 +132,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     carrier: {
       factionName: "Nova Raiders",
@@ -173,6 +176,7 @@ export const shipObject = {
       },
       hasBeenInteractedWith: false,
       capacity: 20,
+      isPendingDestruction: false,
     },
     dreadnought: {
       factionName: "Nova Raiders",
@@ -218,6 +222,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
   },
   "The Zyrrians": {
@@ -262,6 +267,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
 
     destroyer: {
@@ -305,6 +311,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     cruiser: {
       factionName: "The Zyrrians",
@@ -349,6 +356,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     carrier: {
       factionName: "The Zyrrians",
@@ -391,6 +399,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     dreadnought: {
       factionName: "The Zyrrians",
@@ -437,6 +446,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
   },
   "Voidborn Marauders": {
@@ -480,6 +490,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
 
     destroyer: {
@@ -522,6 +533,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     cruiser: {
       factionName: "Voidborn Marauders",
@@ -565,6 +577,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     carrier: {
       factionName: "Voidborn Marauders",
@@ -607,6 +620,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     dreadnought: {
       factionName: "Voidborn Marauders",
@@ -653,6 +667,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
   },
   "Star Reapers": {
@@ -697,6 +712,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
 
     destroyer: {
@@ -740,6 +756,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     cruiser: {
       factionName: "Star Reapers",
@@ -784,6 +801,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     carrier: {
       factionName: "Star Reapers",
@@ -826,6 +844,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     dreadnought: {
       factionName: "Star Reapers",
@@ -872,6 +891,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
   },
   "Praxleon Empire": {
@@ -916,6 +936,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
 
     destroyer: {
@@ -959,6 +980,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     cruiser: {
       factionName: "Praxleon Empire",
@@ -1003,6 +1025,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     carrier: {
       factionName: "Praxleon Empire",
@@ -1045,6 +1068,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     dreadnought: {
       factionName: "Praxleon Empire",
@@ -1091,6 +1115,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
   },
   "Synthon Syndicate": {
@@ -1135,6 +1160,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
 
     destroyer: {
@@ -1178,6 +1204,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     cruiser: {
       factionName: "Synthon Syndicate",
@@ -1222,6 +1249,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     carrier: {
       factionName: "Synthon Syndicate",
@@ -1264,6 +1292,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     dreadnought: {
       factionName: "Synthon Syndicate",
@@ -1310,6 +1339,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
   },
   "The Union": {
@@ -1354,6 +1384,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
 
     destroyer: {
@@ -1397,6 +1428,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     cruiser: {
       factionName: "The Union",
@@ -1441,6 +1473,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     carrier: {
       factionName: "The Union",
@@ -1483,6 +1516,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
     dreadnought: {
       factionName: "The Union",
@@ -1530,6 +1564,7 @@ export const shipObject = {
         attack: false,
         specialOrder: false,
       },
+      isPendingDestruction: false,
     },
   },
 };
