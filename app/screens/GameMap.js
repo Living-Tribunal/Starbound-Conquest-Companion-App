@@ -575,6 +575,7 @@ export default function FleetMap() {
   }, []);
 
   const targetingShip = (ship) => {
+    if (ship.isPendingDestruction === true) return;
     setTargetedShip(ship);
     console.log("Targeting ship:", ship.shipId);
   };
@@ -962,104 +963,119 @@ export default function FleetMap() {
                   }}
                 />
               )}
-              {ship.hp !== 0 && ship.isPendingDestruction === false && (
+              {/*  {ship.isPendingDestruction === false && ( */}
+              <Animated.View
+                key={ship.id}
+                {...panResponder.panHandlers}
+                pointerEvents="auto"
+                style={[
+                  styles.ship,
+                  {
+                    transform: ship.position.getTranslateTransform(),
+                    zIndex: ship.id === shipPressed ? 1000 : 1, // No rotation here
+                  },
+                ]}
+              >
+                {ship.type === "Carrier" &&
+                  (showAllFiringArcs ||
+                    (ship.id === shipPressed && fightersLaunched)) && (
+                    <>
+                      <View
+                        pointerEvents="none"
+                        style={{
+                          position: "absolute",
+                          width: 800, // diameter
+                          height: 800,
+                          borderRadius: 10000,
+                          borderColor: fightersRangeStatus(ship) || null,
+                          borderWidth: 2,
+                          top: "50%",
+                          left: "50%",
+                          marginTop: -400, // half of height
+                          marginLeft: -400, // half of width
+                          zIndex: 5,
+                        }}
+                      />
+                    </>
+                  )}
+                {/* Rotating Ship Image */}
+
                 <Animated.View
-                  key={ship.id}
-                  {...panResponder.panHandlers}
-                  pointerEvents="auto"
-                  style={[
-                    styles.ship,
-                    {
-                      transform: ship.position.getTranslateTransform(),
-                      zIndex: ship.id === shipPressed ? 1000 : 1, // No rotation here
-                    },
-                  ]}
+                  style={{
+                    transform: [
+                      {
+                        rotate: ship.rotation.interpolate({
+                          inputRange: [0, 360],
+                          outputRange: ["0deg", "360deg"],
+                        }),
+                      },
+                    ],
+                  }}
                 >
-                  {ship.type === "Carrier" &&
-                    (showAllFiringArcs ||
-                      (ship.id === shipPressed && fightersLaunched)) && (
-                      <>
+                  {ship.isPendingDestruction === true ? (
+                    <Text
+                      style={{
+                        color: Colors.lighter_red,
+                        fontSize: 8,
+                        textAlign: "center",
+                        backgroundColor: Colors.deep_red,
+                        borderRadius: 5,
+                        borderWidth: 1,
+                        borderColor: Colors.lighter_red,
+                      }}
+                    >
+                      Critical
+                    </Text>
+                  ) : null}
+                  <Image
+                    source={localImage}
+                    style={{
+                      borderRadius: 20,
+                      width: ship.width / 2,
+                      height: ship.height / 2,
+                    }}
+                    resizeMode="center"
+                  />
+                  {ship.user === user.uid && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        position: "absolute",
+                        bottom: 0,
+                        left: ship.width / 2, // center under ship
+                      }}
+                    >
+                      {[...Array(3)].map((_, i) => (
                         <View
-                          pointerEvents="none"
+                          key={i}
                           style={{
-                            position: "absolute",
-                            width: 800, // diameter
-                            height: 800,
-                            borderRadius: 10000,
-                            borderColor: fightersRangeStatus(ship) || null,
-                            borderWidth: 2,
-                            top: "50%",
-                            left: "50%",
-                            marginTop: -400, // half of height
-                            marginLeft: -400, // half of width
-                            zIndex: 5,
+                            width: 10,
+                            height: 10,
+                            marginHorizontal: 1,
+                            backgroundColor: shipHasUsedItsTwoMoves(ship, i),
+                            borderRadius: 1,
                           }}
+                        />
+                      ))}
+                    </View>
+                  )}
+                  <View
+                    style={{
+                      left: ship.width / 4,
+                    }}
+                  >
+                    {shipPressed && isUserShip && ship.id === shipPressed && (
+                      <>
+                        <ShipSwitch
+                          ship={ship}
+                          showFiringArcs={showFiringArcs}
                         />
                       </>
                     )}
-                  {/* Rotating Ship Image */}
-
-                  <Animated.View
-                    style={{
-                      transform: [
-                        {
-                          rotate: ship.rotation.interpolate({
-                            inputRange: [0, 360],
-                            outputRange: ["0deg", "360deg"],
-                          }),
-                        },
-                      ],
-                    }}
-                  >
-                    <Image
-                      source={localImage}
-                      style={{
-                        borderRadius: 20,
-                        width: ship.width / 2,
-                        height: ship.height / 2,
-                      }}
-                      resizeMode="center"
-                    />
-                    {ship.user === user.uid && (
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          position: "absolute",
-                          bottom: 0,
-                          left: ship.width / 2, // center under ship
-                        }}
-                      >
-                        {[...Array(3)].map((_, i) => (
-                          <View
-                            key={i}
-                            style={{
-                              width: 10,
-                              height: 10,
-                              marginHorizontal: 1,
-                              backgroundColor: shipHasUsedItsTwoMoves(ship, i),
-                              borderRadius: 1,
-                            }}
-                          />
-                        ))}
-                      </View>
-                    )}
-                    <View
-                      style={{
-                        left: ship.width / 4,
-                      }}
-                    >
-                      {shipPressed && isUserShip && ship.id === shipPressed && (
-                        <>
-                          <ShipSwitch
-                            ship={ship}
-                            showFiringArcs={showFiringArcs}
-                          />
-                        </>
-                      )}
-                    </View>
-                  </Animated.View>
+                  </View>
                 </Animated.View>
-              )}
+              </Animated.View>
+              {/*   )} */}
             </React.Fragment>
           );
         })}

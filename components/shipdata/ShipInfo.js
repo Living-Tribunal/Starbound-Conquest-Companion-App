@@ -100,7 +100,6 @@ export default function ShipInfo({
                       padding: 2,
                       margin: 2,
                       fontFamily: "LeagueSpartan-Bold",
-                      fontWeight: "bold",
                       fontSize: 9,
                       textAlign: "center",
                       color: Colors.dark_gray,
@@ -127,7 +126,7 @@ export default function ShipInfo({
                         ? Colors.green_toggle
                         : Colors.blue_gray,
                       borderRadius: 5,
-                      padding: 9,
+                      padding: 10,
                       backgroundColor: ionCannonIconStatus
                         ? Colors.darker_green_toggle
                         : Colors.hudDarker,
@@ -170,10 +169,14 @@ export default function ShipInfo({
             <Text
               style={[
                 styles.shipInfo,
-                { color: Colors.green_toggle, textAlign: "center" },
+                {
+                  color: Colors.hud,
+                  textAlign: "center",
+                  fontFamily: "LeagueSpartan-Regular",
+                },
               ]}
             >
-              Ship has taken all of its actions.
+              This ship has taken all of its actions.
             </Text>
           )}
         </View>

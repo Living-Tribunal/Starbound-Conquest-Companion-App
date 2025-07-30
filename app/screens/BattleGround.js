@@ -291,10 +291,15 @@ export default function BattleGround(props) {
       );
 
       try {
-        const { x, y, ...safeData } = singleUserShip;
-        await updateDoc(userShipDocRef, {
+        //const { x, y, ...safeData } = singleUserShip;
+        const updatedShip = {
           hp: clampedHP,
-        });
+        };
+        if (clampedHP === 0) {
+          updatedShip.isPendingDestruction = true;
+        }
+
+        await updateDoc(userShipDocRef, updatedShip);
         setNewHP(clampedHP);
         // console.log("Auto-applied damage:", damageDone);
       } catch (e) {

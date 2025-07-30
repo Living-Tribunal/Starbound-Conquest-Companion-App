@@ -37,6 +37,7 @@ export default function ZoomControls({
     const { x, y } = selectedShip.position.__getValue();
     const rotation = selectedShip.rotation.__getValue();
     const distanceTraveled = selectedShip.netDistance ?? 0;
+
     await updatingPosition(shipPressed, x, y, rotation, distanceTraveled);
     Toast.show({
       type: "success",
@@ -144,11 +145,7 @@ export default function ZoomControls({
                     : Colors.hud,
                 },
               ]}
-              disabled={
-                updatingMovement ||
-                selectedShip?.shipActions?.move === true ||
-                selectedShip?.hasRolledDToHit === true
-              }
+              disabled={!shipHasMovedButNotConfirmed}
               onPress={confirmMovement}
             >
               <Text

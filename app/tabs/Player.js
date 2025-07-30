@@ -12,8 +12,10 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
+import { useFocusEffect } from "@react-navigation/native";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { useMapImageContext } from "../../components/Global/MapImageContext";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -30,6 +32,7 @@ import Share from "react-native-share";
 import { useNavigation } from "@react-navigation/native";
 import DropdownComponentSectors from "../../components/dropdown/DropdownComponentSectors";
 import { ActivityIndicator } from "react-native";
+import EndRoundModal from "../../components/EndRoundModal/EndRoundModal";
 import {
   collection,
   query,
@@ -42,8 +45,9 @@ import {
   setDoc,
   increment,
   onSnapshot,
+  deleteDoc,
+  writeBatch,
 } from "firebase/firestore";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function Player() {
   const ref = useRef();
@@ -58,6 +62,7 @@ export default function Player() {
   const [gameRound, setGameRound] = useState(0);
   const [getAllUsersShipTotals, setGetAllUsersShipTotals] = useState(0);
   const { gameSectors, setGameSectors } = useMapImageContext();
+  const [showEndRoundModal, setShowEndRoundModal] = useState(false);
   const {
     username,
     setUsername,
@@ -78,14 +83,13 @@ export default function Player() {
     getAllUsersShipToggled,
     setGetAllUsersShipToggled,
   } = useStarBoundContext();
-
-  const allToggled =
-    getAllUsersShipToggled.length > 0 &&
-    getAllUsersShipToggled.every((s) => s.isToggled);
+  const hasShownEndRoundModal = useRef(false);
 
   const allToggledOrHpZero =
     getAllUsersShipToggled.length > 0 &&
-    getAllUsersShipToggled.every((ship) => ship.isToggled || ship.hp <= 0);
+    getAllUsersShipToggled.every(
+      (ship) => ship.isToggled || ship.isPendingDestruction
+    );
 
   const myShips = useMemo(() => {
     return getAllUsersShipToggled.filter((ship) => ship.user === user.uid);
@@ -376,6 +380,44 @@ export default function Player() {
     await Promise.all(updatePromises);
   };
 
+  //clean up ships with isPendingDestruction
+  const cleanUpPendingDestruction = async () => {
+    if (!gameRoom) return;
+
+    const usersRef = collection(FIREBASE_DB, "users");
+    const userQuery = query(usersRef, where("gameRoom", "==", gameRoom));
+    const userSnapshots = await getDocs(userQuery);
+
+    const batch = writeBatch(FIREBASE_DB);
+
+    for (const userDoc of userSnapshots.docs) {
+      const userId = userDoc.id;
+      const shipsRef = collection(FIREBASE_DB, "users", userId, "ships");
+      const shipsSnap = await getDocs(shipsRef);
+
+      shipsSnap.docs.forEach((shipDoc) => {
+        const shipData = shipDoc.data();
+        if (shipData.isPendingDestruction) {
+          const shipRef = doc(
+            FIREBASE_DB,
+            "users",
+            userId,
+            "ships",
+            shipDoc.id
+          );
+          batch.delete(shipRef);
+        }
+      });
+    }
+
+    try {
+      await batch.commit();
+      console.log("All pending destruction ships deleted.");
+    } catch (error) {
+      console.error("Error cleaning up pending ships:", error);
+    }
+  };
+
   //listen for gameround changes and update the round for all users
   useEffect(() => {
     const docRef = doc(FIREBASE_DB, "users", user.uid); // or "gameRooms", depending on your structure
@@ -589,9 +631,10 @@ export default function Player() {
     };
   }, [gameRoom]);
 
-  const handleEndRoundPress = () => {
+  const handleEndRoundPress = async () => {
     if (allToggledOrHpZero) {
       endYourTurn();
+      await cleanUpPendingDestruction();
       send_message_discord_end_of_round();
     } else {
       Toast.show({
@@ -638,6 +681,25 @@ export default function Player() {
       userShipUnsubs.forEach((u) => u());
     };
   }, [gameRoom]);
+
+  //show end round modal if all ships are toggled or hp is zero
+  // and if the loading is false and isLoading is false
+  useFocusEffect(
+    useCallback(() => {
+      const timer = setTimeout(() => {
+        if (!loading && !isLoading) {
+          if (allToggledOrHpZero && !hasShownEndRoundModal.current) {
+            setShowEndRoundModal(true);
+            hasShownEndRoundModal.current = true;
+          } else if (!allToggledOrHpZero) {
+            hasShownEndRoundModal.current = false;
+          }
+        }
+      }, 500); // delay to allow Firestore data to settle
+
+      return () => clearTimeout(timer); // cleanup if screen blurs early
+    }, [allToggledOrHpZero, loading, isLoading])
+  );
 
   const getLoadingMessage = () => {
     if (showEndOfRound) return "Round has ended. Resetting your ships...";
@@ -830,12 +892,6 @@ export default function Player() {
                     ]}
                   >
                     {faction}
-                  </Text>
-                  <Text
-                    style={[styles.underText, { color: Colors.green_toggle }]}
-                  >
-                    Toggled: {getAllUsersShipTotals || 0} / Total:{" "}
-                    {getAllUsersShipToggled.length}
                   </Text>
                 </View>
               </ViewShot>
@@ -1168,6 +1224,11 @@ export default function Player() {
         )}
         contentContainerStyle={{ paddingBottom: tabBarHeight }}
       />
+      <EndRoundModal
+        showEndRoundModal={showEndRoundModal}
+        setShowEndRoundModal={setShowEndRoundModal}
+        handleEndRoundPress={handleEndRoundPress}
+      />
     </SafeAreaView>
   );
 }
@@ -1327,5 +1388,18 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 5,
     marginTop: 5,
+  },
+  text1: {
+    color: Colors.hud,
+    fontFamily: "LeagueSpartan-Light",
+    fontSize: 12,
+    padding: 5,
+    textAlign: "center",
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    backgroundColor: Colors.hudDarker,
+    marginBottom: 10,
+    marginTop: 10,
   },
 });
