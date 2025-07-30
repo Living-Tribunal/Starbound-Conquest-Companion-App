@@ -154,6 +154,7 @@ export default function ShipStats({ route }) {
 
       await updateDoc(shipRef, {
         hp: newHP,
+        isPendingDestruction: true,
       });
       /* console.log("Updated ship HP:", hitPoints); */
       adjustHP();

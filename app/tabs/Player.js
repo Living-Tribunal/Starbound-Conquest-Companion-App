@@ -29,6 +29,7 @@ import ViewShot from "react-native-view-shot";
 import Share from "react-native-share";
 import { useNavigation } from "@react-navigation/native";
 import DropdownComponentSectors from "../../components/dropdown/DropdownComponentSectors";
+import { ActivityIndicator } from "react-native";
 import {
   collection,
   query,
@@ -782,14 +783,30 @@ export default function Player() {
                     },
                   ]}
                 >
-                  <Image
-                    style={styles.profile}
-                    source={
-                      profile
-                        ? { uri: profile }
-                        : require("../../assets/images/SC_logo1.png") // fallback image
-                    }
-                  />
+                  {profile ? (
+                    <Image style={styles.profile} source={{ uri: profile }} />
+                  ) : (
+                    <View
+                      style={{
+                        width: 275,
+                        height: 275,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <ActivityIndicator size="large" color={Colors.gold} />
+                      <Text
+                        style={{
+                          color: Colors.gold,
+                          textAlign: "center",
+                          fontFamily: "LeagueSpartan-Light",
+                          fontSize: 15,
+                        }}
+                      >
+                        Loading Profile
+                      </Text>
+                    </View>
+                  )}
                   <Text
                     style={[
                       styles.playerText,
