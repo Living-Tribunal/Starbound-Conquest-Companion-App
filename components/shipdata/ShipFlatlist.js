@@ -95,6 +95,10 @@ export default function ShipFlatList({ type, usersColor, toggleToDelete }) {
 
   const ShipItem = ({ item, deleteShip, toggleToDelete }) => {
     const localImage = FactionImages[item.factionName]?.[item.type]?.classImage;
+    const isIonCannonActive =
+      item.type === "Dreadnought" &&
+      item.weaponStatus?.["Ion Particle Beam"] === false;
+
     useEffect(() => {
       if (item.hp === 0) {
         deleteShip(item);
@@ -178,39 +182,24 @@ export default function ShipFlatList({ type, usersColor, toggleToDelete }) {
               {item.hp} / {item.maxHP} HP
             </Text>
 
-            {item.type === "Dreadnought" ? (
-              item.weaponStatus?.["Ion Particle Beam"] === true ? (
-                <View>
-                  <Image
-                    style={{
-                      width: 30,
-                      height: 30,
-                      alignSelf: "center",
-                      marginTop: 5,
-                      tintColor: Colors.blue_gray,
-                    }}
-                    source={{
-                      uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fsinusoidal-beam.png?alt=media&token=96d76ac5-5426-4bbb-835c-f541f7ba3023",
-                    }}
-                  />
-                </View>
-              ) : (
-                <View>
-                  <Image
-                    style={{
-                      width: 30,
-                      height: 30,
-                      alignSelf: "center",
-                      marginTop: 5,
-                      tintColor: Colors.green_toggle,
-                    }}
-                    source={{
-                      uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fsinusoidal-beam.png?alt=media&token=96d76ac5-5426-4bbb-835c-f541f7ba3023",
-                    }}
-                  />
-                </View>
-              )
-            ) : null}
+            {isIonCannonActive && (
+              <View>
+                <Image
+                  style={{
+                    width: 30,
+                    height: 30,
+                    alignSelf: "center",
+                    marginTop: 5,
+                    tintColor: isIonCannonActive
+                      ? Colors.green_toggle
+                      : Colors.blue_gray,
+                  }}
+                  source={{
+                    uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fsinusoidal-beam.png?alt=media&token=96d76ac5-5426-4bbb-835c-f541f7ba3023",
+                  }}
+                />
+              </View>
+            )}
 
             {item.type === "Carrier" ? (
               item.specialOrders?.["Launch Fighters"] === true ? (

@@ -306,7 +306,23 @@ export default function FleetMap() {
         y,
         rotation_angle: rotation,
         distanceTraveled: distanceTraveled,
+        "shipActions.move": true,
       });
+      setData((prevData) =>
+        prevData.map((s) =>
+          s.id === selectedShip.id
+            ? {
+                ...s,
+                rotation_angle: rotation,
+                distanceTraveled: distanceTraveled,
+                shipActions: {
+                  ...(s.shipActions || {}),
+                  move: true,
+                },
+              }
+            : s
+        )
+      );
     } catch (e) {
       console.error("Error updating document: ", e);
     }
@@ -339,6 +355,12 @@ export default function FleetMap() {
             : s
         )
       );
+      Toast.show({
+        type: "success",
+        text1: "Starbound Conquest",
+        text2: "Movement Confirmed.",
+        position: "top",
+      });
       await updateShipIsToggled(user, selectedShip, setData);
     } catch (e) {
       console.error("Error updating document: ", e);
@@ -653,23 +675,31 @@ export default function FleetMap() {
             setTargetedShip={setTargetedShip}
           />
         )}
-      <ZoomControls
-        scale={scale}
-        updatingRotation={updatingRotation}
-        updatingPosition={updatingPosition}
-        shipPressed={shipPressed}
-        handleShipRotation={handleShipRotation}
-        setShowFiringArcs={setShowFiringArcs}
-        showFiringArcs={showFiringArcs}
-        setShipPressed={setShipPressed}
-        navigateToStats={navigateToStats}
-        setShowAllFiringArcs={setShowAllFiringArcs}
-        ships={ships}
-        targetedShip={targetedShip}
-        navigateToBattleGround={navigateToBattleGround}
-      />
+      {selectedShip && getShipsActionsTakenCount(selectedShip) < 2 && (
+        <ZoomControls
+          scale={scale}
+          updatingRotation={updatingRotation}
+          updatingPosition={updatingPosition}
+          shipPressed={shipPressed}
+          handleShipRotation={handleShipRotation}
+          setShowFiringArcs={setShowFiringArcs}
+          showFiringArcs={showFiringArcs}
+          setShipPressed={setShipPressed}
+          navigateToStats={navigateToStats}
+          setShowAllFiringArcs={setShowAllFiringArcs}
+          ships={ships}
+          targetedShip={targetedShip}
+          navigateToBattleGround={navigateToBattleGround}
+          //confirmMovement={() => updateShipMoveAction(selectedShip)}
+        />
+      )}
+
       {selectedShip && !targetedShip && (
-        <ShipInfo selectedShip={selectedShip} shipPressed={shipPressed} />
+        <ShipInfo
+          selectedShip={selectedShip}
+          shipPressed={shipPressed}
+          shipActionCountTaken={getShipsActionsTakenCount(selectedShip)}
+        />
       )}
 
       <ReactNativeZoomableView
@@ -680,15 +710,15 @@ export default function FleetMap() {
         longPressDuration={5}
         onLongPress={async () => {
           // Confirm movement if it hasn't been done and the ship moved
-          if (
-            !tempDisableMovementRestriction &&
-            selectedShip &&
-            !selectedShip.shipActions?.move &&
-            selectedShip.position.__getValue().x !== movementDistanceCircle.x &&
-            selectedShip.position.__getValue().y !== movementDistanceCircle.y
-          ) {
-            await updateShipMoveAction(selectedShip);
-          }
+          //if (
+          //  !tempDisableMovementRestriction &&
+          // selectedShip &&
+          // !selectedShip.shipActions?.move &&
+          // selectedShip.position.__getValue().x !== movementDistanceCircle.x &&
+          //</SafeAreaView>  selectedShip.position.__getValue().y !== movementDistanceCircle.y
+          //  ) {
+          //    await updateShipMoveAction(selectedShip);
+          //   }
 
           setShipPressed(null);
           setMovementDistanceCircle(null);
@@ -778,7 +808,7 @@ export default function FleetMap() {
               if (actionsTaken >= 2) return;
               if (!isUserShip) return;
               if (ship.shipActions?.move === true) return;
-              if (ship.hasRolledDToHit === true) return;
+              //if (ship.hasRolledDToHit === true) return;
               //if (ship.miss === true) return;
               const scaleFactor = zoomRef.current?.zoomLevel ?? 1;
 
@@ -857,17 +887,21 @@ export default function FleetMap() {
               // Flatten the position to commit the current offset
               ship.position.flattenOffset();
               // Get the current position of the ship
-              const { x, y } = ship.position.__getValue();
-              const rotation = ship.rotation.__getValue();
+              {
+                /* const { x, y } = ship.position.__getValue();
+              const rotation = ship.rotation.__getValue(); */
+              }
 
               // Update the current ship's position in Firebase
-              await updatingPosition(
+              {
+                /*     await updatingPosition(
                 ship.id,
                 x,
                 y,
                 rotation,
                 ship.netDistance ?? 0
-              );
+              ); */
+              }
 
               // --- Calculate ALL ships' fighter range status LOCALLY first ---
 
@@ -1014,17 +1048,14 @@ export default function FleetMap() {
                         left: ship.width / 4,
                       }}
                     >
-                      {shipPressed &&
-                        isUserShip &&
-                        ship.id === shipPressed &&
-                        ship.hasRolledDToHit === false && (
-                          <>
-                            <ShipSwitch
-                              ship={ship}
-                              showFiringArcs={showFiringArcs}
-                            />
-                          </>
-                        )}
+                      {shipPressed && isUserShip && ship.id === shipPressed && (
+                        <>
+                          <ShipSwitch
+                            ship={ship}
+                            showFiringArcs={showFiringArcs}
+                          />
+                        </>
+                      )}
                     </View>
                   </Animated.View>
                 </Animated.View>

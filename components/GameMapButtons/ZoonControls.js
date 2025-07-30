@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useEffect, useRef } from "react";
 import { Colors } from "@/constants/Colors";
+import Toast from "react-native-toast-message";
 
 export default function ZoomControls({
   ships,
@@ -18,8 +19,8 @@ export default function ZoomControls({
   updatingRotation,
   setShowAllFiringArcs,
   updatingMovement,
+  updatingPosition,
   targetedShip,
-  navigateToBattleGround,
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -31,7 +32,30 @@ export default function ZoomControls({
     }).start();
   }, [shipPressed]);
 
+  const confirmMovement = async () => {
+    if (!selectedShip) return;
+    const { x, y } = selectedShip.position.__getValue();
+    const rotation = selectedShip.rotation.__getValue();
+    const distanceTraveled = selectedShip.netDistance ?? 0;
+    await updatingPosition(shipPressed, x, y, rotation, distanceTraveled);
+    Toast.show({
+      type: "success",
+      text1: "Starbound Conquest",
+      text2: "Movement Confirmed.",
+      position: "top",
+    });
+  };
+
   const selectedShip = ships.find((s) => s.id === shipPressed);
+
+  const shipHasMovedButNotConfirmed =
+    selectedShip &&
+    !selectedShip.shipActions?.move &&
+    (selectedShip.position.__getValue().x !== selectedShip.x ||
+      selectedShip.position.__getValue().y !== selectedShip.y);
+
+  console.log("Ship has moved but not confirmed:", shipHasMovedButNotConfirmed);
+
   const shipType = selectedShip?.type === "Carrier";
   return (
     <View style={styles.zoomControls}>
@@ -108,6 +132,38 @@ export default function ZoomControls({
                 </Text>
               </TouchableOpacity>
             )}
+            <TouchableOpacity
+              style={[
+                styles.controlButton,
+                {
+                  backgroundColor: shipHasMovedButNotConfirmed
+                    ? Colors.darker_green_toggle
+                    : Colors.hudDarker,
+                  borderColor: shipHasMovedButNotConfirmed
+                    ? Colors.green_toggle
+                    : Colors.hud,
+                },
+              ]}
+              disabled={
+                updatingMovement ||
+                selectedShip?.shipActions?.move === true ||
+                selectedShip?.hasRolledDToHit === true
+              }
+              onPress={confirmMovement}
+            >
+              <Text
+                style={[
+                  styles.buttonText,
+                  {
+                    color: shipHasMovedButNotConfirmed
+                      ? Colors.green_toggle
+                      : Colors.hud,
+                  },
+                ]}
+              >
+                Confirm Movement
+              </Text>
+            </TouchableOpacity>
           </Animated.View>
         )}
       </View>

@@ -12,7 +12,11 @@ import { Colors } from "@/constants/Colors";
 import { WeaponColors, weaponDescriptions } from "@/constants/WeaponColors";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
 
-export default function ShipInfo({ selectedShip, shipPressed }) {
+export default function ShipInfo({
+  selectedShip,
+  shipPressed,
+  shipActionCountTaken,
+}) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [isShowWeaponInfo, setIsShowWeaponInfo] = useState(false);
   const [isWeapon, setIsWeapon] = useState(false);
@@ -79,7 +83,7 @@ export default function ShipInfo({ selectedShip, shipPressed }) {
           const ionCannon = weapon === "Ion Particle Beam";
           const ionCannonIconStatus =
             weapon === "Ion Particle Beam" &&
-            selectedShip.weaponStatus?.["Ion Particle Beam"] === true;
+            selectedShip.weaponStatus?.["Ion Particle Beam"] === false;
           return (
             <TouchableOpacity
               key={index}
@@ -142,7 +146,7 @@ export default function ShipInfo({ selectedShip, shipPressed }) {
             const isAttempted =
               selectedShip.specialOrdersAttempted?.[orderName];
             const isUsed = selectedShip.specialOrders?.[orderName] || false;
-            console.log("Order Name:", isUsed, orderName);
+            //console.log("Order Name:", isUsed, orderName);
             return (
               <View key={index}>
                 {orderIcon && (
@@ -161,8 +165,18 @@ export default function ShipInfo({ selectedShip, shipPressed }) {
               </View>
             );
           })}
-        </View>
 
+          {shipActionCountTaken >= 2 && (
+            <Text
+              style={[
+                styles.shipInfo,
+                { color: Colors.green_toggle, textAlign: "center" },
+              ]}
+            >
+              Ship has taken all of its actions.
+            </Text>
+          )}
+        </View>
         <Modal
           animationType="slide"
           transparent={true}

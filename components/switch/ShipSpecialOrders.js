@@ -293,11 +293,9 @@ export default async function SpecialOrderBonuses({
       }
       break;
     case "All Systems Fire":
-      console.log("All Systems Fire Bonus");
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
         if (localDiceRoll >= 11) {
-          console.log("All Systems Fire:", localDiceRoll);
           const weaponStatuses = ship.weaponStatus || {};
           const weaponStatusesUpdated = {};
           for (const weaponName in weaponStatuses) {
@@ -308,6 +306,7 @@ export default async function SpecialOrderBonuses({
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
+            "shipActions.attack": false,
             hasRolledDToHit: false,
             hit: false,
             isToggled: false,
@@ -332,6 +331,7 @@ export default async function SpecialOrderBonuses({
                     shipActions: {
                       ...(s.shipActions || {}),
                       specialOrder: true,
+                      attack: false,
                     },
                   }
                 : s
@@ -563,7 +563,7 @@ export default async function SpecialOrderBonuses({
           await updateDoc(shipRef, {
             "weaponStatus.Ion Particle Beam": false,
             [`specialOrders.${orderName}`]: true,
-            "shipActions.specialOrder": true,
+            "shipActions.specialOrder": false,
             [`specialOrdersAttempted.${orderName}`]: true,
             hit: false,
           });
@@ -585,7 +585,7 @@ export default async function SpecialOrderBonuses({
                     },
                     shipActions: {
                       ...(s.shipActions || {}),
-                      specialOrder: true,
+                      specialOrder: false,
                     },
                   }
                 : s
@@ -615,6 +615,7 @@ export default async function SpecialOrderBonuses({
       try {
         await updateDoc(shipRef, {
           [`specialOrdersAttempted.${orderName}`]: true,
+          "shipActions.specialOrder": true,
         });
 
         setData((prevData) =>
@@ -625,6 +626,10 @@ export default async function SpecialOrderBonuses({
                   specialOrdersAttempted: {
                     ...(s.specialOrdersAttempted || {}),
                     [orderName]: true,
+                  },
+                  shipActions: {
+                    ...(s.shipActions || {}),
+                    specialOrder: true,
                   },
                 }
               : s
