@@ -133,6 +133,7 @@ const Login = () => {
             email: user.email,
             displayName: user.displayName || "Commander",
             id: user.uid,
+            isUserTurn: false,
             factionName:
               faction || "Head over to settings to build your character",
           });
@@ -237,6 +238,7 @@ const Login = () => {
             displayName: user.displayName,
             id: user.uid,
             factionName: faction,
+            isUserTurn: false,
           });
           console.log("User document written with ID:", user.uid);
           console.log("Users Profile:", user);

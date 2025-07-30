@@ -655,11 +655,6 @@ export default function Player() {
         };
       }
     });
-    console.log(
-      "Unique Users in Game Room:",
-      Object.values(uniqueUsers).map((u) => u.displayName)
-    );
-    
     return Object.values(uniqueUsers);
   }, [getAllUsersShipToggled]);
 
@@ -975,8 +970,10 @@ export default function Player() {
                     >
                       Fleet Overview
                     </Text>
+                    {playersInGameRoom.map((user, index) => (
+                      <Text key={index}>{user.displayName}</Text>
+                    ))}
                   </View>
-
                   <View
                     style={[
                       styles.valueContainer,
