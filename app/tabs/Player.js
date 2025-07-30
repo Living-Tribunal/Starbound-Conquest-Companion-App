@@ -48,6 +48,7 @@ import {
   deleteDoc,
   writeBatch,
 } from "firebase/firestore";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function Player() {
   const ref = useRef();
@@ -62,6 +63,7 @@ export default function Player() {
   const [gameRound, setGameRound] = useState(0);
   const [getAllUsersShipTotals, setGetAllUsersShipTotals] = useState(0);
   const { gameSectors, setGameSectors } = useMapImageContext();
+  const [usersInRoom, setUsersInRoom] = useState([]);
   const [showEndRoundModal, setShowEndRoundModal] = useState(false);
   const {
     username,
@@ -221,7 +223,7 @@ export default function Player() {
     } catch (e) {
       console.error("Error adding document: ", e);
     } finally {
-      getFleetData({ data, setData });
+      getFleetData({ data, setData, setUsersInRoom, gameRoom, gameSectors });
       setIsLoading(false);
     }
   };
@@ -260,7 +262,6 @@ export default function Player() {
       try {
         const countSnap = await getCountFromServer(shipsRef);
         setNumberOfShips(countSnap.data().count);
-        //  console.log("Ship Counts:", numberOfShips);
       } catch (err) {
         console.error("Failed to get ship count:", err);
       }
@@ -321,13 +322,26 @@ export default function Player() {
     const request = new XMLHttpRequest();
     request.open(
       "POST",
-      "https://discord.com/api/webhooks/1334142368613400598/ByDe3g5n2lUlWW_dpj1tYV5JggI6XMbWpaldCsn53EJF5P1vJ3IU1Tg0-IqZ4cnWuOn_"
+      "https://discord.com/api/webhooks/1400193103775793282/2Rz9AIJTztHwqS8B2OINDmUHy-In76UWV5NBkCnQkBVdBPpedCrPmV0njSE4t4KIDYat"
     );
     request.setRequestHeader("Content-Type", "application/json");
     const params = {
       username: "Starbound Conquest",
       avatar_url: "",
       content: `The Round has ended in ${gameRoom}. Resetting your ships.`,
+    };
+    request.send(JSON.stringify(params));
+  }
+
+  function endYourTurnAndSendMessage() {
+    const request = new XMLHttpRequest();
+    request.open(
+      "POST",
+      "https://discord.com/api/webhooks/1400193598691217428/wIGjO6m0CUTV1rEanECgljpMRyWbrkLoP0nUtdqDerJOvHzYeOCjgOKx25ImJU8vFoi1"
+    );
+    request.setRequestHeader("Content-Type", "application/json");
+    const params = {
+      event_type: "end-your-turn",
     };
     request.send(JSON.stringify(params));
   }
@@ -583,8 +597,7 @@ export default function Player() {
       setGetAllUsersShipTotals(0);
 
       // 🔄 Refresh local fleet state
-      getFleetData({ data, setData });
-
+      getFleetData({ data, setData, setUsersInRoom, gameRoom, gameSectors });
       setShowEndOfRound(false);
     } catch (e) {
       console.error("Error in endYourTurn:", e);
@@ -630,6 +643,25 @@ export default function Player() {
       userShipUnsubs.forEach((u) => u());
     };
   }, [gameRoom]);
+
+  const playersInGameRoom = useMemo(() => {
+    const uniqueUsers = {};
+
+    getAllUsersShipToggled.forEach((ship) => {
+      if (!uniqueUsers[ship.user]) {
+        uniqueUsers[ship.user] = {
+          uid: ship.user,
+          displayName: ship.username || "Commander",
+        };
+      }
+    });
+    console.log(
+      "Unique Users in Game Room:",
+      Object.values(uniqueUsers).map((u) => u.displayName)
+    );
+    
+    return Object.values(uniqueUsers);
+  }, [getAllUsersShipToggled]);
 
   const handleEndRoundPress = async () => {
     if (allToggledOrHpZero) {
@@ -1107,10 +1139,10 @@ export default function Player() {
                         textAlign: "center",
                       }}
                     >
-                      Ships in {gameSectors}:{" "}
+                      Total Ships in: {gameSectors}:{" "}
                       {shipInSector.length > 0
                         ? shipInSector.length
-                        : "No ships"}
+                        : numberOfShips}
                     </Text>
                   </View>
                   <DropdownComponentSectors />

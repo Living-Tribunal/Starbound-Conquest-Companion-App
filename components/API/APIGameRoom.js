@@ -28,6 +28,8 @@ export const getAllShipsInGameRoom = ({
     userSnapshot.forEach((userDoc) => {
       const uid = userDoc.id;
       const userData = userDoc.data();
+      const usernames = userSnapshot.docs.map((doc) => doc.data().displayName);
+      console.log("All players in room:", usernames);
 
       const shipsQuery = query(
         collection(FIREBASE_DB, "users", uid, "ships"),

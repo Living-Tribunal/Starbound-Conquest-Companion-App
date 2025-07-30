@@ -14,7 +14,7 @@ const DropdownComponentCampaigns = () => {
     if (isFocus) {
       return (
         <Text style={[styles.label, isFocus && { color: Colors.hud }]}>
-          Choose a Game Mode
+          Choose a Game Room
         </Text>
       );
     }

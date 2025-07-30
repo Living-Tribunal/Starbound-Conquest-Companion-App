@@ -55,7 +55,7 @@ export default function ZoomControls({
     (selectedShip.position.__getValue().x !== selectedShip.x ||
       selectedShip.position.__getValue().y !== selectedShip.y);
 
-  console.log("Ship has moved but not confirmed:", shipHasMovedButNotConfirmed);
+  //console.log("Ship has moved but not confirmed:", shipHasMovedButNotConfirmed);
 
   const shipType = selectedShip?.type === "Carrier";
   return (

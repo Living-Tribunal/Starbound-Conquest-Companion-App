@@ -36,7 +36,7 @@ export default function Example() {
     selectedColor.value = color.hex;
   };
 
-  console.log("User Faction Color:", selectedColor.value);
+  //console.log("User Faction Color:", selectedColor.value);
 
   return (
     <>
