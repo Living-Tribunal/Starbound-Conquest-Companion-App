@@ -315,7 +315,7 @@ export default function Settings() {
               <Text style={styles.text1}>Game Room: {gameRoom}</Text>
             ) : (
               <Text style={styles.text1}>
-                Game Room not selected, head over to Settings to pick one
+                Game Room not selected, select one below.
               </Text>
             )}
             <ImagePicker factionColor={userFactionColor} />

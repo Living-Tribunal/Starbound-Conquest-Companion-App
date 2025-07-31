@@ -93,7 +93,7 @@ export default function ImagePickerExample({ factionColor }) {
           styles.image,
           {
             boxShadow: `0px 0px 10px ${factionColor}`,
-            borderColor: Colors.gold,
+            borderColor: { factionColor } || Colors.hud,
           },
         ]}
         source={
