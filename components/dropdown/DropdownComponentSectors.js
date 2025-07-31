@@ -34,7 +34,6 @@ const DropdownComponentSectors = () => {
         placeholderStyle={styles.placeholderStyle}
         selectedTextStyle={styles.selectedTextStyle}
         containerStyle={styles.containerStyle}
-        inputSearchStyle={styles.inputSearchStyle}
         iconStyle={styles.iconStyle}
         data={GameSectors}
         search
@@ -45,6 +44,7 @@ const DropdownComponentSectors = () => {
         searchPlaceholder="Search..."
         value={gameSectors}
         onFocus={() => setIsFocus(true)}
+        inputSearchStyle={styles.searchInput}
         onBlur={() => {
           setIsFocus(false);
         }}
@@ -65,7 +65,7 @@ const DropdownComponentSectors = () => {
               style={{
                 color: Colors.hud,
                 fontFamily: "LeagueSpartan-Regular",
-                fontSize: 16,
+                fontSize: 18,
               }}
             >
               {item.value}
@@ -137,8 +137,18 @@ const styles = StyleSheet.create({
     color: Colors.hud,
   },
   containerStyle: {
-    backgroundColor: Colors.dark_gray,
-    borderWidth: 1,
+    backgroundColor: Colors.hudDarker,
     borderColor: Colors.hud,
+    borderWidth: 1,
+    borderRadius: 4,
+    marginTop: 5,
+    padding: 8,
+  },
+  searchInput: {
+    borderColor: Colors.hud,
+    color: Colors.hud,
+    backgroundColor: Colors.hudDarker,
+    fontSize: 14,
+    borderRadius: 5,
   },
 });
