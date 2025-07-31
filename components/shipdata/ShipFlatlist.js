@@ -99,11 +99,11 @@ export default function ShipFlatList({ type, usersColor, toggleToDelete }) {
       item.type === "Dreadnought" &&
       item.weaponStatus?.["Ion Particle Beam"] === false;
 
-    useEffect(() => {
+    /*     useEffect(() => {
       if (item.hp === 0) {
         deleteShip(item);
       }
-    }, [item.hp]);
+    }, [item.hp]); */
 
     return (
       <TouchableOpacity

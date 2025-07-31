@@ -6,7 +6,7 @@ import { Colors } from "@/constants/Colors";
 import { useMapImageContext } from "../Global/MapImageContext";
 import { GameSectors } from "@/constants/GameSectors";
 
-const DropdownComponentSectors = () => {
+const DropdownComponentSectors = ({ getShips }) => {
   const { gameSectors, setGameSectors } = useMapImageContext();
   const [isFocus, setIsFocus] = useState(false);
 
@@ -51,6 +51,7 @@ const DropdownComponentSectors = () => {
         onChange={(item) => {
           setGameSectors(item.value);
           setIsFocus(false);
+          getShips({ gameSectors: item.value });
         }}
         renderItem={(item) => (
           <View

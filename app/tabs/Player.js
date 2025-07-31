@@ -64,7 +64,11 @@ export default function Player() {
   const [getAllUsersShipTotals, setGetAllUsersShipTotals] = useState(0);
   const { gameSectors, setGameSectors } = useMapImageContext();
   const [usersInRoom, setUsersInRoom] = useState([]);
+  const [isUsersTurn, setIsUsersTurn] = useState(false);
+  const [isUsersColors, setIsUsersColors] = useState(false);
   const [showEndRoundModal, setShowEndRoundModal] = useState(false);
+  const [isShowPlayers, setIsShowPlayers] = useState(true);
+  const [playersInGameRoom, setPlayersInGameRoom] = useState([]);
   const {
     username,
     setUsername,
@@ -85,17 +89,45 @@ export default function Player() {
     getAllUsersShipToggled,
     setGetAllUsersShipToggled,
   } = useStarBoundContext();
+
+  const mockPlayers = [
+    { uid: "user1", displayName: "Alpha", userFactionColor: "#FF0000" },
+    { uid: "user2", displayName: "Bravo", userFactionColor: "#00FF00" },
+    { uid: "user3", displayName: "Charlie", userFactionColor: "#0000FF" },
+    { uid: "user4", displayName: "Delta", userFactionColor: "#FFFF00" },
+    { uid: "user5", displayName: "Echo", userFactionColor: "#FF00FF" },
+    { uid: "user6", displayName: "Foxtrot", userFactionColor: "#00FFFF" },
+    { uid: "user7", displayName: "Golf", userFactionColor: "#FFFFFF" },
+    { uid: "user8", displayName: "Hotel", userFactionColor: "#000000" },
+    { uid: "user9", displayName: "India", userFactionColor: "#FF0000" },
+    { uid: "user10", displayName: "Juliet", userFactionColor: "#00FF00" },
+    { uid: "user11", displayName: "Kilo", userFactionColor: "#0000FF" },
+  ];
+
   const hasShownEndRoundModal = useRef(false);
 
+  //geeting the current turn color to disaply it
+  const currentTurnUid = Object.keys(isUsersTurn).find(
+    (uid) => isUsersTurn[uid]
+  );
+
+  const currentTurnColor = isUsersColors?.[currentTurnUid] || "#FFFFFF";
+
+  //checks if there are any ships in the fleet from anyone
   const allToggledOrHpZero =
     getAllUsersShipToggled.length > 0 &&
     getAllUsersShipToggled.every(
       (ship) => ship.isToggled || ship.isPendingDestruction
     );
 
+  //filtering out the ships from the current user
   const myShips = useMemo(() => {
     return getAllUsersShipToggled.filter((ship) => ship.user === user.uid);
   }, [getAllUsersShipToggled, user?.uid]);
+
+  const myToggledOrDestroyingShips =
+    myShips.length > 0 &&
+    myShips.every((ship) => ship.isToggled || ship.isPendingDestruction);
 
   const shipInSector = useMemo(() => {
     return gameSectors === "Show All Ships..."
@@ -244,7 +276,6 @@ export default function Player() {
         setGameRoom(data.gameRoom || "");
         setUserFactionColor(data.userFactionColor || "");
         setGameValue(data.gameValue || "");
-        //console.log("Profile Image In Player:", data.gameRoom);
       }
     });
     return () => unsubscribe();
@@ -333,17 +364,64 @@ export default function Player() {
     request.send(JSON.stringify(params));
   }
 
-  function endYourTurnAndSendMessage() {
-    const request = new XMLHttpRequest();
-    request.open(
-      "POST",
-      "https://discord.com/api/webhooks/1400193598691217428/wIGjO6m0CUTV1rEanECgljpMRyWbrkLoP0nUtdqDerJOvHzYeOCjgOKx25ImJU8vFoi1"
-    );
-    request.setRequestHeader("Content-Type", "application/json");
-    const params = {
-      event_type: "end-your-turn",
-    };
-    request.send(JSON.stringify(params));
+  async function endYourTurnAndSendMessage() {
+    if (myToggledOrDestroyingShips) {
+      // 1. Send Discord message
+      const request = new XMLHttpRequest();
+      request.open(
+        "POST",
+        "https://discord.com/api/webhooks/1400193598691217428/wIGjO6m0CUTV1rEanECgljpMRyWbrkLoP0nUtdqDerJOvHzYeOCjgOKx25ImJU8vFoi1"
+      );
+      request.setRequestHeader("Content-Type", "application/json");
+      const params = {
+        username: "Starbound Conquest",
+        avatar_url: "",
+        content: `${username} has ended their turn in ${gameRoom}.`,
+      };
+      request.send(JSON.stringify(params));
+
+      // 2. Switch to next player
+      const usersRef = collection(FIREBASE_DB, "users");
+      const usersQuery = query(usersRef, where("gameRoom", "==", gameRoom));
+      const snapshot = await getDocs(usersQuery);
+
+      const players = snapshot.docs.map((doc) => ({
+        uid: doc.id,
+        ...doc.data(),
+      }));
+
+      // Sort consistently
+      const sortedPlayers = players.sort((a, b) => a.uid.localeCompare(b.uid));
+      console.log(`Sorted players:`, sortedPlayers);
+
+      // Find current player and determine next
+      const currentIndex = sortedPlayers.findIndex((p) => p.uid === user.uid);
+      const nextIndex = (currentIndex + 1) % sortedPlayers.length;
+      const currentPlayer = sortedPlayers[currentIndex];
+      const nextPlayer = sortedPlayers[nextIndex];
+
+      // Update Firestore: end current turn, start next
+      const currentRef = doc(FIREBASE_DB, "users", currentPlayer.uid);
+      const nextRef = doc(FIREBASE_DB, "users", nextPlayer.uid);
+
+      await updateDoc(currentRef, { isUserTurn: false });
+      await updateDoc(nextRef, { isUserTurn: true });
+
+      // 3. Optional feedback
+      Toast.show({
+        type: "success",
+        text1: "Turn Ended",
+        text2: `${nextPlayer.displayName} is up next!`,
+        position: "top",
+      });
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Starbound Conquest",
+        text2: "You have ships left to deploy.",
+        position: "top",
+      });
+    }
   }
 
   //reset the round for the current user IF there are no ships in the fleet from ANYONE
@@ -467,7 +545,7 @@ export default function Player() {
     return () => unsubscribe();
   }, [user?.uid, gameRoom]);
 
-  const endYourTurn = async () => {
+  const endRound = async () => {
     if (!user || !gameRoom) return;
     setShowEndOfRound(true);
 
@@ -591,8 +669,24 @@ export default function Player() {
       }
       //update round for all users
       await updateRoundForAllUsers();
+
+      // Get all players in this gameRoom
+      const usersQuery = query(usersRef, where("gameRoom", "==", gameRoom));
+      const snapshot = await getDocs(usersQuery);
+
+      const sortedPlayers = snapshot.docs
+        .map((doc) => ({ uid: doc.id, ...doc.data() }))
+        .sort((a, b) => a.uid.localeCompare(b.uid));
+
+      const updateTurnPromises = sortedPlayers.map((player, index) => {
+        const isFirstPlayer = index === 0;
+        return updateDoc(doc(FIREBASE_DB, "users", player.uid), {
+          isUserTurn: isFirstPlayer,
+        });
+      });
       // ✅ Wait for all updates
       await Promise.all(allResetPromises);
+
       //setGetAllUsersShipToggled([]);
       setGetAllUsersShipTotals(0);
 
@@ -606,61 +700,9 @@ export default function Player() {
     }
   };
 
-  useEffect(() => {
-    if (!gameRoom) return;
-
-    const userShipUnsubs = [];
-    const allShipMap = {}; // temp store: { [uid]: [ship, ship, ...] }
-
-    const usersRef = collection(FIREBASE_DB, "users");
-    const unsubscribeUsers = onSnapshot(usersRef, (userSnapshot) => {
-      // Clear previous listeners
-      userShipUnsubs.forEach((unsub) => unsub());
-      userShipUnsubs.length = 0;
-
-      userSnapshot.docs.forEach((userDoc) => {
-        const uid = userDoc.id;
-        const shipsRef = collection(FIREBASE_DB, "users", uid, "ships");
-        const shipsQuery = query(shipsRef, where("gameRoom", "==", gameRoom));
-
-        const unsub = onSnapshot(shipsQuery, (shipsSnap) => {
-          const userShips = shipsSnap.docs.map((doc) => doc.data());
-
-          // Update that user's ships
-          allShipMap[uid] = userShips;
-
-          // Flatten all users' ships
-          const allShips = Object.values(allShipMap).flat();
-          setGetAllUsersShipToggled(allShips);
-        });
-
-        userShipUnsubs.push(unsub);
-      });
-    });
-
-    return () => {
-      unsubscribeUsers();
-      userShipUnsubs.forEach((u) => u());
-    };
-  }, [gameRoom]);
-
-  const playersInGameRoom = useMemo(() => {
-    const uniqueUsers = {};
-
-    getAllUsersShipToggled.forEach((ship) => {
-      if (!uniqueUsers[ship.user]) {
-        uniqueUsers[ship.user] = {
-          uid: ship.user,
-          displayName: ship.username || "Commander",
-        };
-      }
-    });
-    return Object.values(uniqueUsers);
-  }, [getAllUsersShipToggled]);
-
   const handleEndRoundPress = async () => {
     if (allToggledOrHpZero) {
-      endYourTurn();
+      endRound();
       await cleanUpPendingDestruction();
       send_message_discord_end_of_round();
     } else {
@@ -677,37 +719,67 @@ export default function Player() {
     if (!gameRoom) return;
 
     const userShipUnsubs = [];
+    const allShipMap = {};
+    const turnsMap = {};
+    const colorsMap = {};
+    const activePlayers = [];
 
     const usersRef = collection(FIREBASE_DB, "users");
     const unsubscribeUsers = onSnapshot(usersRef, (userSnapshot) => {
-      // clear previous listeners
-      userShipUnsubs.forEach((u) => u());
+      // Clear previous listeners
+      userShipUnsubs.forEach((unsub) => unsub());
       userShipUnsubs.length = 0;
+
+      // Reset temp storage
+      Object.keys(allShipMap).forEach((key) => delete allShipMap[key]);
+      Object.keys(turnsMap).forEach((key) => delete turnsMap[key]);
+      Object.keys(colorsMap).forEach((key) => delete colorsMap[key]);
 
       userSnapshot.docs.forEach((userDoc) => {
         const uid = userDoc.id;
+        const userData = userDoc.data();
+        if (userData.gameRoom === gameRoom) {
+          activePlayers.push({
+            uid,
+            displayName: userData.displayName,
+            userFactionColor: userData.userFactionColor || "#FFFFFF",
+          });
+        }
+        turnsMap[uid] = userData.isUserTurn || false;
+        colorsMap[uid] = userData.userFactionColor || "#FFFFFF";
+
         const shipsRef = collection(FIREBASE_DB, "users", uid, "ships");
         const shipsQuery = query(shipsRef, where("gameRoom", "==", gameRoom));
 
         const unsub = onSnapshot(shipsQuery, (shipsSnap) => {
-          const currentShips = shipsSnap.docs.map((doc) => doc.data());
+          const userShips = shipsSnap.docs.map((doc) => doc.data());
 
-          setGetAllUsersShipToggled((prevShips) => {
-            // Filter out old ships from this user
-            const others = prevShips.filter((s) => s.user !== uid);
-            return [...others, ...currentShips];
-          });
+          allShipMap[uid] = userShips;
+
+          // Flatten and update
+          const allShips = Object.values(allShipMap).flat();
+          setGetAllUsersShipToggled(allShips);
         });
 
         userShipUnsubs.push(unsub);
       });
+
+      setIsUsersTurn({ ...turnsMap });
+      setIsUsersColors({ ...colorsMap });
+      setPlayersInGameRoom(activePlayers);
     });
 
     return () => {
       unsubscribeUsers();
-      userShipUnsubs.forEach((u) => u());
+      userShipUnsubs.forEach((unsub) => unsub());
     };
   }, [gameRoom]);
+
+  /*   useEffect(() => {
+    if (gameSectors && gameRoom) {
+      getFleetData({ data, setData, gameRoom, gameSectors });
+    }
+  }, [gameSectors]); */
 
   //show end round modal if all ships are toggled or hp is zero
   // and if the loading is false and isLoading is false
@@ -850,6 +922,90 @@ export default function Player() {
                   />
                 </TouchableOpacity>
               </View>
+              <TouchableOpacity
+                onPress={() => setIsShowPlayers(!isShowPlayers)}
+              >
+                <View
+                  style={{
+                    borderWidth: 1,
+                    borderColor: currentTurnColor,
+                    boxShadow: `0px 0px 10px ${currentTurnColor}`,
+                    borderRadius: 5,
+                    padding: 10,
+                    marginTop: 10,
+                    margin: 10,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    gap: 20,
+                  }}
+                >
+                  {isShowPlayers ? (
+                    playersInGameRoom
+                      .filter((player) => isUsersTurn[player.uid])
+                      .map((player) => (
+                        <Text
+                          key={player.uid}
+                          style={{
+                            color: player.userFactionColor || Colors.hud,
+                            fontFamily: "LeagueSpartan-Bold",
+                            fontSize: 13,
+                            textAlign: "center",
+                          }}
+                        >
+                          Current Player's Turn: {player.displayName}
+                        </Text>
+                      ))
+                  ) : (
+                    <View
+                      style={{
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <View>
+                        <Text
+                          style={{
+                            color: Colors.gold,
+                            fontFamily: "LeagueSpartan-Bold",
+                            fontSize: 15,
+                            textAlign: "center",
+                            marginBottom: 5,
+                          }}
+                        >
+                          All Players:
+                        </Text>
+                      </View>
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          gap: 10,
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        {playersInGameRoom.map((player, index) => (
+                          <Text
+                            key={player.uid}
+                            numberOfLines={1}
+                            style={{
+                              color: player.userFactionColor || Colors.hud,
+                              fontFamily: "LeagueSpartan-Regular",
+                              fontSize: 10,
+                              textAlign: "left",
+                            }}
+                          >
+                            {index + 1}. {player.displayName}
+                          </Text>
+                        ))}
+                      </View>
+                    </View>
+                  )}
+                </View>
+              </TouchableOpacity>
+
               <ViewShot
                 style={{ justifyContent: "center", alignItems: "center" }}
                 ref={ref}
@@ -970,9 +1126,6 @@ export default function Player() {
                     >
                       Fleet Overview
                     </Text>
-                    {playersInGameRoom.map((user, index) => (
-                      <Text key={index}>{user.displayName}</Text>
-                    ))}
                   </View>
                   <View
                     style={[
@@ -1042,7 +1195,7 @@ export default function Player() {
                         styles.editContainer,
                         {
                           borderWidth: 1,
-                          width: "45%",
+                          width: "30%",
                           shadowColor: !allToggledOrHpZero
                             ? Colors.lighter_red
                             : Colors.gold,
@@ -1073,18 +1226,35 @@ export default function Player() {
 
                     {/*  <PushNotifications /> */}
 
-                    {/* <TouchableOpacity
-                      style={styles.editContainer}
-                      onPress={updateRoundForAllUsers}
+                    <TouchableOpacity
+                      style={[
+                        styles.editContainer,
+                        { backgroundColor: Colors.hudDarker },
+                      ]}
+                      disabled={hasNoShips || allToggledOrHpZero}
+                      onLongPress={async () => {
+                        await endYourTurnAndSendMessage();
+                      }}
                     >
-                      <Text style={styles.textValue}>Force Next Round</Text>
-                    </TouchableOpacity> */}
+                      <Text
+                        style={[
+                          styles.textValue,
+                          {
+                            color: Colors.hud,
+                            fontFamily: "LeagueSpartan-Bold",
+                            fontSize: 12,
+                          },
+                        ]}
+                      >
+                        End Turn
+                      </Text>
+                    </TouchableOpacity>
                     <TouchableOpacity
                       style={[
                         styles.editContainer,
                         {
                           borderWidth: 1,
-                          width: "45%",
+                          width: "30%",
                           borderColor: toggleToDelete
                             ? Colors.lighter_red
                             : Colors.green_toggle,
@@ -1136,13 +1306,44 @@ export default function Player() {
                         textAlign: "center",
                       }}
                     >
-                      Total Ships in: {gameSectors}:{" "}
-                      {shipInSector.length > 0
-                        ? shipInSector.length
-                        : numberOfShips}
+                      {gameSectors === "Show All Ships..." ? (
+                        <Text
+                          style={{
+                            color: Colors.hud,
+                            fontFamily: "LeagueSpartan-Light",
+                            fontSize: 15,
+                            textAlign: "center",
+                          }}
+                        >
+                          Total Ships in All Sectors:{" "}
+                          {shipInSector.length > 0 ? shipInSector.length : "0"}
+                        </Text>
+                      ) : (
+                        <Text
+                          style={{
+                            color: Colors.hud,
+                            fontFamily: "LeagueSpartan-Light",
+                            fontSize: 15,
+                            textAlign: "center",
+                          }}
+                        >
+                          {!gameSectors ? (
+                            <Text>No Sector Selected</Text>
+                          ) : (
+                            <Text>
+                              Total Ships in {gameSectors}:{" "}
+                              {shipInSector.length > 0
+                                ? shipInSector.length
+                                : "0"}
+                            </Text>
+                          )}
+                        </Text>
+                      )}
+                      {/*     Total Ships in {gameSectors}:{" "}
+                      {shipInSector.length > 0 ? shipInSector.length : "0"} */}
                     </Text>
                   </View>
-                  <DropdownComponentSectors />
+                  <DropdownComponentSectors getShips={getFleetData} />
                 </View>
               )}
             </View>
@@ -1322,7 +1523,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderRadius: 10,
     justifyContent: "center",
-    shadowColor: Colors.hud,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    padding: 5,
+    backgroundColor: Colors.hud,
   },
   profile: {
     width: 275,
