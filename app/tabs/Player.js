@@ -103,7 +103,7 @@ export default function Player() {
       : myShips.filter((ship) => ship.gameSector === gameSectors);
   }, [myShips, gameSectors]);
 
-  //assignt that to a variable to check if there are any ships
+  //assign that to a variable to check if there are any ships
   const hasNoShips = myShips.length === 0;
 
   //console.log("Game Sectors:", gameSectors);
@@ -1020,7 +1020,7 @@ export default function Player() {
                             },
                           ]}
                         >
-                          Round: {gameRound}
+                          Round: {gameRound || 0}
                         </Text>
                       </TouchableOpacity>
                     ) : (

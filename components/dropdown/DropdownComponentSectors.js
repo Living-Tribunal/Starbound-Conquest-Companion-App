@@ -25,9 +25,15 @@ const DropdownComponentSectors = () => {
     <View style={styles.container}>
       {renderLabel()}
       <Dropdown
-        style={[styles.dropdown, isFocus && { borderColor: Colors.hud }]}
+        style={[
+          styles.dropdown,
+          isFocus && {
+            borderColor: Colors.hud,
+          },
+        ]}
         placeholderStyle={styles.placeholderStyle}
         selectedTextStyle={styles.selectedTextStyle}
+        containerStyle={styles.containerStyle}
         inputSearchStyle={styles.inputSearchStyle}
         iconStyle={styles.iconStyle}
         data={GameSectors}
@@ -46,6 +52,26 @@ const DropdownComponentSectors = () => {
           setGameSectors(item.value);
           setIsFocus(false);
         }}
+        renderItem={(item) => (
+          <View
+            style={{
+              padding: 10,
+              borderBottomWidth: 1,
+              borderColor: Colors.hud,
+              backgroundColor: Colors.hudDarker,
+            }}
+          >
+            <Text
+              style={{
+                color: Colors.hud,
+                fontFamily: "LeagueSpartan-Regular",
+                fontSize: 16,
+              }}
+            >
+              {item.value}
+            </Text>
+          </View>
+        )}
         renderLeftIcon={() => (
           <AntDesign
             style={styles.icon}
@@ -98,6 +124,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.hud,
     backgroundColor: Colors.hudDarker,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
   iconStyle: {
     width: 20,
@@ -106,5 +134,11 @@ const styles = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
+    color: Colors.hud,
+  },
+  containerStyle: {
+    backgroundColor: Colors.dark_gray,
+    borderWidth: 1,
+    borderColor: Colors.hud,
   },
 });
