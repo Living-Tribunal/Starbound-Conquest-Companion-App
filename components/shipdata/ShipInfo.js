@@ -142,23 +142,23 @@ export default function ShipInfo({
           {shipSpecialOrdersIcon?.specialOrders?.map((specialOrder, index) => {
             const orderIcon = specialOrder[2];
             const orderName = specialOrder[0];
+
             const isAttempted =
-              selectedShip.specialOrdersAttempted?.[orderName];
-            const isUsed = selectedShip.specialOrders?.[orderName] || false;
-            //console.log("Order Name:", isUsed, orderName);
+              selectedShip.specialOrdersAttempted?.[orderName] === true;
+            const isSuccessful =
+              selectedShip.specialOrders?.[orderName] === true;
+
+            let tintColor = Colors.blue_gray;
+            if (isAttempted && isSuccessful) tintColor = Colors.green_toggle;
+            else if (isAttempted && !isSuccessful)
+              tintColor = Colors.lighter_red;
+
             return (
               <View key={index}>
                 {orderIcon && (
                   <Image
-                    style={[
-                      styles.image,
-                      {
-                        tintColor:
-                          isAttempted || isUsed ? Colors.hud : Colors.blue_gray,
-                      },
-                    ]}
+                    style={[styles.image, { tintColor }]}
                     source={{ uri: orderIcon }}
-                    key={index}
                   />
                 )}
               </View>

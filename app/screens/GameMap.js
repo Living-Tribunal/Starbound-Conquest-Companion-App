@@ -39,6 +39,7 @@ import ShipInfo from "@/components/shipdata/ShipInfo";
 
 export default function FleetMap() {
   const navigation = useNavigation();
+  const user = FIREBASE_AUTH.currentUser;
   const { gameSectors, setGameSectors } = useMapImageContext();
   const { data, setData, gameRoom, isUsersTurn } = useStarBoundContext();
   const [ships, setShips] = useState([]);
@@ -68,7 +69,6 @@ export default function FleetMap() {
     "rgba(0,200,255,0.1)"
   );
   const [protectedShipColor, setProtectedShipColor] = useState(null);
-  const user = FIREBASE_AUTH.currentUser;
   const scale = useRef(new Animated.Value(1)).current;
   const scaleValue = useRef(1);
   const WORLD_WIDTH = 1400 * 2;
@@ -252,7 +252,7 @@ export default function FleetMap() {
 
   const navigateToStats = (shipId) => {
     //console.log("Navigating with shipId:", shipId);
-    navigation.navigate("Stats", { shipId, from: "GameMap" });
+    navigation.navigate("Stats", { shipId, from: "GameMap", isPlayerTurn });
   };
 
   const removeNonSerializableProperties = (ship) => {
@@ -809,6 +809,7 @@ export default function FleetMap() {
             // Inside your PanResponder.create's onPanResponderMove function:
 
             onPanResponderMove: (e, gestureState) => {
+              if (!isPlayerTurn) return;
               const actionsTaken = getShipsActionsTakenCount(ship);
 
               if (actionsTaken >= 2) return;
@@ -968,7 +969,6 @@ export default function FleetMap() {
                   }}
                 />
               )}
-              {/*  {ship.isPendingDestruction === false && ( */}
               <Animated.View
                 key={ship.id}
                 {...panResponder.panHandlers}
