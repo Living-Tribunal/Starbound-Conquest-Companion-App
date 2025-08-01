@@ -24,7 +24,6 @@ import { FIREBASE_DB, FIREBASE_AUTH } from "@/FirebaseConfig";
 import { FactionImages } from "@/constants/FactionImages";
 import { useFocusEffect } from "expo-router";
 import TileBackground from "../../components/background/Background";
-import { factionIcons } from "../../constants/shipIcons";
 import LoadingComponent from "@/components/loading/LoadingComponent";
 import { useNavigation } from "@react-navigation/native";
 import { Colors } from "@/constants/Colors";
@@ -33,10 +32,7 @@ import ZoomControls from "@/components/GameMapButtons/ZoonControls";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
 import { useMapImageContext } from "@/components/Global/MapImageContext";
 import BackIconArcs from "@/components/GameMapButtons/BackIconArcs";
-import { FONTS } from "@/constants/fonts";
-import { WeaponColors as weaponColors } from "@/constants/WeaponColors";
 import Toast from "react-native-toast-message";
-import { navigate } from "expo-router/build/global-state/routing";
 import BattleModal from "@/components/BattleModal/BattleModal";
 import { updateShipIsToggled } from "../../components/Functions/updateShipIsToggled";
 import ShipInfo from "@/components/shipdata/ShipInfo";
@@ -44,7 +40,7 @@ import ShipInfo from "@/components/shipdata/ShipInfo";
 export default function FleetMap() {
   const navigation = useNavigation();
   const { gameSectors, setGameSectors } = useMapImageContext();
-  const { data, setData, gameRoom } = useStarBoundContext();
+  const { data, setData, gameRoom, isUsersTurn } = useStarBoundContext();
   const [ships, setShips] = useState([]);
   const [shipPressed, setShipPressed] = useState(null);
   const [showFiringArcs, setShowFiringArcs] = useState(true);
@@ -59,6 +55,8 @@ export default function FleetMap() {
   const [pendingBattle, setPendingBattle] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [shipsEnteringBattle, setShipsEnteringBattle] = useState([]);
+  const isPlayerTurn = isUsersTurn?.[user?.uid] === true;
+  console.log("isPlayerTurn:", isPlayerTurn);
 
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);
@@ -323,6 +321,14 @@ export default function FleetMap() {
             : s
         )
       );
+      const updatedShip = {
+        ...selectedShip,
+        shipActions: {
+          ...selectedShip.shipActions,
+          move: true,
+        },
+      };
+      await updateShipIsToggled(user, updatedShip, setData);
     } catch (e) {
       console.error("Error updating document: ", e);
     }
@@ -355,13 +361,13 @@ export default function FleetMap() {
             : s
         )
       );
+      await updateShipIsToggled(user, selectedShip, setData);
       Toast.show({
         type: "success",
         text1: "Starbound Conquest",
         text2: "Movement Confirmed.",
         position: "top",
       });
-      await updateShipIsToggled(user, selectedShip, setData);
     } catch (e) {
       console.error("Error updating document: ", e);
     }
@@ -691,7 +697,6 @@ export default function FleetMap() {
           ships={ships}
           targetedShip={targetedShip}
           navigateToBattleGround={navigateToBattleGround}
-          //confirmMovement={() => updateShipMoveAction(selectedShip)}
         />
       )}
 

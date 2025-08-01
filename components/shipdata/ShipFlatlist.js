@@ -18,7 +18,7 @@ import { FactionImages } from "../../constants/FactionImages";
 import { useMapImageContext } from "../Global/MapImageContext";
 //import { Shadow } from "react-native-neomorph-shadows";
 
-export default function ShipFlatList({ type, usersColor, toggleToDelete }) {
+export default function ShipFlatList({ type, isPlayerTurn, toggleToDelete }) {
   const specialOrderShortNames = {
     "All Ahead Full": "AHF",
     "Evasive Maneuvers": "EVM",
@@ -114,11 +114,8 @@ export default function ShipFlatList({ type, usersColor, toggleToDelete }) {
           margin: 5,
         }}
         disabled={
-          !toggleToDelete &&
-          (item.hp === 0 ||
-            item.isToggled === true ||
-            item.hasRolledDToHit === true ||
-            item.miss === true)
+          /*  !isPlayerTurn || */
+          !toggleToDelete && (item.hp === 0 || item.isToggled)
         }
         onPress={() => {
           if (toggleToDelete) {
@@ -127,6 +124,7 @@ export default function ShipFlatList({ type, usersColor, toggleToDelete }) {
             navigation.navigate("Stats", {
               shipId: item.id,
               from: "Player",
+              isPlayerTurn,
             });
             //console.log("Navigated to Stats:", item.id);
           }

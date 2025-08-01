@@ -107,6 +107,15 @@ export default async function SpecialOrderBonuses({
                 : s
             )
           );
+          const updatedShip = {
+            ...ship,
+            shipActions: {
+              ...(ship.shipActions || {}),
+              move: false,
+              specialOrder: true,
+            },
+          };
+          await updateShipIsToggled(user, updatedShip, setData);
           Toast.show({
             type: "error",
             text1: "All Ahead Full!",
@@ -114,7 +123,6 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         }
-        await updateShipIsToggled(user, ship, setData);
       } catch (error) {
         console.error("❌ Failed to update moveDistanceBonus:", error);
       }
@@ -197,6 +205,14 @@ export default async function SpecialOrderBonuses({
                 : s
             )
           );
+          const updatedShip = {
+            ...ship,
+            shipActions: {
+              ...(ship.shipActions || {}),
+              specialOrder: true,
+            },
+          };
+          await updateShipIsToggled(user, updatedShip, setData);
           Toast.show({
             type: "error",
             text1: "Shields Reinforcement Failed!",
@@ -204,7 +220,6 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         }
-        await updateShipIsToggled(user, ship, setData);
       } catch (error) {
         console.error("❌ Failed to update shields in Firestore:", error);
       }
@@ -281,13 +296,20 @@ export default async function SpecialOrderBonuses({
                 : s
             )
           );
+          const updatedShip = {
+            ...ship,
+            shipActions: {
+              ...(ship.shipActions || {}),
+              specialOrder: true,
+            },
+          };
+          await updateShipIsToggled(user, updatedShip, setData);
           Toast.show({
             type: "error",
             text1: "Power Up Main Guns Failed!",
             position: "top",
           });
         }
-        await updateShipIsToggled(user, ship, setData);
       } catch (error) {
         console.error("❌ Failed to update moveDistanceBonus:", error);
       }
@@ -375,13 +397,20 @@ export default async function SpecialOrderBonuses({
                 : s
             )
           );
+          const updatedShip = {
+            ...ship,
+            shipActions: {
+              ...(ship.shipActions || {}),
+              specialOrder: true,
+            },
+          };
+          await updateShipIsToggled(user, updatedShip, setData);
           Toast.show({
             type: "error",
             text1: "Unable to reintialize systems.",
             position: "top",
           });
         }
-        await updateShipIsToggled(user, ship, setData);
       } catch (error) {
         console.error("Failed to update hit in Firestore:", error);
       }
@@ -470,13 +499,20 @@ export default async function SpecialOrderBonuses({
                 : s
             )
           );
+          const updatedShip = {
+            ...ship,
+            shipActions: {
+              ...(ship.shipActions || {}),
+              specialOrder: true,
+            },
+          };
+          await updateShipIsToggled(user, updatedShip, setData);
           Toast.show({
             type: "error",
             text1: "Unable to reintialize systems!",
             position: "top",
           });
         }
-        await updateShipIsToggled(user, ship, setData);
       } catch (error) {
         console.error("Failed to update broadSideBonus in Firestore:", error);
       }
@@ -543,6 +579,14 @@ export default async function SpecialOrderBonuses({
                 : s
             )
           );
+          const updatedShip = {
+            ...ship,
+            shipActions: {
+              ...(ship.shipActions || {}),
+              specialOrder: true,
+            },
+          };
+          await updateShipIsToggled(user, updatedShip, setData);
           Toast.show({
             type: "error",
             text1: "Starbound Conquest",
@@ -550,16 +594,15 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         }
-        await updateShipIsToggled(user, ship, setData);
       } catch (e) {
         console.error("Failed to update launch fighters in Firestore:", e);
       }
       break;
     case "Charge Ion Beams":
-      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+      try {
+        const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
 
-      if (localDiceRoll >= 11) {
-        try {
+        if (localDiceRoll >= 11) {
           await updateDoc(shipRef, {
             "weaponStatus.Ion Particle Beam": false,
             [`specialOrders.${orderName}`]: true,
@@ -597,45 +640,43 @@ export default async function SpecialOrderBonuses({
             text1: "Ion Particle Beam Recharges!",
             position: "top",
           });
-        } catch (error) {
-          console.error(
-            "Failed to update Ion Beam recharge in Firestore:",
-            error
+        } else {
+          await updateDoc(shipRef, {
+            [`specialOrdersAttempted.${orderName}`]: true,
+            "shipActions.specialOrder": true,
+          });
+
+          setData((prevData) =>
+            prevData.map((s) =>
+              s.id === ship.id
+                ? {
+                    ...s,
+                    specialOrdersAttempted: {
+                      ...(s.specialOrdersAttempted || {}),
+                      [orderName]: true,
+                    },
+                    shipActions: {
+                      ...(s.shipActions || {}),
+                      specialOrder: true,
+                    },
+                  }
+                : s
+            )
           );
+          const updatedShip = {
+            ...ship,
+            shipActions: {
+              ...(ship.shipActions || {}),
+              specialOrder: true,
+            },
+          };
+          await updateShipIsToggled(user, updatedShip, setData);
+          Toast.show({
+            type: "error",
+            text1: "Unable to charge Ion Beam.",
+            position: "top",
+          });
         }
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Ion Particle Beam Recharge Failed!",
-          position: "top",
-        });
-      }
-
-      // ✅ Always log attempt, regardless of success/failure
-      try {
-        await updateDoc(shipRef, {
-          [`specialOrdersAttempted.${orderName}`]: true,
-          "shipActions.specialOrder": true,
-        });
-
-        setData((prevData) =>
-          prevData.map((s) =>
-            s.id === ship.id
-              ? {
-                  ...s,
-                  specialOrdersAttempted: {
-                    ...(s.specialOrdersAttempted || {}),
-                    [orderName]: true,
-                  },
-                  shipActions: {
-                    ...(s.shipActions || {}),
-                    specialOrder: true,
-                  },
-                }
-              : s
-          )
-        );
-        await updateShipIsToggled(user, ship, setData);
       } catch (err) {
         console.error("Failed to mark special order attempt:", err);
       }

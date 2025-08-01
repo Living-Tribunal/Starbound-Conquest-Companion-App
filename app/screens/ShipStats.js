@@ -29,7 +29,7 @@ import SpecialOrderBonuses from "@/components/switch/ShipSpecialOrders.js";
 
 export default function ShipStats({ route }) {
   const navigation = useNavigation();
-  const { from } = route.params;
+  const { from, isPlayerTurn } = route.params;
   const user = FIREBASE_AUTH.currentUser;
   const { shipId } = route.params || {};
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -52,6 +52,7 @@ export default function ShipStats({ route }) {
     fromGameMap,
     setFromGameMap,
   } = useStarBoundContext();
+  //console.log("isPlayerTurn:", isPlayerTurn);
   const ship = data.find((s) => s.id === shipId);
   const localImage =
     ship?.factionName && ship?.type
@@ -373,12 +374,12 @@ export default function ShipStats({ route }) {
             style={[
               {
                 backgroundColor:
-                  ship.hasRolledDToHit === true
+                  ship.hasRolledDToHit || ship.isToggled
                     ? Colors.deep_red
                     : Colors.darker_green_toggle,
                 borderColor:
-                  ship.hasRolledDToHit === true
-                    ? Colors.deep_red
+                  ship.hasRolledDToHit || ship.isToggled
+                    ? Colors.lighter_red
                     : Colors.green_toggle,
                 width: "95%",
                 borderRadius: 5,
@@ -393,13 +394,15 @@ export default function ShipStats({ route }) {
                   fontSize: 15,
                   fontFamily: "LeagueSpartan-Regular",
                   color:
-                    ship.hasRolledDToHit === true
+                    ship.hasRolledDToHit || ship.isToggled
                       ? Colors.lighter_red
                       : Colors.green_toggle,
                 },
               ]}
             >
-              {ship.hasRolledDToHit === true ? "Ended turn" : "Ready to engage"}
+              {ship.hasRolledDToHit || ship.isToggled
+                ? "Ended turn"
+                : "Ready to engage"}
             </Text>
           </View>
         </View>
@@ -640,7 +643,7 @@ export default function ShipStats({ route }) {
                         }}
                       >
                         <TouchableOpacity
-                          disabled={isDisabled}
+                          disabled={!isPlayerTurn || isDisabled}
                           onPress={() => {
                             setOrderName(orderName);
                             if (
@@ -811,6 +814,7 @@ export default function ShipStats({ route }) {
                 />
                 <TouchableOpacity
                   style={[styles.button, { borderColor: Colors.hudDarker }]}
+                  disabled={!isPlayerTurn}
                   onPress={() => {
                     adjustShipsHitPoints();
                     setIsModalVisible(false);

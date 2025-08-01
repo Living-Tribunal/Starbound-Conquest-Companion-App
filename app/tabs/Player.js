@@ -48,7 +48,6 @@ import {
   deleteDoc,
   writeBatch,
 } from "firebase/firestore";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function Player() {
   const ref = useRef();
@@ -64,12 +63,14 @@ export default function Player() {
   const [getAllUsersShipTotals, setGetAllUsersShipTotals] = useState(0);
   const { gameSectors, setGameSectors } = useMapImageContext();
   const [usersInRoom, setUsersInRoom] = useState([]);
-  const [isUsersTurn, setIsUsersTurn] = useState(false);
   const [isUsersColors, setIsUsersColors] = useState(false);
   const [showEndRoundModal, setShowEndRoundModal] = useState(false);
   const [isShowPlayers, setIsShowPlayers] = useState(true);
   const [playersInGameRoom, setPlayersInGameRoom] = useState([]);
+  const [shouldEndRound, setShouldEndRound] = useState(false);
   const {
+    isUsersTurn,
+    setIsUsersTurn,
     username,
     setUsername,
     profile,
@@ -106,10 +107,10 @@ export default function Player() {
 
   const hasShownEndRoundModal = useRef(false);
 
-  //geeting the current turn color to disaply it
   const currentTurnUid = Object.keys(isUsersTurn).find(
     (uid) => isUsersTurn[uid]
   );
+  const isPlayerTurn = isUsersTurn?.[user?.uid] === true;
 
   const currentTurnColor = isUsersColors?.[currentTurnUid] || "#FFFFFF";
 
@@ -128,6 +129,7 @@ export default function Player() {
   const myToggledOrDestroyingShips =
     myShips.length > 0 &&
     myShips.every((ship) => ship.isToggled || ship.isPendingDestruction);
+  //console.log("myToggledOrDestroyingShips:", myToggledOrDestroyingShips);
 
   const shipInSector = useMemo(() => {
     return gameSectors === "Show All Ships..."
@@ -137,7 +139,7 @@ export default function Player() {
 
   //assign that to a variable to check if there are any ships
   const hasNoShips = myShips.length === 0;
-
+  //console.log("hasNoShips:", hasNoShips);
   //console.log("Game Sectors:", gameSectors);
   const onCancelWarning = () => {
     setIsShowWarning(false);
@@ -350,7 +352,8 @@ export default function Player() {
   /* console.log(JSON.stringify(totalFleetValue) + " In Player"); */
 
   function send_message_discord_end_of_round() {
-    const request = new XMLHttpRequest();
+    console.log("Discord message sent ending round");
+    /* const request = new XMLHttpRequest();
     request.open(
       "POST",
       "https://discord.com/api/webhooks/1400193103775793282/2Rz9AIJTztHwqS8B2OINDmUHy-In76UWV5NBkCnQkBVdBPpedCrPmV0njSE4t4KIDYat"
@@ -361,13 +364,14 @@ export default function Player() {
       avatar_url: "",
       content: `The Round has ended in ${gameRoom}. Resetting your ships.`,
     };
-    request.send(JSON.stringify(params));
+    request.send(JSON.stringify(params)); */
   }
 
   async function endYourTurnAndSendMessage() {
     if (myToggledOrDestroyingShips) {
       // 1. Send Discord message
-      const request = new XMLHttpRequest();
+      console.log("Discord message sent ending your turn");
+      /* const request = new XMLHttpRequest();
       request.open(
         "POST",
         "https://discord.com/api/webhooks/1400193598691217428/wIGjO6m0CUTV1rEanECgljpMRyWbrkLoP0nUtdqDerJOvHzYeOCjgOKx25ImJU8vFoi1"
@@ -378,7 +382,7 @@ export default function Player() {
         avatar_url: "",
         content: `${username} has ended their turn in ${gameRoom}.`,
       };
-      request.send(JSON.stringify(params));
+      request.send(JSON.stringify(params)); */
 
       // 2. Switch to next player
       const usersRef = collection(FIREBASE_DB, "users");
@@ -390,7 +394,6 @@ export default function Player() {
         ...doc.data(),
       }));
 
-      // Sort consistently
       const sortedPlayers = players.sort((a, b) => a.uid.localeCompare(b.uid));
       console.log(`Sorted players:`, sortedPlayers);
 
@@ -667,10 +670,13 @@ export default function Player() {
           );
         }
       }
-      //update round for all users
+      // ✅ First, reset ships for all players
+      await Promise.all(allResetPromises);
+
+      // ✅ Then, update round for all users
       await updateRoundForAllUsers();
 
-      // Get all players in this gameRoom
+      // ✅ Now update player turn states
       const usersQuery = query(usersRef, where("gameRoom", "==", gameRoom));
       const snapshot = await getDocs(usersQuery);
 
@@ -684,8 +690,20 @@ export default function Player() {
           isUserTurn: isFirstPlayer,
         });
       });
-      // ✅ Wait for all updates
-      await Promise.all(allResetPromises);
+
+      await Promise.all(updateTurnPromises);
+      console.log(
+        "✅ Round ended. Next player is:",
+        sortedPlayers[0]?.displayName
+      );
+      Toast.show({
+        type: "success",
+        text1: "Round Ended",
+        text2: `${
+          sortedPlayers[0]?.displayName || "Next Player"
+        } is now active!`,
+        position: "top",
+      });
 
       //setGetAllUsersShipToggled([]);
       setGetAllUsersShipTotals(0);
@@ -703,7 +721,9 @@ export default function Player() {
   const handleEndRoundPress = async () => {
     if (allToggledOrHpZero) {
       endRound();
+
       await cleanUpPendingDestruction();
+
       send_message_discord_end_of_round();
     } else {
       Toast.show({
@@ -722,7 +742,6 @@ export default function Player() {
     const allShipMap = {};
     const turnsMap = {};
     const colorsMap = {};
-    const activePlayers = [];
 
     const usersRef = collection(FIREBASE_DB, "users");
     const unsubscribeUsers = onSnapshot(usersRef, (userSnapshot) => {
@@ -734,6 +753,8 @@ export default function Player() {
       Object.keys(allShipMap).forEach((key) => delete allShipMap[key]);
       Object.keys(turnsMap).forEach((key) => delete turnsMap[key]);
       Object.keys(colorsMap).forEach((key) => delete colorsMap[key]);
+
+      const activePlayers = [];
 
       userSnapshot.docs.forEach((userDoc) => {
         const uid = userDoc.id;
@@ -775,18 +796,14 @@ export default function Player() {
     };
   }, [gameRoom]);
 
-  /*   useEffect(() => {
-    if (gameSectors && gameRoom) {
-      getFleetData({ data, setData, gameRoom, gameSectors });
-    }
-  }, [gameSectors]); */
-
   //show end round modal if all ships are toggled or hp is zero
   // and if the loading is false and isLoading is false
   useFocusEffect(
     useCallback(() => {
+      if (!isPlayerTurn) return;
       const timer = setTimeout(() => {
         if (!loading && !isLoading) {
+          setShouldEndRound(allToggledOrHpZero);
           if (allToggledOrHpZero && !hasShownEndRoundModal.current) {
             setShowEndRoundModal(true);
             hasShownEndRoundModal.current = true;
@@ -794,9 +811,8 @@ export default function Player() {
             hasShownEndRoundModal.current = false;
           }
         }
-      }, 500); // delay to allow Firestore data to settle
-
-      return () => clearTimeout(timer); // cleanup if screen blurs early
+      }, 500);
+      return () => clearTimeout(timer);
     }, [allToggledOrHpZero, loading, isLoading])
   );
 
@@ -1005,6 +1021,11 @@ export default function Player() {
                   )}
                 </View>
               </TouchableOpacity>
+              {!isPlayerTurn && (
+                <Text style={{ textAlign: "center", color: Colors.hud }}>
+                  Waiting for your turn...
+                </Text>
+              )}
 
               <ViewShot
                 style={{ justifyContent: "center", alignItems: "center" }}
@@ -1154,7 +1175,10 @@ export default function Player() {
                       Total Fleet Value: {totalFleetValue}/{gameValue}
                     </Text>
                     {gameRoom ? (
-                      <TouchableOpacity onLongPress={resetRoundForCurretUser}>
+                      <TouchableOpacity
+                        disabled={!isPlayerTurn}
+                        onLongPress={resetRoundForCurretUser}
+                      >
                         <Text
                           style={[
                             styles.gameRoomText,
@@ -1189,23 +1213,27 @@ export default function Player() {
                     }}
                   >
                     <TouchableOpacity
-                      disabled={!allToggledOrHpZero}
+                      disabled={!isPlayerTurn || !allToggledOrHpZero}
                       onPress={handleEndRoundPress}
                       style={[
                         styles.editContainer,
                         {
                           borderWidth: 1,
-                          width: "30%",
-                          shadowColor: !allToggledOrHpZero
-                            ? Colors.lighter_red
-                            : Colors.gold,
-                          borderColor: !allToggledOrHpZero
-                            ? Colors.lighter_red
-                            : Colors.gold,
-                          backgroundColor: !allToggledOrHpZero
-                            ? Colors.deep_red
-                            : Colors.goldenrod,
-                          opacity: !allToggledOrHpZero ? 0.5 : 1,
+                          width: "45%",
+                          shadowColor:
+                            !isPlayerTurn || !allToggledOrHpZero
+                              ? Colors.lighter_red
+                              : Colors.gold,
+                          borderColor:
+                            !isPlayerTurn || !allToggledOrHpZero
+                              ? Colors.lighter_red
+                              : Colors.gold,
+                          backgroundColor:
+                            !isPlayerTurn || !allToggledOrHpZero
+                              ? Colors.deep_red
+                              : Colors.goldenrod,
+                          opacity:
+                            !isPlayerTurn || !allToggledOrHpZero ? 0.5 : 1,
                         },
                       ]}
                     >
@@ -1213,9 +1241,10 @@ export default function Player() {
                         style={[
                           styles.textValue,
                           {
-                            color: !allToggledOrHpZero
-                              ? Colors.lighter_red
-                              : Colors.gold,
+                            color:
+                              !isPlayerTurn || !allToggledOrHpZero
+                                ? Colors.lighter_red
+                                : Colors.gold,
                             fontSize: 12,
                           },
                         ]}
@@ -1227,34 +1256,12 @@ export default function Player() {
                     {/*  <PushNotifications /> */}
 
                     <TouchableOpacity
-                      style={[
-                        styles.editContainer,
-                        { backgroundColor: Colors.hudDarker },
-                      ]}
-                      disabled={hasNoShips || allToggledOrHpZero}
-                      onLongPress={async () => {
-                        await endYourTurnAndSendMessage();
-                      }}
-                    >
-                      <Text
-                        style={[
-                          styles.textValue,
-                          {
-                            color: Colors.hud,
-                            fontFamily: "LeagueSpartan-Bold",
-                            fontSize: 12,
-                          },
-                        ]}
-                      >
-                        End Turn
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
+                      disabled={!isPlayerTurn || shouldEndRound}
                       style={[
                         styles.editContainer,
                         {
                           borderWidth: 1,
-                          width: "30%",
+                          width: "45%",
                           borderColor: toggleToDelete
                             ? Colors.lighter_red
                             : Colors.green_toggle,
@@ -1279,6 +1286,47 @@ export default function Player() {
                         ]}
                       >
                         Delete a ship
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={[
+                        styles.editContainer,
+                        {
+                          backgroundColor:
+                            !isPlayerTurn || hasNoShips || shouldEndRound
+                              ? Colors.hudDarker
+                              : Colors.hud,
+                          width: "50%",
+                        },
+                      ]}
+                      disabled={!isPlayerTurn || hasNoShips || shouldEndRound}
+                      onLongPress={async () => {
+                        await endYourTurnAndSendMessage();
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.textValue,
+                          {
+                            color:
+                              !isPlayerTurn || hasNoShips || shouldEndRound
+                                ? Colors.hud
+                                : Colors.hudDarker,
+                            fontFamily: "LeagueSpartan-Bold",
+                            marginTop: 2,
+                            marginBottom: 2,
+                          },
+                        ]}
+                      >
+                        End Turn
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -1391,7 +1439,7 @@ export default function Player() {
               </Text>
               {/* //minus button */}
               <TouchableOpacity
-                disabled={toggleToDelete}
+                disabled={!isPlayerTurn || toggleToDelete || shouldEndRound}
                 onPress={() => decrementShipCount(item.type)}
                 style={styles.button}
               >
@@ -1406,7 +1454,7 @@ export default function Player() {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                disabled={toggleToDelete || !gameRoom}
+                disabled={!isPlayerTurn || toggleToDelete || shouldEndRound}
                 onPress={() =>
                   addShipToFleet(item.ships[0], shipCounts[item.type] || 1)
                 }
@@ -1427,7 +1475,7 @@ export default function Player() {
               </TouchableOpacity>
               {/* //add button */}
               <TouchableOpacity
-                disabled={toggleToDelete}
+                disabled={!isPlayerTurn || toggleToDelete || shouldEndRound}
                 onPress={() => incrementShipCount(item.type)}
                 style={styles.button}
               >
@@ -1448,6 +1496,7 @@ export default function Player() {
                 toggleToDelete={toggleToDelete}
                 type={item.type}
                 usersColor={userFactionColor}
+                isPlayerTurn={isPlayerTurn}
               />
             </View>
           </View>
@@ -1560,7 +1609,7 @@ const styles = StyleSheet.create({
   textValue: {
     fontSize: 15,
     color: Colors.hud,
-    fontFamily: "leagueBold",
+    fontFamily: "LeagueSpartan-Bold",
     textAlign: "center",
     marginBottom: 5,
     marginTop: 5,

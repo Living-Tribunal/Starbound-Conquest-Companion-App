@@ -21,6 +21,7 @@ export default function ZoomControls({
   updatingMovement,
   updatingPosition,
   targetedShip,
+  isPlayerTurn,
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -70,6 +71,7 @@ export default function ZoomControls({
               onPress={() => handleShipRotation(shipPressed, -45)}
               onLongPress={() => handleShipRotation(shipPressed, -90)}
               disabled={
+                !isPlayerTurn ||
                 updatingRotation ||
                 updatingMovement ||
                 selectedShip?.hasRolledDToHit === true
@@ -85,6 +87,7 @@ export default function ZoomControls({
               onPress={() => handleShipRotation(shipPressed, 45)}
               onLongPress={() => handleShipRotation(shipPressed, 90)}
               disabled={
+                !isPlayerTurn ||
                 updatingRotation ||
                 updatingMovement ||
                 selectedShip?.hasRolledDToHit === true
