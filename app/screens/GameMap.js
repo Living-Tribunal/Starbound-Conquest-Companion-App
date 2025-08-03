@@ -768,7 +768,7 @@ export default function FleetMap() {
             onPanResponderGrant: () => {
               if (isUserShip) {
                 //first set the original position
-                if (selectedShip) {
+                if (selectedShip && !originalShipPosition) {
                   const { x, y } = selectedShip.position.__getValue();
                   const originalRotation = selectedShip.rotation.__getValue(); // ← Fix here!
 
