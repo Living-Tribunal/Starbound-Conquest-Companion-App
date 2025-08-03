@@ -660,7 +660,7 @@ export default function FleetMap() {
     return <LoadingComponent whatToSay="Entering the battle..." />;
   }
 
-  console.log("Original Ship Position:", originalShipPosition);
+  // console.log("Original Ship Position:", originalShipPosition);
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -767,10 +767,10 @@ export default function FleetMap() {
 
             onPanResponderGrant: () => {
               if (isUserShip) {
-                //first set the original position
+                //first set the original position and prevent if its NOT the original position
                 if (selectedShip && !originalShipPosition) {
                   const { x, y } = selectedShip.position.__getValue();
-                  const originalRotation = selectedShip.rotation.__getValue(); // ← Fix here!
+                  const originalRotation = selectedShip.rotation.__getValue();
 
                   setOriginalShipPosition({
                     x,
