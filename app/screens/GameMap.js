@@ -55,8 +55,8 @@ export default function FleetMap() {
   const [pendingBattle, setPendingBattle] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [shipsEnteringBattle, setShipsEnteringBattle] = useState([]);
+  const [originalShipPosition, setOriginalShipPosition] = useState(null);
   const isPlayerTurn = isUsersTurn?.[user?.uid] === true;
-  console.log("isPlayerTurn:", isPlayerTurn);
 
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);
@@ -335,7 +335,7 @@ export default function FleetMap() {
     setUpdateMovement(false);
   };
 
-  const updateShipMoveAction = async (selectedShip) => {
+  /*   const updateShipMoveAction = async (selectedShip) => {
     if (!selectedShip || !user) return;
     try {
       const shipRef = doc(
@@ -371,7 +371,7 @@ export default function FleetMap() {
     } catch (e) {
       console.error("Error updating document: ", e);
     }
-  };
+  }; */
 
   const updateFighterProtection = async (
     ships,
@@ -660,6 +660,8 @@ export default function FleetMap() {
     return <LoadingComponent whatToSay="Entering the battle..." />;
   }
 
+  console.log("Original Ship Position:", originalShipPosition);
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <BackIconArcs
@@ -697,6 +699,10 @@ export default function FleetMap() {
           ships={ships}
           targetedShip={targetedShip}
           navigateToBattleGround={navigateToBattleGround}
+          originalShipPosition={originalShipPosition}
+          setOriginalShipPosition={setOriginalShipPosition}
+          setMovementDistanceCircle={setMovementDistanceCircle}
+          setTargetedShip={setTargetedShip}
         />
       )}
 
@@ -715,22 +721,27 @@ export default function FleetMap() {
         initialZoom={0.5}
         longPressDuration={5}
         onLongPress={async () => {
-          // Confirm movement if it hasn't been done and the ship moved
-          //if (
-          //  !tempDisableMovementRestriction &&
-          // selectedShip &&
-          // !selectedShip.shipActions?.move &&
-          // selectedShip.position.__getValue().x !== movementDistanceCircle.x &&
-          //</SafeAreaView>  selectedShip.position.__getValue().y !== movementDistanceCircle.y
-          //  ) {
-          //    await updateShipMoveAction(selectedShip);
-          //   }
+          const shipHasMovedButNotConfirmed =
+            selectedShip &&
+            !selectedShip.shipActions?.move &&
+            (selectedShip.position.__getValue().x !== selectedShip.x ||
+              selectedShip.position.__getValue().y !== selectedShip.y);
 
-          setShipPressed(null);
-          setMovementDistanceCircle(null);
-          setTargetedShip(null);
-          setCircleBorderColor("rgba(0,200,255,0.5)");
-          setCircleBackgroundColor("rgba(0,200,255,0.1)");
+          if (shipHasMovedButNotConfirmed) {
+            Toast.show({
+              type: "info",
+              text1: "Starbound Conquest",
+              text2: "You must confirm your movement.",
+              position: "top",
+            });
+            return;
+          } else {
+            setShipPressed(null);
+            setMovementDistanceCircle(null);
+            setTargetedShip(null);
+            setCircleBorderColor("rgba(0,200,255,0.5)");
+            setCircleBackgroundColor("rgba(0,200,255,0.1)");
+          }
         }}
         contentWidth={BACKGROUND_WIDTH}
         contentHeight={BACKGROUND_HEIGHT}
@@ -756,6 +767,18 @@ export default function FleetMap() {
 
             onPanResponderGrant: () => {
               if (isUserShip) {
+                //first set the original position
+                if (selectedShip) {
+                  const { x, y } = selectedShip.position.__getValue();
+                  const originalRotation = selectedShip.rotation.__getValue(); // ← Fix here!
+
+                  setOriginalShipPosition({
+                    x,
+                    y,
+                    rotation: originalRotation,
+                  });
+                }
+
                 ship.position.extractOffset();
                 if (shipPressed !== ship.id) {
                   // Store current position
@@ -890,6 +913,7 @@ export default function FleetMap() {
               if (ship.shipActions?.move === true) return;
               if (ship.hasRolledDToHit === true) return;
               if (ship.miss === true) return;
+
               // Flatten the position to commit the current offset
               ship.position.flattenOffset();
               // Get the current position of the ship

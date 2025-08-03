@@ -22,6 +22,11 @@ export default function ZoomControls({
   updatingPosition,
   targetedShip,
   isPlayerTurn,
+  originalShipPosition,
+  setOriginalShipPosition,
+  setShipPressed,
+  setMovementDistanceCircle,
+  setTargetedShip,
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -45,6 +50,32 @@ export default function ZoomControls({
       text1: "Starbound Conquest",
       text2: "Movement Confirmed.",
       position: "top",
+    });
+  };
+
+  const handleCancelMovement = () => {
+    const selectedShip = ships.find((s) => s.id === shipPressed);
+    if (!selectedShip || !originalShipPosition) return;
+
+    // Reset position
+    selectedShip.position.setValue({
+      x: originalShipPosition.x,
+      y: originalShipPosition.y,
+    });
+
+    // Reset rotation
+    selectedShip.rotation.setValue(originalShipPosition.rotation ?? 0);
+    setOriginalShipPosition(null);
+    setShipPressed(null);
+    setMovementDistanceCircle(null);
+    setTargetedShip(null);
+
+    Toast.show({
+      type: "info",
+      text1: "Starbound Conquest",
+      text2: "Movement Cancelled.",
+      position: "top",
+      duration: 1000,
     });
   };
 
@@ -136,34 +167,60 @@ export default function ZoomControls({
                 </Text>
               </TouchableOpacity>
             )}
-            <TouchableOpacity
-              style={[
-                styles.controlButton,
-                {
-                  backgroundColor: shipHasMovedButNotConfirmed
-                    ? Colors.darker_green_toggle
-                    : Colors.hudDarker,
-                  borderColor: shipHasMovedButNotConfirmed
-                    ? Colors.green_toggle
-                    : Colors.hud,
-                },
-              ]}
-              disabled={!shipHasMovedButNotConfirmed}
-              onPress={confirmMovement}
-            >
-              <Text
-                style={[
-                  styles.buttonText,
-                  {
-                    color: shipHasMovedButNotConfirmed
-                      ? Colors.green_toggle
-                      : Colors.hud,
-                  },
-                ]}
-              >
-                Confirm Movement
-              </Text>
-            </TouchableOpacity>
+            {shipHasMovedButNotConfirmed && (
+              <Animated.View style={{ opacity: fadeAnim }}>
+                <TouchableOpacity
+                  style={[
+                    styles.controlButton,
+                    {
+                      backgroundColor: shipHasMovedButNotConfirmed
+                        ? Colors.darker_green_toggle
+                        : Colors.hudDarker,
+                      borderColor: shipHasMovedButNotConfirmed
+                        ? Colors.green_toggle
+                        : Colors.hud,
+                    },
+                  ]}
+                  disabled={!shipHasMovedButNotConfirmed}
+                  onPress={confirmMovement}
+                >
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      {
+                        color: shipHasMovedButNotConfirmed
+                          ? Colors.green_toggle
+                          : Colors.hud,
+                      },
+                    ]}
+                  >
+                    Confirm Movement
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.controlButton,
+                    {
+                      backgroundColor: Colors.deep_red,
+                      borderColor: Colors.lighter_red,
+                    },
+                  ]}
+                  onPress={handleCancelMovement}
+                >
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      {
+                        color: Colors.lighter_red,
+                      },
+                    ]}
+                  >
+                    Cancel Move
+                  </Text>
+                </TouchableOpacity>
+              </Animated.View>
+            )}
           </Animated.View>
         )}
       </View>

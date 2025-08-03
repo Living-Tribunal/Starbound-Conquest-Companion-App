@@ -68,6 +68,7 @@ export default function Player() {
   const [isShowPlayers, setIsShowPlayers] = useState(true);
   const [playersInGameRoom, setPlayersInGameRoom] = useState([]);
   const [shouldEndRound, setShouldEndRound] = useState(false);
+  const [isLoadingActivePlayers, setIsLoadingActivePlayers] = useState(false);
   const {
     isUsersTurn,
     setIsUsersTurn,
@@ -737,6 +738,7 @@ export default function Player() {
 
   useEffect(() => {
     if (!gameRoom) return;
+    setIsLoadingActivePlayers(true);
 
     const userShipUnsubs = [];
     const allShipMap = {};
@@ -789,7 +791,7 @@ export default function Player() {
       setIsUsersColors({ ...colorsMap });
       setPlayersInGameRoom(activePlayers);
     });
-
+    setIsLoadingActivePlayers(false);
     return () => {
       unsubscribeUsers();
       userShipUnsubs.forEach((unsub) => unsub());
