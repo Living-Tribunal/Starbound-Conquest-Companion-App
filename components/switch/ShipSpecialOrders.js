@@ -180,7 +180,7 @@ export default async function SpecialOrderBonuses({
           });
         } else {
           await updateDoc(shipRef, {
-            [`specialOrders.${orderName}`]: true,
+            [`specialOrders.${orderName}`]: false,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
           });
@@ -191,7 +191,7 @@ export default async function SpecialOrderBonuses({
                     ...s,
                     specialOrders: {
                       ...(s.specialOrders || {}),
-                      [orderName]: true,
+                      [orderName]: false,
                     },
                     specialOrdersAttempted: {
                       ...(s.specialOrdersAttempted || {}),
@@ -271,7 +271,7 @@ export default async function SpecialOrderBonuses({
           });
         } else {
           await updateDoc(shipRef, {
-            [`specialOrders.${orderName}`]: true,
+            [`specialOrders.${orderName}`]: false,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
           });
@@ -282,7 +282,7 @@ export default async function SpecialOrderBonuses({
                     ...s,
                     specialOrders: {
                       ...(s.specialOrders || {}),
-                      [orderName]: true,
+                      [orderName]: false,
                     },
                     specialOrdersAttempted: {
                       ...(s.specialOrdersAttempted || {}),
@@ -367,6 +367,7 @@ export default async function SpecialOrderBonuses({
           });
         } else {
           await updateDoc(shipRef, {
+            [`specialOrders.${orderName}`]: false,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
             hasRolledDToHit: true,
@@ -383,7 +384,7 @@ export default async function SpecialOrderBonuses({
                     isToggled: true,
                     specialOrders: {
                       ...(s.specialOrders || {}),
-                      [orderName]: true,
+                      [orderName]: false,
                     },
                     specialOrdersAttempted: {
                       ...(s.specialOrdersAttempted || {}),
@@ -448,7 +449,7 @@ export default async function SpecialOrderBonuses({
                     isToggled: false,
                     bonuses: {
                       ...(s.bonuses || {}),
-                      broadSideBonus: 15,
+                      broadSideBonus: 30,
                     },
                     specialOrders: {
                       ...(s.specialOrders || {}),
@@ -473,7 +474,7 @@ export default async function SpecialOrderBonuses({
           });
         } else {
           await updateDoc(shipRef, {
-            [`specialOrders.${orderName}`]: true,
+            [`specialOrders.${orderName}`]: false,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
           });
@@ -557,8 +558,8 @@ export default async function SpecialOrderBonuses({
             position: "top",
           });
         } else {
-          const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
           await updateDoc(shipRef, {
+            [`specialOrders.${orderName}`]: false,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
           });
@@ -567,6 +568,10 @@ export default async function SpecialOrderBonuses({
               s.id === ship.id
                 ? {
                     ...s,
+                    specialOrders: {
+                      ...(s.specialOrders || {}),
+                      [orderName]: false,
+                    },
                     specialOrdersAttempted: {
                       ...(s.specialOrdersAttempted || {}),
                       [orderName]: true,
@@ -604,10 +609,11 @@ export default async function SpecialOrderBonuses({
 
         if (localDiceRoll >= 11) {
           await updateDoc(shipRef, {
-            "weaponStatus.Ion Particle Beam": false,
             [`specialOrders.${orderName}`]: true,
-            "shipActions.specialOrder": false,
             [`specialOrdersAttempted.${orderName}`]: true,
+            "weaponStatus.Ion Particle Beam": false,
+            "shipActions.specialOrder": false,
+
             hit: false,
           });
 
@@ -642,6 +648,7 @@ export default async function SpecialOrderBonuses({
           });
         } else {
           await updateDoc(shipRef, {
+            [`specialOrders.${orderName}`]: false,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
           });
@@ -651,6 +658,10 @@ export default async function SpecialOrderBonuses({
               s.id === ship.id
                 ? {
                     ...s,
+                    specialOrders: {
+                      ...(s.specialOrders || {}),
+                      [orderName]: false,
+                    },
                     specialOrdersAttempted: {
                       ...(s.specialOrdersAttempted || {}),
                       [orderName]: true,
