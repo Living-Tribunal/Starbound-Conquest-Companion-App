@@ -10,6 +10,8 @@ import React, { useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { weapons } from "../../constants/weapons.js";
+import { weaponDescriptions } from "@/constants/WeaponColors.js";
+
 import {
   GestureHandlerRootView,
   ScrollView,
@@ -200,7 +202,7 @@ export default function Rules() {
 
           {/* ///weapon types */}
           <View style={styles.rulesSection}>
-            <View style={styles.textSectionContainer}>
+            <View style={[styles.textSectionContainer, { width: "70%" }]}>
               <Text style={[styles.textSection]}>Weapon Ranges and Arcs</Text>
             </View>
           </View>

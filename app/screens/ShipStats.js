@@ -39,7 +39,7 @@ export default function ShipStats({ route }) {
   const [orderIcon, setOrderIcon] = useState("");
   const [orderDescription, setOrderDescription] = useState("");
   const diceRollRef = useRef(0);
-  console.log("Ships Stats:", isPlayerTurn);
+  //console.log("Ships Stats:", isPlayerTurn);
   const {
     faction,
     data,
@@ -332,6 +332,7 @@ export default function ShipStats({ route }) {
       <HeaderComponent
         text="Ship Stats"
         NavToWhere={fromGameMap === "GameMap" ? "GameMap" : "Player"}
+        color={Colors.white}
       />
       <ScrollView
         nestedScrollEnabled

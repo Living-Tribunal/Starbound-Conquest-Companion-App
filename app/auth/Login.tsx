@@ -100,7 +100,7 @@ const Login = () => {
       });
 
       const signInResult = await GoogleSignin.signIn();
-      console.log("SignIn Result:", signInResult);
+      //console.log("SignIn Result:", signInResult);
 
       let idToken = signInResult?.data.idToken;
 
@@ -122,7 +122,7 @@ const Login = () => {
       //await updateProfile(user, { displayName: username || "Commander" });
       await AsyncStorage.setItem("UserName", username || "Commander");
       await saveFaction();
-      console.log("User Name:" + JSON.stringify(user.displayName));
+      //console.log("User Name:" + JSON.stringify(user.displayName));
 
       const userReference = doc(FIREBASE_DB, "users", user?.uid);
       const userSnapshot = await getDoc(userReference);
@@ -137,8 +137,8 @@ const Login = () => {
             factionName:
               faction || "Head over to settings to build your character",
           });
-          console.log("User document written with ID:", user.uid);
-          console.log("Users Profile:", user);
+          //console.log("User document written with ID:", user.uid);
+          // console.log("Users Profile:", user);
         } catch (e) {
           console.error("Error adding document:", e);
         }
@@ -172,7 +172,7 @@ const Login = () => {
         password
       );
       const user = userCredential.user;
-      console.log("Verified:", user.emailVerified);
+      //console.log("Verified:", user.emailVerified);
 
       if (user.emailVerified) {
         const storedUsername = user.displayName || "Guest";
@@ -220,13 +220,13 @@ const Login = () => {
         email,
         password
       );
-      console.log("✅ User created:", userCredential.user);
+      //console.log("✅ User created:", userCredential.user);
 
       const user = userCredential.user;
       await updateProfile(user, { displayName: username });
       await AsyncStorage.setItem("UserName", username);
       await saveFaction();
-      console.log("User Name:" + JSON.stringify(user.displayName));
+      // console.log("User Name:" + JSON.stringify(user.displayName));
 
       const userReference = doc(FIREBASE_DB, "users", user?.uid);
       const userSnapshot = await getDoc(userReference);
@@ -240,8 +240,8 @@ const Login = () => {
             factionName: faction,
             isUserTurn: false,
           });
-          console.log("User document written with ID:", user.uid);
-          console.log("Users Profile:", user);
+          // console.log("User document written with ID:", user.uid);
+          //  console.log("Users Profile:", user);
         } catch (e) {
           console.error("Error adding document:", e);
         }
@@ -262,9 +262,9 @@ const Login = () => {
           ]
         );
       });
-      console.log(
+      /*   console.log(
         "🚀 Sign-up successful! AppNavigation will handle redirection."
-      );
+      ); */
     } catch (error) {
       Toast.show({
         type: "error", // 'success' | 'error' | 'info'

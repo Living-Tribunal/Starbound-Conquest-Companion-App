@@ -1,24 +1,6 @@
 import { SpecialOrders } from "./SpecialOrders.js";
 
 export const ShipAttributes = {
-  Fighter: {
-    hp: 1,
-    toHit: 15,
-    soak: 1,
-    moveDistance: 80,
-    capacity: 0,
-    specialOrders: [
-      [SpecialOrders[1].name, SpecialOrders[1].text, SpecialOrders[1].icon],
-      [SpecialOrders[2].name, SpecialOrders[2].text, SpecialOrders[2].icon],
-      [SpecialOrders[3].name, SpecialOrders[3].text, SpecialOrders[3].icon],
-    ],
-    weaponType: ["Light Cannon"],
-    firingArc: "Forward(90°)",
-    weaponDamage: "1d4",
-    weaponRange: "30ft",
-    pointValue: 1,
-  },
-
   Destroyer: {
     hp: 8,
     toHit: 10,

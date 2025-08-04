@@ -10,6 +10,7 @@ export default function HeaderComponent({
   NavToWhere,
   onPress,
   disabled,
+  color,
 }) {
   const navigation = useNavigation();
   const { gameSectors } = useMapImageContext();
@@ -34,11 +35,15 @@ export default function HeaderComponent({
         }}
       >
         <Image
-          style={styles.image}
+          style={[styles.image, { tintColor: color || Colors.hud }]}
           source={require("../../assets/icons/icons8-back-arrow-50.png")}
         />
       </TouchableOpacity>
-      <Text style={[styles.headerText, { left: 40 }]}>{text}</Text>
+      <Text
+        style={[styles.headerText, { left: 40, color: color || Colors.hud }]}
+      >
+        {text}
+      </Text>
     </View>
   );
 }

@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import {
   View,
   Image,
@@ -59,6 +65,8 @@ export default function FleetMap() {
   const [originalShipPosition, setOriginalShipPosition] = useState(null);
   const isPlayerTurn = isUsersTurn?.[user?.uid] === true;
 
+  console.log("Turn:", isPlayerTurn);
+
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);
   const [removeAllIcons, setRemoveAllIcons] = useState(true);
@@ -68,7 +76,6 @@ export default function FleetMap() {
   const [circleBackgroundColor, setCircleBackgroundColor] = useState(
     "rgba(0,200,255,0.1)"
   );
-  const [protectedShipColor, setProtectedShipColor] = useState(null);
   const scale = useRef(new Animated.Value(1)).current;
   const scaleValue = useRef(1);
   const WORLD_WIDTH = 1400 * 2;
@@ -335,6 +342,32 @@ export default function FleetMap() {
     setUpdateMovement(false);
   };
 
+  const shipHasMovedButNotConfirmed = useMemo(() => {
+    return (
+      selectedShip &&
+      !selectedShip.shipActions?.move &&
+      (selectedShip.position.__getValue().x !== selectedShip.x ||
+        selectedShip.position.__getValue().y !== selectedShip.y)
+    );
+  }, [selectedShip]);
+
+  /*   useEffect(() => {
+    if (!shipHasMovedButNotConfirmed) {
+      console.log("Ship has not moved but not confirmed");
+      console.log(shipHasMovedButNotConfirmed);
+    } else {
+      console.log("Ship has moved but not confirmed");
+      console.log(shipHasMovedButNotConfirmed);
+    }
+  }, [shipHasMovedButNotConfirmed]); */
+
+  useEffect(() => {
+    if (!shipHasMovedButNotConfirmed) {
+      console.log("Ship has not moved but not confirmed");
+    } else {
+      console.log("Ship has moved but not confirmed");
+    }
+  }, [shipHasMovedButNotConfirmed]);
   /*   const updateShipMoveAction = async (selectedShip) => {
     if (!selectedShip || !user) return;
     try {
@@ -581,7 +614,12 @@ export default function FleetMap() {
   }, []);
 
   const targetingShip = (ship) => {
-    if (ship.isPendingDestruction === true || isPlayerTurn === false) return;
+    if (
+      shipHasMovedButNotConfirmed ||
+      ship.isPendingDestruction === true ||
+      isPlayerTurn === false
+    )
+      return;
     setTargetedShip(ship);
     console.log("Targeting ship:", ship.shipId);
   };
@@ -660,7 +698,7 @@ export default function FleetMap() {
     return <LoadingComponent whatToSay="Entering the battle..." />;
   }
 
-  console.log("Original Ship Position:", originalShipPosition);
+  // console.log("Original Ship Position:", originalShipPosition);
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -672,7 +710,7 @@ export default function FleetMap() {
         removeAllIcons={removeAllIcons}
         ships={data}
         user={user}
-        isPlayerTurn={isPlayerTurn}
+        isPlayerTurn={isPlayerTurn || false}
       />
       {selectedShip?.hasRolledDToHit === false &&
         getShipsActionsTakenCount(selectedShip) < 2 && (
@@ -722,12 +760,6 @@ export default function FleetMap() {
         initialZoom={0.5}
         longPressDuration={5}
         onLongPress={async () => {
-          const shipHasMovedButNotConfirmed =
-            selectedShip &&
-            !selectedShip.shipActions?.move &&
-            (selectedShip.position.__getValue().x !== selectedShip.x ||
-              selectedShip.position.__getValue().y !== selectedShip.y);
-
           if (shipHasMovedButNotConfirmed) {
             Toast.show({
               type: "info",

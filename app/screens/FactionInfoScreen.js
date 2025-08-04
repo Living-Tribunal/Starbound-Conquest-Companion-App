@@ -24,7 +24,11 @@ export default function FactionInfoScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <HeaderComponent text="Faction Lore" NavToWhere={"Game Lore"} />
+      <HeaderComponent
+        text="Faction Lore"
+        NavToWhere={"Game Lore"}
+        color={Colors.white}
+      />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,

@@ -435,6 +435,7 @@ export default function BattleGround(props) {
     <SafeAreaView style={styles.mainContainer}>
       <HeaderComponent
         disabled={isDisableBackButton}
+        color={Colors.white}
         text={isDisableBackButton ? "Battle Has Started" : "BattleGround"}
         NavToWhere={{
           name: fromGameMap ? "GameMap" : "Stats",

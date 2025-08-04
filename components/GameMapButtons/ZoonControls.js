@@ -6,7 +6,7 @@ import {
   Text,
   Animated,
 } from "react-native";
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Colors } from "@/constants/Colors";
 import Toast from "react-native-toast-message";
 
@@ -29,6 +29,7 @@ export default function ZoomControls({
   setTargetedShip,
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [isCancelling, setIsCancelling] = useState(false);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -45,6 +46,7 @@ export default function ZoomControls({
     const distanceTraveled = selectedShip.netDistance ?? 0;
 
     await updatingPosition(shipPressed, x, y, rotation, distanceTraveled);
+    setOriginalShipPosition(null);
     Toast.show({
       type: "success",
       text1: "Starbound Conquest",
@@ -55,14 +57,17 @@ export default function ZoomControls({
 
   const handleCancelMovement = () => {
     const selectedShip = ships.find((s) => s.id === shipPressed);
-    if (!selectedShip || !originalShipPosition) return;
-
+    if (isCancelling || !selectedShip || !originalShipPosition) return;
+    setIsCancelling(true);
     // Reset position
     selectedShip.position.setValue({
       x: originalShipPosition.x,
       y: originalShipPosition.y,
     });
 
+    selectedShip.x = originalShipPosition.x;
+    selectedShip.y = originalShipPosition.y;
+    selectedShip.rotation_angle = originalShipPosition.rotation ?? 0;
     // Reset rotation
     selectedShip.rotation.setValue(originalShipPosition.rotation ?? 0);
     setOriginalShipPosition(null);
@@ -77,6 +82,7 @@ export default function ZoomControls({
       position: "top",
       duration: 1000,
     });
+    setTimeout(() => setIsCancelling(false), 300);
   };
 
   const selectedShip = ships.find((s) => s.id === shipPressed);
@@ -181,7 +187,7 @@ export default function ZoomControls({
                         : Colors.hud,
                     },
                   ]}
-                  disabled={!shipHasMovedButNotConfirmed}
+                  disabled={!shipHasMovedButNotConfirmed || isCancelling}
                   onPress={confirmMovement}
                 >
                   <Text
@@ -199,6 +205,7 @@ export default function ZoomControls({
                 </TouchableOpacity>
 
                 <TouchableOpacity
+                  disabled={isCancelling}
                   style={[
                     styles.controlButton,
                     {

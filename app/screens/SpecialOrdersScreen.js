@@ -16,7 +16,11 @@ import HeaderComponent from "../../components/header/HeaderComponent.js";
 export default function SpecialOrdersScreen() {
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <HeaderComponent text="Special Orders" NavToWhere={"Rules"} />
+      <HeaderComponent
+        text="Special Orders"
+        NavToWhere={"Rules"}
+        color={Colors.white}
+      />
       <FlatList
         data={Object.entries(SpecialOrders)}
         keyExtractor={([key]) => key} // Use the object key as the unique identifier

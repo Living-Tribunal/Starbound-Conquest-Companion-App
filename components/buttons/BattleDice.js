@@ -1,25 +1,6 @@
 import { Colors } from "@/constants/Colors";
 
 export const shipBattleDiceMapping = {
-  Fighter: [
-    {
-      id: "D20",
-      text: "Roll to Hit",
-      number1: 1,
-      number2: 20,
-      numberOfDice: 1,
-      tintColor: Colors.goldenrod,
-      textStyle: { color: Colors.gold },
-      borderColor: { borderColor: Colors.goldenrod },
-    },
-    {
-      id: "Light Cannon",
-      text: "Light Cannon",
-      number1: 1,
-      number2: 6,
-      numberOfDice: 1,
-    },
-  ],
   Destroyer: [
     {
       id: "D20",
