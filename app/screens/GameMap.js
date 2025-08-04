@@ -65,7 +65,7 @@ export default function FleetMap() {
   const [originalShipPosition, setOriginalShipPosition] = useState(null);
   const isPlayerTurn = isUsersTurn?.[user?.uid] === true;
 
-  //console.log("Turn:", isPlayerTurn);
+  console.log("Turn:", isPlayerTurn);
 
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);

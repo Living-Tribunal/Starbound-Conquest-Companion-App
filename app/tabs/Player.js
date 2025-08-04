@@ -620,6 +620,13 @@ export default function Player() {
 
         let newSpecialOrders = {};
         let newShipActions = {};
+        let newShipWeaponStatus = {};
+
+        if (myShipData.weaponStatus) {
+          Object.keys(myShipData.weaponStatus).forEach((key) => {
+            newShipWeaponStatus[key] = false;
+          });
+        }
 
         if (myShipData.specialOrders) {
           Object.keys(myShipData.specialOrders).forEach((order) => {
@@ -644,6 +651,7 @@ export default function Player() {
             shipInterval: increment(1),
             distanceTraveled: 0,
             shipActions: newShipActions,
+            weaponStatus: newShipWeaponStatus,
             bonuses: {
               broadSideBonus: 0,
               inFighterRangeBonus: 0,
@@ -685,6 +693,13 @@ export default function Player() {
 
           let newSpecialOrders = {};
           let newShipActions = {};
+          let newShipWeaponStatus = {};
+
+          if (shipData.weaponStatus) {
+            Object.keys(shipData.weaponStatus).forEach((key) => {
+              newShipWeaponStatus[key] = false;
+            });
+          }
 
           if (shipData.specialOrders) {
             Object.keys(shipData.specialOrders).forEach((key) => {
@@ -700,7 +715,6 @@ export default function Player() {
           allResetPromises.push(
             updateDoc(shipDocRef, {
               isToggled: false,
-              specialOrders: {},
               hasBeenInteractedWith: false,
               hit: false,
               miss: false,
@@ -710,6 +724,7 @@ export default function Player() {
               specialOrdersAttempted: {},
               shipActions: newShipActions,
               specialOrders: newSpecialOrders,
+              weaponStatus: newShipWeaponStatus,
               bonuses: {
                 broadSideBonus: 0,
                 inFighterRangeBonus: 0,
