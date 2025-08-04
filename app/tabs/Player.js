@@ -1013,6 +1013,12 @@ export default function Player() {
                               fontFamily: "LeagueSpartan-Regular",
                               fontSize: 10,
                               textAlign: "left",
+                              borderBottomColor: isUsersTurn[player.uid]
+                                ? player.userFactionColor
+                                : "transparent",
+                              borderBottomWidth: isUsersTurn[player.uid]
+                                ? 2
+                                : 0,
                             }}
                           >
                             {index + 1}. {player.displayName}

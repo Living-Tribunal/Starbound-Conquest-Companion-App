@@ -581,7 +581,7 @@ export default function FleetMap() {
   }, []);
 
   const targetingShip = (ship) => {
-    if (ship.isPendingDestruction === true) return;
+    if (ship.isPendingDestruction === true || isPlayerTurn === false) return;
     setTargetedShip(ship);
     console.log("Targeting ship:", ship.shipId);
   };
@@ -672,6 +672,7 @@ export default function FleetMap() {
         removeAllIcons={removeAllIcons}
         ships={data}
         user={user}
+        isPlayerTurn={isPlayerTurn}
       />
       {selectedShip?.hasRolledDToHit === false &&
         getShipsActionsTakenCount(selectedShip) < 2 && (

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Colors } from "@/constants/Colors";
 import Toast from "react-native-toast-message";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function BackIconArcs({
   navigation,
@@ -11,6 +12,7 @@ export default function BackIconArcs({
   removeAllIcons,
   ships,
   user,
+  isPlayerTurn,
 }) {
   /*   console.log(
     "backIconArcs:",
@@ -23,6 +25,8 @@ export default function BackIconArcs({
     Dreadnought: "Dr",
   };
 
+  const insets = useSafeAreaInsets();
+
   const playerShips = ships.filter((s) => s.user === user.uid);
 
   const typeCounts = playerShips.reduce((acc, ship) => {
@@ -32,6 +36,26 @@ export default function BackIconArcs({
 
   return (
     <>
+      {!isPlayerTurn && (
+        <Text
+          style={{
+            position: "absolute", // pin it
+            bottom: insets.bottom + 10, // push to bottom
+            alignSelf: "center", // center horizontally
+            color: Colors.hud,
+            fontSize: 12,
+            fontFamily: "monospace",
+            textAlign: "center",
+            justifyContent: "center",
+            backgroundColor: Colors.hudDarker,
+            borderRadius: 5,
+            padding: 5,
+            zIndex: 10000,
+          }}
+        >
+          Waiting for your turn...
+        </Text>
+      )}
       <TouchableOpacity
         onPress={() => navigation.navigate("Map")}
         style={{
