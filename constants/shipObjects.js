@@ -204,7 +204,7 @@ export const shipObject = {
         "All Ahead Full": false,
         "Reinforce Shields": false,
         "All Systems Fire": false,
-        "Charge Ion Beam": false,
+        "Charge Ion Beams": false,
       },
       bonuses: {
         moveDistanceBonus: 0,
@@ -433,7 +433,7 @@ export const shipObject = {
         "All Ahead Full": false,
         "Reinforce Shields": false,
         "All Systems Fire": false,
-        "Charge Ion Beam": false,
+        "Charge Ion Beams": false,
       },
       hasBeenInteractedWith: false,
       weaponStatus: {
@@ -654,7 +654,7 @@ export const shipObject = {
         "All Ahead Full": false,
         "Reinforce Shields": false,
         "All Systems Fire": false,
-        "Charge Ion Beam": false,
+        "Charge Ion Beams": false,
       },
       moveDistanceBonus: 0,
       weaponStatus: {
@@ -878,7 +878,7 @@ export const shipObject = {
         "All Ahead Full": false,
         "Reinforce Shields": false,
         "All Systems Fire": false,
-        "Charge Ion Beam": false,
+        "Charge Ion Beams": false,
       },
       hasBeenInteractedWith: false,
       weaponStatus: {
@@ -1102,7 +1102,7 @@ export const shipObject = {
         "All Ahead Full": false,
         "Reinforce Shields": false,
         "All Systems Fire": false,
-        "Charge Ion Beam": false,
+        "Charge Ion Beams": false,
       },
       hasBeenInteractedWith: false,
       weaponStatus: {
@@ -1326,7 +1326,7 @@ export const shipObject = {
         "All Ahead Full": false,
         "Reinforce Shields": false,
         "All Systems Fire": false,
-        "Charge Ion Beam": false,
+        "Charge Ion Beams": false,
       },
       hasBeenInteractedWith: false,
       weaponStatus: {
@@ -1551,7 +1551,7 @@ export const shipObject = {
         "All Ahead Full": false,
         "Reinforce Shields": false,
         "All Systems Fire": false,
-        "Charge Ion Beam": false,
+        "Charge Ion Beams": false,
       },
       hasBeenInteractedWith: false,
       weaponStatus: {

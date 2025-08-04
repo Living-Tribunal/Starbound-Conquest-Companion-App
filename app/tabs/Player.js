@@ -162,6 +162,14 @@ export default function Player() {
     myShips.every((ship) => ship.isToggled || ship.isPendingDestruction);
   //console.log("myToggledOrDestroyingShips:", myToggledOrDestroyingShips);
 
+  useEffect(() => {
+    if (myToggledOrDestroyingShips) {
+      console.log("My toggled or destroying ships");
+    } else {
+      console.log("Not my toggled or destroying ships");
+    }
+  }, [myToggledOrDestroyingShips]);
+
   const shipInSector = useMemo(() => {
     return gameSectors === "Show All Ships..."
       ? myShips
@@ -1302,18 +1310,28 @@ export default function Player() {
                     {/*  <PushNotifications /> */}
 
                     <TouchableOpacity
-                      disabled={!isPlayerTurn || shouldEndRound}
+                      disabled={
+                        !isPlayerTurn ||
+                        shouldEndRound ||
+                        myToggledOrDestroyingShips
+                      }
                       style={[
                         styles.editContainer,
                         {
                           borderWidth: 1,
                           width: "45%",
-                          borderColor: toggleToDelete
-                            ? Colors.lighter_red
-                            : Colors.green_toggle,
-                          backgroundColor: toggleToDelete
-                            ? Colors.deep_red
-                            : Colors.darker_green_toggle,
+                          borderColor:
+                            toggleToDelete ||
+                            shouldEndRound ||
+                            myToggledOrDestroyingShips
+                              ? Colors.lighter_red
+                              : Colors.green_toggle,
+                          backgroundColor:
+                            toggleToDelete ||
+                            shouldEndRound ||
+                            myToggledOrDestroyingShips
+                              ? Colors.deep_red
+                              : Colors.darker_green_toggle,
                         },
                       ]}
                       onPress={() => {
@@ -1324,9 +1342,12 @@ export default function Player() {
                         style={[
                           styles.textValue,
                           {
-                            color: toggleToDelete
-                              ? Colors.lighter_red
-                              : Colors.green_toggle,
+                            color:
+                              toggleToDelete ||
+                              shouldEndRound ||
+                              myToggledOrDestroyingShips
+                                ? Colors.lighter_red
+                                : Colors.green_toggle,
                             fontSize: 12,
                           },
                         ]}
@@ -1347,13 +1368,21 @@ export default function Player() {
                         styles.editContainer,
                         {
                           backgroundColor:
-                            !isPlayerTurn || hasNoShips || shouldEndRound
+                            !isPlayerTurn ||
+                            hasNoShips ||
+                            shouldEndRound ||
+                            !myToggledOrDestroyingShips
                               ? Colors.hudDarker
                               : Colors.hud,
                           width: "50%",
                         },
                       ]}
-                      disabled={!isPlayerTurn || hasNoShips || shouldEndRound}
+                      disabled={
+                        !isPlayerTurn ||
+                        hasNoShips ||
+                        shouldEndRound ||
+                        !myToggledOrDestroyingShips
+                      }
                       onLongPress={async () => {
                         await endYourTurnAndSendMessage();
                       }}
@@ -1363,7 +1392,10 @@ export default function Player() {
                           styles.textValue,
                           {
                             color:
-                              !isPlayerTurn || hasNoShips || shouldEndRound
+                              !isPlayerTurn ||
+                              hasNoShips ||
+                              shouldEndRound ||
+                              !myToggledOrDestroyingShips
                                 ? Colors.hud
                                 : Colors.hudDarker,
                             fontFamily: "LeagueSpartan-Bold",

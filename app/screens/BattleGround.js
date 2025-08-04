@@ -552,14 +552,19 @@ export default function BattleGround(props) {
               liveShip.type === "Destroyer";
               const ipbHasBeenFired =
                 liveShip.weaponStatus?.["Ion Particle Beam"] === true;
-              const anyWeaponFired = Object.values(
+              const anyWeaponFired = Object.entries(
                 liveShip.weaponStatus || {}
-              ).some((fired) => fired === true);
+              ).some(
+                ([weapon, fired]) =>
+                  weapon !== "Ion Particle Beam" && fired === true
+              );
               {
-                /* console.log(
-                "Ship in BattleGround:",
-                JSON.stringify(liveShip.hasRolledDToHit, null, 2)
-              ); */
+                {
+                  /* console.log(
+                  "Ship in BattleGround:",
+                  JSON.stringify(anyWeaponFired, null, 2)
+                ); */
+                }
               }
 
               return (
@@ -580,7 +585,7 @@ export default function BattleGround(props) {
                     liveShip.miss
                   }
                   //for weapon ONLY dice
-                  disabledButton={anyWeaponFired}
+                  disabledButton={anyWeaponFired && !ipbHasBeenFired}
                   onPress={() => {
                     if (!(isIonParticleBeam && ipbHasBeenFired)) {
                       setWeaponHasAttacked(dice.id);
