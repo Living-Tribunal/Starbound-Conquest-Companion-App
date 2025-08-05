@@ -92,20 +92,6 @@ export default function Player() {
     setGetAllUsersShipToggled,
   } = useStarBoundContext();
 
-  const mockPlayers = [
-    { uid: "user1", displayName: "Alpha", userFactionColor: "#FF0000" },
-    { uid: "user2", displayName: "Bravo", userFactionColor: "#00FF00" },
-    { uid: "user3", displayName: "Charlie", userFactionColor: "#0000FF" },
-    { uid: "user4", displayName: "Delta", userFactionColor: "#FFFF00" },
-    { uid: "user5", displayName: "Echo", userFactionColor: "#FF00FF" },
-    { uid: "user6", displayName: "Foxtrot", userFactionColor: "#00FFFF" },
-    { uid: "user7", displayName: "Golf", userFactionColor: "#FFFFFF" },
-    { uid: "user8", displayName: "Hotel", userFactionColor: "#000000" },
-    { uid: "user9", displayName: "India", userFactionColor: "#FF0000" },
-    { uid: "user10", displayName: "Juliet", userFactionColor: "#00FF00" },
-    { uid: "user11", displayName: "Kilo", userFactionColor: "#0000FF" },
-  ];
-
   const hasShownEndRoundModal = useRef(false);
 
   const currentTurnUid = Object.keys(isUsersTurn).find(
@@ -115,13 +101,57 @@ export default function Player() {
 
   const currentTurnColor = isUsersColors?.[currentTurnUid] || "#FFFFFF";
 
-  //checks if there are any ships in the fleet from anyone
+  const currentUserShips = playersInGameRoom.some((player) => {
+    if (player.uid === user.uid) {
+      const currentUserShips = getAllUsersShipToggled.filter(
+        (ship) => ship.user === user.uid
+      );
+      if (currentUserShips.length === 0) return false;
+      /* console.log(
+        "Current User and Their Ships:",
+        currentUserShips.length,
+        player
+      ); */
+      return (
+        currentUserShips.length === 0 ||
+        currentUserShips.every(
+          (ship) => ship.isToggled || ship.isPendingDestruction
+        )
+      );
+    }
+    /* console.log("false"); */
+    return false;
+  });
+
+  const canEndRoundForAllPlayers = playersInGameRoom
+    .filter((player) => player.uid !== user.uid)
+    .every((player) => {
+      const otherPlayerShips = getAllUsersShipToggled.filter(
+        (ship) => ship.user === player.uid
+      );
+      if (otherPlayerShips.length === 0) return false;
+      /* console.log(
+        "Other Player and their Ships:",
+        otherPlayerShips.length,
+        player
+      ); */
+      return (
+        otherPlayerShips.length === 0 ||
+        otherPlayerShips.every(
+          (ship) => ship.isToggled || ship.isPendingDestruction
+        )
+      );
+    });
+
+  const canEndRoundForEveryone = canEndRoundForAllPlayers && currentUserShips;
+
+  /*   //checks if there are any ships in the fleet from anyone
   const allToggledOrHpZero =
     getAllUsersShipToggled.length > 0 &&
     getAllUsersShipToggled.every(
       (ship) => ship.isToggled || ship.isPendingDestruction
     );
-
+ */
   //filtering out the ships from the current user
   const myShips = useMemo(() => {
     return getAllUsersShipToggled.filter((ship) => ship.user === user.uid);
@@ -131,6 +161,14 @@ export default function Player() {
     myShips.length > 0 &&
     myShips.every((ship) => ship.isToggled || ship.isPendingDestruction);
   //console.log("myToggledOrDestroyingShips:", myToggledOrDestroyingShips);
+
+  useEffect(() => {
+    if (myToggledOrDestroyingShips) {
+      console.log("My toggled or destroying ships");
+    } else {
+      console.log("Not my toggled or destroying ships");
+    }
+  }, [myToggledOrDestroyingShips]);
 
   const shipInSector = useMemo(() => {
     return gameSectors === "Show All Ships..."
@@ -186,6 +224,8 @@ export default function Player() {
       console.error("Error saving character image:", error);
     }
   };
+
+  //console.log("PLayers Done:", canEndRoundForAllPlayers);
 
   //console.log("Ship Length:", data);
   //so ship ids arent too crazy long
@@ -354,7 +394,7 @@ export default function Player() {
 
   function send_message_discord_end_of_round() {
     console.log("Discord message sent ending round");
-    /* const request = new XMLHttpRequest();
+    const request = new XMLHttpRequest();
     request.open(
       "POST",
       "https://discord.com/api/webhooks/1400193103775793282/2Rz9AIJTztHwqS8B2OINDmUHy-In76UWV5NBkCnQkBVdBPpedCrPmV0njSE4t4KIDYat"
@@ -365,27 +405,22 @@ export default function Player() {
       avatar_url: "",
       content: `The Round has ended in ${gameRoom}. Resetting your ships.`,
     };
-    request.send(JSON.stringify(params)); */
+    request.send(JSON.stringify(params));
   }
 
   async function endYourTurnAndSendMessage() {
-    if (myToggledOrDestroyingShips) {
-      // 1. Send Discord message
-      console.log("Discord message sent ending your turn");
-      /* const request = new XMLHttpRequest();
-      request.open(
-        "POST",
-        "https://discord.com/api/webhooks/1400193598691217428/wIGjO6m0CUTV1rEanECgljpMRyWbrkLoP0nUtdqDerJOvHzYeOCjgOKx25ImJU8vFoi1"
-      );
-      request.setRequestHeader("Content-Type", "application/json");
-      const params = {
-        username: "Starbound Conquest",
-        avatar_url: "",
-        content: `${username} has ended their turn in ${gameRoom}.`,
-      };
-      request.send(JSON.stringify(params)); */
+    if (!myToggledOrDestroyingShips) {
+      Toast.show({
+        type: "error",
+        text1: "Starbound Conquest",
+        text2: "You have ships left to deploy.",
+        position: "top",
+      });
+      return;
+    }
 
-      // 2. Switch to next player
+    try {
+      // 1. Get players
       const usersRef = collection(FIREBASE_DB, "users");
       const usersQuery = query(usersRef, where("gameRoom", "==", gameRoom));
       const snapshot = await getDocs(usersQuery);
@@ -394,35 +429,48 @@ export default function Player() {
         uid: doc.id,
         ...doc.data(),
       }));
-
       const sortedPlayers = players.sort((a, b) => a.uid.localeCompare(b.uid));
-      console.log(`Sorted players:`, sortedPlayers);
-
-      // Find current player and determine next
       const currentIndex = sortedPlayers.findIndex((p) => p.uid === user.uid);
       const nextIndex = (currentIndex + 1) % sortedPlayers.length;
       const currentPlayer = sortedPlayers[currentIndex];
       const nextPlayer = sortedPlayers[nextIndex];
 
-      // Update Firestore: end current turn, start next
+      // 2. Update turn state in Firestore
       const currentRef = doc(FIREBASE_DB, "users", currentPlayer.uid);
       const nextRef = doc(FIREBASE_DB, "users", nextPlayer.uid);
+      await Promise.all([
+        updateDoc(currentRef, { isUserTurn: false }),
+        updateDoc(nextRef, { isUserTurn: true }),
+      ]);
 
-      await updateDoc(currentRef, { isUserTurn: false });
-      await updateDoc(nextRef, { isUserTurn: true });
+      // 3. THEN send Discord message
+      const discordMessage = {
+        username: "Starbound Conquest",
+        avatar_url: "",
+        content: `${username} has ended their turn in ${gameRoom}. ${nextPlayer.displayName} is up next!`,
+      };
+      await fetch(
+        "https://discord.com/api/webhooks/1400193598691217428/wIGjO6m0CUTV1rEanECgljpMRyWbrkLoP0nUtdqDerJOvHzYeOCjgOKx25ImJU8vFoi1",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(discordMessage),
+        }
+      );
 
-      // 3. Optional feedback
+      // 4. Toast confirmation
       Toast.show({
         type: "success",
         text1: "Turn Ended",
         text2: `${nextPlayer.displayName} is up next!`,
         position: "top",
       });
-    } else {
+    } catch (error) {
+      console.error("Error ending turn:", error);
       Toast.show({
         type: "error",
-        text1: "Starbound Conquest",
-        text2: "You have ships left to deploy.",
+        text1: "Error ending turn",
+        text2: "Please try again.",
         position: "top",
       });
     }
@@ -572,6 +620,13 @@ export default function Player() {
 
         let newSpecialOrders = {};
         let newShipActions = {};
+        let newShipWeaponStatus = {};
+
+        if (myShipData.weaponStatus) {
+          Object.keys(myShipData.weaponStatus).forEach((key) => {
+            newShipWeaponStatus[key] = false;
+          });
+        }
 
         if (myShipData.specialOrders) {
           Object.keys(myShipData.specialOrders).forEach((order) => {
@@ -596,6 +651,7 @@ export default function Player() {
             shipInterval: increment(1),
             distanceTraveled: 0,
             shipActions: newShipActions,
+            weaponStatus: newShipWeaponStatus,
             bonuses: {
               broadSideBonus: 0,
               inFighterRangeBonus: 0,
@@ -637,6 +693,13 @@ export default function Player() {
 
           let newSpecialOrders = {};
           let newShipActions = {};
+          let newShipWeaponStatus = {};
+
+          if (shipData.weaponStatus) {
+            Object.keys(shipData.weaponStatus).forEach((key) => {
+              newShipWeaponStatus[key] = false;
+            });
+          }
 
           if (shipData.specialOrders) {
             Object.keys(shipData.specialOrders).forEach((key) => {
@@ -652,7 +715,6 @@ export default function Player() {
           allResetPromises.push(
             updateDoc(shipDocRef, {
               isToggled: false,
-              specialOrders: {},
               hasBeenInteractedWith: false,
               hit: false,
               miss: false,
@@ -662,6 +724,7 @@ export default function Player() {
               specialOrdersAttempted: {},
               shipActions: newShipActions,
               specialOrders: newSpecialOrders,
+              weaponStatus: newShipWeaponStatus,
               bonuses: {
                 broadSideBonus: 0,
                 inFighterRangeBonus: 0,
@@ -720,7 +783,7 @@ export default function Player() {
   };
 
   const handleEndRoundPress = async () => {
-    if (allToggledOrHpZero) {
+    if (canEndRoundForAllPlayers && currentUserShips) {
       endRound();
 
       await cleanUpPendingDestruction();
@@ -799,23 +862,27 @@ export default function Player() {
   }, [gameRoom]);
 
   //show end round modal if all ships are toggled or hp is zero
-  // and if the loading is false and isLoading is false
   useFocusEffect(
     useCallback(() => {
       if (!isPlayerTurn) return;
       const timer = setTimeout(() => {
         if (!loading && !isLoading) {
-          setShouldEndRound(allToggledOrHpZero);
-          if (allToggledOrHpZero && !hasShownEndRoundModal.current) {
+          setShouldEndRound(canEndRoundForAllPlayers && currentUserShips);
+          if (
+            canEndRoundForAllPlayers &&
+            currentUserShips &&
+            !hasShownEndRoundModal.current
+          ) {
+            console.log("Showing End Round Modal");
             setShowEndRoundModal(true);
             hasShownEndRoundModal.current = true;
-          } else if (!allToggledOrHpZero) {
+          } else if (!(canEndRoundForAllPlayers && currentUserShips)) {
             hasShownEndRoundModal.current = false;
           }
         }
       }, 500);
       return () => clearTimeout(timer);
-    }, [allToggledOrHpZero, loading, isLoading])
+    }, [canEndRoundForAllPlayers, currentUserShips, loading, isLoading])
   );
 
   const getLoadingMessage = () => {
@@ -1215,7 +1282,7 @@ export default function Player() {
                     }}
                   >
                     <TouchableOpacity
-                      disabled={!isPlayerTurn || !allToggledOrHpZero}
+                      disabled={!isPlayerTurn || !canEndRoundForEveryone}
                       onPress={handleEndRoundPress}
                       style={[
                         styles.editContainer,
@@ -1223,19 +1290,19 @@ export default function Player() {
                           borderWidth: 1,
                           width: "45%",
                           shadowColor:
-                            !isPlayerTurn || !allToggledOrHpZero
+                            !isPlayerTurn || !canEndRoundForEveryone
                               ? Colors.lighter_red
                               : Colors.gold,
                           borderColor:
-                            !isPlayerTurn || !allToggledOrHpZero
+                            !isPlayerTurn || !canEndRoundForEveryone
                               ? Colors.lighter_red
                               : Colors.gold,
                           backgroundColor:
-                            !isPlayerTurn || !allToggledOrHpZero
+                            !isPlayerTurn || !canEndRoundForEveryone
                               ? Colors.deep_red
                               : Colors.goldenrod,
                           opacity:
-                            !isPlayerTurn || !allToggledOrHpZero ? 0.5 : 1,
+                            !isPlayerTurn || !canEndRoundForEveryone ? 0.5 : 1,
                         },
                       ]}
                     >
@@ -1244,7 +1311,7 @@ export default function Player() {
                           styles.textValue,
                           {
                             color:
-                              !isPlayerTurn || !allToggledOrHpZero
+                              !isPlayerTurn || !canEndRoundForEveryone
                                 ? Colors.lighter_red
                                 : Colors.gold,
                             fontSize: 12,
@@ -1258,18 +1325,28 @@ export default function Player() {
                     {/*  <PushNotifications /> */}
 
                     <TouchableOpacity
-                      disabled={!isPlayerTurn || shouldEndRound}
+                      disabled={
+                        !isPlayerTurn ||
+                        shouldEndRound ||
+                        myToggledOrDestroyingShips
+                      }
                       style={[
                         styles.editContainer,
                         {
                           borderWidth: 1,
                           width: "45%",
-                          borderColor: toggleToDelete
-                            ? Colors.lighter_red
-                            : Colors.green_toggle,
-                          backgroundColor: toggleToDelete
-                            ? Colors.deep_red
-                            : Colors.darker_green_toggle,
+                          borderColor:
+                            toggleToDelete ||
+                            shouldEndRound ||
+                            myToggledOrDestroyingShips
+                              ? Colors.lighter_red
+                              : Colors.green_toggle,
+                          backgroundColor:
+                            toggleToDelete ||
+                            shouldEndRound ||
+                            myToggledOrDestroyingShips
+                              ? Colors.deep_red
+                              : Colors.darker_green_toggle,
                         },
                       ]}
                       onPress={() => {
@@ -1280,9 +1357,12 @@ export default function Player() {
                         style={[
                           styles.textValue,
                           {
-                            color: toggleToDelete
-                              ? Colors.lighter_red
-                              : Colors.green_toggle,
+                            color:
+                              toggleToDelete ||
+                              shouldEndRound ||
+                              myToggledOrDestroyingShips
+                                ? Colors.lighter_red
+                                : Colors.green_toggle,
                             fontSize: 12,
                           },
                         ]}
@@ -1303,13 +1383,21 @@ export default function Player() {
                         styles.editContainer,
                         {
                           backgroundColor:
-                            !isPlayerTurn || hasNoShips || shouldEndRound
+                            !isPlayerTurn ||
+                            hasNoShips ||
+                            shouldEndRound ||
+                            !myToggledOrDestroyingShips
                               ? Colors.hudDarker
                               : Colors.hud,
                           width: "50%",
                         },
                       ]}
-                      disabled={!isPlayerTurn || hasNoShips || shouldEndRound}
+                      disabled={
+                        !isPlayerTurn ||
+                        hasNoShips ||
+                        shouldEndRound ||
+                        !myToggledOrDestroyingShips
+                      }
                       onLongPress={async () => {
                         await endYourTurnAndSendMessage();
                       }}
@@ -1319,7 +1407,10 @@ export default function Player() {
                           styles.textValue,
                           {
                             color:
-                              !isPlayerTurn || hasNoShips || shouldEndRound
+                              !isPlayerTurn ||
+                              hasNoShips ||
+                              shouldEndRound ||
+                              !myToggledOrDestroyingShips
                                 ? Colors.hud
                                 : Colors.hudDarker,
                             fontFamily: "LeagueSpartan-Bold",

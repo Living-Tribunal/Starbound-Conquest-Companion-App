@@ -20,7 +20,11 @@ export default function GameLore() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.dark_gray }}>
-      <HeaderComponent text="Factions" NavToWhere={"Rules"} />
+      <HeaderComponent
+        text="Factions"
+        NavToWhere={"Rules"}
+        color={Colors.white}
+      />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,

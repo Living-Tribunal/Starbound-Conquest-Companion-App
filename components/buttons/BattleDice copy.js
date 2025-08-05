@@ -3,35 +3,6 @@ import { Colors } from "@/constants/Colors.js";
 import { View, StyleSheet } from "react-native";
 
 const shipBattleDiceMapping = {
-  Fighter: [
-    <View style={{ width: "100%" }}>
-      <View
-        style={{
-          width: "100%",
-          flexDirection: "row",
-          alignContent: "center",
-          justifyContent: "space-evenly",
-          marginBottom: 10,
-        }}
-      >
-        <BattleDice
-          text="Roll to Hit"
-          number1={1}
-          id={"D20"}
-          number2={20}
-          tintColor={Colors.goldenrod}
-          textStyle={{ color: Colors.gold }}
-          borderColor={{ borderColor: Colors.goldenrod }}
-        />
-        <BattleDice
-          text="Light Cannon"
-          id={"Light Cannon"}
-          number1={1}
-          number2={6}
-        />
-      </View>
-    </View>,
-  ],
   Destroyer: [
     <View style={{ width: "100%" }}>
       <View

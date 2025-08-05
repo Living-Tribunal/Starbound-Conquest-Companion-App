@@ -2,17 +2,6 @@ import Dice from "../dice/D4Dice.js";
 import { Colors } from "@/constants/Colors.js";
 
 const shipDiceMapping = {
-  Fighter: [
-    <Dice
-      text="Roll to Hit"
-      number1={1}
-      number2={20}
-      tintColor={Colors.goldenrod}
-      textStyle={{ color: Colors.gold }}
-      borderColor={{ borderColor: Colors.goldenrod }}
-    />,
-    <Dice text="Light Cannon" number1={1} number2={4} />,
-  ],
   Destroyer: [
     <Dice
       text="Roll to Hit"

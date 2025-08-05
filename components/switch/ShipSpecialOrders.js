@@ -611,7 +611,7 @@ export default async function SpecialOrderBonuses({
           await updateDoc(shipRef, {
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
-            "weaponStatus.Ion Particle Beam": false,
+            "weaponStatus.Ion Particle Beams": false,
             "shipActions.specialOrder": false,
 
             hit: false,
