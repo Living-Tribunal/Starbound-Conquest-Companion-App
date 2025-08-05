@@ -1080,6 +1080,9 @@ export default function Player() {
                               fontFamily: "LeagueSpartan-Regular",
                               fontSize: 10,
                               textAlign: "left",
+                              borderBottomColor:
+                                player.userFactionColor || "transparent",
+                              borderBottomWidth: 1,
                             }}
                           >
                             {index + 1}. {player.displayName}
