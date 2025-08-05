@@ -10,7 +10,7 @@ import {
 import { Colors } from "@/constants/Colors";
 import { useStarBoundContext } from "../Global/StarBoundProvider";
 import { useFocusEffect } from "@react-navigation/native";
-import { useDiceContext } from "../Global/DiceContext";
+import { useNavigation } from "@react-navigation/native";
 export default function BattleDice({
   text,
   number1,
@@ -24,10 +24,12 @@ export default function BattleDice({
   disabledButton: disabledProp = null,
   disabledButtonOnHit: disabledOnHitProp = null,
   disableDiceModifiers,
+  onTriggerNavigationModal,
 }) {
   const [firstDice, setFirstDice] = useState(0);
   const [diceFaceModifier, setDiceFaceModifier] = useState(0);
   const [numberOfDiceModifier, setNumberOfDiceModifier] = useState(0);
+
   const {
     singleUserShip,
     hit,
@@ -45,7 +47,6 @@ export default function BattleDice({
   const threatLevel = singleUserShip?.threatLevel ?? null;
   const damageThreshold = singleUserShip?.damageThreshold ?? null;
   //console.log("selectedShip in BattleDice:", singleUserShip);
-
   const disabledButton =
     disabledProp !== null ? disabledProp : contextDisabledButton;
   const disabledButtonOnHit =
@@ -131,6 +132,12 @@ export default function BattleDice({
         setHit(false);
         setDisabledButtonOnHit(true);
         setDisabledButton(true);
+        //navigate to game map
+        if (onTriggerNavigationModal) {
+          setTimeout(() => {
+            onTriggerNavigationModal();
+          }, 1000);
+        }
       }
     } else {
       console.log(`🎲 Dice ${id} rolled ${newRolledValue} (no hit check)`);
@@ -160,6 +167,12 @@ export default function BattleDice({
       }
       setDisabledButton(true);
       setDisabledButtonOnHit(true);
+      //navigate to game map
+      if (onTriggerNavigationModal) {
+        setTimeout(() => {
+          onTriggerNavigationModal();
+        }, 1000);
+      }
     } else {
       //outside else to handle ion particle beam
       setDamageDone(newWeaponRolledValue);
@@ -168,6 +181,12 @@ export default function BattleDice({
       );
       setDisabledButton(true);
       setDisabledButtonOnHit(true);
+      //navigate to game map
+      if (onTriggerNavigationModal) {
+        setTimeout(() => {
+          onTriggerNavigationModal();
+        }, 1000);
+      }
     }
   };
 
@@ -236,7 +255,8 @@ export default function BattleDice({
       }
     });
   };
-  //console.log("disableDiceModifiers prop:", disableDiceModifiers);
+  //console.log("disableDiceModifiers prop:", disableDiceModifiers)
+
   return (
     <View
       style={{

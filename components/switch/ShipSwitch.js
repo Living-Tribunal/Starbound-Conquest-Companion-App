@@ -10,7 +10,6 @@ export default function ShipSwitch({ ship, showFiringArcs }) {
   //console.log("Ship in ShipSwitch:", ship.bonuses.broadSideBonus);
 
   const animOpacity = useRef(new Animated.Value(0)).current;
-  const fightersLaunched = ship.specialOrders?.["Launch Fighters"] === true;
   const radius = 300;
 
   useEffect(() => {

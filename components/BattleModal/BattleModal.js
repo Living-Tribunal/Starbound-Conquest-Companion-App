@@ -9,7 +9,7 @@ export default function BattleModal({
   navigateToBattleGround,
   setShipPressed,
   setTargetedShip,
-  setPendingBattle,
+  
 }) {
   const [confirming, setConfirming] = useState(false);
 

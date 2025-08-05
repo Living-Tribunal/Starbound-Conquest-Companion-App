@@ -91,7 +91,8 @@ export default function ZoomControls({
     selectedShip &&
     !selectedShip.shipActions?.move &&
     (selectedShip.position.__getValue().x !== selectedShip.x ||
-      selectedShip.position.__getValue().y !== selectedShip.y);
+      selectedShip.position.__getValue().y !== selectedShip.y ||
+      selectedShip.rotation.__getValue() !== selectedShip.rotation_angle);
 
   //console.log("Ship has moved but not confirmed:", shipHasMovedButNotConfirmed);
 
@@ -103,45 +104,48 @@ export default function ZoomControls({
           <Animated.View
             style={{ flexDirection: "row", gap: 10, opacity: fadeAnim }}
           >
-            <TouchableOpacity
-              style={[styles.zoomButton]}
-              onPress={() => handleShipRotation(shipPressed, -45)}
-              onLongPress={() => handleShipRotation(shipPressed, -90)}
-              disabled={
-                !isPlayerTurn ||
-                updatingRotation ||
-                updatingMovement ||
-                selectedShip?.hasRolledDToHit === true
-              }
-            >
-              <Image
-                style={{ tintColor: Colors.hud, width: 30, height: 30 }}
-                source={require("../../assets/icons/icons8-rotate-left-50.png")}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.zoomButton]}
-              onPress={() => handleShipRotation(shipPressed, 45)}
-              onLongPress={() => handleShipRotation(shipPressed, 90)}
-              disabled={
-                !isPlayerTurn ||
-                updatingRotation ||
-                updatingMovement ||
-                selectedShip?.hasRolledDToHit === true
-              }
-            >
-              <Image
-                style={{ tintColor: Colors.hud, width: 30, height: 30 }}
-                source={require("../../assets/icons/icons8-rotate-right-50.png")}
-              />
-            </TouchableOpacity>
+            {!selectedShip?.shipActions?.move && (
+              <>
+                <TouchableOpacity
+                  style={[styles.zoomButton]}
+                  onPress={() => handleShipRotation(shipPressed, -45)}
+                  onLongPress={() => handleShipRotation(shipPressed, -90)}
+                  disabled={
+                    !isPlayerTurn ||
+                    updatingRotation ||
+                    selectedShip?.hasRolledDToHit ||
+                    selectedShip?.shipActions?.move
+                  }
+                >
+                  <Image
+                    style={{ tintColor: Colors.hud, width: 30, height: 30 }}
+                    source={require("../../assets/icons/icons8-rotate-left-50.png")}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.zoomButton]}
+                  onPress={() => handleShipRotation(shipPressed, 45)}
+                  onLongPress={() => handleShipRotation(shipPressed, 90)}
+                  disabled={
+                    !isPlayerTurn ||
+                    updatingRotation ||
+                    selectedShip?.hasRolledDToHit
+                  }
+                >
+                  <Image
+                    style={{ tintColor: Colors.hud, width: 30, height: 30 }}
+                    source={require("../../assets/icons/icons8-rotate-right-50.png")}
+                  />
+                </TouchableOpacity>
+              </>
+            )}
           </Animated.View>
         )}
         {shipPressed && !targetedShip && (
           <Animated.View
             style={{
               flexDirection: "column",
-              marginTop: 10,
+              marginTop: selectedShip?.shipActions?.move ? -10 : 0,
               opacity: fadeAnim,
             }}
           >
@@ -154,14 +158,14 @@ export default function ZoomControls({
             <TouchableOpacity
               style={styles.controlButton}
               onPress={() => setShowFiringArcs((prev) => !prev)}
-              disabled={selectedShip?.hasRolledDToHit === true}
+              disabled={selectedShip?.hasRolledDToHit}
             >
               <Text style={styles.buttonText}>Firing Arcs</Text>
             </TouchableOpacity>
             {shipType && (
               <TouchableOpacity
                 style={styles.controlButton}
-                disabled={selectedShip?.hasRolledDToHit === true}
+                disabled={selectedShip?.hasRolledDToHit}
                 onPress={
                   shipType
                     ? () => setShowAllFiringArcs((prev) => !prev)

@@ -607,7 +607,7 @@ export default async function SpecialOrderBonuses({
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
 
-        if (localDiceRoll >= 11) {
+        if (localDiceRoll >= 5) {
           await updateDoc(shipRef, {
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,

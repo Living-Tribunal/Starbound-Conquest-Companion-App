@@ -84,13 +84,6 @@ export const shipBattleDiceMapping = {
       borderColor: { borderColor: Colors.goldenrod },
     },
     {
-      id: "Ion Particle Beam",
-      text: "Ion Particle Beam",
-      number1: 1,
-      number2: 10,
-      numberOfDice: 2,
-    },
-    {
       id: "Plasma Cannon",
       text: "Plasma Cannon",
       number1: 1,

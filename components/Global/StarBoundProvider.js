@@ -24,11 +24,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [rolledD20, setRolledD20] = useState(null);
   const [gameRoom, setGameRoom] = useState(null);
   const [diceValueToShare, setDiceValueToShare] = useState(null);
-
   const [email, setEmail] = useState(null);
-
   const [text, setText] = useState("0");
-
   const [faction, setFaction] = useState("");
   const [getAllUsersShipToggled, setGetAllUsersShipToggled] = useState([]);
   const [fromGameMap, setFromGameMap] = useState(null);

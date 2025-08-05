@@ -164,7 +164,7 @@ export default function Player() {
 
   useEffect(() => {
     if (myToggledOrDestroyingShips) {
-      console.log("My toggled or destroying ships");
+      //console.log("My toggled or destroying ships");
     } else {
       console.log("Not my toggled or destroying ships");
     }
@@ -308,6 +308,7 @@ export default function Player() {
     : 0;
 
   useEffect(() => {
+    if (!FIREBASE_AUTH.currentUser) return;
     if (!user) return;
     const userDocRef = doc(FIREBASE_DB, "users", user.uid);
     const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
@@ -322,7 +323,7 @@ export default function Player() {
       }
     });
     return () => unsubscribe();
-  }, [user?.uid]);
+  }, [user?.uid, FIREBASE_AUTH.currentUser]);
 
   useEffect(() => {
     const fetchShipCount = async () => {
@@ -564,6 +565,7 @@ export default function Player() {
 
   //listen for gameround changes and update the round for all users
   useEffect(() => {
+    if (!FIREBASE_AUTH.currentUser || !user || !gameRoom) return;
     const docRef = doc(FIREBASE_DB, "users", user.uid); // or "gameRooms", depending on your structure
 
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
@@ -573,7 +575,7 @@ export default function Player() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [gameRoom, user?.uid, FIREBASE_AUTH.currentUser]);
 
   useEffect(() => {
     const count = getAllUsersShipToggled.filter((s) => s.isToggled).length;
@@ -581,7 +583,7 @@ export default function Player() {
   }, [getAllUsersShipToggled]);
 
   useEffect(() => {
-    if (!user || !gameRoom) return;
+    if (!FIREBASE_AUTH.currentUser || !gameRoom) return;
 
     const ref = query(
       collection(FIREBASE_DB, "users", user.uid, "ships"),
@@ -595,7 +597,7 @@ export default function Player() {
     });
 
     return () => unsubscribe();
-  }, [user?.uid, gameRoom]);
+  }, [FIREBASE_AUTH.currentUser, gameRoom]);
 
   const endRound = async () => {
     if (!user || !gameRoom) return;
@@ -623,8 +625,8 @@ export default function Player() {
         let newShipWeaponStatus = {};
 
         if (myShipData.weaponStatus) {
-          Object.keys(myShipData.weaponStatus).forEach((key) => {
-            newShipWeaponStatus[key] = false;
+          Object.keys(myShipData.weaponStatus).forEach((weapon) => {
+            newShipWeaponStatus[weapon] = false;
           });
         }
 
@@ -696,8 +698,8 @@ export default function Player() {
           let newShipWeaponStatus = {};
 
           if (shipData.weaponStatus) {
-            Object.keys(shipData.weaponStatus).forEach((key) => {
-              newShipWeaponStatus[key] = false;
+            Object.keys(shipData.weaponStatus).forEach((weapon) => {
+              newShipWeaponStatus[weapon] = false;
             });
           }
 
@@ -800,7 +802,7 @@ export default function Player() {
   };
 
   useEffect(() => {
-    if (!gameRoom) return;
+    if (!gameRoom || !FIREBASE_AUTH.currentUser) return;
     setIsLoadingActivePlayers(true);
 
     const userShipUnsubs = [];
@@ -859,7 +861,7 @@ export default function Player() {
       unsubscribeUsers();
       userShipUnsubs.forEach((unsub) => unsub());
     };
-  }, [gameRoom]);
+  }, [gameRoom, FIREBASE_AUTH.currentUser]);
 
   //show end round modal if all ships are toggled or hp is zero
   useFocusEffect(
@@ -1374,58 +1376,61 @@ export default function Player() {
                       </Text>
                     </TouchableOpacity>
                   </View>
-                  <View
-                    style={{
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "100%",
-                    }}
-                  >
-                    <TouchableOpacity
-                      style={[
-                        styles.editContainer,
-                        {
-                          backgroundColor:
-                            !isPlayerTurn ||
-                            hasNoShips ||
-                            shouldEndRound ||
-                            !myToggledOrDestroyingShips
-                              ? Colors.hudDarker
-                              : Colors.hud,
-                          width: "50%",
-                        },
-                      ]}
-                      disabled={
-                        !isPlayerTurn ||
-                        hasNoShips ||
-                        shouldEndRound ||
-                        !myToggledOrDestroyingShips
-                      }
-                      onLongPress={async () => {
-                        await endYourTurnAndSendMessage();
+                  {myToggledOrDestroyingShips && !shouldEndRound && (
+                    <View
+                      style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "100%",
                       }}
                     >
-                      <Text
+                      <TouchableOpacity
                         style={[
-                          styles.textValue,
+                          styles.editContainer,
                           {
-                            color:
+                            backgroundColor:
                               !isPlayerTurn ||
                               hasNoShips ||
                               shouldEndRound ||
                               !myToggledOrDestroyingShips
-                                ? Colors.hud
-                                : Colors.hudDarker,
-                            fontFamily: "LeagueSpartan-Bold",
-                            marginTop: 2,
-                            marginBottom: 2,
+                                ? Colors.hudDarker
+                                : Colors.hud,
+                            width: "50%",
                           },
                         ]}
+                        disabled={
+                          !isPlayerTurn ||
+                          hasNoShips ||
+                          shouldEndRound ||
+                          !myToggledOrDestroyingShips
+                        }
+                        onPress={async () => {
+                          await endYourTurnAndSendMessage();
+                        }}
                       >
-                        End Turn
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
+                        <Text
+                          style={[
+                            styles.textValue,
+                            {
+                              color:
+                                !isPlayerTurn ||
+                                hasNoShips ||
+                                shouldEndRound ||
+                                !myToggledOrDestroyingShips
+                                  ? Colors.hud
+                                  : Colors.hudDarker,
+                              fontFamily: "LeagueSpartan-Bold",
+                              marginTop: 2,
+                              marginBottom: 2,
+                            },
+                          ]}
+                        >
+                          End Turn
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+
                   <View
                     style={{
                       justifyContent: "center",
@@ -1453,7 +1458,9 @@ export default function Player() {
                       {gameSectors === "Show All Ships..." ? (
                         <Text
                           style={{
-                            color: Colors.hud,
+                            color: toggleToDelete
+                              ? Colors.lighter_red
+                              : Colors.hud,
                             fontFamily: "LeagueSpartan-Light",
                             fontSize: 15,
                             textAlign: "center",
@@ -1465,7 +1472,9 @@ export default function Player() {
                       ) : (
                         <Text
                           style={{
-                            color: Colors.hud,
+                            color: toggleToDelete
+                              ? Colors.lighter_red
+                              : Colors.hud,
                             fontFamily: "LeagueSpartan-Light",
                             fontSize: 15,
                             textAlign: "center",
@@ -1487,7 +1496,9 @@ export default function Player() {
                       {shipInSector.length > 0 ? shipInSector.length : "0"} */}
                     </Text>
                   </View>
-                  <DropdownComponentSectors getShips={getFleetData} />
+                  {!toggleToDelete && (
+                    <DropdownComponentSectors getShips={getFleetData} />
+                  )}
                 </View>
               )}
             </View>
@@ -1535,7 +1546,12 @@ export default function Player() {
               </Text>
               {/* //minus button */}
               <TouchableOpacity
-                disabled={!isPlayerTurn || toggleToDelete || shouldEndRound}
+                disabled={
+                  !isPlayerTurn ||
+                  toggleToDelete ||
+                  shouldEndRound ||
+                  myToggledOrDestroyingShips
+                }
                 onPress={() => decrementShipCount(item.type)}
                 style={styles.button}
               >
@@ -1550,7 +1566,12 @@ export default function Player() {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                disabled={!isPlayerTurn || toggleToDelete || shouldEndRound}
+                disabled={
+                  !isPlayerTurn ||
+                  toggleToDelete ||
+                  shouldEndRound ||
+                  myToggledOrDestroyingShips
+                }
                 onPress={() =>
                   addShipToFleet(item.ships[0], shipCounts[item.type] || 1)
                 }
@@ -1571,7 +1592,12 @@ export default function Player() {
               </TouchableOpacity>
               {/* //add button */}
               <TouchableOpacity
-                disabled={!isPlayerTurn || toggleToDelete || shouldEndRound}
+                disabled={
+                  !isPlayerTurn ||
+                  toggleToDelete ||
+                  shouldEndRound ||
+                  myToggledOrDestroyingShips
+                }
                 onPress={() => incrementShipCount(item.type)}
                 style={styles.button}
               >
@@ -1593,6 +1619,7 @@ export default function Player() {
                 type={item.type}
                 usersColor={userFactionColor}
                 isPlayerTurn={isPlayerTurn}
+                myToggledOrDestroyingShips={myToggledOrDestroyingShips}
               />
             </View>
           </View>

@@ -18,7 +18,12 @@ import { FactionImages } from "../../constants/FactionImages";
 import { useMapImageContext } from "../Global/MapImageContext";
 //import { Shadow } from "react-native-neomorph-shadows";
 
-export default function ShipFlatList({ type, isPlayerTurn, toggleToDelete }) {
+export default function ShipFlatList({
+  type,
+  isPlayerTurn,
+  toggleToDelete,
+  myToggledOrDestroyingShips,
+}) {
   const specialOrderShortNames = {
     "All Ahead Full": "AHF",
     "Evasive Maneuvers": "EVM",

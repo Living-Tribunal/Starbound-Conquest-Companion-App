@@ -42,6 +42,7 @@ import Toast from "react-native-toast-message";
 import BattleModal from "@/components/BattleModal/BattleModal";
 import { updateShipIsToggled } from "../../components/Functions/updateShipIsToggled";
 import ShipInfo from "@/components/shipdata/ShipInfo";
+import { factionIcons } from "../../constants/shipIcons";
 
 export default function FleetMap() {
   const navigation = useNavigation();
@@ -64,8 +65,6 @@ export default function FleetMap() {
   const [shipsEnteringBattle, setShipsEnteringBattle] = useState([]);
   const [originalShipPosition, setOriginalShipPosition] = useState(null);
   const isPlayerTurn = isUsersTurn?.[user?.uid] === true;
-
-  console.log("Turn:", isPlayerTurn);
 
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);
@@ -227,6 +226,7 @@ export default function FleetMap() {
     runFighterRangeUpdate();
   }, [ships, user?.uid]);
 
+  const FIREBASE_UPDATES_ENABLED = false;
   const handleShipRotation = (shipId, deltaDegrees = 15) => {
     const shipIndex = ships.findIndex((s) => s.id === shipId);
     if (shipIndex === -1) return;
@@ -238,6 +238,7 @@ export default function FleetMap() {
 
     const current = ship.rotation.__getValue();
     const next = (current + deltaDegrees) % 360;
+    console.log("Rotating ship:", ship.id, "by:", deltaDegrees);
 
     Animated.timing(ship.rotation, {
       toValue: next,
@@ -245,10 +246,15 @@ export default function FleetMap() {
       useNativeDriver: false,
     }).start(async () => {
       try {
-        await updateDoc(doc(FIREBASE_DB, "users", user.uid, "ships", shipId), {
-          rotation_angle: next,
-        });
-        //setShips(updatedShips);
+        if (FIREBASE_UPDATES_ENABLED) {
+          await updateDoc(
+            doc(FIREBASE_DB, "users", user.uid, "ships", shipId),
+            {
+              rotation_angle: next,
+            }
+          );
+        }
+        //setShips(updatedShips); // If you're updating local state
       } catch (e) {
         console.error("Error updating rotation:", e);
       } finally {
@@ -579,32 +585,21 @@ export default function FleetMap() {
 
   useFocusEffect(
     useCallback(() => {
+      setLoading(true);
       if (!gameRoom || !gameSectors) return;
-      getAllShipsInGameRoom({
+
+      const unsubscribe = getAllShipsInGameRoom({
         setData,
         setLoading,
         gameSectors,
         gameRoom,
       });
+      setLoading(false);
+      return () => {
+        if (unsubscribe) unsubscribe();
+      };
     }, [gameRoom, gameSectors])
   );
-
-  /*  useEffect(() => {
-    if (!gameRoom || !gameSectors) return;
-
-    const unsubscribe = getAllShipsInGameRoom({
-      setData,
-      setLoading,
-      gameSectors,
-      gameRoom,
-    });
-
-    return () => {
-      if (typeof unsubscribe === "function") {
-        unsubscribe();
-      }
-    };
-  }, [gameRoom, gameSectors]); */
 
   useEffect(() => {
     const listener = scale.addListener(({ value }) => {
@@ -742,6 +737,7 @@ export default function FleetMap() {
           setOriginalShipPosition={setOriginalShipPosition}
           setMovementDistanceCircle={setMovementDistanceCircle}
           setTargetedShip={setTargetedShip}
+          isPlayerTurn={isPlayerTurn}
         />
       )}
 
@@ -1074,6 +1070,25 @@ export default function FleetMap() {
                     ],
                   }}
                 >
+                  <Image
+                    source={
+                      factionIcons[ship.type.toLowerCase()] ||
+                      require("../../assets/icons/icons8-chevron-50.png")
+                    }
+                    style={{
+                      width: 12,
+                      height: 25,
+                      position: "absolute",
+                      top: 0,
+                      marginTop: 5,
+                      left: 80,
+                      tintColor: ship.isToggled
+                        ? Colors.gold
+                        : ship.factionColor,
+                    }}
+                    resizeMode="contain"
+                  />
+
                   {ship.isPendingDestruction === true ? (
                     <Text
                       style={{
@@ -1107,6 +1122,7 @@ export default function FleetMap() {
                         left: ship.width / 2, // center under ship
                       }}
                     >
+                      {/* indicator to show if ship has used its two moves */}
                       {[...Array(3)].map((_, i) => (
                         <View
                           key={i}
@@ -1137,7 +1153,6 @@ export default function FleetMap() {
                   </View>
                 </Animated.View>
               </Animated.View>
-              {/*   )} */}
             </React.Fragment>
           );
         })}
