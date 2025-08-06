@@ -212,8 +212,10 @@ export const shipObject = {
         inFighterRangeBonus: 0,
       },
       hasBeenInteractedWith: false,
-      weaponStatus: {
+      specialWeaponStatus: {
         "Ion Particle Beam": false,
+      },
+      weaponStatus: {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
@@ -436,8 +438,10 @@ export const shipObject = {
         "Charge Ion Beams": false,
       },
       hasBeenInteractedWith: false,
-      weaponStatus: {
+      specialWeaponStatus: {
         "Ion Particle Beam": false,
+      },
+      weaponStatus: {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
@@ -657,8 +661,10 @@ export const shipObject = {
         "Charge Ion Beams": false,
       },
       moveDistanceBonus: 0,
-      weaponStatus: {
+      specialWeaponStatus: {
         "Ion Particle Beam": false,
+      },
+      weaponStatus: {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
@@ -881,8 +887,10 @@ export const shipObject = {
         "Charge Ion Beams": false,
       },
       hasBeenInteractedWith: false,
-      weaponStatus: {
+      specialWeaponStatus: {
         "Ion Particle Beam": false,
+      },
+      weaponStatus: {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
@@ -1105,8 +1113,10 @@ export const shipObject = {
         "Charge Ion Beams": false,
       },
       hasBeenInteractedWith: false,
-      weaponStatus: {
+      specialWeaponStatus: {
         "Ion Particle Beam": false,
+      },
+      weaponStatus: {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
@@ -1329,8 +1339,10 @@ export const shipObject = {
         "Charge Ion Beams": false,
       },
       hasBeenInteractedWith: false,
-      weaponStatus: {
+      specialWeaponStatus: {
         "Ion Particle Beam": false,
+      },
+      weaponStatus: {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },
@@ -1554,8 +1566,10 @@ export const shipObject = {
         "Charge Ion Beams": false,
       },
       hasBeenInteractedWith: false,
-      weaponStatus: {
+      specialWeaponStatus: {
         "Ion Particle Beam": false,
+      },
+      weaponStatus: {
         "Plasma Cannon": false,
         "350mm Railgun": false,
       },

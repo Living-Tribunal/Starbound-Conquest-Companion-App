@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import Toast from "react-native-toast-message";
 import BattleDice from "@/components/dice/BattleGroundDice.js";
 import { FactionImages } from "@/constants/FactionImages.js";
@@ -10,6 +10,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  TouchableWithoutFeedback,
   Platform,
   SafeAreaView,
   FlatList,
@@ -20,6 +21,7 @@ import HeaderComponent from "@/components/header/HeaderComponent";
 import { Colors } from "../../constants/Colors";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { useNavigation } from "@react-navigation/native";
+import ChargingButton from "../../components/buttons/ChargingButton";
 import {
   collection,
   doc,
@@ -69,7 +71,9 @@ export default function BattleGround(props) {
 
   const user = FIREBASE_AUTH.currentUser;
   const scaleAnim = useRef(new Animated.Value(0)).current;
-
+  const buttonScaleCharge = useRef(new Animated.Value(1)).current;
+  const AnimatedTouchableOpacity =
+    Animated.createAnimatedComponent(TouchableOpacity);
   const fromGameMap = from === "GameMap";
   const gameMapAttackingShip = attackingShip || ship;
   const gameMapTargetedShip = targetedShip || singleUserShip;
@@ -92,13 +96,10 @@ export default function BattleGround(props) {
   const showNavingModal = () => {
     setIsNavingModal(true);
   };
-  /*  console.log("From in BattleGround:", from);
 
-  console.log(
-    "GameMap Attacking Ship:",
-    gameMapAttackingShip.id,
-    targetedShip.id
-  ); */
+  const triggerIonFireEffect = () => {
+    console.log("Ion Particle Beam Firing");
+  };
 
   useEffect(() => {
     Animated.loop(
@@ -110,22 +111,38 @@ export default function BattleGround(props) {
         }),
         Animated.timing(scaleAnim, {
           toValue: 0,
-          duration: 0, // snap back
+          duration: 2000,
           useNativeDriver: true,
         }),
       ])
     ).start();
   }, []);
 
+  const startChargeIonBeam = () => {
+    Animated.timing(buttonScaleCharge, {
+      toValue: 0.7,
+      duration: 2000,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const endChargeIonBeam = () => {
+    Animated.timing(buttonScaleCharge, {
+      toValue: 1,
+      duration: 2000,
+      useNativeDriver: true,
+    }).start();
+  };
+
   // Interpolate scale and opacity
   const buttonScale = scaleAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 2],
+    inputRange: [0.5, 5],
+    outputRange: [0.7, 1],
   });
 
   const buttonOpacity = scaleAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0.7, 0],
+    outputRange: [0.25, 1],
   });
 
   const handleD20Roll = async (value, id) => {
@@ -239,14 +256,6 @@ export default function BattleGround(props) {
     }
   };
 
-  //console.log("Weapon Fired In BattleGround:", weaponId);
-  //resetting sethit state when leaving the screen
-  /*  useEffect(() => {
-    return () => {
-      setHit(false);
-    };
-  }, []); */
-
   useEffect(() => {
     if (weaponId) {
       setWeaponHasAttacked(weaponId);
@@ -346,8 +355,6 @@ export default function BattleGround(props) {
   //useEffect function to listen for changes for the specific user and ship selected in battleGround
   useEffect(() => {
     if (!FIREBASE_AUTH.currentUser || !singleUserShip || !isUser) return;
-    //console.log("Ship:", JSON.stringify(singleUserShip, null, 2));
-    //console.log("User:", JSON.stringify(isUser, null, 2));
     const userShipDocRef = doc(
       FIREBASE_DB,
       "users",
@@ -358,10 +365,6 @@ export default function BattleGround(props) {
     const unsubscribe = onSnapshot(userShipDocRef, (doc) => {
       if (doc.exists) {
         const updatedShip = { id: doc.id, ...doc.data() };
-        /* console.log(
-          "Updated Ship in the UseEffect:",
-          JSON.stringify(updatedShip, null, 2)
-        ); */
         setSingleUserShip(updatedShip);
       }
     });
@@ -376,11 +379,6 @@ export default function BattleGround(props) {
       setDamageDone(0);
     }, [])
   );
-
-  /*   console.log(
-    "Selected Weapon ID Status in Battleground:",
-    liveShip?.weaponStatus?.[weaponId]
-  ); */
 
   //useEffect function to get ALL users and their ships from firestore
   useEffect(() => {
@@ -523,9 +521,7 @@ export default function BattleGround(props) {
             >
               Result: {hit === true ? "Hit" : "Miss"}
             </Text>
-          ) : (
-            <Text>Cody</Text>
-          )}
+          ) : null}
         </View>
         <View
           style={{ justifyContent: "center", alignItems: "center", margin: 10 }}
@@ -587,8 +583,8 @@ export default function BattleGround(props) {
             style={[
               styles.row,
               {
-                borderRadius: 5,
-                backgroundColor: Colors.hudDarker,
+                borderTopWidth: 3,
+                borderTopColor: Colors.white,
                 margin: 10,
               },
             ]}
@@ -625,7 +621,7 @@ export default function BattleGround(props) {
                       : Colors.hudDarker,
                   borderRadius: 5,
                   padding: 5,
-                  width: "70%",
+                  width: "90%",
                   borderWidth: 1,
                   flexDirection: "row",
                   borderColor:
@@ -667,14 +663,6 @@ export default function BattleGround(props) {
                 {weaponId} hit for: {damageDone} hp
               </Text>
             </View>
-            {/*  && gameMapAttackingShip?.specialWeapon?.["Ion Particle Beam"] === true */}
-            {gameMapAttackingShip.type === "Dreadnought" && (
-              <Animnated.View>
-                <TouchableOpacity style={styles.ionBeamButton}>
-                  <Text style={styles.ionBeamText}>Ion Particle Beam</Text>
-                </TouchableOpacity>
-              </Animnated.View>
-            )}
           </View>
 
           <View
@@ -740,6 +728,46 @@ export default function BattleGround(props) {
                 />
               );
             })}
+          </View>
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <View style={styles.specialWeaponsContainer}>
+              <Text style={styles.specialWeapons}>Special Weapons</Text>
+            </View>
+
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              {gameMapAttackingShip.type === "Dreadnought" &&
+              gameMapAttackingShip?.specialWeaponStatus?.[
+                "Ion Particle Beam"
+              ] === false ? (
+                <View>
+                  {Object.keys(
+                    gameMapAttackingShip.specialWeaponStatus || {}
+                  ).map((weaponName, index) => (
+                    <ChargingButton key={index} specialWeapon={weaponName} />
+                  ))}
+                </View>
+              ) : (
+                <View
+                  style={{
+                    borderColor: Colors.lightened_deep_red,
+                    borderWidth: 1,
+                    borderRadius: 3,
+                    backgroundColor: Colors.deep_red,
+                    padding: 5,
+                    margin: 5,
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.ionBeamText,
+                      { color: Colors.lightened_deep_red },
+                    ]}
+                  >
+                    Ion Particle Beam Recharging
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
 
           <View
@@ -850,33 +878,6 @@ export default function BattleGround(props) {
               )}
             </View>
           </View>
-          {/*     <View style={{ flex: 1 }}>
-            <TouchableOpacity
-              style={[
-                styles.closeButton,
-                {
-                  backgroundColor: hit !== null ? Colors.dark_gray : Colors.hud,
-                  borderColor: hit !== null ? Colors.hud : Colors.hudDarker,
-                },
-              ]}
-              disabled={disableChoose || hit !== null}
-              onPress={() => {
-                setModal(true);
-                setExpandUserShipList({});
-              }}
-            >
-              <Text
-                style={[
-                  styles.closeText,
-                  {
-                    color: hit !== null ? Colors.hudDarker : Colors.hudDarker,
-                  },
-                ]}
-              >
-                Choose Your Opponent
-              </Text>
-            </TouchableOpacity>
-          </View> */}
         </View>
         <Modal visible={modal} animationType="slide">
           <View style={{ flex: 1, backgroundColor: Colors.dark_gray }}>
@@ -1145,7 +1146,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.hud,
     backgroundColor: Colors.hudDarker,
-    width: "70%",
+    width: "90%",
     borderRadius: 5,
     padding: 10,
   },
@@ -1177,15 +1178,29 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 10,
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: Colors.hud,
     borderRadius: 3,
-    backgroundColor: Colors.hud,
+    backgroundColor: Colors.goldenrod,
+    borderWidth: 1,
+    borderColor: Colors.lightened_gold,
   },
   ionBeamText: {
-    color: Colors.hudDarker,
+    color: Colors.lightened_gold,
     fontFamily: "LeagueSpartan-ExtraBold",
     textAlign: "center",
     fontSize: 12,
+  },
+  specialWeapons: {
+    color: Colors.hud,
+    fontFamily: "LeagueSpartan-ExtraBold",
+    textAlign: "center",
+    fontSize: 15,
+  },
+  specialWeaponsContainer: {
+    width: "90%",
+    borderRadius: 3,
+    backgroundColor: Colors.hudDarker,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    margin: 5,
   },
 });
