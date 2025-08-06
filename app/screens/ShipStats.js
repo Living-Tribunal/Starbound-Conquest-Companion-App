@@ -109,7 +109,7 @@ export default function ShipStats({ route }) {
     );
   };
 
-  useEffect(() => {
+  /*  useEffect(() => {
     if (!ship || !user) return;
 
     // Only trigger if the ship hasn't toggled yet, but has rolled
@@ -132,7 +132,7 @@ export default function ShipStats({ route }) {
 
       toggleHasTakenTurn();
     }
-  }, [ship?.hasRolledDToHit, ship?.isToggled]);
+  }, [ship?.hasRolledDToHit, ship?.isToggled]); */
 
   const adjustHP = () => {
     //prev data is the ships array of all currnt ships
@@ -375,14 +375,12 @@ export default function ShipStats({ route }) {
           <View
             style={[
               {
-                backgroundColor:
-                  ship.hasRolledDToHit || ship.isToggled
-                    ? Colors.deep_red
-                    : Colors.darker_green_toggle,
-                borderColor:
-                  ship.hasRolledDToHit || ship.isToggled
-                    ? Colors.lighter_red
-                    : Colors.green_toggle,
+                backgroundColor: ship.isToggled
+                  ? Colors.deep_red
+                  : Colors.darker_green_toggle,
+                borderColor: ship.isToggled
+                  ? Colors.lighter_red
+                  : Colors.green_toggle,
                 width: "95%",
                 borderRadius: 5,
                 borderWidth: 2,
@@ -395,16 +393,13 @@ export default function ShipStats({ route }) {
                 {
                   fontSize: 15,
                   fontFamily: "LeagueSpartan-Regular",
-                  color:
-                    ship.hasRolledDToHit || ship.isToggled
-                      ? Colors.lighter_red
-                      : Colors.green_toggle,
+                  color: ship.isToggled
+                    ? Colors.lighter_red
+                    : Colors.green_toggle,
                 },
               ]}
             >
-              {ship.hasRolledDToHit || ship.isToggled
-                ? "Ended turn"
-                : "Ready to engage"}
+              {ship.isToggled ? "Ended turn" : "Ready to engage"}
             </Text>
           </View>
         </View>
@@ -650,7 +645,8 @@ export default function ShipStats({ route }) {
                             setOrderName(orderName);
                             if (
                               orderName === "Charge Ion Beams" &&
-                              ship.weaponStatus["Ion Particle Beam"] === false
+                              ship.specialWeaponStatus["Ion Particle Beam"] ===
+                                false
                             ) {
                               Toast.show({
                                 type: "error",

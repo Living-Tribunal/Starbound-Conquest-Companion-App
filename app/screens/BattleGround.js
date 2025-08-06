@@ -22,6 +22,7 @@ import { Colors } from "../../constants/Colors";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { useNavigation } from "@react-navigation/native";
 import ChargingButton from "../../components/buttons/ChargingButton";
+import { updateShipIsToggled } from "@/components/Functions/updateShipIsToggled.js";
 import {
   collection,
   doc,
@@ -33,7 +34,6 @@ import {
 } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import { getDoc } from "firebase/firestore";
-import { useMapImageContext } from "@/components/Global/MapImageContext.js";
 import { useFocusEffect } from "expo-router";
 import PulsingGlow from "@/components/Pusle/PulsingGlow.js";
 
@@ -71,9 +71,6 @@ export default function BattleGround(props) {
 
   const user = FIREBASE_AUTH.currentUser;
   const scaleAnim = useRef(new Animated.Value(0)).current;
-  const buttonScaleCharge = useRef(new Animated.Value(1)).current;
-  const AnimatedTouchableOpacity =
-    Animated.createAnimatedComponent(TouchableOpacity);
   const fromGameMap = from === "GameMap";
   const gameMapAttackingShip = attackingShip || ship;
   const gameMapTargetedShip = targetedShip || singleUserShip;
@@ -97,10 +94,6 @@ export default function BattleGround(props) {
     setIsNavingModal(true);
   };
 
-  const triggerIonFireEffect = () => {
-    console.log("Ion Particle Beam Firing");
-  };
-
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
@@ -118,26 +111,10 @@ export default function BattleGround(props) {
     ).start();
   }, []);
 
-  const startChargeIonBeam = () => {
-    Animated.timing(buttonScaleCharge, {
-      toValue: 0.7,
-      duration: 2000,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const endChargeIonBeam = () => {
-    Animated.timing(buttonScaleCharge, {
-      toValue: 1,
-      duration: 2000,
-      useNativeDriver: true,
-    }).start();
-  };
-
   // Interpolate scale and opacity
   const buttonScale = scaleAnim.interpolate({
-    inputRange: [0.5, 5],
-    outputRange: [0.7, 1],
+    inputRange: [0.5, 6],
+    outputRange: [1, 1.5],
   });
 
   const buttonOpacity = scaleAnim.interpolate({
@@ -147,7 +124,7 @@ export default function BattleGround(props) {
 
   const handleD20Roll = async (value, id) => {
     if (!gameMapAttackingShip || !user) return;
-
+    setIsDisableBackButton(true);
     try {
       const shipRef = doc(
         FIREBASE_DB,
@@ -161,7 +138,6 @@ export default function BattleGround(props) {
         await updateDoc(shipRef, {
           hit: isHit,
           hasRolledDToHit: true,
-          isToggled: true,
           miss: false,
           "shipActions.attack": true,
         });
@@ -173,7 +149,6 @@ export default function BattleGround(props) {
                   ...s,
                   hit: isHit,
                   hasRolledDToHit: true,
-                  isToggled: true,
                   miss: false,
                   shipActions: {
                     ...(s.shipActions || {}),
@@ -183,12 +158,10 @@ export default function BattleGround(props) {
               : s
           )
         );
-        setIsDisableBackButton(true);
         setDiceValueToShare(0);
       } else {
         await updateDoc(shipRef, {
           miss: true,
-          isToggled: true,
           hit: false,
           "shipActions.attack": true,
         });
@@ -199,7 +172,6 @@ export default function BattleGround(props) {
               ? {
                   ...s,
                   miss: true,
-                  isToggled: true,
                   hit: false,
                   shipActions: {
                     ...(s.shipActions || {}),
@@ -210,6 +182,48 @@ export default function BattleGround(props) {
           )
         );
       }
+      setIsDisableBackButton(true);
+    } catch (e) {
+      console.error("❌ Error updating ship after D20 roll:", e);
+    }
+  };
+
+  const startChargingIonBeam = async (weaponName) => {
+    if (!gameMapAttackingShip || !user) return;
+    setIsDisableBackButton(true);
+    try {
+      const shipRef = doc(
+        FIREBASE_DB,
+        "users",
+        gameMapAttackingShip.userId,
+        "ships",
+        gameMapAttackingShip.id
+      );
+
+      const newWeaponStatus = {
+        ...gameMapAttackingShip.specialWeaponStatus,
+        [weaponName]: true,
+      };
+
+      await updateDoc(shipRef, {
+        specialWeaponStatus: newWeaponStatus,
+        specialWeaponStatusAttempted: newWeaponStatus,
+        "shipActions.attack": true,
+      });
+
+      setData((prevData) =>
+        prevData.map((s) =>
+          s.id === gameMapAttackingShip.id
+            ? {
+                ...s,
+                specialWeaponStatus: newWeaponStatus,
+                specialWeaponStatusAttempted: newWeaponStatus,
+                "shipActions.attack": true,
+              }
+            : s
+        )
+      );
+      setIsDisableBackButton(false);
     } catch (e) {
       console.error("❌ Error updating ship after D20 roll:", e);
     }
@@ -217,7 +231,7 @@ export default function BattleGround(props) {
 
   const setWeaponHasAttacked = async (weaponId) => {
     if (!gameMapAttackingShip || !user) return;
-
+    setIsDisableBackButton(true);
     try {
       const shipRef = doc(
         FIREBASE_DB,
@@ -259,6 +273,7 @@ export default function BattleGround(props) {
   useEffect(() => {
     if (weaponId) {
       setWeaponHasAttacked(weaponId);
+      // startChargingIonBeam(weaponName);
       //console.log("WeaponId in BattleGround:", weaponId);
     }
   }, [weaponId]);
@@ -275,7 +290,9 @@ export default function BattleGround(props) {
     );
     const unsubscribe = onSnapshot(shipRef, (docSnap) => {
       if (docSnap.exists()) {
+        const updateShip = { id: docSnap.id, ...docSnap.data() };
         setLiveShip({ id: docSnap.id, ...docSnap.data() });
+        updateShipIsToggled(user, updateShip, setData);
       }
     });
 
@@ -463,105 +480,6 @@ export default function BattleGround(props) {
     return null;
   };
 
-  if (isNavingModal) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: Colors.dark_gray,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text
-          style={[
-            styles.text,
-            { fontFamily: "LeagueSpartan-Bold", fontSize: 25, margin: 10 },
-          ]}
-        >
-          End of Battle Report
-        </Text>
-        <Text style={styles.text}>
-          {gameMapAttackingShip?.type} - {gameMapAttackingShip?.shipId}
-        </Text>
-        <View
-          style={[
-            styles.hitOrMissText,
-            {
-              backgroundColor:
-                hit === false
-                  ? Colors.deep_red
-                  : hit === true
-                  ? Colors.darker_green_toggle
-                  : Colors.hudDarker,
-              borderRadius: 5,
-              padding: 5,
-              width: "70%",
-              borderWidth: 1,
-              flexDirection: "row",
-              margin: 10,
-              borderColor:
-                hit === false
-                  ? Colors.lighter_red
-                  : hit === true
-                  ? Colors.green_toggle
-                  : Colors.hud,
-            },
-          ]}
-        >
-          {ship !== null ? (
-            <Text
-              style={[
-                styles.hitOrMissText,
-                {
-                  color:
-                    hit === true ? Colors.green_toggle : Colors.lighter_red,
-                },
-              ]}
-            >
-              Result: {hit === true ? "Hit" : "Miss"}
-            </Text>
-          ) : null}
-        </View>
-        <View
-          style={{ justifyContent: "center", alignItems: "center", margin: 10 }}
-        >
-          <Image
-            source={localImage}
-            style={{ width: 170, height: 170, resizeMode: "contain" }}
-          />
-        </View>
-        {hit === true && (
-          <View style={styles.hitOrMissTextContainer}>
-            <Text style={styles.damageDone}>
-              {weaponId} hit for: {damageDone} hp
-            </Text>
-          </View>
-        )}
-        <TouchableOpacity
-          onPress={async () => [
-            await setDiceValueToShare(0),
-            await setHit(false),
-            navigation.navigate("GameMap", {
-              name: fromGameMap ? "GameMap" : "Stats",
-              params: { shipId: gameMapAttackingShip?.id || null },
-            }),
-          ]}
-          style={styles.button}
-        >
-          <Text
-            style={[
-              styles.text,
-              { color: Colors.hudDarker, fontFamily: "LeagueSpartan-Bold" },
-            ]}
-          >
-            End Battle
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.mainContainer}>
       <HeaderComponent
@@ -674,6 +592,9 @@ export default function BattleGround(props) {
               gap: 10,
             }}
           >
+            <View style={styles.specialWeaponsContainer}>
+              <Text style={styles.specialWeapons}>Main Weapons</Text>
+            </View>
             {selectedShipDice.map((dice, index) => {
               const isIonParticleBeam = dice.id === "Ion Particle Beam";
 
@@ -681,19 +602,18 @@ export default function BattleGround(props) {
                 liveShip.specialOrders?.["Power Up Main Guns"] === true &&
                 liveShip.miss === false;
               liveShip.type === "Destroyer";
+
+              const specialWeaponHasBeenAttempted = Object.values(
+                liveShip.specialWeaponStatusAttempted || {}
+              ).some((fired) => fired === true);
+
               const ipbHasBeenFired =
                 liveShip.weaponStatus?.["Ion Particle Beam"] === true;
+
               const anyWeaponFired = Object.values(
                 liveShip.weaponStatus || {}
               ).some((fired) => fired === true);
-              {
-                {
-                  /* console.log(
-                  "Ship in BattleGround:",
-                  JSON.stringify(anyWeaponFired, null, 2)
-                ); */
-                }
-              }
+
               return (
                 <BattleDice
                   key={index}
@@ -706,14 +626,14 @@ export default function BattleGround(props) {
                   textStyle={dice.textStyle}
                   disableDiceModifiers={!destroyerPowerUpMainGuns}
                   borderColor={dice.borderColor}
-                  onTriggerNavigationModal={showNavingModal}
-                  //for d20 dice
                   disabledButtonOnHit={
                     (dice.id === "D20" && liveShip.hasRolledDToHit) ||
                     liveShip.miss
                   }
                   //for weapon ONLY dice
-                  disabledButton={anyWeaponFired}
+                  disabledButton={
+                    anyWeaponFired || specialWeaponHasBeenAttempted
+                  }
                   onPress={() => {
                     if (!(isIonParticleBeam && ipbHasBeenFired)) {
                       setWeaponHasAttacked(dice.id);
@@ -735,37 +655,27 @@ export default function BattleGround(props) {
             </View>
 
             <View style={{ justifyContent: "center", alignItems: "center" }}>
-              {gameMapAttackingShip.type === "Dreadnought" &&
-              gameMapAttackingShip?.specialWeaponStatus?.[
-                "Ion Particle Beam"
-              ] === false ? (
-                <View>
-                  {Object.keys(
-                    gameMapAttackingShip.specialWeaponStatus || {}
-                  ).map((weaponName, index) => (
-                    <ChargingButton key={index} specialWeapon={weaponName} />
-                  ))}
-                </View>
-              ) : (
-                <View
-                  style={{
-                    borderColor: Colors.lightened_deep_red,
-                    borderWidth: 1,
-                    borderRadius: 3,
-                    backgroundColor: Colors.deep_red,
-                    padding: 5,
-                    margin: 5,
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.ionBeamText,
-                      { color: Colors.lightened_deep_red },
-                    ]}
-                  >
-                    Ion Particle Beam Recharging
-                  </Text>
-                </View>
+              {liveShip.type === "Dreadnought" && (
+                <Animated.View>
+                  {Object.keys(liveShip.specialWeaponStatus || {}).map(
+                    (weaponName, index) => {
+                      const hasFired =
+                        liveShip.specialWeaponStatus[weaponName] === true;
+                      const canFire = liveShip.hit === true;
+                      return (
+                        <ChargingButton
+                          key={index}
+                          ship={liveShip}
+                          disabled={!canFire || hasFired}
+                          specialWeapon={weaponName}
+                          specialWeaponFunction={() =>
+                            startChargingIonBeam(weaponName)
+                          }
+                        />
+                      );
+                    }
+                  )}
+                </Animated.View>
               )}
             </View>
           </View>
@@ -1184,23 +1094,23 @@ const styles = StyleSheet.create({
     borderColor: Colors.lightened_gold,
   },
   ionBeamText: {
-    color: Colors.lightened_gold,
-    fontFamily: "LeagueSpartan-ExtraBold",
-    textAlign: "center",
-    fontSize: 12,
-  },
-  specialWeapons: {
     color: Colors.hud,
     fontFamily: "LeagueSpartan-ExtraBold",
     textAlign: "center",
-    fontSize: 15,
+    fontSize: 13,
+    padding: 2,
+  },
+  specialWeapons: {
+    color: Colors.white,
+    fontFamily: "LeagueSpartan-ExtraBold",
+    textAlign: "center",
+    fontSize: 17,
+    marginBottom: 5,
   },
   specialWeaponsContainer: {
     width: "90%",
-    borderRadius: 3,
-    backgroundColor: Colors.hudDarker,
-    borderWidth: 1,
-    borderColor: Colors.hud,
+    borderBottomWidth: 2,
+    borderBottomColor: Colors.hud,
     margin: 5,
   },
 });

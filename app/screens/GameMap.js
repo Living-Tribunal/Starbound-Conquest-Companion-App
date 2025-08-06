@@ -14,6 +14,7 @@ import {
   SafeAreaView,
   Text,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { getAllShipsInGameRoom } from "@/components/API/APIGameRoom";
 import { useStarBoundContext } from "@/components/Global/StarBoundProvider";
@@ -781,6 +782,15 @@ export default function FleetMap() {
         <TileBackground panX={panX} panY={panY} />
 
         {filteredShips.map((ship) => {
+          if (loading) {
+            return (
+              <ActivityIndicator
+                key={ship.id}
+                size="large"
+                color={Colors.gold}
+              />
+            );
+          }
           const localImage =
             ship?.factionName && ship?.type
               ? FactionImages[ship.factionName]?.[ship.type]?.classImage

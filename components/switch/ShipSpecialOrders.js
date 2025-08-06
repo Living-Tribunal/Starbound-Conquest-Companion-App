@@ -611,9 +611,8 @@ export default async function SpecialOrderBonuses({
           await updateDoc(shipRef, {
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
-            "weaponStatus.Ion Particle Beams": false,
+            "specialWeaponStatus.Ion Particle Beam": false,
             "shipActions.specialOrder": false,
-
             hit: false,
           });
 
@@ -643,7 +642,8 @@ export default async function SpecialOrderBonuses({
 
           Toast.show({
             type: "success",
-            text1: "Ion Particle Beam Recharges!",
+            text1: "Starbound Conquest",
+            text2: "Ion Particle Beam Recharged!",
             position: "top",
           });
         } else {
@@ -684,7 +684,8 @@ export default async function SpecialOrderBonuses({
           await updateShipIsToggled(user, updatedShip, setData);
           Toast.show({
             type: "error",
-            text1: "Unable to charge Ion Beam.",
+            text1: "Starbound Conquest",
+            text2: "Unable to charge Ion Beam.",
             position: "top",
           });
         }

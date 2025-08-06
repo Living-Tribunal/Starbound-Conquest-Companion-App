@@ -162,14 +162,6 @@ export default function Player() {
     myShips.every((ship) => ship.isToggled || ship.isPendingDestruction);
   //console.log("myToggledOrDestroyingShips:", myToggledOrDestroyingShips);
 
-  useEffect(() => {
-    if (myToggledOrDestroyingShips) {
-      //console.log("My toggled or destroying ships");
-    } else {
-      console.log("Not my toggled or destroying ships");
-    }
-  }, [myToggledOrDestroyingShips]);
-
   const shipInSector = useMemo(() => {
     return gameSectors === "Show All Ships..."
       ? myShips
@@ -284,6 +276,7 @@ export default function Player() {
           color: getRandomColorForCarrier(),
           specialOrdersAttempted: {},
           isPendingDestruction: false,
+          specialWeaponStatusAttempted: {},
         };
         // Add to Firestore
         const docRef = await addDoc(
@@ -623,6 +616,15 @@ export default function Player() {
         let newSpecialOrders = {};
         let newShipActions = {};
         let newShipWeaponStatus = {};
+        let newSpecialWeaponAttemptedStatus = {};
+
+        if (myShipData.weaponStatusAttempted) {
+          Object.keys(myShipData.specialWeaponStatusAttempted).forEach(
+            (weapon) => {
+              specialWeaponStatusAttempted[weapon] = false;
+            }
+          );
+        }
 
         if (myShipData.weaponStatus) {
           Object.keys(myShipData.weaponStatus).forEach((weapon) => {
@@ -659,6 +661,7 @@ export default function Player() {
               inFighterRangeBonus: 0,
               moveDistanceBonus: 0,
             },
+            specialWeaponStatusAttempted: newSpecialWeaponAttemptedStatus,
           })
         );
       }
@@ -697,6 +700,16 @@ export default function Player() {
           let newShipActions = {};
           let newShipWeaponStatus = {};
 
+          let newSpecialWeaponAttemptedStatus = {};
+
+          if (shipData.weaponStatusAttempted) {
+            Object.keys(shipData.specialWeaponStatusAttempted).forEach(
+              (weapon) => {
+                newSpecialWeaponAttemptedStatus[weapon] = false;
+              }
+            );
+          }
+
           if (shipData.weaponStatus) {
             Object.keys(shipData.weaponStatus).forEach((weapon) => {
               newShipWeaponStatus[weapon] = false;
@@ -732,6 +745,7 @@ export default function Player() {
                 inFighterRangeBonus: 0,
                 moveDistanceBonus: 0,
               },
+              specialWeaponStatusAttempted: newSpecialWeaponAttemptedStatus,
             })
           );
         }

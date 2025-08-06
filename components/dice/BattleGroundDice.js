@@ -24,7 +24,6 @@ export default function BattleDice({
   disabledButton: disabledProp = null,
   disabledButtonOnHit: disabledOnHitProp = null,
   disableDiceModifiers,
-  onTriggerNavigationModal,
 }) {
   const [firstDice, setFirstDice] = useState(0);
   const [diceFaceModifier, setDiceFaceModifier] = useState(0);
@@ -133,11 +132,11 @@ export default function BattleDice({
         setDisabledButtonOnHit(true);
         setDisabledButton(true);
         //navigate to game map
-        if (onTriggerNavigationModal) {
+        /* if (onTriggerNavigationModal) {
           setTimeout(() => {
             onTriggerNavigationModal();
           }, 1000);
-        }
+        } */
       }
     } else {
       console.log(`🎲 Dice ${id} rolled ${newRolledValue} (no hit check)`);
@@ -168,11 +167,11 @@ export default function BattleDice({
       setDisabledButton(true);
       setDisabledButtonOnHit(true);
       //navigate to game map
-      if (onTriggerNavigationModal) {
+      /* if (onTriggerNavigationModal) {
         setTimeout(() => {
           onTriggerNavigationModal();
         }, 1000);
-      }
+      } */
     } else {
       //outside else to handle ion particle beam
       setDamageDone(newWeaponRolledValue);
@@ -182,11 +181,11 @@ export default function BattleDice({
       setDisabledButton(true);
       setDisabledButtonOnHit(true);
       //navigate to game map
-      if (onTriggerNavigationModal) {
+      /* if (onTriggerNavigationModal) {
         setTimeout(() => {
           onTriggerNavigationModal();
         }, 1000);
-      }
+      } */
     }
   };
 
