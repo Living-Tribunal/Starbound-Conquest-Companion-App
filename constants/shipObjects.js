@@ -194,7 +194,8 @@ export const shipObject = {
       damageThreshold: 4,
       threatLevel: 8,
       moveDistance: 30,
-      weaponType: ["Ion Particle Beam", "Plasma Cannon", "350mm Railgun"],
+      weaponType: ["Plasma Cannon", "350mm Railgun"],
+      specialWeaponType: ["Ion Particle Beam"],
       firingArc:
         "Forward(90°) \nPortside(90°)/Starboard(90°) \nForward(90°)/Aft(90°)",
       weaponDamage: "1d12\n1d10\n1d8",
@@ -425,7 +426,8 @@ export const shipObject = {
       damageThreshold: 4,
       threatLevel: 8,
       moveDistance: 30,
-      weaponType: ["Ion Particle Beam", "Plasma Cannon", "350mm Railgun"],
+      weaponType: ["Plasma Cannon", "350mm Railgun"],
+      specialWeaponType: ["Ion Particle Beam"],
       firingArc:
         "Forward(90°) \nPortside(90°)/Starboard(90°) \nForward(90°)/Aft(90°)",
       weaponDamage: "1d12\n1d10\n1d8",
@@ -648,7 +650,8 @@ export const shipObject = {
       damageThreshold: 4,
       threatLevel: 8,
       moveDistance: 30,
-      weaponType: ["Ion Particle Beam", "Plasma Cannon", "350mm Railgun"],
+      weaponType: ["Plasma Cannon", "350mm Railgun"],
+      specialWeaponType: ["Ion Particle Beam"],
       firingArc:
         "Forward(90°) \nPortside(90°)/Starboard(90°) \nForward(90°)/Aft(90°)",
       weaponDamage: "1d12\n1d10\n1d8",
@@ -874,7 +877,8 @@ export const shipObject = {
       damageThreshold: 4,
       threatLevel: 8,
       moveDistance: 30,
-      weaponType: ["Ion Particle Beam", "Plasma Cannon", "350mm Railgun"],
+      weaponType: ["Plasma Cannon", "350mm Railgun"],
+      specialWeaponType: ["Ion Particle Beam"],
       firingArc:
         "Forward(90°) \nPortside(90°)/Starboard(90°) \nForward(90°)/Aft(90°)",
       weaponDamage: "1d12\n1d10\n1d8",
@@ -1100,7 +1104,8 @@ export const shipObject = {
       damageThreshold: 4,
       threatLevel: 8,
       moveDistance: 30,
-      weaponType: ["Ion Particle Beam", "Plasma Cannon", "350mm Railgun"],
+      weaponType: ["Plasma Cannon", "350mm Railgun"],
+      specialWeaponType: ["Ion Particle Beam"],
       firingArc:
         "Forward(90°) \nPortside(90°)/Starboard(90°) \nForward(90°)/Aft(90°)",
       weaponDamage: "1d12\n1d10\n1d8",
@@ -1326,7 +1331,8 @@ export const shipObject = {
       damageThreshold: 4,
       threatLevel: 8,
       moveDistance: 30,
-      weaponType: ["Ion Particle Beam", "Plasma Cannon", "350mm Railgun"],
+      weaponType: ["Plasma Cannon", "350mm Railgun"],
+      specialWeaponType: ["Ion Particle Beam"],
       firingArc:
         "Forward(90°) \nPortside(90°)/Starboard(90°) \nForward(90°)/Aft(90°)",
       weaponDamage: "1d12\n1d10\n1d8",
@@ -1548,7 +1554,8 @@ export const shipObject = {
       damageThreshold: 4,
       threatLevel: 8,
       moveDistance: 30,
-      weaponType: ["Ion Particle Beam", "Plasma Cannon", "350mm Railgun"],
+      weaponType: ["Plasma Cannon", "350mm Railgun"],
+      specialWeaponType: ["Ion Particle Beam"],
       firingArc:
         "Forward(90°) \nPortside(90°)/Starboard(90°) \nForward(90°)/Aft(90°)",
       weaponDamage: "1d12\n1d10\n1d8",

@@ -80,10 +80,6 @@ export default function ShipInfo({
         )}
         <Text style={styles.shipInfo}>Weapons:</Text>
         {selectedShip?.weaponType?.map((weapon, index) => {
-          const ionCannon = weapon === "Ion Particle Beam";
-          const ionCannonIconStatus =
-            weapon === "Ion Particle Beam" &&
-            selectedShip.weaponStatus?.["Ion Particle Beam"] === false;
           return (
             <TouchableOpacity
               key={index}
@@ -91,7 +87,7 @@ export default function ShipInfo({
                 setIsShowWeaponInfo(!isShowWeaponInfo), setIsWeapon(weapon);
               }}
             >
-              <View style={ionCannon ? styles.ionCannon : styles.shipInfo2}>
+              <View style={styles.shipInfo2}>
                 <Text
                   style={[
                     styles.shipInfo,
@@ -109,32 +105,68 @@ export default function ShipInfo({
                 >
                   {weapon}
                 </Text>
-                {ionCannon && (
-                  <Image
-                    source={{
-                      uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fsinusoidal-beam.png?alt=media&token=96d76ac5-5426-4bbb-835c-f541f7ba3023",
-                    }}
-                    style={{
-                      width: 10,
-                      height: 10,
-                      zIndex: 1000,
-                      tintColor: ionCannonIconStatus
-                        ? Colors.green_toggle
-                        : Colors.blue_gray,
-                      borderWidth: 1,
-                      borderColor: ionCannonIconStatus
-                        ? Colors.green_toggle
-                        : Colors.blue_gray,
-                      borderRadius: 5,
-                      padding: 10,
-                      backgroundColor: ionCannonIconStatus
-                        ? Colors.darker_green_toggle
-                        : Colors.hudDarker,
-                    }}
-                  />
-                )}
               </View>
             </TouchableOpacity>
+          );
+        })}
+        <Text style={styles.shipInfo}>Special Weapons:</Text>
+        {selectedShip.specialWeaponType?.map((specialWeapon, index) => {
+          const ionCannon = specialWeapon === "Ion Particle Beam";
+          const ionCannonIconStatus =
+            specialWeapon === "Ion Particle Beam" &&
+            selectedShip.specialWeaponStatus?.["Ion Particle Beam"] === false;
+          return (
+            <View style={{ flexDirection: "row", gap: 5 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setIsShowWeaponInfo(!isShowWeaponInfo),
+                    setIsWeapon(specialWeapon);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.shipInfo,
+                    {
+                      borderRadius: 5,
+                      padding: 2,
+                      margin: 2,
+                      fontFamily: "LeagueSpartan-Bold",
+                      fontSize: 9,
+                      textAlign: "center",
+                      color: Colors.dark_gray,
+                      backgroundColor:
+                        WeaponColors[specialWeapon] || Colors.hud,
+                    },
+                  ]}
+                >
+                  {specialWeapon}
+                </Text>
+              </TouchableOpacity>
+              {ionCannon && (
+                <Image
+                  source={{
+                    uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fsinusoidal-beam.png?alt=media&token=96d76ac5-5426-4bbb-835c-f541f7ba3023",
+                  }}
+                  style={{
+                    width: 10,
+                    height: 10,
+                    zIndex: 1000,
+                    tintColor: ionCannonIconStatus
+                      ? Colors.green_toggle
+                      : Colors.blue_gray,
+                    borderWidth: 1,
+                    borderColor: ionCannonIconStatus
+                      ? Colors.green_toggle
+                      : Colors.blue_gray,
+                    borderRadius: 5,
+                    padding: 10,
+                    backgroundColor: ionCannonIconStatus
+                      ? Colors.darker_green_toggle
+                      : Colors.hudDarker,
+                  }}
+                />
+              )}
+            </View>
           );
         })}
         <Text style={styles.shipInfo}>Orders:</Text>
@@ -210,14 +242,6 @@ export default function ShipInfo({
                 borderColor: Colors.hud,
               }}
             >
-              <Image
-                style={{
-                  width: 315,
-                  height: 161,
-                  resizeMode: "contain",
-                }}
-                source={require("../../assets/images/SC_logo1.png")}
-              />
               <Text
                 style={{
                   fontSize: 16,

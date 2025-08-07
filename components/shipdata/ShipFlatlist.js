@@ -102,7 +102,7 @@ export default function ShipFlatList({
     const localImage = FactionImages[item.factionName]?.[item.type]?.classImage;
     const isIonCannonActive =
       item.type === "Dreadnought" &&
-      item.weaponStatus?.["Ion Particle Beam"] === false;
+      item.specialWeaponStatus?.["Ion Particle Beam"] === false;
 
     /*     useEffect(() => {
       if (item.hp === 0) {
