@@ -1436,7 +1436,7 @@ export default function Player() {
                         Delete a ship
                       </Text>
                     </TouchableOpacity>
-                    {!shouldEndRound && !myToggledOrDestroyingShips && (
+                    {!shouldEndRound && (
                       <TouchableOpacity
                         style={[
                           styles.editContainer,

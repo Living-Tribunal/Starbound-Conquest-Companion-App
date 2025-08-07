@@ -116,7 +116,7 @@ export default function ShipInfo({
             specialWeapon === "Ion Particle Beam" &&
             selectedShip.specialWeaponStatus?.["Ion Particle Beam"] === false;
           return (
-            <View style={{ flexDirection: "row", gap: 5 }}>
+            <View key={index} style={{ flexDirection: "row", gap: 5 }}>
               <TouchableOpacity
                 onPress={() => {
                   setIsShowWeaponInfo(!isShowWeaponInfo),

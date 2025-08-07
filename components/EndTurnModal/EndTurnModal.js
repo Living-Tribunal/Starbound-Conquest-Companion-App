@@ -77,7 +77,7 @@ export default function EndTurnModal({
               padding: 10,
             }}
           >
-            Number of undeployed ships: {myToggledShipsCount}
+            Number of deployed ships: {myToggledShipsCount}
           </Text>
           <Text
             style={{

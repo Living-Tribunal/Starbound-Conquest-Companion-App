@@ -105,7 +105,7 @@ export default function ShipFlatList({
       item.specialWeaponStatus?.["Ion Particle Beam"] === false;
 
     /*     useEffect(() => {
-      if (item.hp === 0) {
+      if (item.hp === 0) {f
         deleteShip(item);
       }
     }, [item.hp]); */
