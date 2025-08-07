@@ -6,17 +6,27 @@ import {
   TouchableOpacity,
   Image,
   Modal,
+  FlatList,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 
-export default function EndRoundModal({
+export default function EndTurnModal({
   showEndTurnModal,
   setShowEndTurnModal,
   endYourTurnAndSendMessage,
   myToggledOrDestroyingShips,
   myToggledShipsCount,
   myUntoggledShipsCount,
+  myShipsBySectorNotToggled,
 }) {
+  //flatten the data so the flatlist can render it
+  const sectorData = Object.entries(myShipsBySectorNotToggled).map(
+    ([sector, ships]) => ({
+      sector,
+      ships,
+    })
+  );
+
   return (
     <Modal
       visible={showEndTurnModal}
@@ -67,7 +77,7 @@ export default function EndRoundModal({
               padding: 10,
             }}
           >
-            Number of ships left to deploy: {myToggledShipsCount}
+            Number of undeployed ships: {myToggledShipsCount}
           </Text>
           <Text
             style={{
@@ -78,8 +88,51 @@ export default function EndRoundModal({
               padding: 10,
             }}
           >
-            Number of ships: {myUntoggledShipsCount}
+            Number of ships left to deploy: {myUntoggledShipsCount}
           </Text>
+          <FlatList
+            style={{ maxHeight: 200, width: "100%" }}
+            data={sectorData}
+            keyExtractor={(item) => item.sector}
+            renderItem={({ item }) => (
+              <View
+                style={{
+                  marginBottom: 10,
+                  backgroundColor: Colors.hudDarker,
+                  padding: 5,
+                  borderRadius: 5,
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: "LeagueSpartan-Bold",
+                    fontSize: 15,
+                    color: Colors.dark_gray,
+                    textAlign: "center",
+                    borderBottomWidth: 2,
+                    borderBottomColor: Colors.dark_gray,
+                  }}
+                >
+                  Sector {item.sector}: {item.ships.length} ship(s)
+                </Text>
+                <View
+                  style={{ flexDirection: "row", gap: 10, flexWrap: "wrap" }}
+                >
+                  {item.ships.map((ship) => (
+                    <Text
+                      key={ship.id}
+                      style={{
+                        fontFamily: "LeagueSpartan-Regular",
+                        color: Colors.hud,
+                      }}
+                    >
+                      • {ship.shipId}
+                    </Text>
+                  ))}
+                </View>
+              </View>
+            )}
+          />
           <View style={{ flexDirection: "row", gap: 10 }}>
             <TouchableOpacity
               onPress={async () => {

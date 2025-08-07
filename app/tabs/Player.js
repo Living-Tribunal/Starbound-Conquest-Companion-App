@@ -94,6 +94,8 @@ export default function Player() {
     setGetAllUsersShipToggled,
   } = useStarBoundContext();
 
+  console.log("Game Sectors in Player:", gameSectors);
+
   const hasShownEndRoundModal = useRef(false);
 
   const currentTurnUid = Object.keys(isUsersTurn).find(
@@ -116,7 +118,6 @@ export default function Player() {
         )
       );
     }
-    /* console.log("false"); */
     return false;
   });
 
@@ -127,11 +128,6 @@ export default function Player() {
         (ship) => ship.user === player.uid
       );
       if (otherPlayerShips.length === 0) return false;
-      /* console.log(
-        "Other Player and their Ships:",
-        otherPlayerShips.length,
-        player
-      ); */
       return (
         otherPlayerShips.length === 0 ||
         otherPlayerShips.every(
@@ -140,36 +136,50 @@ export default function Player() {
       );
     });
 
+  //if everyone can end the round, then can end the round
   const canEndRoundForEveryone = canEndRoundForAllPlayers && currentUserShips;
-  console.log(
-    "canEndRoundForEveryone:",
-    canEndRoundForEveryone,
-    currentUserShips
-  );
 
-  /*   //checks if there are any ships in the fleet from anyone
-  const allToggledOrHpZero =
-    getAllUsersShipToggled.length > 0 &&
-    getAllUsersShipToggled.every(
-      (ship) => ship.isToggled || ship.isPendingDestruction
-    );
- */
   //filtering out the ships from the current user
   const myShips = useMemo(() => {
     return getAllUsersShipToggled.filter((ship) => ship.user === user.uid);
   }, [getAllUsersShipToggled, user?.uid]);
 
+  //get the number of ships that are toggled or pending destruction
   const myToggledOrDestroyingShips =
     myShips.length > 0 &&
     myShips.every((ship) => ship.isToggled || ship.isPendingDestruction);
 
+  //get the number of ships that ARE toggled
   const myToggledShipsCount = myShips.filter((ship) => ship.isToggled).length;
 
+  //get all ships by sector for user
+  /*   const myShipsBySector = myShips.reduce((acc, ship) => {
+    const sector = ship.gameSector || "Unassigned";
+    if (!acc[sector]) acc[sector] = [];
+    acc[sector].push(ship);
+    return acc;
+  }, {}); */
+
+  //get ships not toggled count using length
   const myUntoggledShipsCount = myShips.filter(
     (ship) => !ship.isToggled && !ship.isPendingDestruction
   ).length;
 
+  //get the actual ships that are untoggled
+  const myUntoggledShips = myShips.filter(
+    (ship) => !ship.isToggled && !ship.isPendingDestruction
+  );
+
+  //reduce the untoggled ships to a dictionary of sectors and ships
+  const myUntoggledShipsBySector = myUntoggledShips.reduce((acc, ship) => {
+    const sector = ship.gameSector || "Unassigned";
+    if (!acc[sector]) acc[sector] = [];
+    acc[sector].push(ship);
+    return acc;
+  }, {});
+
   const shipInSector = useMemo(() => {
+    if (!myShips || !Array.isArray(myShips)) return [];
     return gameSectors === "Show All Ships..."
       ? myShips
       : myShips.filter((ship) => ship.gameSector === gameSectors);
@@ -1668,6 +1678,7 @@ export default function Player() {
         myToggledOrDestroyingShips={myToggledOrDestroyingShips}
         myToggledShipsCount={myToggledShipsCount}
         myUntoggledShipsCount={myUntoggledShipsCount}
+        myShipsBySectorNotToggled={myUntoggledShipsBySector}
       />
     </SafeAreaView>
   );
