@@ -654,7 +654,12 @@ export default function BattleGround(props) {
               <Text style={styles.specialWeapons}>Special Weapons</Text>
             </View>
 
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               {liveShip.type === "Dreadnought" && (
                 <Animated.View>
                   {Object.keys(liveShip.specialWeaponStatus || {}).map(

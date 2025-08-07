@@ -204,9 +204,19 @@ export default function ShipInfo({
                 padding: 20,
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: Colors.hudDarker,
+                backgroundColor: Colors.dark_gray,
+                borderWidth: 1,
+                borderColor: Colors.hud,
               }}
             >
+              <Image
+                style={{
+                  width: 315,
+                  height: 161,
+                  resizeMode: "contain",
+                }}
+                source={require("../../assets/images/SC_logo1.png")}
+              />
               <Text
                 style={{
                   fontSize: 16,
@@ -235,6 +245,7 @@ export default function ShipInfo({
                     backgroundColor: Colors.hud,
                     padding: 5,
                     borderRadius: 5,
+                    fontFamily: "LeagueSpartan-Bold",
                   }}
                 >
                   Close

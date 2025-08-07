@@ -10,33 +10,53 @@ import {
 import { Colors } from "@/constants/Colors";
 
 export default function EndRoundModal({
-  showEndRoundModal,
-  setShowEndRoundModal,
-  handleEndRoundPress,
+  showEndTurnModal,
+  setShowEndTurnModal,
+  endYourTurnAndSendMessage,
+  myToggledOrDestroyingShips,
+  myToggledShipsCount,
+  myUntoggledShipsCount,
 }) {
   return (
     <Modal
-      visible={showEndRoundModal}
+      visible={showEndTurnModal}
       transparent
       animationType="fade"
-      onRequestClose={() => setShowEndRoundModal(false)}
+      onRequestClose={() => setShowEndTurnModal(false)}
     >
-      <View style={styles.loadingContainer}>
+      <View
+        style={{
+          backgroundColor: "rgba(0,0,0,0.5)",
+          justifyContent: "flex-end",
+          alignContent: "center",
+          flex: 1,
+        }}
+      >
         <View
           style={{
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: Colors.dark_gray,
             width: "100%",
-            height: "100%",
+            paddingVertical: 30,
+            paddingHorizontal: 20,
+            backgroundColor: Colors.dark_gray,
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            alignItems: "center",
+            borderWidth: 1,
+            borderColor: Colors.hud,
           }}
         >
           <Image
-            style={{ width: 315, height: 161 }}
+            style={{
+              width: 315,
+              height: 161,
+              resizeMode: "contain",
+            }}
             source={require("../../assets/images/SC_logo1.png")}
           />
-          <Text style={[styles.text1, { fontSize: 20 }]}>
-            The round has ended.
+          <Text style={[styles.text1, { fontSize: 15 }]}>
+            {myToggledOrDestroyingShips
+              ? "Ready to end your turn?"
+              : "You CAN end your turn, but you have ships left to deploy."}
           </Text>
           <Text
             style={{
@@ -47,13 +67,24 @@ export default function EndRoundModal({
               padding: 10,
             }}
           >
-            Would you like to end the round?
+            Number of ships left to deploy: {myToggledShipsCount}
+          </Text>
+          <Text
+            style={{
+              fontSize: 15,
+              fontFamily: "LeagueSpartan-Regular",
+              color: Colors.hud,
+              textAlign: "center",
+              padding: 10,
+            }}
+          >
+            Number of ships: {myUntoggledShipsCount}
           </Text>
           <View style={{ flexDirection: "row", gap: 10 }}>
             <TouchableOpacity
-              onPress={() => {
-                handleEndRoundPress();
-                setShowEndRoundModal(false);
+              onPress={async () => {
+                await endYourTurnAndSendMessage();
+                setShowEndTurnModal(false);
               }}
               style={[
                 styles.editContainer,
@@ -76,11 +107,11 @@ export default function EndRoundModal({
                   },
                 ]}
               >
-                End Round
+                End Turn
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => setShowEndRoundModal(false)}
+              onPress={() => setShowEndTurnModal(false)}
               style={[
                 styles.editContainer,
                 {
@@ -114,7 +145,7 @@ export default function EndRoundModal({
 const styles = StyleSheet.create({
   text1: {
     color: Colors.hud,
-    fontFamily: "LeagueSpartan-Light",
+    fontFamily: "LeagueSpartan-Bold",
     fontSize: 12,
     padding: 5,
     textAlign: "center",
@@ -131,7 +162,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderRadius: 10,
     justifyContent: "center",
-    shadowColor: Colors.hud,
   },
   textValue: {
     fontSize: 15,

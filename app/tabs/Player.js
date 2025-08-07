@@ -33,6 +33,7 @@ import { useNavigation } from "@react-navigation/native";
 import DropdownComponentSectors from "../../components/dropdown/DropdownComponentSectors";
 import { ActivityIndicator } from "react-native";
 import EndRoundModal from "../../components/EndRoundModal/EndRoundModal";
+import EndTurnModal from "../../components/EndTurnModal/EndTurnModal";
 import {
   collection,
   query,
@@ -69,6 +70,7 @@ export default function Player() {
   const [playersInGameRoom, setPlayersInGameRoom] = useState([]);
   const [shouldEndRound, setShouldEndRound] = useState(false);
   const [isLoadingActivePlayers, setIsLoadingActivePlayers] = useState(false);
+  const [showEndTurnModal, setShowEndTurnModal] = useState(false);
   const {
     isUsersTurn,
     setIsUsersTurn,
@@ -107,11 +109,6 @@ export default function Player() {
         (ship) => ship.user === user.uid
       );
       if (currentUserShips.length === 0) return false;
-      /* console.log(
-        "Current User and Their Ships:",
-        currentUserShips.length,
-        player
-      ); */
       return (
         currentUserShips.length === 0 ||
         currentUserShips.every(
@@ -144,6 +141,11 @@ export default function Player() {
     });
 
   const canEndRoundForEveryone = canEndRoundForAllPlayers && currentUserShips;
+  console.log(
+    "canEndRoundForEveryone:",
+    canEndRoundForEveryone,
+    currentUserShips
+  );
 
   /*   //checks if there are any ships in the fleet from anyone
   const allToggledOrHpZero =
@@ -160,7 +162,12 @@ export default function Player() {
   const myToggledOrDestroyingShips =
     myShips.length > 0 &&
     myShips.every((ship) => ship.isToggled || ship.isPendingDestruction);
-  //console.log("myToggledOrDestroyingShips:", myToggledOrDestroyingShips);
+
+  const myToggledShipsCount = myShips.filter((ship) => ship.isToggled).length;
+
+  const myUntoggledShipsCount = myShips.filter(
+    (ship) => !ship.isToggled && !ship.isPendingDestruction
+  ).length;
 
   const shipInSector = useMemo(() => {
     return gameSectors === "Show All Ships..."
@@ -402,8 +409,17 @@ export default function Player() {
     request.send(JSON.stringify(params));
   }
 
+  async function endTurnWarning() {
+    Toast.show({
+      type: "info",
+      text1: "Starbound Conquest",
+      text2: "If you want to end your turn early, long press the button.",
+      position: "top",
+    });
+  }
+
   async function endYourTurnAndSendMessage() {
-    if (!myToggledOrDestroyingShips) {
+    /*  if (!myToggledOrDestroyingShips) {
       Toast.show({
         type: "error",
         text1: "Starbound Conquest",
@@ -411,7 +427,7 @@ export default function Player() {
         position: "top",
       });
       return;
-    }
+    } */
 
     try {
       // 1. Get players
@@ -437,7 +453,28 @@ export default function Player() {
         updateDoc(nextRef, { isUserTurn: true }),
       ]);
 
-      // 3. THEN send Discord message
+      //3. Update ship isToggled for non-toggled ships
+      const shipsRef = collection(FIREBASE_DB, "users", user.uid, "ships");
+      const shipsSnap = await getDocs(shipsRef);
+      const batch = writeBatch(FIREBASE_DB);
+
+      shipsSnap.forEach((docSnap) => {
+        const shipData = docSnap.data();
+        if (!shipData.isToggled && !shipData.isPendingDestruction) {
+          batch.update(docSnap.ref, {
+            isToggled: true,
+            shipActions: {
+              move: shipData.shipActions?.move || false,
+              attack: shipData.shipActions?.attack || false,
+              specialOrder: shipData.shipActions?.specialOrder || false,
+            },
+          });
+        }
+      });
+
+      await batch.commit();
+
+      // 4. THEN send Discord message
       const discordMessage = {
         username: "Starbound Conquest",
         avatar_url: "",
@@ -1307,7 +1344,7 @@ export default function Player() {
                         styles.editContainer,
                         {
                           borderWidth: 1,
-                          width: "45%",
+                          width: "30%",
                           shadowColor:
                             !isPlayerTurn || !canEndRoundForEveryone
                               ? Colors.lighter_red
@@ -1353,7 +1390,7 @@ export default function Player() {
                         styles.editContainer,
                         {
                           borderWidth: 1,
-                          width: "45%",
+                          width: "30%",
                           borderColor:
                             toggleToDelete ||
                             shouldEndRound ||
@@ -1389,48 +1426,27 @@ export default function Player() {
                         Delete a ship
                       </Text>
                     </TouchableOpacity>
-                  </View>
-                  {myToggledOrDestroyingShips && !shouldEndRound && (
-                    <View
-                      style={{
-                        alignItems: "center",
-                        justifyContent: "center",
-                        width: "100%",
-                      }}
-                    >
+                    {!shouldEndRound && !myToggledOrDestroyingShips && (
                       <TouchableOpacity
                         style={[
                           styles.editContainer,
                           {
                             backgroundColor:
-                              !isPlayerTurn ||
-                              hasNoShips ||
-                              shouldEndRound ||
-                              !myToggledOrDestroyingShips
+                              !isPlayerTurn || hasNoShips || shouldEndRound
                                 ? Colors.hudDarker
                                 : Colors.hud,
-                            width: "50%",
+                            width: "35%",
                           },
                         ]}
-                        disabled={
-                          !isPlayerTurn ||
-                          hasNoShips ||
-                          shouldEndRound ||
-                          !myToggledOrDestroyingShips
-                        }
-                        onPress={async () => {
-                          await endYourTurnAndSendMessage();
-                        }}
+                        disabled={!isPlayerTurn || hasNoShips || shouldEndRound}
+                        onPress={async () => setShowEndTurnModal(true)}
                       >
                         <Text
                           style={[
                             styles.textValue,
                             {
                               color:
-                                !isPlayerTurn ||
-                                hasNoShips ||
-                                shouldEndRound ||
-                                !myToggledOrDestroyingShips
+                                !isPlayerTurn || hasNoShips || shouldEndRound
                                   ? Colors.hud
                                   : Colors.hudDarker,
                               fontFamily: "LeagueSpartan-Bold",
@@ -1442,8 +1458,8 @@ export default function Player() {
                           End Turn
                         </Text>
                       </TouchableOpacity>
-                    </View>
-                  )}
+                    )}
+                  </View>
 
                   <View
                     style={{
@@ -1644,6 +1660,14 @@ export default function Player() {
         showEndRoundModal={showEndRoundModal}
         setShowEndRoundModal={setShowEndRoundModal}
         handleEndRoundPress={handleEndRoundPress}
+      />
+      <EndTurnModal
+        showEndTurnModal={showEndTurnModal}
+        setShowEndTurnModal={setShowEndTurnModal}
+        endYourTurnAndSendMessage={endYourTurnAndSendMessage}
+        myToggledOrDestroyingShips={myToggledOrDestroyingShips}
+        myToggledShipsCount={myToggledShipsCount}
+        myUntoggledShipsCount={myUntoggledShipsCount}
       />
     </SafeAreaView>
   );

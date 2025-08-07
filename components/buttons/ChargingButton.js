@@ -75,7 +75,6 @@ export default function ChargingButton({
   return (
     <View
       style={{
-        width: "100%",
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "row",
