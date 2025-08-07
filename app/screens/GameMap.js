@@ -106,11 +106,6 @@ export default function FleetMap() {
     return actionsTaken;
   };
 
-  const checkIfShipIsInRangeShowIndicator = (ship) =>
-    ship.type !== "Carrier" && ship.isInFighterRange && ship.user === user.uid
-      ? Colors.green_toggle
-      : Colors.blue_gray;
-
   const fightersRangeStatus = (ship) => {
     if (
       ship.specialOrders?.["Launch Fighters"] === true &&
@@ -142,14 +137,6 @@ export default function FleetMap() {
     }
     return Colors.dark_gray; // for enemy or unknown
   };
-
-  /*   useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: shipPressed ? 1 : 0, // fade in if ship selected, fade out if not
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [shipPressed]); */
 
   useEffect(() => {
     let raf;
@@ -358,61 +345,6 @@ export default function FleetMap() {
     );
   }, [selectedShip]);
 
-  /*   useEffect(() => {
-    if (!shipHasMovedButNotConfirmed) {
-      console.log("Ship has not moved but not confirmed");
-      console.log(shipHasMovedButNotConfirmed);
-    } else {
-      console.log("Ship has moved but not confirmed");
-      console.log(shipHasMovedButNotConfirmed);
-    }
-  }, [shipHasMovedButNotConfirmed]); */
-
-  useEffect(() => {
-    if (!shipHasMovedButNotConfirmed) {
-      console.log("Ship has not moved but not confirmed");
-    } else {
-      console.log("Ship has moved but not confirmed");
-    }
-  }, [shipHasMovedButNotConfirmed]);
-  /*   const updateShipMoveAction = async (selectedShip) => {
-    if (!selectedShip || !user) return;
-    try {
-      const shipRef = doc(
-        FIREBASE_DB,
-        "users",
-        user.uid,
-        "ships",
-        selectedShip.id
-      );
-      await updateDoc(shipRef, {
-        "shipActions.move": true,
-      });
-      setData((prevData) =>
-        prevData.map((s) =>
-          s.id === selectedShip.id
-            ? {
-                ...s,
-                shipActions: {
-                  ...(s.shipActions || {}),
-                  move: true,
-                },
-              }
-            : s
-        )
-      );
-      await updateShipIsToggled(user, selectedShip, setData);
-      Toast.show({
-        type: "success",
-        text1: "Starbound Conquest",
-        text2: "Movement Confirmed.",
-        position: "top",
-      });
-    } catch (e) {
-      console.error("Error updating document: ", e);
-    }
-  }; */
-
   const updateFighterProtection = async (
     ships,
     user,
@@ -541,7 +473,7 @@ export default function FleetMap() {
     }
   };
 
-  useFocusEffect(
+  /*   useFocusEffect(
     useCallback(() => {
       setShipsEnteringBattle([]);
       setShipPressed(null);
@@ -568,11 +500,6 @@ export default function FleetMap() {
             ...doc.data(),
           }));
 
-          /* console.log(
-            "✅ User ships loaded:",
-            userShips.length,
-            "in sector" + gameSectors
-          ); */
           setData(userShips);
         } catch (e) {
           console.error("❌ Failed to fetch user ships:", e);
@@ -582,24 +509,69 @@ export default function FleetMap() {
       fetchUserShips();
       setLoading(false);
     }, [user?.uid, gameRoom, gameSectors])
-  );
+  ); */
 
   useFocusEffect(
     useCallback(() => {
-      setLoading(true);
-      if (!gameRoom || !gameSectors) return;
+      let isMounted = true;
 
-      const unsubscribe = getAllShipsInGameRoom({
-        setData,
-        setLoading,
-        gameSectors,
-        gameRoom,
-      });
-      setLoading(false);
-      return () => {
-        if (unsubscribe) unsubscribe();
+      const loadFleetData = async () => {
+        setLoading(true);
+
+        // Reset local battle/selection UI state
+        setShipsEnteringBattle([]);
+        setShipPressed(null);
+        setTargetedShip(null);
+        setPendingBattle(null);
+        setShowConfirmModal(false);
+        setShips([]); // Clear animated ship instances
+        setData([]); // Clear context data
+
+        // Validate inputs
+        if (!user?.uid || !gameRoom || !gameSectors) {
+          setLoading(false);
+          return;
+        }
+
+        try {
+          // Step 1: Fetch user's own ships
+          const userQuery = query(
+            collection(FIREBASE_DB, "users", user.uid, "ships"),
+            where("gameRoom", "==", gameRoom),
+            where("gameSector", "==", gameSectors)
+          );
+          const userSnapshot = await getDocs(userQuery);
+          const userShips = userSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+          // Optional: store separately if needed later
+          const userShipIds = userShips.map((s) => s.id);
+
+          // Step 2: Set user's ships into context
+          if (isMounted) setData(userShips);
+
+          // Step 3: Fetch all ships in this room/sector (includes user's and opponents')
+          await getAllShipsInGameRoom({
+            setData,
+            setLoading,
+            gameSectors,
+            gameRoom,
+          });
+        } catch (e) {
+          console.error("❌ Error loading fleet data:", e);
+        } finally {
+          if (isMounted) setLoading(false);
+        }
       };
-    }, [gameRoom, gameSectors])
+
+      loadFleetData();
+
+      return () => {
+        isMounted = false;
+      };
+    }, [user?.uid, gameRoom, gameSectors])
   );
 
   useEffect(() => {
