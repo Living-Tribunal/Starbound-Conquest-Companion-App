@@ -145,6 +145,7 @@ export default function ShipInfo({
 
             const isAttempted =
               selectedShip.specialOrdersAttempted?.[orderName] === true;
+
             const isSuccessful =
               selectedShip.specialOrders?.[orderName] === true;
 

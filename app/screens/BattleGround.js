@@ -182,7 +182,7 @@ export default function BattleGround(props) {
           )
         );
       }
-      setIsDisableBackButton(true);
+      setIsDisableBackButton(false);
     } catch (e) {
       console.error("❌ Error updating ship after D20 roll:", e);
     }

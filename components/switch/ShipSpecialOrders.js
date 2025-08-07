@@ -612,6 +612,7 @@ export default async function SpecialOrderBonuses({
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
             "specialWeaponStatus.Ion Particle Beam": false,
+            "specialWeaponStatusAttempted.Ion Particle Beam": false,
             "shipActions.specialOrder": false,
             hit: false,
           });
@@ -627,6 +628,8 @@ export default async function SpecialOrderBonuses({
                       ...(s.specialOrders || {}),
                       [orderName]: true,
                     },
+                    "specialWeaponStatusAttempted.Ion Particle Beam": false,
+                    "specialWeaponStatus.Ion Particle Beam": false,
                     specialOrdersAttempted: {
                       ...(s.specialOrdersAttempted || {}),
                       [orderName]: true,
@@ -650,6 +653,7 @@ export default async function SpecialOrderBonuses({
           await updateDoc(shipRef, {
             [`specialOrders.${orderName}`]: false,
             [`specialOrdersAttempted.${orderName}`]: true,
+            "specialWeaponStatusAttempted.Ion Particle Beam": true,
             "shipActions.specialOrder": true,
           });
 
@@ -662,6 +666,7 @@ export default async function SpecialOrderBonuses({
                       ...(s.specialOrders || {}),
                       [orderName]: false,
                     },
+                    "specialWeaponStatus.Ion Particle Beam": false,
                     specialOrdersAttempted: {
                       ...(s.specialOrdersAttempted || {}),
                       [orderName]: true,

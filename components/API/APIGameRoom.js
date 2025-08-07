@@ -1,7 +1,7 @@
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "@/FirebaseConfig";
 
-export const getAllShipsInGameRoom = ({
+export const getAllShipsInGameRoom = async ({
   gameRoom,
   gameSectors,
   setData,
