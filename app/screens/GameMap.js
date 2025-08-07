@@ -714,7 +714,7 @@ export default function FleetMap() {
         />
       )}
 
-      {selectedShip && !targetedShip && (
+      {selectedShip && !targetedShip && selectedShip.user === user.uid && (
         <ShipInfo
           selectedShip={selectedShip}
           shipPressed={shipPressed}
@@ -837,6 +837,9 @@ export default function FleetMap() {
                 if (attackingShip?.hasRolledDToHit === true) return;
                 targetingShip(ship);
                 //attackingShip(ship);
+              } else {
+                // fallback for selecting enemy ship (to show pulse or highlight)
+                setShipPressed(ship.id);
               }
             },
 
@@ -959,51 +962,55 @@ export default function FleetMap() {
 
           return (
             <React.Fragment key={`${ship.id}-${ship.type}`}>
-              {shipPressed === ship.id && movementDistanceCircle && (
-                <View
-                  pointerEvents="none"
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    top:
-                      movementDistanceCircle.y -
-                      (ship.specialOrders?.["Broadside"]
-                        ? ship.bonuses.broadSideBonus
-                        : ship.moveDistance + ship.bonuses.moveDistanceBonus) /
-                        4,
+              {shipPressed === ship.id &&
+                movementDistanceCircle &&
+                ship.user === user.uid && (
+                  <View
+                    pointerEvents="none"
+                    style={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                      top:
+                        movementDistanceCircle.y -
+                        (ship.specialOrders?.["Broadside"]
+                          ? ship.bonuses.broadSideBonus
+                          : ship.moveDistance +
+                            ship.bonuses.moveDistanceBonus) /
+                          4,
 
-                    left:
-                      movementDistanceCircle.x -
-                      (ship.specialOrders?.["Broadside"]
-                        ? ship.bonuses.broadSideBonus
-                        : ship.moveDistance + ship.bonuses.moveDistanceBonus) /
-                        16,
+                      left:
+                        movementDistanceCircle.x -
+                        (ship.specialOrders?.["Broadside"]
+                          ? ship.bonuses.broadSideBonus
+                          : ship.moveDistance +
+                            ship.bonuses.moveDistanceBonus) /
+                          16,
 
-                    width:
-                      (ship.specialOrders?.["Broadside"]
-                        ? ship.bonuses.broadSideBonus
-                        : ship.moveDistance + ship.bonuses.moveDistanceBonus) *
-                      12,
+                      width:
+                        (ship.specialOrders?.["Broadside"]
+                          ? ship.bonuses.broadSideBonus
+                          : ship.moveDistance +
+                            ship.bonuses.moveDistanceBonus) * 12,
 
-                    height:
-                      (ship.specialOrders?.["Broadside"]
-                        ? ship.bonuses.broadSideBonus
-                        : ship.moveDistance + ship.bonuses.moveDistanceBonus) *
-                      12,
+                      height:
+                        (ship.specialOrders?.["Broadside"]
+                          ? ship.bonuses.broadSideBonus
+                          : ship.moveDistance +
+                            ship.bonuses.moveDistanceBonus) * 12,
 
-                    borderRadius:
-                      (ship.specialOrders?.["Broadside"]
-                        ? ship.bonuses.broadSideBonus
-                        : ship.moveDistance + ship.bonuses.moveDistanceBonus) *
-                      6,
+                      borderRadius:
+                        (ship.specialOrders?.["Broadside"]
+                          ? ship.bonuses.broadSideBonus
+                          : ship.moveDistance +
+                            ship.bonuses.moveDistanceBonus) * 6,
 
-                    borderWidth: 2,
-                    borderColor: circleBorderColor,
-                    backgroundColor: circleBackgroundColor,
-                    zIndex: 0,
-                  }}
-                />
-              )}
+                      borderWidth: 2,
+                      borderColor: circleBorderColor,
+                      backgroundColor: circleBackgroundColor,
+                      zIndex: 0,
+                    }}
+                  />
+                )}
               <Animated.View
                 key={ship.id}
                 {...panResponder.panHandlers}
@@ -1038,8 +1045,65 @@ export default function FleetMap() {
                       />
                     </>
                   )}
+                {/* preventing user ship info from rotating */}
+                {ship.user === user.uid && (
+                  <Image
+                    source={
+                      factionIcons[ship.type.toLowerCase()] ||
+                      require("../../assets/icons/icons8-chevron-50.png")
+                    }
+                    style={{
+                      width: 12,
+                      height: 25,
+                      position: "absolute",
+                      top: 0,
+                      marginTop: 5,
+                      left: 80,
+                      tintColor: Colors.green_toggle,
+                    }}
+                    resizeMode="contain"
+                  />
+                )}
+                {ship.user === user.uid && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      position: "absolute",
+                      bottom: 0,
+                      left: ship.width / 2, // center under ship
+                    }}
+                  >
+                    {/* indicator to show if ship has used its two moves */}
+                    {[...Array(3)].map((_, i) => (
+                      <View
+                        key={i}
+                        style={{
+                          width: 10,
+                          height: 10,
+                          marginHorizontal: 1,
+                          backgroundColor: shipHasUsedItsTwoMoves(ship, i),
+                          borderRadius: 1,
+                        }}
+                      />
+                    ))}
+                  </View>
+                )}
+                {ship.isPendingDestruction === true ? (
+                  <Text
+                    style={{
+                      color: Colors.lighter_red,
+                      fontSize: 8,
+                      textAlign: "center",
+                      backgroundColor: Colors.deep_red,
+                      borderRadius: 5,
+                      borderWidth: 1,
+                      borderColor: Colors.lighter_red,
+                    }}
+                  >
+                    Critical
+                  </Text>
+                ) : null}
                 {/* Rotating Ship Image */}
-
                 <Animated.View
                   style={{
                     transform: [
@@ -1053,40 +1117,6 @@ export default function FleetMap() {
                   }}
                 >
                   <Image
-                    source={
-                      factionIcons[ship.type.toLowerCase()] ||
-                      require("../../assets/icons/icons8-chevron-50.png")
-                    }
-                    style={{
-                      width: 12,
-                      height: 25,
-                      position: "absolute",
-                      top: 0,
-                      marginTop: 5,
-                      left: 80,
-                      tintColor: ship.isToggled
-                        ? Colors.gold
-                        : ship.factionColor,
-                    }}
-                    resizeMode="contain"
-                  />
-
-                  {ship.isPendingDestruction === true ? (
-                    <Text
-                      style={{
-                        color: Colors.lighter_red,
-                        fontSize: 8,
-                        textAlign: "center",
-                        backgroundColor: Colors.deep_red,
-                        borderRadius: 5,
-                        borderWidth: 1,
-                        borderColor: Colors.lighter_red,
-                      }}
-                    >
-                      Critical
-                    </Text>
-                  ) : null}
-                  <Image
                     source={localImage}
                     style={{
                       borderRadius: 20,
@@ -1095,40 +1125,19 @@ export default function FleetMap() {
                     }}
                     resizeMode="center"
                   />
-                  {ship.user === user.uid && (
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        position: "absolute",
-                        bottom: 0,
-                        left: ship.width / 2, // center under ship
-                      }}
-                    >
-                      {/* indicator to show if ship has used its two moves */}
-                      {[...Array(3)].map((_, i) => (
-                        <View
-                          key={i}
-                          style={{
-                            width: 10,
-                            height: 10,
-                            marginHorizontal: 1,
-                            backgroundColor: shipHasUsedItsTwoMoves(ship, i),
-                            borderRadius: 1,
-                          }}
-                        />
-                      ))}
-                    </View>
-                  )}
+
                   <View
                     style={{
                       left: ship.width / 4,
                     }}
                   >
-                    {shipPressed && isUserShip && ship.id === shipPressed && (
+                    {shipPressed && ship.id === shipPressed && (
                       <>
                         <ShipSwitch
                           ship={ship}
                           showFiringArcs={showFiringArcs}
+                          currentUserId={user.uid}
+                          isUsersTurn={isUsersTurn}
                         />
                       </>
                     )}

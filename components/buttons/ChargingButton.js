@@ -43,6 +43,12 @@ export default function ChargingButton({
         const result = rollDice(8, 2);
         setIsValue(result);
         setDamageDone(result);
+        setIsCharging(false);
+        Animated.timing(fillAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: false,
+        }).start();
       }
       Toast.show({
         type: "success",
@@ -91,19 +97,29 @@ export default function ChargingButton({
             borderColor: disabled
               ? Colors.hud
               : isCharging
-              ? Colors.green_toggle
-              : Colors.hud,
+              ? Colors.darker_green_toggle
+              : Colors.hudDarker,
             borderWidth: 1,
             opacity: disabled ? 0.25 : 1,
             backgroundColor: disabled
-              ? Colors.hud
+              ? Colors.hudDarker
               : isCharging
-              ? Colors.green_toggle
+              ? Colors.hudDarker
               : Colors.hudDarker,
           },
         ]}
       >
-        <Animated.View style={[styles.fill, { width: fillWidth }]} />
+        <Animated.View
+          style={[
+            styles.fill,
+            {
+              width: fillWidth,
+              backgroundColor: disabled
+                ? Colors.hudDarker
+                : Colors.darker_green_toggle,
+            },
+          ]}
+        />
         <Text
           style={[
             styles.text,
@@ -111,7 +127,7 @@ export default function ChargingButton({
               color: disabled
                 ? Colors.hud
                 : isCharging
-                ? Colors.darker_green_toggle
+                ? Colors.green_toggle
                 : Colors.hud,
             },
           ]}
@@ -128,7 +144,7 @@ export default function ChargingButton({
               color: disabled
                 ? Colors.hud
                 : isCharging
-                ? Colors.darker_green_toggle
+                ? Colors.green_toggle
                 : Colors.hud,
               fontFamily: "LeagueSpartan-Light",
             },
@@ -175,7 +191,6 @@ const styles = StyleSheet.create({
   },
   fill: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.hudDarker,
     zIndex: -1,
     width: 260,
     height: 60,

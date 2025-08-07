@@ -71,6 +71,7 @@ export default function Player() {
   const [shouldEndRound, setShouldEndRound] = useState(false);
   const [isLoadingActivePlayers, setIsLoadingActivePlayers] = useState(false);
   const [showEndTurnModal, setShowEndTurnModal] = useState(false);
+  const [isShowRules, setIsShowRules] = useState(false);
   const {
     isUsersTurn,
     setIsUsersTurn,
@@ -1028,14 +1029,21 @@ export default function Player() {
         ListHeaderComponent={
           <>
             <View style={styles.container}>
-              <Text style={styles.subHeaderText}>
-                Welcome to Starbound Conquest! Prepare to command your fleet and
-                conquer the stars. Below, you'll find a quick snapshot of your
-                fleet's status. Use the buttons to navigate to screens where you
-                can manage your ships' stats, toggle their turns, and issue
-                orders. Also tap on the settings to change your Faction,
-                Username and Profile Picture.
-              </Text>
+              <TouchableOpacity onPress={() => setIsShowRules((prev) => !prev)}>
+                {isShowRules ? (
+                  <Text style={styles.subHeaderText}>
+                    Welcome to Starbound Conquest! Prepare to command your fleet
+                    and conquer the stars. Below, you'll find a quick snapshot
+                    of your fleet's status. Use the buttons to navigate to
+                    screens where you can manage your ships' stats, toggle their
+                    turns, and issue orders. Also tap on the settings to change
+                    your Faction, Username and Profile Picture.
+                  </Text>
+                ) : (
+                  <Text style={styles.subHeaderText}>Game Info</Text>
+                )}
+              </TouchableOpacity>
+
               {toggleToDelete && (
                 <View>
                   <Text
@@ -1401,6 +1409,12 @@ export default function Player() {
                         {
                           borderWidth: 1,
                           width: "30%",
+                          opacity:
+                            toggleToDelete ||
+                            shouldEndRound ||
+                            myToggledOrDestroyingShips
+                              ? 0.5
+                              : 1,
                           borderColor:
                             toggleToDelete ||
                             shouldEndRound ||
@@ -1441,6 +1455,10 @@ export default function Player() {
                         style={[
                           styles.editContainer,
                           {
+                            opacity:
+                              !isPlayerTurn || hasNoShips || shouldEndRound
+                                ? 0.5
+                                : 1,
                             backgroundColor:
                               !isPlayerTurn || hasNoShips || shouldEndRound
                                 ? Colors.hudDarker

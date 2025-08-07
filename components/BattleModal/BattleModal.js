@@ -9,7 +9,6 @@ export default function BattleModal({
   navigateToBattleGround,
   setShipPressed,
   setTargetedShip,
-  
 }) {
   const [confirming, setConfirming] = useState(false);
 
@@ -22,7 +21,20 @@ export default function BattleModal({
     >
       <View style={styles.modalBackground}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Confirm Battle</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 10,
+              borderBottomWidth: 2,
+              borderBottomColor: Colors.hud,
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text style={styles.modalTitle}>Confirm Battle</Text>
+          </View>
+
           <Text style={styles.modalText}>
             Attacker: {pendingBattle?.attackingShip.displayName}
           </Text>
@@ -98,7 +110,9 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Colors.gold,
+    fontFamily: "LeagueSpartan-Bold",
+    color: Colors.hud,
+    borderRadius: 10,
   },
   zoomButton: {
     backgroundColor: Colors.hud,
@@ -112,15 +126,15 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: Colors.hudDarker,
-    fontFamily: "LeagueSpartan-ExtraBold",
+    fontFamily: "LeagueSpartan-Bold",
     textAlign: "center",
     fontSize: 12,
   },
   modalText: {
-    color: Colors.hud,
+    color: Colors.white,
     fontFamily: "LeagueSpartan-ExtraBold",
     textAlign: "center",
-    fontSize: 18,
+    fontSize: 14,
   },
   modalTextInfo: {
     color: Colors.hud,
