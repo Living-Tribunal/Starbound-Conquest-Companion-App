@@ -496,7 +496,7 @@ export default function ShipStats({ route }) {
               </View>
             </View>
           )}
-          <View style={{ width: ship.capacity > 0 ? "25%" : "45%" }}>
+          <View style={{ width: ship.maxCapacity > 0 ? "25%" : "45%" }}>
             <View style={[styles.statButton]}>
               <View style={{ width: "100%" }}>
                 <Text style={styles.statButtonText}>Point Value</Text>

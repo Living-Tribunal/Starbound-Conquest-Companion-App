@@ -109,10 +109,10 @@ export default function FleetMap() {
   const fightersRangeStatus = (ship) => {
     if (
       ship.specialOrders?.["Launch Fighters"] === true &&
-      ship.capacity / ship.maxCapacity > 0.5
+      ship.currentCapacity / ship.maxCapacity > 0.5
     ) {
       return Colors.green_toggle;
-    } else if (ship.capacity / ship.maxCapacity > 0.25) {
+    } else if (ship.currentCapacity / ship.maxCapacity > 0.25) {
       return Colors.lightened_gold;
     } else {
       return "transparent";
@@ -166,7 +166,7 @@ export default function FleetMap() {
         if (
           carrier.type === "Carrier" &&
           carrier.specialOrders?.["Launch Fighters"] === true &&
-          carrier.capacity > 0 &&
+          carrier.currentCapacity > 0 &&
           carrier.user === user.uid
         ) {
           const center = carrier.position.__getValue();
@@ -380,7 +380,7 @@ export default function FleetMap() {
       if (
         carrier.type === "Carrier" &&
         carrier.specialOrders?.["Launch Fighters"] === true &&
-        carrier.capacity > 0 &&
+        carrier.currentCapacity > 0 &&
         user.uid === carrier.user
       ) {
         const center = carrier.position.__getValue();
@@ -414,7 +414,7 @@ export default function FleetMap() {
 
           if (carrier.numberOfShipsProtecting > 0) {
             s.bonuses.inFighterRangeBonus = Math.floor(
-              carrier.maxCapacity / carrier.numberOfShipsProtecting
+              carrier.currentCapacity / carrier.numberOfShipsProtecting
             );
           } else {
             s.bonuses.inFighterRangeBonus = 0;
