@@ -231,7 +231,89 @@ export default async function SpecialOrderBonuses({
       console.log("Combine Fire");
       break;
     case "Anti-Fighter Barrage":
-      console.log("Anti-Fighter Barrage");
+      try {
+        const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+        if (localDiceRoll >= 11 && ship.type === "Destroyer") {
+          await updateDoc(shipRef, {
+            [`specialOrders.${orderName}`]: true,
+            [`specialOrdersAttempted.${orderName}`]: true,
+            "shipActions.specialOrder": true,
+          });
+          setData((prevData) =>
+            prevData.map((s) =>
+              s.id === ship.id
+                ? {
+                    ...s,
+                    specialOrders: {
+                      ...(s.specialOrders || {}),
+                      [orderName]: true,
+                    },
+                    specialOrdersAttempted: {
+                      ...(s.specialOrdersAttempted || {}),
+                      [orderName]: true,
+                    },
+                    shipActions: {
+                      ...(s.shipActions || {}),
+                      specialOrder: true,
+                    },
+                  }
+                : s
+            )
+          );
+          Toast.show({
+            type: "success",
+            text1: "Starbound Conquest",
+            text2: "Anti-Fighter Barrage Engaged!",
+            position: "top",
+          });
+        } else {
+          await updateDoc(shipRef, {
+            [`specialOrders.${orderName}`]: true,
+            [`specialOrdersAttempted.${orderName}`]: true,
+            "shipActions.specialOrder": true,
+          });
+          setData((prevData) =>
+            prevData.map((s) =>
+              s.id === ship.id
+                ? {
+                    ...s,
+                    specialOrders: {
+                      ...(s.specialOrders || {}),
+                      [orderName]: true,
+                    },
+                    specialOrdersAttempted: {
+                      ...(s.specialOrdersAttempted || {}),
+                      [orderName]: true,
+                    },
+                    shipActions: {
+                      ...(s.shipActions || {}),
+                      specialOrder: true,
+                    },
+                  }
+                : s
+            )
+          );
+          const updatedShip = {
+            ...ship,
+            shipActions: {
+              ...(ship.shipActions || {}),
+              specialOrder: true,
+            },
+          };
+          await updateShipIsToggled(user, updatedShip, setData);
+          Toast.show({
+            type: "error",
+            text1: "Starbound Conquest",
+            text2: "Anti-Fighter Barrage Failed!",
+            position: "top",
+          });
+        }
+      } catch (error) {
+        console.error(
+          "Failed to update Anti-Fighter Barrage in Firestore:",
+          error
+        );
+      }
       break;
     case "Power Up Main Guns":
       try {
@@ -521,12 +603,13 @@ export default async function SpecialOrderBonuses({
     case "Launch Fighters":
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-        if (Number(localDiceRoll) >= 11 && ship.type === "Carrier") {
+        //change this value to 11 when you're ready to launch fighters
+        if (Number(localDiceRoll) >= 2 && ship.type === "Carrier") {
           await updateDoc(shipRef, {
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
-            maxCapacity: 20,
+            currentCapacity: 20,
           });
           // Update local data
           setData((prevData) =>
@@ -534,7 +617,7 @@ export default async function SpecialOrderBonuses({
               s.id === ship.id
                 ? {
                     ...s,
-                    maxCapacity: 20,
+                    currentCapacity: 20,
                     specialOrdersAttempted: {
                       ...(s.specialOrdersAttempted || {}),
                       [orderName]: true,
@@ -559,7 +642,7 @@ export default async function SpecialOrderBonuses({
           });
         } else {
           await updateDoc(shipRef, {
-            [`specialOrders.${orderName}`]: false,
+            [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
           });
@@ -570,7 +653,7 @@ export default async function SpecialOrderBonuses({
                     ...s,
                     specialOrders: {
                       ...(s.specialOrders || {}),
-                      [orderName]: false,
+                      [orderName]: true,
                     },
                     specialOrdersAttempted: {
                       ...(s.specialOrdersAttempted || {}),

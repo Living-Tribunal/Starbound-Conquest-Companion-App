@@ -475,7 +475,7 @@ export default function ShipStats({ route }) {
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          {ship.capacity > 0 && (
+          {ship.maxCapacity > 0 && (
             <View style={{ width: "25%" }}>
               <View style={[styles.statButton]}>
                 <View style={{ width: "100%" }}>
@@ -491,7 +491,7 @@ export default function ShipStats({ route }) {
                     fontSize: 10,
                   }}
                 >
-                  {ship.capacity}
+                  {ship.maxCapacity}
                 </Text>
               </View>
             </View>
@@ -515,7 +515,7 @@ export default function ShipStats({ route }) {
               </Text>
             </View>
           </View>
-          <View style={{ width: ship.capacity > 0 ? "25%" : "45%" }}>
+          <View style={{ width: ship.maxCapacity > 0 ? "25%" : "45%" }}>
             <View style={[styles.statButton]}>
               <Text style={styles.statButtonText}>Soak</Text>
             </View>

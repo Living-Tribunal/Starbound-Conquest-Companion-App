@@ -6,7 +6,6 @@ export const ShipAttributes = {
     toHit: 10,
     soak: 4,
     moveDistance: "60ft",
-    capacity: 0,
     specialOrders: [
       [SpecialOrders[1].name, SpecialOrders[1].text, SpecialOrders[1].icon],
       [SpecialOrders[4].name, SpecialOrders[4].text, SpecialOrders[4].icon],
@@ -23,7 +22,6 @@ export const ShipAttributes = {
     toHit: 8,
     soak: 6,
     moveDistance: "50ft",
-    capacity: 0,
     specialOrders: [
       [SpecialOrders[1].name, SpecialOrders[1].text, SpecialOrders[1].icon],
       [SpecialOrders[7].name, SpecialOrders[7].text, SpecialOrders[7].icon],
@@ -41,7 +39,7 @@ export const ShipAttributes = {
     toHit: 6,
     soak: 7,
     moveDistance: "40ft",
-    capacity: 20,
+    currentCapacity: 20,
     specialOrders: [
       [SpecialOrders[1].name, SpecialOrders[1].text, SpecialOrders[1].icon],
       [SpecialOrders[7].name, SpecialOrders[7].text, SpecialOrders[7].icon],
@@ -59,7 +57,7 @@ export const ShipAttributes = {
     toHit: 4,
     soak: 8,
     moveDistance: "30ft",
-    capacity: 20,
+    currentCapacity: 20,
     specialOrders: [
       [SpecialOrders[1].name, SpecialOrders[1].text, SpecialOrders[1].icon],
       [SpecialOrders[7].name, SpecialOrders[7].text, SpecialOrders[7].icon],

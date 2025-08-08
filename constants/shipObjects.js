@@ -175,7 +175,8 @@ export const shipObject = {
         inFighterRangeBonus: 0,
       },
       hasBeenInteractedWith: false,
-      capacity: 20,
+      currentCapacity: 0,
+      maxCapacity: 20,
       isPendingDestruction: false,
     },
     dreadnought: {
@@ -396,7 +397,8 @@ export const shipObject = {
         "All Systems Fire": false,
       },
       hasBeenInteractedWith: false,
-      capacity: 20,
+      currentCapacity: 0,
+      maxCapacity: 20,
       shipActions: {
         move: false,
         attack: false,
@@ -620,7 +622,8 @@ export const shipObject = {
       },
       weaponType: ["Missile Battery"],
       weaponStatus: { "Missile Battery": false },
-      capacity: 20,
+      currentCapacity: 0,
+      maxCapacity: 20,
       shipActions: {
         move: false,
         attack: false,
@@ -847,7 +850,8 @@ export const shipObject = {
         "All Systems Fire": false,
       },
       hasBeenInteractedWith: false,
-      capacity: 20,
+      currentCapacity: 0,
+      maxCapacity: 20,
       shipActions: {
         move: false,
         attack: false,
@@ -1074,7 +1078,8 @@ export const shipObject = {
         "All Systems Fire": false,
       },
       hasBeenInteractedWith: false,
-      capacity: 20,
+      currentCapacity: 0,
+      maxCapacity: 20,
       shipActions: {
         move: false,
         attack: false,
@@ -1301,7 +1306,8 @@ export const shipObject = {
         "All Systems Fire": false,
       },
       hasBeenInteractedWith: false,
-      capacity: 20,
+      currentCapacity: 0,
+      maxCapacity: 20,
       shipActions: {
         move: false,
         attack: false,
@@ -1528,7 +1534,8 @@ export const shipObject = {
         "All Systems Fire": false,
       },
       hasBeenInteractedWith: false,
-      capacity: 20,
+      currentCapacity: 0,
+      maxCapacity: 20,
       shipActions: {
         move: false,
         attack: false,

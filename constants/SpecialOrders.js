@@ -16,7 +16,7 @@ export const SpecialOrders = {
   },
   4: {
     name: "Anti-Fighter Barrage",
-    text: "For up to six Fighters within 60ft of your ship, you can roll 1d6. On a 6, that Fighter is destroyed.",
+    text: "If your destroyer is within the target carrier’s fighter protection zone, roll 1d20. On 11+, reduce that carrier’s capacity by a number determined by your damage roll.",
     icon: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fbubble-field.png?alt=media&token=a713b629-1354-48e0-81e2-85eef8c35d5d",
   },
   5: {
