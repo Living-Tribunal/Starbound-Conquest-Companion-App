@@ -233,7 +233,8 @@ export default async function SpecialOrderBonuses({
     case "Anti-Fighter Barrage":
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-        if (localDiceRoll >= 11 && ship.type === "Destroyer") {
+        //change this back to 11 when you're ready to test
+        if (localDiceRoll >= 2 && ship.type === "Destroyer") {
           await updateDoc(shipRef, {
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,

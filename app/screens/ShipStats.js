@@ -608,6 +608,15 @@ export default function ShipStats({ route }) {
               >
                 Special Orders
               </Text>
+              <Text
+                style={[
+                  styles.subHeaderText,
+                  { marginTop: 0, color: Colors.hud },
+                ]}
+              >
+                ⚠️ Tip: Special Orders work best before attacking or moving —
+                unused orders expire at round’s end.
+              </Text>
             </View>
             <>
               <View
@@ -636,7 +645,8 @@ export default function ShipStats({ route }) {
                       <View
                         key={index}
                         style={{
-                          marginBottom: 10,
+                          marginBottom: 5,
+                          padding: 5,
                         }}
                       >
                         <TouchableOpacity
@@ -963,8 +973,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     backgroundColor: Colors.underTextGray,
     borderRadius: 5,
-    padding: 5,
-    margin: 5,
   },
   showButton: { height: 150, justifyContent: "center", marginVertical: 30 },
   image1: {

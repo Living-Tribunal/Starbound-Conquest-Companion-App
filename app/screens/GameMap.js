@@ -593,6 +593,7 @@ export default function FleetMap() {
   };
 
   const attackingShip = (ship) => {
+    if (ship.isToggled) return;
     setShipPressed(ship.id);
     console.log("Attacking ship:", ship.shipId);
   };
@@ -600,9 +601,42 @@ export default function FleetMap() {
   useEffect(() => {
     if (shipPressed && targetedShip) {
       const attackerShip = ships.find((s) => s.id === shipPressed);
-      console.log("Attacker Ship in UseEffect:", attackerShip.id);
-      console.log("Targeted Ship in UseEffect:", targetedShip.id);
-      if (!attackerShip && attackingShip.id === targetedShip.id) return;
+      if (attackerShip.isToggled) return;
+      if (!attackerShip || attackerShip.id === targetedShip.id) return;
+
+      const isDestroyer = attackerShip.type === "Destroyer";
+      const hasAFB = attackerShip.specialOrders?.["Anti-Fighter Barrage"];
+      const isTargetCarrier = targetedShip.type === "Carrier";
+      const targetLaunchedFighters =
+        targetedShip.specialOrders?.["Launch Fighters"];
+
+      // 1. AFB can only be used against a Carrier
+      if (isDestroyer && hasAFB && !isTargetCarrier) {
+        Toast.show({
+          type: "error",
+          text1: "Starbound Conquest",
+          text2: "Anti-Fighter Barrage can only be used against a carrier.",
+          position: "top",
+        });
+        setPendingBattle(null);
+        setShowConfirmModal(false);
+        return;
+      }
+
+      // 2. Carrier must have launched fighters for AFB to apply
+      if (isDestroyer && hasAFB && isTargetCarrier && !targetLaunchedFighters) {
+        Toast.show({
+          type: "error",
+          text1: "Starbound Conquest",
+          text2: "The enemy carrier must have launched fighters first.",
+          position: "top",
+        });
+        setPendingBattle(null);
+        setShowConfirmModal(false);
+        return;
+      }
+
+      // 3. All good — allow the battle
       setPendingBattle({ attackingShip: attackerShip, targetedShip });
       setShowConfirmModal(true);
     }
@@ -772,6 +806,9 @@ export default function FleetMap() {
 
           const fightersLaunched =
             ship.specialOrders?.["Launch Fighters"] === true;
+
+          const antiFighterBarrage =
+            ship.specialOrders?.["Anti-Fighter Barrage"] === true;
 
           const panResponder = PanResponder.create({
             onStartShouldSetPanResponder: () => true,
@@ -1041,6 +1078,29 @@ export default function FleetMap() {
                           marginTop: -400, // half of height
                           marginLeft: -400, // half of width
                           zIndex: 5,
+                        }}
+                      />
+                    </>
+                  )}
+                {ship.type === "Destroyer" &&
+                  (showAllFiringArcs ||
+                    (ship.id === shipPressed && antiFighterBarrage)) && (
+                    <>
+                      <View
+                        pointerEvents="none"
+                        style={{
+                          position: "absolute",
+                          width: 400, // diameter
+                          height: 400,
+                          borderRadius: 10000,
+                          borderColor: Colors.green_toggle,
+                          backgroundColor: "#18751023",
+                          borderWidth: 2,
+                          top: "50%",
+                          left: "50%",
+                          marginTop: -200, // half of height
+                          marginLeft: -200, // half of width
+                          zIndex: -5,
                         }}
                       />
                     </>

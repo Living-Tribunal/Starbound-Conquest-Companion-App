@@ -16,7 +16,7 @@ export const SpecialOrders = {
   },
   4: {
     name: "Anti-Fighter Barrage",
-    text: "If your destroyer is within the target carrier’s fighter protection zone, roll 1d20. On 11+, reduce that carrier’s capacity by a number determined by your damage roll.",
+    text: "If your destroyer is within the target carrier’s fighter protection zone, and the carrier has launched fighters, roll 1d20. On 11+, reduce that carrier’s capacity by a number determined by your damage roll.",
     icon: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fbubble-field.png?alt=media&token=a713b629-1354-48e0-81e2-85eef8c35d5d",
   },
   5: {

@@ -108,7 +108,9 @@ export default function ShipInfo({
             </TouchableOpacity>
           );
         })}
-        <Text style={styles.shipInfo}>Special Weapons:</Text>
+        {selectedShip.type === "Dreadnought" && (
+          <Text style={styles.shipInfo}>Special Weapons:</Text>
+        )}
         {selectedShip.specialWeaponType?.map((specialWeapon, index) => {
           const ionCannon = specialWeapon === "Ion Particle Beam";
           const ionCannonIconStatus =
