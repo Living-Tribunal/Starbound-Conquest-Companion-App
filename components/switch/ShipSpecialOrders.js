@@ -268,7 +268,7 @@ export default async function SpecialOrderBonuses({
           });
         } else {
           await updateDoc(shipRef, {
-            [`specialOrders.${orderName}`]: true,
+            [`specialOrders.${orderName}`]: false,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
           });
@@ -279,7 +279,7 @@ export default async function SpecialOrderBonuses({
                     ...s,
                     specialOrders: {
                       ...(s.specialOrders || {}),
-                      [orderName]: true,
+                      [orderName]: false,
                     },
                     specialOrdersAttempted: {
                       ...(s.specialOrdersAttempted || {}),
@@ -642,7 +642,7 @@ export default async function SpecialOrderBonuses({
           });
         } else {
           await updateDoc(shipRef, {
-            [`specialOrders.${orderName}`]: true,
+            [`specialOrders.${orderName}`]: false,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
           });
@@ -653,7 +653,7 @@ export default async function SpecialOrderBonuses({
                     ...s,
                     specialOrders: {
                       ...(s.specialOrders || {}),
-                      [orderName]: true,
+                      [orderName]: false,
                     },
                     specialOrdersAttempted: {
                       ...(s.specialOrdersAttempted || {}),
