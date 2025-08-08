@@ -17,6 +17,8 @@ export default function ChargingButton({
   const timeoutRef = useRef(null);
   const [isCharging, setIsCharging] = useState(false);
   const [isValue, setIsValue] = useState(0);
+  const [animatedValue, setAnimatedValue] = useState(0);
+  const diceIntervalRef = useRef(null);
 
   const rollDice = (sides = 8, numberOfDice = 2) => {
     let total = 0;
@@ -31,31 +33,43 @@ export default function ChargingButton({
     Animated.timing(fillAnim, {
       toValue: 1,
       duration: fillDuration,
-      useNativeDriver: false, // layout property!
+      useNativeDriver: false,
     }).start();
-    let hasFired = false;
+
     setIsCharging(true);
+    let hasFired = false;
+
+    // Start fake dice rolling animation
+    diceIntervalRef.current = setInterval(() => {
+      const fakeRoll = Math.floor(Math.random() * 16) + 2; // 2d8 fake value
+      setAnimatedValue(fakeRoll);
+    }, 100);
 
     timeoutRef.current = setTimeout(() => {
       if (!hasFired && specialWeaponFunction) {
         hasFired = true;
+        const result = rollDice(8, 2); // actual result
         specialWeaponFunction();
-        const result = rollDice(8, 2);
-        setIsValue(result);
         setDamageDone(result);
+        setIsValue(result);
+        setAnimatedValue(result); // show final result
         setIsCharging(false);
+
+        // Stop animation and reset fill
+        clearInterval(diceIntervalRef.current);
         Animated.timing(fillAnim, {
           toValue: 0,
-          duration: 200,
+          duration: 400,
           useNativeDriver: false,
         }).start();
+
+        Toast.show({
+          type: "success",
+          text1: "Starbound Conquest",
+          text2: "Ion Particle Beam Fired!",
+          position: "top",
+        });
       }
-      Toast.show({
-        type: "success",
-        text1: "Starbound Conquest",
-        text2: "Ion Particle Beam Fired!",
-        position: "top",
-      });
     }, fillDuration);
   };
 
@@ -170,7 +184,7 @@ export default function ChargingButton({
             },
           ]}
         >
-          {isValue}
+          {isCharging ? animatedValue : isValue}
         </Text>
       </View>
     </View>

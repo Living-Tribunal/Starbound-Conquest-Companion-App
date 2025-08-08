@@ -53,8 +53,7 @@ export default function ShipInfo({
             },
           ]}
         >
-          HP:{" "}
-          {selectedShip.hp ?? 0 + selectedShip.bonuses.inFighterRangeBonus ?? 0}{" "}
+          HP: {selectedShip.hp + selectedShip.bonuses.inFighterRangeBonus || 0}{" "}
           / {selectedShip.maxHP ?? 0}
         </Text>
         <Text style={styles.shipInfo}>Type: {selectedShip.type}</Text>

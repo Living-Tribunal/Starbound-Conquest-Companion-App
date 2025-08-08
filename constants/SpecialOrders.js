@@ -41,7 +41,7 @@ export const SpecialOrders = {
   },
   9: {
     name: "Launch Fighters",
-    text: "Roll 1d20, deploy or collect up to the number of Fighters rolled. For each turn you take this maneuver in a row, you can add an additional +5 to the die result.",
+    text: "Roll 1d20. On a result of 11 or higher, up to four ships surrounding the carrier gain bonus hit points equal to the number of the carrier’s fighters divided evenly among them.",
     icon: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/maneuverIcons%2Fstrafe.png?alt=media&token=9a1bc896-f4c1-4a07-abc1-f71e6bbe9c5b",
   },
   10: {

@@ -95,8 +95,6 @@ export default function Player() {
     setGetAllUsersShipToggled,
   } = useStarBoundContext();
 
-  console.log("Game Sectors in Player:", gameSectors);
-
   const hasShownEndRoundModal = useRef(false);
 
   const currentTurnUid = Object.keys(isUsersTurn).find(

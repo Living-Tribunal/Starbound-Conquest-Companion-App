@@ -1046,49 +1046,52 @@ export default function FleetMap() {
                     </>
                   )}
                 {/* preventing user ship info from rotating */}
-                {ship.user === user.uid && (
-                  <Image
-                    source={
-                      factionIcons[ship.type.toLowerCase()] ||
-                      require("../../assets/icons/icons8-chevron-50.png")
-                    }
-                    style={{
-                      width: 12,
-                      height: 25,
-                      position: "absolute",
-                      top: 0,
-                      marginTop: 5,
-                      left: 80,
-                      tintColor: Colors.green_toggle,
-                    }}
-                    resizeMode="contain"
-                  />
-                )}
-                {ship.user === user.uid && (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      position: "absolute",
-                      bottom: 0,
-                      left: ship.width / 2, // center under ship
-                    }}
-                  >
-                    {/* indicator to show if ship has used its two moves */}
-                    {[...Array(3)].map((_, i) => (
-                      <View
-                        key={i}
+                {removeAllIcons && ship.user === user.uid && (
+                  <>
+                    {isPlayerTurn && (
+                      <Image
+                        source={
+                          factionIcons[ship.type.toLowerCase()] ||
+                          require("../../assets/icons/icons8-chevron-50.png")
+                        }
                         style={{
-                          width: 10,
-                          height: 10,
-                          marginHorizontal: 1,
-                          backgroundColor: shipHasUsedItsTwoMoves(ship, i),
-                          borderRadius: 1,
+                          width: 25,
+                          height: 25,
+                          position: "absolute",
+                          top: 0,
+                          marginTop: 5,
+                          left: 80,
+                          tintColor: Colors.green_toggle,
                         }}
+                        resizeMode="contain"
                       />
-                    ))}
-                  </View>
+                    )}
+
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        position: "absolute",
+                        bottom: 0,
+                        left: ship.width / 2,
+                      }}
+                    >
+                      {[...Array(3)].map((_, i) => (
+                        <View
+                          key={i}
+                          style={{
+                            width: 10,
+                            height: 10,
+                            marginHorizontal: 1,
+                            backgroundColor: shipHasUsedItsTwoMoves(ship, i),
+                            borderRadius: 1,
+                          }}
+                        />
+                      ))}
+                    </View>
+                  </>
                 )}
-                {ship.isPendingDestruction === true ? (
+
+                {removeAllIcons && ship.isPendingDestruction === true && (
                   <Text
                     style={{
                       color: Colors.lighter_red,
@@ -1102,7 +1105,22 @@ export default function FleetMap() {
                   >
                     Critical
                   </Text>
-                ) : null}
+                )}
+
+                {removeAllIcons && (
+                  <View
+                    style={{
+                      backgroundColor: ship.protectingCarriersColor,
+                      width: 10,
+                      height: 10,
+                      borderRadius: 1,
+                      position: "absolute",
+                      bottom: ship.height / 2,
+                      left: ship.width / 2,
+                    }}
+                  />
+                )}
+
                 {/* Rotating Ship Image */}
                 <Animated.View
                   style={{
