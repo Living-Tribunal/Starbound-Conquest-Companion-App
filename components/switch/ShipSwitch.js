@@ -30,11 +30,11 @@ export default function ShipSwitch({ ship, showFiringArcs, currentUserId }) {
   const shouldShowPulse = isOpponent || isMyShip;
   const shouldShowFiringArcs = isMyShip;
 
-  console.log("Should Show Pulse:", shouldShowPulse);
+  /*   console.log("Should Show Pulse:", shouldShowPulse);
   console.log("Should Show Firing Arcs:", shouldShowFiringArcs);
   console.log("Is My Ship:", isMyShip);
   console.log("Is Opponent:", isOpponent);
-  console.log("Current User ID:", currentUserId);
+  console.log("Current User ID:", currentUserId); */
 
   const shipSwitch = (ship) => {
     switch (ship.type) {
