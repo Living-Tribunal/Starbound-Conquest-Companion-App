@@ -807,8 +807,10 @@ export default function FleetMap() {
                       ? ship.bonuses.broadSideBonus
                       : ship.moveDistance + ship.bonuses.moveDistanceBonus,
                   });
-                  setCircleBorderColor("rgba(0,200,255,0.5)");
-                  setCircleBackgroundColor("rgba(0,200,255,0.1)");
+                  if (!ship.shipActions?.move) {
+                    setCircleBorderColor("rgba(0,200,255,0.5)");
+                    setCircleBackgroundColor("rgba(0,200,255,0.1)");
+                  }
 
                   if (
                     ship.type === "Carrier" &&
