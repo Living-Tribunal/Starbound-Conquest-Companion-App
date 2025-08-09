@@ -1081,7 +1081,9 @@ export default function FleetMap() {
               >
                 {ship.type === "Carrier" &&
                   (showAllFiringArcs ||
-                    (ship.id === shipPressed && fightersLaunched)) && (
+                    (ship.id === shipPressed &&
+                      fightersLaunched &&
+                      ship.user === user.uid)) && (
                     <>
                       <View
                         pointerEvents="none"
