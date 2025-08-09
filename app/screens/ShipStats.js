@@ -716,20 +716,50 @@ export default function ShipStats({ route }) {
                               gap: 10,
                             }}
                           >
-                            <Text
+                            <View
                               style={{
-                                textAlign: "center",
-                                color:
-                                  isAttempted || isUsed
-                                    ? Colors.hudDarker
-                                    : Colors.white,
-                                fontFamily: "monospace",
-                                fontSize: 12,
-                                marginBottom: 2,
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                alignItems: "center",
                               }}
                             >
-                              {orderName}
-                            </Text>
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  color:
+                                    isAttempted || isUsed
+                                      ? Colors.hudDarker
+                                      : Colors.white,
+                                  fontFamily: "monospace",
+                                  fontSize: 12,
+                                  marginBottom: 2,
+                                }}
+                              >
+                                {orderName}
+                              </Text>
+                              {orderName === "Anti-Fighter Barrage" && (
+                                <Text
+                                  numberOfLines={2}
+                                  style={[
+                                    styles.subHeaderText,
+                                    {
+                                      textAlign: "center",
+                                      backgroundColor: "transparent",
+                                      color:
+                                        isAttempted || isUsed
+                                          ? Colors.hudDarker
+                                          : Colors.white,
+                                      fontFamily: "monospace",
+                                      fontSize: 8,
+                                    },
+                                  ]}
+                                >
+                                  (This order is only available against a
+                                  carrier.)
+                                </Text>
+                              )}
+                            </View>
+
                             {orderIcon && (
                               <Image
                                 source={{ uri: orderIcon }}
