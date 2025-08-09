@@ -1350,7 +1350,7 @@ export default function Player() {
                       flexDirection: "row",
                       alignItems: "center",
                       justifyContent: "center",
-                      gap: 10,
+                      gap: 5,
                     }}
                   >
                     <TouchableOpacity
@@ -1408,21 +1408,15 @@ export default function Player() {
                           borderWidth: 1,
                           width: "30%",
                           opacity:
-                            toggleToDelete ||
-                            shouldEndRound ||
-                            myToggledOrDestroyingShips
+                            shouldEndRound || myToggledOrDestroyingShips
                               ? 0.5
                               : 1,
                           borderColor:
-                            toggleToDelete ||
-                            shouldEndRound ||
-                            myToggledOrDestroyingShips
+                            shouldEndRound || myToggledOrDestroyingShips
                               ? Colors.lighter_red
                               : Colors.green_toggle,
                           backgroundColor:
-                            toggleToDelete ||
-                            shouldEndRound ||
-                            myToggledOrDestroyingShips
+                            shouldEndRound || myToggledOrDestroyingShips
                               ? Colors.deep_red
                               : Colors.darker_green_toggle,
                         },
@@ -1436,9 +1430,7 @@ export default function Player() {
                           styles.textValue,
                           {
                             color:
-                              toggleToDelete ||
-                              shouldEndRound ||
-                              myToggledOrDestroyingShips
+                              shouldEndRound || myToggledOrDestroyingShips
                                 ? Colors.lighter_red
                                 : Colors.green_toggle,
                             fontSize: 12,
@@ -1475,9 +1467,7 @@ export default function Player() {
                                 !isPlayerTurn || hasNoShips || shouldEndRound
                                   ? Colors.hud
                                   : Colors.hudDarker,
-                              fontFamily: "LeagueSpartan-Bold",
-                              marginTop: 2,
-                              marginBottom: 2,
+                              fontSize: 12,
                             },
                           ]}
                         >

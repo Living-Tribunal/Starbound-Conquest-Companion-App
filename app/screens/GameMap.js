@@ -65,6 +65,7 @@ export default function FleetMap() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [shipsEnteringBattle, setShipsEnteringBattle] = useState([]);
   const [originalShipPosition, setOriginalShipPosition] = useState(null);
+  const [isScanBattleField, setIsScanBattleField] = useState(false);
   const isPlayerTurn = isUsersTurn?.[user?.uid] === true;
 
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
@@ -88,6 +89,8 @@ export default function FleetMap() {
   const filteredShips = ships.filter(
     (s) => s.gameRoom === gameRoom && s.gameSector === gameSectors
   );
+
+  //console.log("scanning battle field in gamemap:", isScanBattleField);
 
   const BACKGROUND_WIDTH = WORLD_WIDTH;
   const BACKGROUND_HEIGHT = WORLD_HEIGHT;
@@ -581,11 +584,12 @@ export default function FleetMap() {
     return () => scale.removeListener(listener);
   }, []);
 
-  const targetingShip = (ship) => {
+  const shipBeingTargeted = (ship) => {
     if (
       shipHasMovedButNotConfirmed ||
       ship.isPendingDestruction === true ||
-      isPlayerTurn === false
+      isPlayerTurn === false ||
+      ship.user === user.uid
     )
       return;
     setTargetedShip(ship);
@@ -594,14 +598,22 @@ export default function FleetMap() {
 
   const attackingShip = (ship) => {
     if (ship.isToggled) return;
+    if (ship.user !== user.uid) return;
     setShipPressed(ship.id);
     console.log("Attacking ship:", ship.shipId);
+    console.log("Pressed:");
   };
 
   useEffect(() => {
     if (shipPressed && targetedShip) {
       const attackerShip = ships.find((s) => s.id === shipPressed);
       if (attackerShip.isToggled) return;
+      if (
+        !attackerShip ||
+        attackerShip.user !== user.uid ||
+        attackerShip.isToggled
+      )
+        return;
       if (!attackerShip || attackerShip.id === targetedShip.id) return;
 
       const isDestroyer = attackerShip.type === "Destroyer";
@@ -713,6 +725,8 @@ export default function FleetMap() {
         ships={data}
         user={user}
         isPlayerTurn={isPlayerTurn || false}
+        isScanningBattleField={isScanBattleField}
+        isScanning={setIsScanBattleField}
       />
       {selectedShip?.hasRolledDToHit === false &&
         getShipsActionsTakenCount(selectedShip) < 2 && (
@@ -725,28 +739,30 @@ export default function FleetMap() {
             setTargetedShip={setTargetedShip}
           />
         )}
-      {selectedShip && getShipsActionsTakenCount(selectedShip) < 2 && (
-        <ZoomControls
-          scale={scale}
-          updatingRotation={updatingRotation}
-          updatingPosition={updatingPosition}
-          shipPressed={shipPressed}
-          handleShipRotation={handleShipRotation}
-          setShowFiringArcs={setShowFiringArcs}
-          showFiringArcs={showFiringArcs}
-          setShipPressed={setShipPressed}
-          navigateToStats={navigateToStats}
-          setShowAllFiringArcs={setShowAllFiringArcs}
-          ships={ships}
-          targetedShip={targetedShip}
-          navigateToBattleGround={navigateToBattleGround}
-          originalShipPosition={originalShipPosition}
-          setOriginalShipPosition={setOriginalShipPosition}
-          setMovementDistanceCircle={setMovementDistanceCircle}
-          setTargetedShip={setTargetedShip}
-          isPlayerTurn={isPlayerTurn}
-        />
-      )}
+      {selectedShip &&
+        getShipsActionsTakenCount(selectedShip) < 2 &&
+        user.uid === selectedShip.user && (
+          <ZoomControls
+            scale={scale}
+            updatingRotation={updatingRotation}
+            updatingPosition={updatingPosition}
+            shipPressed={shipPressed}
+            handleShipRotation={handleShipRotation}
+            setShowFiringArcs={setShowFiringArcs}
+            showFiringArcs={showFiringArcs}
+            setShipPressed={setShipPressed}
+            navigateToStats={navigateToStats}
+            setShowAllFiringArcs={setShowAllFiringArcs}
+            ships={ships}
+            targetedShip={targetedShip}
+            navigateToBattleGround={navigateToBattleGround}
+            originalShipPosition={originalShipPosition}
+            setOriginalShipPosition={setOriginalShipPosition}
+            setMovementDistanceCircle={setMovementDistanceCircle}
+            setTargetedShip={setTargetedShip}
+            isPlayerTurn={isPlayerTurn}
+          />
+        )}
 
       {selectedShip && !targetedShip && selectedShip.user === user.uid && (
         <ShipInfo
@@ -873,12 +889,13 @@ export default function FleetMap() {
               } else if (isTargetedShip && shipPressed) {
                 const attackingShip = ships.find((s) => s.id === shipPressed);
                 if (attackingShip?.miss === true) return;
+                if (!attackingShip || attackingShip.user !== user.uid) return;
                 if (attackingShip?.hasRolledDToHit === true) return;
-                targetingShip(ship);
+                shipBeingTargeted(ship);
                 //attackingShip(ship);
               } else {
                 // fallback for selecting enemy ship (to show pulse or highlight)
-                setShipPressed(ship.id);
+                setShipPressed(ship.id); // set the pressed ship
               }
             },
 
@@ -1211,15 +1228,15 @@ export default function FleetMap() {
                       left: ship.width / 4,
                     }}
                   >
-                    {shipPressed && ship.id === shipPressed && (
-                      <>
-                        <ShipSwitch
-                          ship={ship}
-                          showFiringArcs={showFiringArcs}
-                          currentUserId={user.uid}
-                          isUsersTurn={isUsersTurn}
-                        />
-                      </>
+                    {(isScanBattleField ||
+                      (shipPressed && ship.id === shipPressed)) && (
+                      <ShipSwitch
+                        ship={ship}
+                        showFiringArcs={showFiringArcs}
+                        currentUserId={user.uid}
+                        isUsersTurn={isUsersTurn}
+                        isScanning={isScanBattleField}
+                      />
                     )}
                   </View>
                 </Animated.View>
