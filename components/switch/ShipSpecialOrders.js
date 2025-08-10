@@ -128,6 +128,7 @@ export default async function SpecialOrderBonuses({
       }
       break;
     case "Reinforce Shields":
+    //add in if hp <0 and isPendingDestruction then set hp to 1 and remove status. 
       if (ship.hp === ship.maxHP) {
         Toast.show({
           type: "error",
