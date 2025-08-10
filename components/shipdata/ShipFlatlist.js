@@ -118,10 +118,10 @@ export default function ShipFlatList({
           backgroundColor: "transparent",
           margin: 5,
         }}
-        disabled={
-          /*  !isPlayerTurn || */
+        /* disabled={
+            !isPlayerTurn || 
           !toggleToDelete && (item.hp === 0 || item.isToggled)
-        }
+        }*/
         onPress={() => {
           if (toggleToDelete) {
             deleteShip(item);

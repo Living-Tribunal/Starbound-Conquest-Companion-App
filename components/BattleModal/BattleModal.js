@@ -9,8 +9,10 @@ export default function BattleModal({
   navigateToBattleGround,
   setShipPressed,
   setTargetedShip,
+  isScanningBattleField,
 }) {
   const [confirming, setConfirming] = useState(false);
+  console.log("Scanning Battle Field in BattleModal:", isScanningBattleField);
 
   return (
     <Modal

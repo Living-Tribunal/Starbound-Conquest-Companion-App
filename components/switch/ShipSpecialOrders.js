@@ -1,6 +1,5 @@
 import { doc, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB } from "../../FirebaseConfig";
-import { useStarBoundContext } from "@/components/Global/StarBoundProvider";
 import Toast from "react-native-toast-message";
 import { updateShipIsToggled } from "../Functions/updateShipIsToggled";
 
@@ -234,7 +233,6 @@ export default async function SpecialOrderBonuses({
     case "Anti-Fighter Barrage":
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-        //change this back to 11 when you're ready to test
         if (localDiceRoll >= 2 && ship.type === "Destroyer") {
           await updateDoc(shipRef, {
             [`specialOrders.${orderName}`]: true,

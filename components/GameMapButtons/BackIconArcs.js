@@ -4,6 +4,7 @@ import { Colors } from "@/constants/Colors";
 import Toast from "react-native-toast-message";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import WaitingForTurn from "@/components/WaitingForTurn/WaitingForTurn";
+import ScanBattleField from "@/components/GameMapButtons/ScanBattleField";
 
 export default function BackIconArcs({
   navigation,
@@ -14,6 +15,8 @@ export default function BackIconArcs({
   ships,
   user,
   isPlayerTurn,
+  isScanningBattleField,
+  isScanning,
 }) {
   /*   console.log(
     "backIconArcs:",
@@ -26,6 +29,7 @@ export default function BackIconArcs({
     Dreadnought: "Dr",
   };
 
+
   const insets = useSafeAreaInsets();
 
   const playerShips = ships.filter((s) => s.user === user.uid);
@@ -37,6 +41,7 @@ export default function BackIconArcs({
 
   return (
     <>
+      <ScanBattleField isPlayerTurn={isPlayerTurn} isScanningBattleField={isScanningBattleField} isScanning={isScanning} />
       {!isPlayerTurn && <WaitingForTurn />}
       <TouchableOpacity
         onPress={() => navigation.navigate("Map")}

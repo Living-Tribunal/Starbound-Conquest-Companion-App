@@ -39,6 +39,11 @@ export default function ShipStats({ route }) {
   const [orderIcon, setOrderIcon] = useState("");
   const [orderDescription, setOrderDescription] = useState("");
   const diceRollRef = useRef(0);
+  const shipActionsNames = {
+    move: "Move",
+    attack: "Attack",
+    specialOrder: "Special Order",
+  };
   //console.log("Ships Stats:", isPlayerTurn);
   const {
     faction,
@@ -69,6 +74,12 @@ export default function ShipStats({ route }) {
     ship?.type === "Cruiser" &&
     ship?.bonuses?.broadSideBonus &&
     ship.specialOrders?.["Broadside"] === true;
+
+  const getShipsActionsTakenCount = (ship) => {
+    const { move, attack, specialOrder } = ship.shipActions || {};
+    const actionsTaken = [move, attack, specialOrder].filter(Boolean).length;
+    return actionsTaken;
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -340,9 +351,6 @@ export default function ShipStats({ route }) {
           flexGrow: 1,
         }}
       >
-        <Text style={styles.subHeaderText}>
-          Below, you will find the stats of your selected ship.
-        </Text>
         <View style={styles.image}>
           <View style={{ marginBottom: 20 }}>
             <Text style={styles.headerText}>{faction}</Text>
@@ -377,9 +385,13 @@ export default function ShipStats({ route }) {
               {
                 backgroundColor: ship.isToggled
                   ? Colors.deep_red
+                  : getShipsActionsTakenCount(ship) >= 1
+                  ? Colors.goldenrod
                   : Colors.darker_green_toggle,
                 borderColor: ship.isToggled
                   ? Colors.lighter_red
+                  : getShipsActionsTakenCount(ship) >= 1
+                  ? Colors.lightened_gold
                   : Colors.green_toggle,
                 width: "95%",
                 borderRadius: 5,
@@ -395,12 +407,74 @@ export default function ShipStats({ route }) {
                   fontFamily: "LeagueSpartan-Regular",
                   color: ship.isToggled
                     ? Colors.lighter_red
+                    : getShipsActionsTakenCount(ship) >= 1
+                    ? Colors.lightened_gold
                     : Colors.green_toggle,
                 },
               ]}
             >
-              {ship.isToggled ? "Ended turn" : "Ready to engage"}
+              {ship.isToggled
+                ? "Ended turn - All Actions Used"
+                : getShipsActionsTakenCount(ship) >= 1
+                ? "Ready to engage - 1/3 Actions Used"
+                : "Ready to attack - No actions taken"}
             </Text>
+          </View>
+        </View>
+
+        <View
+          style={[
+            styles.statButton,
+            {
+              marginTop: 10,
+              justifyContent: "center",
+              alignSelf: "center",
+              width: "95%",
+            },
+          ]}
+        >
+          <Text style={styles.statButtonText}>Actions Taken</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 10,
+              width: "100%",
+            }}
+          >
+            {Object.entries(ship.shipActions).map(([action, value]) => {
+              return (
+                <View
+                  key={action}
+                  style={{
+                    justifyContent: "center",
+                    borderRadius: 5,
+                    alignItems: "center",
+                    backgroundColor: value
+                      ? Colors.darker_green_toggle
+                      : Colors.underTextGray,
+                    borderWidth: value ? 1 : 0,
+                    borderColor: value ? Colors.green_toggle : null,
+                    padding: 1,
+                    width: "30%",
+                    marginTop: 5,
+                    marginBottom: 5,
+                  }}
+                >
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: value ? Colors.green_toggle : Colors.white,
+                      fontFamily: "LeagueSpartan-Regular",
+                      fontSize: 10,
+                    }}
+                  >
+                    {shipActionsNames[action]}
+                  </Text>
+                </View>
+              );
+            })}
           </View>
         </View>
         <View style={styles.buttonContainer}>
@@ -463,7 +537,7 @@ export default function ShipStats({ route }) {
                       ? Colors.green_toggle
                       : Colors.white,
                   fontFamily: "monospace",
-                  fontSize: 12,
+                  fontSize: 9,
                   marginTop: 2,
                 }}
               >
@@ -488,7 +562,7 @@ export default function ShipStats({ route }) {
                     textAlign: "center",
                     color: Colors.white,
                     fontFamily: "monospace",
-                    fontSize: 10,
+                    fontSize: 9,
                   }}
                 >
                   {ship.maxCapacity}
@@ -508,7 +582,7 @@ export default function ShipStats({ route }) {
                   textAlign: "center",
                   color: Colors.white,
                   fontFamily: "monospace",
-                  fontSize: 10,
+                  fontSize: 9,
                 }}
               >
                 {ship.pointValue}
@@ -528,7 +602,7 @@ export default function ShipStats({ route }) {
                       ? Colors.green_toggle
                       : */ Colors.white,
                   fontFamily: "monospace",
-                  fontSize: 10,
+                  fontSize: 9,
                 }}
               >
                 {ship.damageThreshold}
@@ -567,7 +641,7 @@ export default function ShipStats({ route }) {
                         textAlign: "center",
                         color: Colors.white,
                         fontFamily: "monospace",
-                        fontSize: 10,
+                        fontSize: 9,
                       }}
                     >
                       {bonusNameChanged[bonusName]}
@@ -580,7 +654,7 @@ export default function ShipStats({ route }) {
                         color:
                           bonusValue > 0 ? Colors.green_toggle : Colors.white,
                         fontFamily: "monospace",
-                        fontSize: 10,
+                        fontSize: 9,
                       }}
                     >
                       +{bonusValue}
@@ -650,7 +724,11 @@ export default function ShipStats({ route }) {
                         }}
                       >
                         <TouchableOpacity
-                          disabled={!isPlayerTurn || isDisabled}
+                          disabled={
+                            !isPlayerTurn ||
+                            isDisabled ||
+                            getShipsActionsTakenCount(ship) >= 2
+                          }
                           onPress={() => {
                             setOrderName(orderName);
                             if (
@@ -716,20 +794,50 @@ export default function ShipStats({ route }) {
                               gap: 10,
                             }}
                           >
-                            <Text
+                            <View
                               style={{
-                                textAlign: "center",
-                                color:
-                                  isAttempted || isUsed
-                                    ? Colors.hudDarker
-                                    : Colors.white,
-                                fontFamily: "monospace",
-                                fontSize: 12,
-                                marginBottom: 2,
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                alignItems: "center",
                               }}
                             >
-                              {orderName}
-                            </Text>
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  color:
+                                    isAttempted || isUsed
+                                      ? Colors.hudDarker
+                                      : Colors.white,
+                                  fontFamily: "monospace",
+                                  fontSize: 9,
+                                  marginBottom: 2,
+                                }}
+                              >
+                                {orderName}
+                              </Text>
+                              {orderName === "Anti-Fighter Barrage" && (
+                                <Text
+                                  numberOfLines={2}
+                                  style={[
+                                    styles.subHeaderText,
+                                    {
+                                      textAlign: "center",
+                                      backgroundColor: "transparent",
+                                      color:
+                                        isAttempted || isUsed
+                                          ? Colors.hudDarker
+                                          : Colors.white,
+                                      fontFamily: "monospace",
+                                      fontSize: 8,
+                                    },
+                                  ]}
+                                >
+                                  (This order is only available against a
+                                  carrier.)
+                                </Text>
+                              )}
+                            </View>
+
                             {orderIcon && (
                               <Image
                                 source={{ uri: orderIcon }}
@@ -756,7 +864,7 @@ export default function ShipStats({ route }) {
 
                           <Text
                             style={{
-                              fontSize: 10,
+                              fontSize: 9,
                               color:
                                 isAttempted || isUsed
                                   ? Colors.hudDarker
@@ -867,7 +975,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     marginBottom: 5,
     textAlign: "center",
-    fontFamily: FONTS.leagueRegular,
+    fontFamily: "LeagueSpartan-Regular",
     borderBottomColor: Colors.white,
     borderTopColor: "transparent",
   },
@@ -877,7 +985,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginTop: 5,
     textAlign: "center",
-    fontFamily: FONTS.leagueRegular,
+    fontFamily: "LeagueSpartan-Regular",
     borderBottomColor: Colors.white,
     borderTopColor: "transparent",
   },
@@ -962,7 +1070,7 @@ const styles = StyleSheet.create({
     margin: 5,
     backgroundColor: Colors.underTextGray,
     width: "100%",
-    borderRadius: 2,
+    borderRadius: 5,
   },
   subHeaderText: {
     fontFamily: "monospace",
@@ -997,6 +1105,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginBottom: 5,
     textAlign: "center",
-    fontFamily: FONTS.leagueRegular,
+    fontFamily: "LeagueSpartan-Regular",
   },
 });
