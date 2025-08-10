@@ -987,22 +987,6 @@ export default function FleetMap() {
 
               // Flatten the position to commit the current offset
               ship.position.flattenOffset();
-              // Get the current position of the ship
-              {
-                /* const { x, y } = ship.position.__getValue();
-              const rotation = ship.rotation.__getValue(); */
-              }
-
-              // Update the current ship's position in Firebase
-              {
-                /*     await updatingPosition(
-                ship.id,
-                x,
-                y,
-                rotation,
-                ship.netDistance ?? 0
-              ); */
-              }
 
               // --- Calculate ALL ships' fighter range status LOCALLY first ---
 
@@ -1080,32 +1064,29 @@ export default function FleetMap() {
                 ]}
               >
                 {ship.type === "Carrier" &&
-                  (showAllFiringArcs ||
-                    (ship.id === shipPressed &&
-                      fightersLaunched &&
-                      ship.user === user.uid)) && (
-                    <>
-                      <View
-                        pointerEvents="none"
-                        style={{
-                          position: "absolute",
-                          width: 800, // diameter
-                          height: 800,
-                          borderRadius: 10000,
-                          borderColor: fightersRangeStatus(ship) || null,
-                          borderWidth: 2,
-                          top: "50%",
-                          left: "50%",
-                          marginTop: -400, // half of height
-                          marginLeft: -400, // half of width
-                          zIndex: 5,
-                        }}
-                      />
-                    </>
+                  ship.id === shipPressed &&
+                  fightersLaunched &&
+                  ship.user === user.uid && (
+                    <View
+                      pointerEvents="none"
+                      style={{
+                        position: "absolute",
+                        width: 800,
+                        height: 800,
+                        borderRadius: 10000,
+                        borderColor: fightersRangeStatus(ship) || undefined,
+                        borderWidth: 2,
+                        top: "50%",
+                        left: "50%",
+                        marginTop: -400,
+                        marginLeft: -400,
+                        zIndex: 5,
+                      }}
+                    />
                   )}
                 {ship.type === "Destroyer" &&
-                  (showAllFiringArcs ||
-                    (ship.id === shipPressed && antiFighterBarrage)) && (
+                  ship.id === shipPressed &&
+                  antiFighterBarrage && (
                     <>
                       <View
                         pointerEvents="none"
@@ -1171,7 +1152,6 @@ export default function FleetMap() {
                     </View>
                   </>
                 )}
-
                 {removeAllIcons && ship.isPendingDestruction === true && (
                   <Text
                     style={{
@@ -1187,7 +1167,6 @@ export default function FleetMap() {
                     Critical
                   </Text>
                 )}
-
                 {removeAllIcons && (
                   <View
                     style={{
@@ -1201,7 +1180,6 @@ export default function FleetMap() {
                     }}
                   />
                 )}
-
                 {/* Rotating Ship Image */}
                 <Animated.View
                   style={{

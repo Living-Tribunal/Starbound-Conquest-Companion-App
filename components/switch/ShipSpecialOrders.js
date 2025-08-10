@@ -1,6 +1,5 @@
 import { doc, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB } from "../../FirebaseConfig";
-import { useStarBoundContext } from "@/components/Global/StarBoundProvider";
 import Toast from "react-native-toast-message";
 import { updateShipIsToggled } from "../Functions/updateShipIsToggled";
 
