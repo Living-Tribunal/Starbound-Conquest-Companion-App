@@ -774,8 +774,9 @@ export default function Player() {
           let newSpecialOrders = {};
           let newShipActions = {};
           let newShipWeaponStatus = {};
-
           let newSpecialWeaponAttemptedStatus = {};
+
+          const specialOrdersToPersistForOpponent = ["Launch Fighters"];
 
           if (shipData.weaponStatusAttempted) {
             Object.keys(shipData.specialWeaponStatusAttempted).forEach(
@@ -793,13 +794,23 @@ export default function Player() {
 
           if (shipData.specialOrders) {
             Object.keys(shipData.specialOrders).forEach((key) => {
-              newSpecialOrders[key] = false;
+              newSpecialOrders[key] =
+                specialOrdersToPersistForOpponent.includes(key)
+                  ? shipData.specialOrders[key]
+                  : false;
             });
           }
           if (shipData.shipActions) {
             Object.keys(shipData.shipActions).forEach((key) => {
               newShipActions[key] = false;
             });
+          }
+
+          const opponentStillHasActiveSpecialOrders =
+            Object.values(newSpecialOrders).some(Boolean);
+
+          if (opponentStillHasActiveSpecialOrders) {
+            newShipActions["specialOrder"] = true;
           }
 
           allResetPromises.push(
