@@ -33,7 +33,7 @@ export default function EndRoundModal({
         >
           <Image
             style={{ width: 315, height: 161 }}
-            source={require("../../assets/images/SC_logo1.png")}
+            source={require("../../../assets/images/SC_logo1.png")}
           />
           <Text style={[styles.text1, { fontSize: 20 }]}>
             The round has ended.

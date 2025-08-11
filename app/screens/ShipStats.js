@@ -12,7 +12,7 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import { Colors } from "../../constants/Colors.js";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
 import { FONTS } from "../../constants/fonts.js";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
@@ -26,25 +26,25 @@ import { getFleetData } from "@/components/API/API.js";
 import { FactionImages } from "@/constants/FactionImages.js";
 import LoadingComponent from "@/components/loading/LoadingComponent.js";
 import SpecialOrderBonuses from "@/components/switch/ShipSpecialOrders.js";
+import RecallFightersModal from "@/components/Modals/RecallFightersModal/RecallFighters";
 
 export default function ShipStats({ route }) {
   const navigation = useNavigation();
-  const { from, isPlayerTurn } = route.params;
   const user = FIREBASE_AUTH.currentUser;
-  const { shipId } = route.params || {};
+  const { shipId, from, isPlayerTurn } = route.params || {};
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [localDiceRoll, setLocalDiceRoll] = useState(0);
   const [modalToRollADice, setModalToRollADice] = useState(false);
   const [orderName, setOrderName] = useState("");
   const [orderIcon, setOrderIcon] = useState("");
   const [orderDescription, setOrderDescription] = useState("");
+  const [showRecallFightersModal, setShowRecallFightersModal] = useState(false);
   const diceRollRef = useRef(0);
   const shipActionsNames = {
     move: "Move",
     attack: "Attack",
     specialOrder: "Special Order",
   };
-  //console.log("Ships Stats:", isPlayerTurn);
   const {
     faction,
     data,
@@ -57,9 +57,26 @@ export default function ShipStats({ route }) {
     firstDice,
     fromGameMap,
     setFromGameMap,
+    myShips,
   } = useStarBoundContext();
-  //console.log("isPlayerTurn:", isPlayerTurn);
   const ship = data.find((s) => s.id === shipId);
+
+  const carrierId = ship?.id;
+
+  // all of *your* ships that are protected by THIS carrier
+  const protectedShips = useMemo(
+    () =>
+      (myShips ?? []).filter(
+        (s) =>
+          s?.protectedByCarrierID != null &&
+          String(s.protectedByCarrierID) === String(carrierId)
+      ),
+    [myShips, carrierId]
+  );
+
+  // just the IDs (fallback to whatever your id field is)
+  const protectedIds = protectedShips.map((s) => s.shipId ?? s.id);
+
   const localImage =
     ship?.factionName && ship?.type
       ? FactionImages[ship.factionName]?.[ship.type]?.classImage
@@ -860,6 +877,37 @@ export default function ShipStats({ route }) {
                                 resizeMode="contain"
                               />
                             )}
+                            {orderName === "Launch Fighters" &&
+                              ship.specialOrders?.["Launch Fighters"] ===
+                                true && (
+                                <TouchableOpacity
+                                  onPress={() =>
+                                    setShowRecallFightersModal(true)
+                                  }
+                                  style={[
+                                    styles.button,
+                                    {
+                                      backgroundColor:
+                                        Colors.darker_green_toggle,
+                                      borderColor: Colors.green_toggle,
+                                      padding: 3,
+                                      marginTop: 0,
+                                    },
+                                  ]}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.buttonText,
+                                      {
+                                        color: Colors.green_toggle,
+                                        fontFamily: "LeagueSpartan-Bold",
+                                      },
+                                    ]}
+                                  >
+                                    Recall Fighters
+                                  </Text>
+                                </TouchableOpacity>
+                              )}
                           </View>
 
                           <Text
@@ -946,6 +994,13 @@ export default function ShipStats({ route }) {
             </TouchableOpacity>
           </Modal>
         )}
+        <RecallFightersModal
+          showRecallFightersModal={showRecallFightersModal}
+          setShowRecallFightersModal={setShowRecallFightersModal}
+          ship={ship}
+          myShips={myShips}
+          protectedIds={protectedIds}
+        />
       </ScrollView>
     </SafeAreaView>
   );

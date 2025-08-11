@@ -61,7 +61,7 @@ export default function EndTurnModal({
               height: 161,
               resizeMode: "contain",
             }}
-            source={require("../../assets/images/SC_logo1.png")}
+            source={require("../../../assets/images/SC_logo1.png")}
           />
           <Text style={[styles.text1, { fontSize: 15 }]}>
             {myToggledOrDestroyingShips

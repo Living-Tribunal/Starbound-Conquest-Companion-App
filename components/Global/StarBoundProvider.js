@@ -44,6 +44,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [hasBeenInteractedWith, setHasBeenInteractedWith] = useState(false);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [myShips, setMyShips] = useState([]);
 
   return (
     <StarBoundContext.Provider
@@ -134,6 +135,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setFromGameMap,
         isUsersTurn,
         setIsUsersTurn,
+        myShips,
+        setMyShips,
       }}
     >
       {children}

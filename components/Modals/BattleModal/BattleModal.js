@@ -12,7 +12,7 @@ export default function BattleModal({
   isScanningBattleField,
 }) {
   const [confirming, setConfirming] = useState(false);
-  console.log("Scanning Battle Field in BattleModal:", isScanningBattleField);
+  /*   console.log("Scanning Battle Field in BattleModal:", isScanningBattleField); */
 
   return (
     <Modal

@@ -22,7 +22,7 @@ export default function ShipFlatList({
   type,
   isPlayerTurn,
   toggleToDelete,
-  myToggledOrDestroyingShips,
+  myShips,
 }) {
   const specialOrderShortNames = {
     "All Ahead Full": "AHF",
@@ -118,10 +118,10 @@ export default function ShipFlatList({
           backgroundColor: "transparent",
           margin: 5,
         }}
-        /* disabled={
-            !isPlayerTurn || 
-          !toggleToDelete && (item.hp === 0 || item.isToggled)
-        }*/
+        disabled={
+          !isPlayerTurn ||
+          (!toggleToDelete && (item.hp === 0 || item.isToggled))
+        }
         onPress={() => {
           if (toggleToDelete) {
             deleteShip(item);
@@ -130,6 +130,7 @@ export default function ShipFlatList({
               shipId: item.id,
               from: "Player",
               isPlayerTurn,
+              myShips,
             });
             //console.log("Navigated to Stats:", item.id);
           }

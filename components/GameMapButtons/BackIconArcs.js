@@ -29,7 +29,6 @@ export default function BackIconArcs({
     Dreadnought: "Dr",
   };
 
-
   const insets = useSafeAreaInsets();
 
   const playerShips = ships.filter((s) => s.user === user.uid);
@@ -41,7 +40,11 @@ export default function BackIconArcs({
 
   return (
     <>
-      <ScanBattleField isPlayerTurn={isPlayerTurn} isScanningBattleField={isScanningBattleField} isScanning={isScanning} />
+      <ScanBattleField
+        isPlayerTurn={isPlayerTurn}
+        isScanningBattleField={isScanningBattleField}
+        isScanning={isScanning}
+      />
       {!isPlayerTurn && <WaitingForTurn />}
       <TouchableOpacity
         onPress={() => navigation.navigate("Map")}

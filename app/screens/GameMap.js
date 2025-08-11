@@ -40,7 +40,7 @@ import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-vi
 import { useMapImageContext } from "@/components/Global/MapImageContext";
 import BackIconArcs from "@/components/GameMapButtons/BackIconArcs";
 import Toast from "react-native-toast-message";
-import BattleModal from "@/components/BattleModal/BattleModal";
+import BattleModal from "@/components/Modals/BattleModal/BattleModal";
 import { updateShipIsToggled } from "../../components/Functions/updateShipIsToggled";
 import ShipInfo from "@/components/shipdata/ShipInfo";
 import { factionIcons } from "../../constants/shipIcons";
@@ -193,7 +193,6 @@ export default function FleetMap() {
       });
 
       setShipInFighterRange(updatedMap);
-      //setFighterRangeLength(allInRange.length);
 
       const batch = writeBatch(FIREBASE_DB);
 
@@ -600,8 +599,8 @@ export default function FleetMap() {
     if (ship.isToggled) return;
     if (ship.user !== user.uid) return;
     setShipPressed(ship.id);
-    console.log("Attacking ship:", ship.shipId);
-    console.log("Pressed:");
+    /*    console.log("Attacking ship:", ship.shipId);
+    console.log("Pressed:"); */
   };
 
   useEffect(() => {
@@ -1173,7 +1172,20 @@ export default function FleetMap() {
                       backgroundColor: ship.protectingCarriersColor,
                       width: 10,
                       height: 10,
-                      borderRadius: 1,
+                      borderRadius: 5,
+                      position: "absolute",
+                      bottom: ship.height / 2,
+                      left: ship.width / 2,
+                    }}
+                  />
+                )}
+                {removeAllIcons && ship.type === "Carrier" && (
+                  <View
+                    style={{
+                      backgroundColor: ship.color,
+                      width: 20,
+                      height: 10,
+                      borderRadius: 5,
                       position: "absolute",
                       bottom: ship.height / 2,
                       left: ship.width / 2,

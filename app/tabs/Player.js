@@ -29,11 +29,10 @@ import LoadingComponent from "../../components/loading/LoadingComponent";
 import { factionIcons } from "../../constants/shipIcons";
 import ViewShot from "react-native-view-shot";
 import Share from "react-native-share";
-import { useNavigation } from "@react-navigation/native";
 import DropdownComponentSectors from "../../components/dropdown/DropdownComponentSectors";
 import { ActivityIndicator } from "react-native";
-import EndRoundModal from "../../components/EndRoundModal/EndRoundModal";
-import EndTurnModal from "../../components/EndTurnModal/EndTurnModal";
+import EndRoundModal from "../../components/Modals/EndRoundModal/EndRoundModal";
+import EndTurnModal from "../../components/Modals/EndTurnModal/EndTurnModal";
 import {
   collection,
   query,
@@ -72,6 +71,7 @@ export default function Player() {
   const [isLoadingActivePlayers, setIsLoadingActivePlayers] = useState(false);
   const [showEndTurnModal, setShowEndTurnModal] = useState(false);
   const [isShowRules, setIsShowRules] = useState(false);
+
   const {
     isUsersTurn,
     setIsUsersTurn,
@@ -93,6 +93,8 @@ export default function Player() {
     setUserFactionColor,
     getAllUsersShipToggled,
     setGetAllUsersShipToggled,
+    myShips,
+    setMyShips,
   } = useStarBoundContext();
 
   const hasShownEndRoundModal = useRef(false);
@@ -139,9 +141,24 @@ export default function Player() {
   const canEndRoundForEveryone = canEndRoundForAllPlayers && currentUserShips;
 
   //filtering out the ships from the current user
-  const myShips = useMemo(() => {
-    return getAllUsersShipToggled.filter((ship) => ship.user === user.uid);
-  }, [getAllUsersShipToggled, user?.uid]);
+  const uid = user?.uid ?? null;
+
+  const myShipsToSave = useMemo(() => {
+    const all = getAllUsersShipToggled ?? [];
+    if (!uid) return [];
+    return all.filter((s) => s?.user === uid);
+  }, [getAllUsersShipToggled, uid]);
+
+  // optional: shallow equality on IDs to avoid re-renders
+  const sameIds = (a, b) => {
+    if (a.length !== b.length) return false;
+    const bIds = new Set(b.map((x) => x.shipId ?? x.id));
+    return a.every((x) => bIds.has(x.shipId ?? x.id));
+  };
+
+  useEffect(() => {
+    setMyShips((prev) => (sameIds(prev, myShipsToSave) ? prev : myShipsToSave));
+  }, [myShipsToSave, setMyShips]);
 
   //get the number of ships that are toggled or pending destruction
   const myToggledOrDestroyingShips =
@@ -664,10 +681,12 @@ export default function Player() {
         let newShipWeaponStatus = {};
         let newSpecialWeaponAttemptedStatus = {};
 
+        const specialOrdesToPersist = ["Launch Fighters"];
+
         if (myShipData.weaponStatusAttempted) {
           Object.keys(myShipData.specialWeaponStatusAttempted).forEach(
             (weapon) => {
-              specialWeaponStatusAttempted[weapon] = false;
+              newSpecialWeaponAttemptedStatus[weapon] = false;
             }
           );
         }
@@ -680,13 +699,23 @@ export default function Player() {
 
         if (myShipData.specialOrders) {
           Object.keys(myShipData.specialOrders).forEach((order) => {
-            newSpecialOrders[order] = false;
+            newSpecialOrders[order] = specialOrdesToPersist.includes(order)
+              ? myShipData.specialOrders[order]
+              : false;
           });
         }
+
         if (myShipData.shipActions) {
           Object.keys(myShipData.shipActions).forEach((key) => {
             newShipActions[key] = false;
           });
+        }
+
+        const stillHasActiveSpecialOrders =
+          Object.values(newSpecialOrders).some(Boolean);
+
+        if (stillHasActiveSpecialOrders) {
+          newShipActions["specialOrder"] = true;
         }
 
         allResetPromises.push(
@@ -1666,6 +1695,7 @@ export default function Player() {
                 usersColor={userFactionColor}
                 isPlayerTurn={isPlayerTurn}
                 myToggledOrDestroyingShips={myToggledOrDestroyingShips}
+                myShips={myShips}
               />
             </View>
           </View>
