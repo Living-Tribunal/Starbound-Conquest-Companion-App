@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 
@@ -13,7 +14,10 @@ export default function EndRoundModal({
   showEndRoundModal,
   setShowEndRoundModal,
   handleEndRoundPress,
+  isEndingRound,
 }) {
+  //console.log("isEndingRound:", isEndingRound);
+
   return (
     <Modal
       visible={showEndRoundModal}
@@ -21,92 +25,121 @@ export default function EndRoundModal({
       animationType="fade"
       onRequestClose={() => setShowEndRoundModal(false)}
     >
-      <View style={styles.loadingContainer}>
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: Colors.dark_gray,
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          <Image
-            style={{ width: 315, height: 161 }}
-            source={require("../../../assets/images/SC_logo1.png")}
-          />
-          <Text style={[styles.text1, { fontSize: 20 }]}>
-            The round has ended.
-          </Text>
-          <Text
+      {!isEndingRound ? (
+        <View style={styles.loadingContainer}>
+          <View
             style={{
-              fontSize: 15,
-              fontFamily: "LeagueSpartan-Regular",
-              color: Colors.hud,
-              textAlign: "center",
-              padding: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: Colors.dark_gray,
+              width: "100%",
+              height: "100%",
             }}
           >
-            Would you like to end the round?
-          </Text>
-          <View style={{ flexDirection: "row", gap: 10 }}>
-            <TouchableOpacity
-              onPress={() => {
-                handleEndRoundPress();
-                setShowEndRoundModal(false);
+            <Image
+              style={{ width: 315, height: 161 }}
+              source={require("../../../assets/images/SC_logo1.png")}
+            />
+            <Text style={[styles.text1, { fontSize: 20 }]}>
+              The round has ended.
+            </Text>
+            <Text
+              style={{
+                fontSize: 15,
+                fontFamily: "LeagueSpartan-Regular",
+                color: Colors.hud,
+                textAlign: "center",
+                padding: 10,
               }}
-              style={[
-                styles.editContainer,
-                {
-                  borderWidth: 1,
-                  width: "45%",
-                  borderWidth: 1,
-                  borderColor: Colors.hud,
-                  backgroundColor: Colors.hud,
-                  borderRadius: 5,
-                },
-              ]}
             >
-              <Text
+              Would you like to end the round?
+            </Text>
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  handleEndRoundPress();
+                  setShowEndRoundModal(false);
+                }}
                 style={[
-                  styles.textValue,
+                  styles.editContainer,
                   {
-                    color: Colors.dark_gray,
-                    fontSize: 12,
+                    borderWidth: 1,
+                    width: "45%",
+                    borderWidth: 1,
+                    borderColor: Colors.hud,
+                    backgroundColor: Colors.hud,
+                    borderRadius: 5,
                   },
                 ]}
               >
-                End Round
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setShowEndRoundModal(false)}
-              style={[
-                styles.editContainer,
-                {
-                  borderWidth: 1,
-                  width: "45%",
-                  borderColor: Colors.hud,
-                  backgroundColor: Colors.dark_gray,
-                  borderRadius: 5,
-                },
-              ]}
+                <Text
+                  style={[
+                    styles.textValue,
+                    {
+                      color: Colors.dark_gray,
+                      fontSize: 12,
+                    },
+                  ]}
+                >
+                  End Round
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowEndRoundModal(false)}
+                style={[
+                  styles.editContainer,
+                  {
+                    borderWidth: 1,
+                    width: "45%",
+                    borderColor: Colors.hud,
+                    backgroundColor: Colors.dark_gray,
+                    borderRadius: 5,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.textValue,
+                    {
+                      color: Colors.hud,
+                      fontSize: 12,
+                    },
+                  ]}
+                >
+                  Not Yet
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      ) : (
+        isEndingRound && (
+          <View style={styles.loadingContainer}>
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: Colors.dark_gray,
+                width: "100%",
+                height: "100%",
+              }}
             >
+              <ActivityIndicator size="large" color={Colors.hud} />
               <Text
                 style={[
                   styles.textValue,
                   {
                     color: Colors.hud,
-                    fontSize: 12,
+                    fontSize: 15,
                   },
                 ]}
               >
-                Not Yet
+                Ending Round...
               </Text>
-            </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </View>
+        )
+      )}
     </Modal>
   );
 }

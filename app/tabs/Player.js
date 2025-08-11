@@ -71,7 +71,8 @@ export default function Player() {
   const [isLoadingActivePlayers, setIsLoadingActivePlayers] = useState(false);
   const [showEndTurnModal, setShowEndTurnModal] = useState(false);
   const [isShowRules, setIsShowRules] = useState(false);
-
+  const [isEndingRound, setIsEndingRound] = useState(false);
+  const [isEndingTurn, setIsEndingTurn] = useState(false);
   const {
     isUsersTurn,
     setIsUsersTurn,
@@ -436,6 +437,7 @@ export default function Player() {
   }
 
   async function endYourTurnAndSendMessage() {
+    setIsEndingTurn(true);
     try {
       // 1. Get players
       const usersRef = collection(FIREBASE_DB, "users");
@@ -512,6 +514,7 @@ export default function Player() {
         position: "top",
       });
     }
+    setIsEndingTurn(false);
   }
 
   //reset the round for the current user IF there are no ships in the fleet from ANYONE
@@ -900,6 +903,7 @@ export default function Player() {
 
   const handleEndRoundPress = async () => {
     if (canEndRoundForAllPlayers && currentUserShips) {
+      setIsEndingRound(true);
       endRound();
 
       await cleanUpPendingDestruction();
@@ -913,6 +917,7 @@ export default function Player() {
         position: "top",
       });
     }
+    setIsEndingRound(false);
   };
 
   useEffect(() => {
@@ -1731,6 +1736,7 @@ export default function Player() {
         showEndRoundModal={showEndRoundModal}
         setShowEndRoundModal={setShowEndRoundModal}
         handleEndRoundPress={handleEndRoundPress}
+        isEndingRound={isEndingRound}
       />
       <EndTurnModal
         showEndTurnModal={showEndTurnModal}
@@ -1740,6 +1746,7 @@ export default function Player() {
         myToggledShipsCount={myToggledShipsCount}
         myUntoggledShipsCount={myUntoggledShipsCount}
         myShipsBySectorNotToggled={myUntoggledShipsBySector}
+        isEndingTurn={isEndingTurn}
       />
     </SafeAreaView>
   );
