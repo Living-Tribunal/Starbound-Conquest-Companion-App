@@ -668,15 +668,12 @@ export default function Player() {
 
         const specialOrdesToPersist = ["Launch Fighters"];
         const specialOrdersAttemptedToPersist = ["Launch Fighters"];
-        const specialWeaponStatusToPersist = ["Ion Particle Beam"];
+        /*   const specialWeaponStatusToPersist = ["Ion Particle Beam"]; */
 
         if (myShipData.specialWeaponStatusAttempted) {
           Object.keys(myShipData.specialWeaponStatusAttempted).forEach(
             (weapon) => {
-              newSpecialWeaponAttemptedStatus[weapon] =
-                specialWeaponStatusToPersist.includes(weapon)
-                  ? myShipData.specialWeaponStatusAttempted[weapon]
-                  : false;
+              newSpecialWeaponAttemptedStatus[weapon] = false;
             }
           );
         }
@@ -780,15 +777,12 @@ export default function Player() {
 
           const specialOrdersToPersist = ["Launch Fighters"];
           const specialOrdersAttemptedToPersist = ["Launch Fighters"];
-          const specialWeaponStatusToPersist = ["Ion Particle Beam"];
+          //const specialWeaponStatusToPersist = ["Ion Particle Beam"];
 
           if (shipData.specialWeaponStatusAttempted) {
             Object.keys(shipData.specialWeaponStatusAttempted).forEach(
               (weapon) => {
-                newSpecialWeaponAttemptedStatus[weapon] =
-                  specialWeaponStatusToPersist.includes(weapon)
-                    ? shipData.specialWeaponStatusAttempted[weapon]
-                    : false;
+                newSpecialWeaponAttemptedStatus[weapon] = false;
               }
             );
           }
@@ -1207,9 +1201,14 @@ export default function Player() {
                               color: player.userFactionColor || Colors.hud,
                               fontFamily: "LeagueSpartan-Regular",
                               fontSize: 10,
-                              textAlign: "left",
-                              borderBottomColor:
-                                player.userFactionColor || "transparent",
+                              textAlign: "center",
+                              borderWidth: 1,
+                              borderRadius: 5,
+                              padding: 3,
+                              borderColor:
+                                (isUsersTurn[player.uid] &&
+                                  player.userFactionColor) ||
+                                "transparent",
                               borderBottomWidth: 1,
                             }}
                           >

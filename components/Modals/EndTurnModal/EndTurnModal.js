@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
+import LoadingComponent from "@/components/loading/LoadingComponent";
 
 export default function EndTurnModal({
   showEndTurnModal,
@@ -210,8 +211,8 @@ export default function EndTurnModal({
               height: "100%",
             }}
           >
-            <ActivityIndicator size="large" color={Colors.hud} />
-            <Text
+            <LoadingComponent whatToSay="Ending Turn..." />
+            {/*  <Text
               style={[
                 styles.textValue,
                 {
@@ -221,7 +222,7 @@ export default function EndTurnModal({
               ]}
             >
               Ending Turn...
-            </Text>
+            </Text> */}
           </View>
         </View>
       )}

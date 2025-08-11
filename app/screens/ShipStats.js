@@ -744,7 +744,8 @@ export default function ShipStats({ route }) {
                           disabled={
                             !isPlayerTurn ||
                             isDisabled ||
-                            getShipsActionsTakenCount(ship) >= 2
+                            getShipsActionsTakenCount(ship) >= 2 ||
+                            ship.shipActions.specialOrder
                           }
                           onPress={() => {
                             setOrderName(orderName);
