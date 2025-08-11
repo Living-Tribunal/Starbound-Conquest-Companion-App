@@ -421,7 +421,7 @@ export default function Player() {
 
   function send_message_discord_end_of_round() {
     console.log("Discord message sent ending round");
-    const request = new XMLHttpRequest();
+    /*  const request = new XMLHttpRequest();
     request.open(
       "POST",
       "https://discord.com/api/webhooks/1400193103775793282/2Rz9AIJTztHwqS8B2OINDmUHy-In76UWV5NBkCnQkBVdBPpedCrPmV0njSE4t4KIDYat"
@@ -432,29 +432,10 @@ export default function Player() {
       avatar_url: "",
       content: `The Round has ended in ${gameRoom}. Resetting your ships.`,
     };
-    request.send(JSON.stringify(params));
-  }
-
-  async function endTurnWarning() {
-    Toast.show({
-      type: "info",
-      text1: "Starbound Conquest",
-      text2: "If you want to end your turn early, long press the button.",
-      position: "top",
-    });
+    request.send(JSON.stringify(params)) */
   }
 
   async function endYourTurnAndSendMessage() {
-    /*  if (!myToggledOrDestroyingShips) {
-      Toast.show({
-        type: "error",
-        text1: "Starbound Conquest",
-        text2: "You have ships left to deploy.",
-        position: "top",
-      });
-      return;
-    } */
-
     try {
       // 1. Get players
       const usersRef = collection(FIREBASE_DB, "users");
@@ -500,7 +481,7 @@ export default function Player() {
 
       await batch.commit();
 
-      // 4. THEN send Discord message
+      /*     // 4. THEN send Discord message
       const discordMessage = {
         username: "Starbound Conquest",
         avatar_url: "",
@@ -514,7 +495,7 @@ export default function Player() {
           body: JSON.stringify(discordMessage),
         }
       );
-
+ */
       // 4. Toast confirmation
       Toast.show({
         type: "success",
@@ -680,13 +661,19 @@ export default function Player() {
         let newShipActions = {};
         let newShipWeaponStatus = {};
         let newSpecialWeaponAttemptedStatus = {};
+        let newSpecialOrdersAttempted = {};
 
         const specialOrdesToPersist = ["Launch Fighters"];
+        const specialOrdersAttemptedToPersist = ["Launch Fighters"];
+        const specialWeaponStatusToPersist = ["Ion Particle Beam"];
 
-        if (myShipData.weaponStatusAttempted) {
+        if (myShipData.specialWeaponStatusAttempted) {
           Object.keys(myShipData.specialWeaponStatusAttempted).forEach(
             (weapon) => {
-              newSpecialWeaponAttemptedStatus[weapon] = false;
+              newSpecialWeaponAttemptedStatus[weapon] =
+                specialWeaponStatusToPersist.includes(weapon)
+                  ? myShipData.specialWeaponStatusAttempted[weapon]
+                  : false;
             }
           );
         }
@@ -702,6 +689,15 @@ export default function Player() {
             newSpecialOrders[order] = specialOrdesToPersist.includes(order)
               ? myShipData.specialOrders[order]
               : false;
+          });
+        }
+
+        if (myShipData.specialOrdersAttempted) {
+          Object.keys(myShipData.specialOrdersAttempted).forEach((order) => {
+            newSpecialOrdersAttempted[order] =
+              specialOrdersAttemptedToPersist.includes(order)
+                ? myShipData.specialOrdersAttempted[order]
+                : false;
           });
         }
 
@@ -737,6 +733,7 @@ export default function Player() {
               moveDistanceBonus: 0,
             },
             specialWeaponStatusAttempted: newSpecialWeaponAttemptedStatus,
+            specialOrdersAttempted: newSpecialOrdersAttempted,
           })
         );
       }
@@ -774,14 +771,21 @@ export default function Player() {
           let newSpecialOrders = {};
           let newShipActions = {};
           let newShipWeaponStatus = {};
+
           let newSpecialWeaponAttemptedStatus = {};
+          let newSpecialOrdersAttempted = {};
 
-          const specialOrdersToPersistForOpponent = ["Launch Fighters"];
+          const specialOrdersToPersist = ["Launch Fighters"];
+          const specialOrdersAttemptedToPersist = ["Launch Fighters"];
+          const specialWeaponStatusToPersist = ["Ion Particle Beam"];
 
-          if (shipData.weaponStatusAttempted) {
+          if (shipData.specialWeaponStatusAttempted) {
             Object.keys(shipData.specialWeaponStatusAttempted).forEach(
               (weapon) => {
-                newSpecialWeaponAttemptedStatus[weapon] = false;
+                newSpecialWeaponAttemptedStatus[weapon] =
+                  specialWeaponStatusToPersist.includes(weapon)
+                    ? shipData.specialWeaponStatusAttempted[weapon]
+                    : false;
               }
             );
           }
@@ -794,22 +798,31 @@ export default function Player() {
 
           if (shipData.specialOrders) {
             Object.keys(shipData.specialOrders).forEach((key) => {
-              newSpecialOrders[key] =
-                specialOrdersToPersistForOpponent.includes(key)
-                  ? shipData.specialOrders[key]
+              newSpecialOrders[key] = specialOrdersToPersist.includes(key)
+                ? shipData.specialOrders[key]
+                : false;
+            });
+          }
+
+          if (shipData.specialOrdersAttempted) {
+            Object.keys(shipData.specialOrdersAttempted).forEach((order) => {
+              newSpecialOrdersAttempted[order] =
+                specialOrdersAttemptedToPersist.includes(order)
+                  ? shipData.specialOrdersAttempted[order]
                   : false;
             });
           }
+
           if (shipData.shipActions) {
             Object.keys(shipData.shipActions).forEach((key) => {
               newShipActions[key] = false;
             });
           }
 
-          const opponentStillHasActiveSpecialOrders =
+          const stillHasActiveSpecialOrders =
             Object.values(newSpecialOrders).some(Boolean);
 
-          if (opponentStillHasActiveSpecialOrders) {
+          if (stillHasActiveSpecialOrders) {
             newShipActions["specialOrder"] = true;
           }
 
@@ -832,6 +845,7 @@ export default function Player() {
                 moveDistanceBonus: 0,
               },
               specialWeaponStatusAttempted: newSpecialWeaponAttemptedStatus,
+              specialOrdersAttempted: newSpecialOrdersAttempted,
             })
           );
         }

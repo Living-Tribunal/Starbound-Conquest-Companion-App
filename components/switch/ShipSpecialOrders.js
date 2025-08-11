@@ -16,12 +16,14 @@ export default async function SpecialOrderBonuses({
     return;
   }
 
+  const numberToroll = 2;
+
   switch (orderName) {
     case "All Ahead Full":
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
 
-        if (localDiceRoll >= 11) {
+        if (localDiceRoll >= numberToroll) {
           const bonus = ship.moveDistance;
           //console.log("Bonus applied:", bonus);
           //console.log("Local Dice Roll:", localDiceRoll);
@@ -127,7 +129,7 @@ export default async function SpecialOrderBonuses({
       }
       break;
     case "Reinforce Shields":
-    //add in if hp <0 and isPendingDestruction then set hp to 1 and remove status. 
+      //add in if hp <0 and isPendingDestruction then set hp to 1 and remove status.
       if (ship.hp === ship.maxHP) {
         Toast.show({
           type: "error",
@@ -140,7 +142,7 @@ export default async function SpecialOrderBonuses({
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
 
-        if (localDiceRoll >= 11) {
+        if (localDiceRoll >= numberToroll) {
           const newHP = Math.max(0, Math.min(Number(ship.hp + 1), ship.maxHP));
 
           await updateDoc(shipRef, {
@@ -233,7 +235,7 @@ export default async function SpecialOrderBonuses({
     case "Anti-Fighter Barrage":
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-        if (localDiceRoll >= 2 && ship.type === "Destroyer") {
+        if (localDiceRoll >= numberToroll && ship.type === "Destroyer") {
           await updateDoc(shipRef, {
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
@@ -318,7 +320,7 @@ export default async function SpecialOrderBonuses({
     case "Power Up Main Guns":
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-        if (localDiceRoll >= 11 && ship.type === "Destroyer") {
+        if (localDiceRoll >= numberToroll && ship.type === "Destroyer") {
           await updateDoc(shipRef, {
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
@@ -399,7 +401,7 @@ export default async function SpecialOrderBonuses({
     case "All Systems Fire":
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-        if (localDiceRoll >= 11) {
+        if (localDiceRoll >= numberToroll) {
           const weaponStatuses = ship.weaponStatus || {};
           const weaponStatusesUpdated = {};
           for (const weaponName in weaponStatuses) {
@@ -502,7 +504,7 @@ export default async function SpecialOrderBonuses({
     case "Broadside":
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
-        if (localDiceRoll >= 11) {
+        if (localDiceRoll >= numberToroll) {
           const weaponStatuses = ship.weaponStatus || {};
           const weaponStatusesUpdated = {};
           for (const weaponName in weaponStatuses) {
@@ -604,7 +606,7 @@ export default async function SpecialOrderBonuses({
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
         //change this value to 11 when you're ready to launch fighters
-        if (Number(localDiceRoll) >= 2 && ship.type === "Carrier") {
+        if (Number(localDiceRoll) >= numberToroll && ship.type === "Carrier") {
           await updateDoc(shipRef, {
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
@@ -690,7 +692,7 @@ export default async function SpecialOrderBonuses({
       try {
         const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
 
-        if (localDiceRoll >= 5) {
+        if (localDiceRoll >= numberToroll) {
           await updateDoc(shipRef, {
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
