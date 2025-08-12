@@ -22,7 +22,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [disabledButtonOnHit, setDisabledButtonOnHit] = useState(false);
   const [weaponId, setWeaponId] = useState(null);
   const [rolledD20, setRolledD20] = useState(null);
-  const [gameRoom, setGameRoom] = useState(null);
+  const [gameRoomID, setGameRoom] = useState(null);
   const [diceValueToShare, setDiceValueToShare] = useState(null);
   const [email, setEmail] = useState(null);
   const [text, setText] = useState("0");
@@ -121,7 +121,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setDisabledButtonOnHit,
         weaponId,
         setWeaponId,
-        gameRoom,
+        gameRoomID,
         setGameRoom,
         userFactionColor,
         setUserFactionColor,

@@ -49,7 +49,7 @@ export default function FleetMap() {
   const navigation = useNavigation();
   const user = FIREBASE_AUTH.currentUser;
   const { gameSectors, setGameSectors } = useMapImageContext();
-  const { data, setData, gameRoom, isUsersTurn } = useStarBoundContext();
+  const { data, setData, gameRoomID, isUsersTurn } = useStarBoundContext();
   const [ships, setShips] = useState([]);
   const [shipPressed, setShipPressed] = useState(null);
   const [showFiringArcs, setShowFiringArcs] = useState(true);
@@ -87,7 +87,7 @@ export default function FleetMap() {
   const panX = useRef(new Animated.Value(0)).current;
   const panY = useRef(new Animated.Value(0)).current;
   const filteredShips = ships.filter(
-    (s) => s.gameRoom === gameRoom && s.gameSector === gameSectors
+    (s) => s.gameRoomID === gameRoomID && s.gameSector === gameSectors
   );
 
   //console.log("scanning battle field in gamemap:", isScanBattleField);
@@ -181,7 +181,7 @@ export default function FleetMap() {
               s.id !== carrier.id &&
               s.type !== "Carrier" &&
               s.user === user.uid &&
-              s.gameRoom === gameRoom &&
+              s.gameRoomID === gameRoomID &&
               s.gameSector === gameSectors &&
               checkIfInFighterRange(s, radius, center)
           );
@@ -483,7 +483,7 @@ export default function FleetMap() {
       setPendingBattle(null);
       setShowConfirmModal(false);
 
-      if (!user || !gameRoom || !gameSectors) return;
+      if (!user || !gameRoomID || !gameSectors) return;
       setShips([]); // Clear animated ships
       setData([]);
       setLoading(true);
@@ -492,7 +492,7 @@ export default function FleetMap() {
         try {
           const q = query(
             collection(FIREBASE_DB, "users", user.uid, "ships"),
-            where("gameRoom", "==", gameRoom),
+            where("gameRoomID", "==", gameRoomID),
             where("gameSector", "==", gameSectors)
           );
 
@@ -510,7 +510,7 @@ export default function FleetMap() {
 
       fetchUserShips();
       setLoading(false);
-    }, [user?.uid, gameRoom, gameSectors])
+    }, [user?.uid, gameRoomID, gameSectors])
   ); */
 
   useFocusEffect(
@@ -530,7 +530,7 @@ export default function FleetMap() {
         setData([]); // Clear context data
 
         // Validate inputs
-        if (!user?.uid || !gameRoom || !gameSectors) {
+        if (!user?.uid || !gameRoomID || !gameSectors) {
           setLoading(false);
           return;
         }
@@ -539,7 +539,7 @@ export default function FleetMap() {
           // Step 1: Fetch user's own ships
           const userQuery = query(
             collection(FIREBASE_DB, "users", user.uid, "ships"),
-            where("gameRoomID", "==", gameRoom),
+            where("gameRoomID", "==", gameRoomID),
             where("gameSector", "==", gameSectors)
           );
           const userSnapshot = await getDocs(userQuery);
@@ -559,7 +559,7 @@ export default function FleetMap() {
             setData,
             setLoading,
             gameSectors,
-            gameRoom,
+            gameRoomID,
           });
         } catch (e) {
           console.error("❌ Error loading fleet data:", e);
@@ -573,7 +573,7 @@ export default function FleetMap() {
       return () => {
         isMounted = false;
       };
-    }, [user?.uid, gameRoom, gameSectors])
+    }, [user?.uid, gameRoomID, gameSectors])
   );
 
   useEffect(() => {
@@ -877,7 +877,7 @@ export default function FleetMap() {
                       (s) =>
                         s.id !== ship.id &&
                         s.type !== "Carrier" &&
-                        s.gameRoom === gameRoom &&
+                        s.gameRoomID === gameRoomID &&
                         s.gameSector === gameSectors &&
                         checkIfInFighterRange(s, radius, center)
                     );

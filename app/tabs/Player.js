@@ -33,6 +33,7 @@ import DropdownComponentSectors from "../../components/dropdown/DropdownComponen
 import { ActivityIndicator } from "react-native";
 import EndRoundModal from "../../components/Modals/EndRoundModal/EndRoundModal";
 import EndTurnModal from "../../components/Modals/EndTurnModal/EndTurnModal";
+import Clipboard from "@react-native-clipboard/clipboard";
 import {
   collection,
   query,
@@ -88,7 +89,7 @@ export default function Player() {
     setGameValue,
     toggleToDelete,
     setToggleToDelete,
-    gameRoom,
+    gameRoomID,
     setGameRoom,
     userFactionColor,
     setUserFactionColor,
@@ -122,6 +123,20 @@ export default function Player() {
     }
     return false;
   });
+
+  const copyToClipboard = () => {
+    try {
+      Clipboard.setString(gameRoomID);
+      Toast.show({
+        type: "success",
+        text1: "StarBound Conquest",
+        text2: "Game Room ID copied to clipboard!",
+        position: "top",
+      });
+    } catch (error) {
+      console.error("Error copying to clipboard:", error);
+    }
+  };
 
   const canEndRoundForAllPlayers = playersInGameRoom
     .filter((player) => player.uid !== user.uid)
@@ -297,7 +312,7 @@ export default function Player() {
           isSelected: false,
           isToggled: false,
           hasBeenInteractedWith: false,
-          gameRoomID: gameRoom,
+          gameRoomID: gameRoomID,
           factionColor: userFactionColor,
           hit: false,
           miss: false,
@@ -325,7 +340,7 @@ export default function Player() {
     } catch (e) {
       console.error("Error adding document: ", e);
     } finally {
-      getFleetData({ data, setData, setUsersInRoom, gameRoom, gameSectors });
+      getFleetData({ data, setData, setUsersInRoom, gameRoomID, gameSectors });
       setIsLoading(false);
     }
   };
@@ -354,11 +369,11 @@ export default function Player() {
 
   useEffect(() => {
     const fetchShipCount = async () => {
-      if (!user || !gameRoom) return;
+      if (!user || !gameRoomID) return;
 
       const shipsRef = query(
         collection(FIREBASE_DB, "users", user.uid, "ships"),
-        where("gameRoomID", "==", gameRoom)
+        where("gameRoomID", "==", gameRoomID)
       );
 
       try {
@@ -370,7 +385,7 @@ export default function Player() {
     };
 
     fetchShipCount();
-  }, [user?.uid, gameRoom]);
+  }, [user?.uid, gameRoomID]);
 
   const incrementShipCount = (type) => {
     setShipCounts((prev) => ({
@@ -431,7 +446,7 @@ export default function Player() {
     const params = {
       username: "Starbound Conquest",
       avatar_url: "",
-      content: `The Round has ended in ${gameRoom}. Resetting your ships.`,
+      content: `The Round has ended in ${gameRoomID}. Resetting your ships.`,
     };
     request.send(JSON.stringify(params)) */
   }
@@ -441,7 +456,7 @@ export default function Player() {
     try {
       // 1. Get players
       const usersRef = collection(FIREBASE_DB, "users");
-      const usersQuery = query(usersRef, where("gameRoomID", "==", gameRoom));
+      const usersQuery = query(usersRef, where("gameRoomID", "==", gameRoomID));
       const snapshot = await getDocs(usersQuery);
 
       const players = snapshot.docs.map((doc) => ({
@@ -487,7 +502,7 @@ export default function Player() {
       const discordMessage = {
         username: "Starbound Conquest",
         avatar_url: "",
-        content: `${username} has ended their turn in ${gameRoom}. ${nextPlayer.displayName} is up next!`,
+        content: `${username} has ended their turn in ${gameRoomID}. ${nextPlayer.displayName} is up next!`,
       };
       await fetch(
         "https://discord.com/api/webhooks/1400193598691217428/wIGjO6m0CUTV1rEanECgljpMRyWbrkLoP0nUtdqDerJOvHzYeOCjgOKx25ImJU8vFoi1",
@@ -519,7 +534,7 @@ export default function Player() {
 
   //reset the round for the current user IF there are no ships in the fleet from ANYONE
   const resetRoundForCurretUser = async () => {
-    if (!user || !gameRoom) return;
+    if (!user || !gameRoomID) return;
     //console.log(hasNoShips, getAllUsersShipToggled.length);
 
     if (!hasNoShips || getAllUsersShipToggled.length > 0) {
@@ -553,9 +568,12 @@ export default function Player() {
 
   //users in a game room, increment the round
   const updateRoundForAllUsers = async () => {
-    if (!user || !gameRoom) return;
+    if (!user || !gameRoomID) return;
     const usersCollection = collection(FIREBASE_DB, "users");
-    const myQuery = query(usersCollection, where("gameRoomID", "==", gameRoom));
+    const myQuery = query(
+      usersCollection,
+      where("gameRoomID", "==", gameRoomID)
+    );
     const querySnapshot = await getDocs(myQuery);
     const updatePromises = querySnapshot.docs.map((doc) => {
       updateDoc(doc.ref, {
@@ -567,10 +585,10 @@ export default function Player() {
 
   //clean up ships with isPendingDestruction
   const cleanUpPendingDestruction = async () => {
-    if (!gameRoom) return;
+    if (!gameRoomID) return;
 
     const usersRef = collection(FIREBASE_DB, "users");
-    const userQuery = query(usersRef, where("gameRoomID", "==", gameRoom));
+    const userQuery = query(usersRef, where("gameRoomID", "==", gameRoomID));
     const userSnapshots = await getDocs(userQuery);
 
     const batch = writeBatch(FIREBASE_DB);
@@ -605,7 +623,7 @@ export default function Player() {
 
   //listen for gameround changes and update the round for all users
   useEffect(() => {
-    if (!FIREBASE_AUTH.currentUser || !user || !gameRoom) return;
+    if (!FIREBASE_AUTH.currentUser || !user || !gameRoomID) return;
     const docRef = doc(FIREBASE_DB, "users", user.uid); // or "gameRooms", depending on your structure
 
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
@@ -615,7 +633,7 @@ export default function Player() {
     });
 
     return () => unsubscribe();
-  }, [gameRoom, user?.uid, FIREBASE_AUTH.currentUser]);
+  }, [gameRoomID, user?.uid, FIREBASE_AUTH.currentUser]);
 
   useEffect(() => {
     const count = getAllUsersShipToggled.filter((s) => s.isToggled).length;
@@ -623,11 +641,11 @@ export default function Player() {
   }, [getAllUsersShipToggled]);
 
   useEffect(() => {
-    if (!FIREBASE_AUTH.currentUser || !gameRoom) return;
+    if (!FIREBASE_AUTH.currentUser || !gameRoomID) return;
 
     const ref = query(
       collection(FIREBASE_DB, "users", user.uid, "ships"),
-      where("gameRoomID", "==", gameRoom)
+      where("gameRoomID", "==", gameRoomID)
     );
 
     const unsubscribe = onSnapshot(ref, (snap) => {
@@ -637,10 +655,10 @@ export default function Player() {
     });
 
     return () => unsubscribe();
-  }, [FIREBASE_AUTH.currentUser, gameRoom]);
+  }, [FIREBASE_AUTH.currentUser, gameRoomID]);
 
   const endRound = async () => {
-    if (!user || !gameRoom) return;
+    if (!user || !gameRoomID) return;
     setShowEndOfRound(true);
 
     try {
@@ -742,7 +760,7 @@ export default function Player() {
       const usersRef = collection(FIREBASE_DB, "users");
       const opponentsQuery = query(
         usersRef,
-        where("gameRoomID", "==", gameRoom),
+        where("gameRoomID", "==", gameRoomID),
         where("email", "!=", user.email)
       );
       const opponentSnapshots = await getDocs(opponentsQuery);
@@ -854,7 +872,7 @@ export default function Player() {
       await updateRoundForAllUsers();
 
       // ✅ Now update player turn states
-      const usersQuery = query(usersRef, where("gameRoomID", "==", gameRoom));
+      const usersQuery = query(usersRef, where("gameRoomID", "==", gameRoomID));
       const snapshot = await getDocs(usersQuery);
 
       const sortedPlayers = snapshot.docs
@@ -886,7 +904,7 @@ export default function Player() {
       setGetAllUsersShipTotals(0);
 
       // 🔄 Refresh local fleet state
-      getFleetData({ data, setData, setUsersInRoom, gameRoom, gameSectors });
+      getFleetData({ data, setData, setUsersInRoom, gameRoomID, gameSectors });
       setShowEndOfRound(false);
     } catch (e) {
       console.error("Error in endYourTurn:", e);
@@ -915,7 +933,7 @@ export default function Player() {
   };
 
   useEffect(() => {
-    if (!gameRoom || !FIREBASE_AUTH.currentUser) return;
+    if (!gameRoomID || !FIREBASE_AUTH.currentUser) return;
     setIsLoadingActivePlayers(true);
 
     const userShipUnsubs = [];
@@ -939,7 +957,7 @@ export default function Player() {
       userSnapshot.docs.forEach((userDoc) => {
         const uid = userDoc.id;
         const userData = userDoc.data();
-        if (userData.gameRoom === gameRoom) {
+        if (userData.gameRoomID === gameRoomID) {
           activePlayers.push({
             uid,
             displayName: userData.displayName,
@@ -950,7 +968,10 @@ export default function Player() {
         colorsMap[uid] = userData.userFactionColor || "#FFFFFF";
 
         const shipsRef = collection(FIREBASE_DB, "users", uid, "ships");
-        const shipsQuery = query(shipsRef, where("gameRoomID", "==", gameRoom));
+        const shipsQuery = query(
+          shipsRef,
+          where("gameRoomID", "==", gameRoomID)
+        );
 
         const unsub = onSnapshot(shipsQuery, (shipsSnap) => {
           const userShips = shipsSnap.docs.map((doc) => doc.data());
@@ -974,7 +995,7 @@ export default function Player() {
       unsubscribeUsers();
       userShipUnsubs.forEach((unsub) => unsub());
     };
-  }, [gameRoom, FIREBASE_AUTH.currentUser]);
+  }, [gameRoomID, FIREBASE_AUTH.currentUser]);
 
   //show end round modal if all ships are toggled or hp is zero
   useFocusEffect(
@@ -1307,16 +1328,12 @@ export default function Player() {
                       justifyContent: "center",
                     }}
                   >
-                    {gameRoom ? (
-                      <Text
+                    {gameRoomID ? (
+                      <TouchableOpacity
+                        onPress={copyToClipboard}
                         style={[
-                          styles.gameRoomText,
+                          styles.gameRoomTextButton,
                           {
-                            marginTop: 10,
-                            padding: 5,
-                            color: toggleToDelete
-                              ? Colors.lighter_red
-                              : Colors.hud,
                             backgroundColor: toggleToDelete
                               ? Colors.deep_red
                               : Colors.hudDarker,
@@ -1326,8 +1343,55 @@ export default function Player() {
                           },
                         ]}
                       >
-                        Game Room: {gameRoom || "Not Connected"}
-                      </Text>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            gap: 10,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: toggleToDelete
+                              ? Colors.deep_red
+                              : "transparent",
+                            borderColor: toggleToDelete
+                              ? Colors.lighter_red
+                              : Colors.hud,
+                          }}
+                        >
+                          <Image
+                            style={[
+                              styles.image,
+                              {
+                                tintColor: toggleToDelete
+                                  ? Colors.lighter_red
+                                  : Colors.hud,
+                              },
+                            ]}
+                            source={require("../../assets/icons/icons8-copy-50.png")}
+                          />
+                          <Text
+                            style={[
+                              {
+                                fontSize: 10,
+                                backgroundColor: "transparent",
+                                textAlign: "center",
+                                fontFamily: "monospace",
+                                padding: 5,
+                                color: toggleToDelete
+                                  ? Colors.lighter_red
+                                  : Colors.hud,
+                                backgroundColor: toggleToDelete
+                                  ? Colors.deep_red
+                                  : "transparent",
+                                borderColor: toggleToDelete
+                                  ? Colors.lighter_red
+                                  : Colors.hud,
+                              },
+                            ]}
+                          >
+                            {gameRoomID || "Not Connected"}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
                     ) : (
                       <Text style={styles.gameRoomText}>
                         Game Room not selected, head over to Settings to pick
@@ -1373,7 +1437,7 @@ export default function Player() {
                     >
                       Total Fleet Value: {totalFleetValue}/{gameValue}
                     </Text>
-                    {gameRoom ? (
+                    {gameRoomID ? (
                       <TouchableOpacity
                         disabled={!isPlayerTurn}
                         onLongPress={resetRoundForCurretUser}
@@ -1922,5 +1986,20 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.hudDarker,
     marginBottom: 10,
     marginTop: 10,
+  },
+  gameRoomTextButton: {
+    backgroundColor: Colors.hudDarker,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    borderRadius: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  image: {
+    width: 25,
+    height: 25,
+    tintColor: Colors.hud,
   },
 });

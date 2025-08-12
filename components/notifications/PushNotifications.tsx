@@ -19,20 +19,20 @@ Notifications.setNotificationHandler({
 
 async function sendPushNotification(
   expoPushToken: string,
-  gameRoom: string,
+  gameRoomID: string,
   user: any
 ) {
   const message = {
     to: expoPushToken,
     sound: "default",
     title: "Starbound Conquest",
-    body: `${user?.displayName} has ended their turn! in game room ${gameRoom}`,
+    body: `${user?.displayName} has ended their turn! in game room ${gameRoomID}`,
     data: { someData: "goes here" },
   };
   console.log(
     `${JSON.stringify(message, null, 2)} to ${
       user?.displayName
-    } in game room ${gameRoom}`
+    } in game room ${gameRoomID}`
   );
 
   await fetch("https://exp.host/--/api/v2/push/send", {
@@ -99,7 +99,7 @@ async function registerForPushNotificationsAsync() {
 
 export default function PushNotifications() {
   const [expoPushToken, setExpoPushToken] = useState("");
-  const { gameRoom } = useStarBoundContext();
+  const { gameRoomID } = useStarBoundContext();
   const user = FIREBASE_AUTH.currentUser;
   console.log("User:", user);
   const [notification, setNotification] = useState<
@@ -117,14 +117,14 @@ export default function PushNotifications() {
 
           const shipsRef = query(
             collection(FIREBASE_DB, "users", user.uid, "ships"),
-            where("gameRoomID", "==", gameRoom)
+            where("gameRoomID", "==", gameRoomID)
           );
           const docRef = doc(FIREBASE_DB, "users", user.uid);
           //console.log("Ship Counts:", numberOfShips);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             const data = docSnap.data();
-            console.log("Profile Image In Player:", data.gameRoom);
+            console.log("Profile Image In Player:", data.gameRoomID);
           }
         } catch (error) {
           console.error("Failed to retrieve user data:", error);
@@ -163,7 +163,7 @@ export default function PushNotifications() {
       <Button
         title="Press to Send Notification"
         onPress={async () => {
-          await sendPushNotification(expoPushToken, gameRoom, user);
+          await sendPushNotification(expoPushToken, gameRoomID, user);
         }}
       />
     </View>

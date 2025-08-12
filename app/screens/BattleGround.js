@@ -57,7 +57,7 @@ export default function BattleGround(props) {
     setDamageDone,
     weaponId,
     setDiceValueToShare,
-    gameRoom,
+    gameRoomID,
     setData,
     setHit,
     setWeaponId,
@@ -304,15 +304,15 @@ export default function BattleGround(props) {
     try {
       const allUsersArray = [];
       const currentUserEmail = FIREBASE_AUTH.currentUser.email;
-      //console.log("Game Room:", gameRoom);
-      //console.log("Game Room:", user.gameRoom);
-      if (!currentUserEmail || !gameRoom) return [];
+      //console.log("Game Room:", gameRoomID);
+      //console.log("Game Room:", user.gameRoomID);
+      if (!currentUserEmail || !gameRoomID) return [];
 
       const usersCollection = collection(FIREBASE_DB, "users");
       const myQuery = query(
         usersCollection,
         where("email", "!=", currentUserEmail),
-        where("gameRoomID", "==", gameRoom)
+        where("gameRoomID", "==", gameRoomID)
         //where("gameSector", "==", gameSectors)
       );
       const querySnapshot = await getDocs(myQuery);
@@ -399,7 +399,7 @@ export default function BattleGround(props) {
 
   //useEffect function to get ALL users and their ships from firestore
   useEffect(() => {
-    if (!FIREBASE_AUTH.currentUser || !gameRoom) return;
+    if (!FIREBASE_AUTH.currentUser || !gameRoomID) return;
     let unsubscribers = [];
 
     const getAllUsersAndListen = async () => {
@@ -437,7 +437,7 @@ export default function BattleGround(props) {
     return () => {
       unsubscribers.forEach((unsubscribe) => unsubscribe());
     };
-  }, [gameRoom, FIREBASE_AUTH.currentUser?.uid]);
+  }, [gameRoomID, FIREBASE_AUTH.currentUser?.uid]);
 
   //useEffect function to clamp the value from going lower than 0 when rolling for damage and setting it to state
   useEffect(() => {

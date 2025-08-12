@@ -27,11 +27,20 @@ export default function SetupGameRoom({
   const [copiedText, setCopiedText] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
+  const disableSaveButton =
+    inputValue.trim() === "" || inputValue.trim() === gameRoomId;
+
   const randomGameRoomId = () => {
-    if (gameRoomId) return;
     const id = String(uuid.v4());
-    setGameRoomId(id);
+    setInputValue(id);
   };
+
+  useEffect(() => {
+    if (showGameRoomModal) {
+      setInputValue(gameRoomId || "");
+      setCopiedText(false);
+    }
+  }, [showGameRoomModal]);
 
   const copyToClipboard = () => {
     try {
@@ -42,6 +51,44 @@ export default function SetupGameRoom({
       }, 2000);
     } catch (error) {
       console.error("Error copying to clipboard:", error);
+    }
+  };
+
+  const handleUpdateGameRoom = async () => {
+    const next = inputValue.trimStart();
+    console.log("Next:", next);
+    if (!next) {
+      Alert.alert("Game Room ID Required", "Please enter a Game Room ID.");
+      return;
+    }
+
+    if (next === gameRoomId) {
+      setShowGameRoomModal(false);
+      return;
+    }
+
+    if (gameRoomId) {
+      console.log("Next in alert:", next);
+      console.log("Game Room ID Already Exists:", gameRoomId);
+      Alert.alert(
+        "Game Room Exists",
+        "You already have a Game Room ID. Do you want to change it?",
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Yes",
+            onPress: async () => {
+              setGameRoomId(next);
+              await handleSaveGameRoom(next);
+              setShowGameRoomModal(false);
+            },
+          },
+        ]
+      );
+    } else {
+      setGameRoomId(next);
+      handleSaveGameRoom();
+      setShowGameRoomModal(false);
     }
   };
 
@@ -67,10 +114,14 @@ export default function SetupGameRoom({
       }}
     >
       <View style={styles.mainContainer}>
+        <Image
+          style={{ width: 315, height: 161 }}
+          source={require("../../assets/images/SC_logo1.png")}
+        />
         <Text style={styles.text1}>
-          You can create a Game Room by entering a unique Game Room ID. This
-          game room ID will be used to identify your Game Room and can be shared
-          with other players. Tap 'Save' to apply the changes.
+          Create a Game Room by entering a unique Game Room ID. This ID will
+          identify your room and can be shared with other players. Tap Save to
+          confirm and apply your changes.
         </Text>
         <Text style={styles.text2}>
           (If you already have a Game Room ID, you can paste it below instead of
@@ -123,14 +174,14 @@ export default function SetupGameRoom({
           }}
         >
           <TouchableOpacity
-            style={styles.gameRoomButton}
-            onPress={async () => {
-              setGameRoomId(inputValue);
-              await handleSaveGameRoom();
-              setShowGameRoomModal(false);
-            }}
+            style={[
+              styles.gameRoomButton,
+              { opacity: disableSaveButton ? 0.5 : 1 },
+            ]}
+            onPress={handleUpdateGameRoom}
+            disabled={disableSaveButton}
           >
-            <Text style={styles.gameRoom}>Save</Text>
+            <Text style={styles.gameRoomID}>Save</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
@@ -141,7 +192,7 @@ export default function SetupGameRoom({
               setShowGameRoomModal(false);
             }}
           >
-            <Text style={styles.gameRoom}>Cancel</Text>
+            <Text style={styles.gameRoomID}>Cancel</Text>
           </TouchableOpacity>
         </View>
         {gameRoomId && (
@@ -219,7 +270,7 @@ const styles = StyleSheet.create({
     fontFamily: "LeagueSpartan-Bold",
     padding: 5,
   },
-  gameRoom: {
+  gameRoomID: {
     color: Colors.hud,
     fontSize: 15,
     textAlign: "center",
@@ -243,7 +294,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     color: Colors.hud,
     fontFamily: "monospace",
-    fontSize: 10,
+    fontSize: 9,
     borderRadius: 2,
     backgroundColor: Colors.hudDarker,
     paddingHorizontal: 10,
@@ -254,7 +305,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     backgroundColor: Colors.dark_gray,
     left: 20,
-    top: -15,
+    top: -10,
     zIndex: 999,
     paddingHorizontal: 8,
     fontSize: 12,

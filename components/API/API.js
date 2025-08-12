@@ -5,17 +5,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export const getFleetData = async ({
   data,
   setData,
-  gameRoom,
+  gameRoomID,
   gameSectors,
 }) => {
   const user = FIREBASE_AUTH.currentUser;
 
-  if (!user || !gameRoom || !gameSectors) return;
+  if (!user || !gameRoomID || !gameSectors) return;
 
   try {
     const shipQuery = query(
       collection(FIREBASE_DB, "users", user.uid, "ships"),
-      where("gameRoomID", "==", gameRoom),
+      where("gameRoomID", "==", gameRoomID),
       where("gameSector", "==", gameSectors)
     );
 

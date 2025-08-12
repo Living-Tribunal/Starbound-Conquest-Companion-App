@@ -16,7 +16,7 @@ import { getAuth } from "firebase/auth";
 import { updateDoc, doc, getDoc } from "firebase/firestore";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import DropdownComponentFactions from "../../components/dropdown/DropdownComponentFactions";
-import DropdownComponentCampaigns from "../../components/dropdown/DropdownComponentCampaigns";
+//import DropdownComponentCampaigns from "../../components/dropdown/DropdownComponentCampaigns";
 import { FIREBASE_AUTH, FIREBASE_STORE, FIREBASE_DB } from "@/FirebaseConfig";
 import { updateProfile } from "firebase/auth";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
@@ -56,7 +56,7 @@ export default function Settings() {
     userProfilePicture,
     setUserProfilePicture,
     data,
-    gameRoom,
+    gameRoomID,
     setGameRoom,
     userFactionColor,
     setUserFactionColor,
@@ -130,7 +130,7 @@ export default function Settings() {
   );
 
   //updating the logged in user profile
-  const updateUserProfile = async () => {
+  const updateUserProfile = async (gameRoomID) => {
     if (!user) return;
     setUpdatingProfile(true);
     try {
@@ -150,14 +150,14 @@ export default function Settings() {
         "users",
         FIREBASE_AUTH.currentUser.uid
       );
-
+      console.log("Game Room ID Being Saved:", gameRoomID);
       await updateDoc(userDocRef, {
         displayName: username,
         photoURL: finalPhotourl,
         factionName: String(faction),
         gameValue: String(gameValue),
         email: user.email,
-        gameRoomID: gameRoom,
+        gameRoomID: gameRoomID,
         userFactionColor: userFactionColor,
       });
       setUpdatingProfile(false);
@@ -267,6 +267,22 @@ export default function Settings() {
     return null;
   };
 
+  //instead of just opening the modal, prompt the user to change the game room id
+  const handleOpenGameRoom = () => {
+    if (gameRoomID) {
+      Alert.alert(
+        "Game Room Exists",
+        "You already have a Game Room ID. Do you want to change it?",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Yes", onPress: () => setShowGameRoomModal(true) },
+        ]
+      );
+    } else {
+      setShowGameRoomModal(true);
+    }
+  };
+
   const handleSignOut = async () => {
     try {
       console.log("Signing out...");
@@ -302,8 +318,8 @@ export default function Settings() {
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
-            {gameRoom ? (
-              <Text style={styles.text1}>Game Room: {gameRoom}</Text>
+            {gameRoomID ? (
+              <Text style={styles.text1}>Game Room: {gameRoomID}</Text>
             ) : (
               <Text style={styles.text1}>
                 Game Room not selected, select one below.
@@ -329,14 +345,12 @@ export default function Settings() {
                 >
                   <TouchableOpacity
                     style={styles.gameRoomButton}
-                    onPress={() => {
-                      setShowGameRoomModal(true);
-                    }}
+                    onPress={handleOpenGameRoom}
                   >
-                    <Text style={styles.gameRoom}>
+                    <Text style={styles.gameRoomID}>
                       {" "}
-                      {gameRoom
-                        ? "Game Room ID: " + gameRoom
+                      {gameRoomID
+                        ? "Game Room ID: " + gameRoomID
                         : "Tap To Set A Game Room"}
                     </Text>
                   </TouchableOpacity>
@@ -467,8 +481,9 @@ export default function Settings() {
         </View>
         <SetupGameRoom
           showGameRoomModal={showGameRoomModal}
+          handleOpenGameRoom={handleOpenGameRoom}
           setShowGameRoomModal={setShowGameRoomModal}
-          gameRoomId={gameRoom}
+          gameRoomId={gameRoomID}
           setGameRoomId={setGameRoom}
           handleSaveGameRoom={updateUserProfile}
         />
@@ -641,7 +656,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "LeagueSpartan-Bold",
   },
-  gameRoom: {
+  gameRoomID: {
     color: Colors.hud,
     fontSize: 10,
     textAlign: "center",
