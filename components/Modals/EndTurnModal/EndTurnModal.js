@@ -23,7 +23,6 @@ export default function EndTurnModal({
   isEndingTurn,
 }) {
   //flatten the data so the flatlist can render it
-  console.log("isEndingTurn:", isEndingTurn);
   const sectorData = Object.entries(myShipsBySectorNotToggled).map(
     ([sector, ships]) => ({
       sector,

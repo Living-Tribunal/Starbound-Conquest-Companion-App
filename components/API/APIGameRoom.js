@@ -15,7 +15,7 @@ export const getAllShipsInGameRoom = async ({
 
   const usersQuery = query(
     collection(FIREBASE_DB, "users"),
-    where("gameRoom", "==", gameRoom)
+    where("gameRoomID", "==", gameRoom)
   );
 
   // Store all ships per userId to rebuild a clean combined array

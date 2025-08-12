@@ -15,7 +15,7 @@ export const getFleetData = async ({
   try {
     const shipQuery = query(
       collection(FIREBASE_DB, "users", user.uid, "ships"),
-      where("gameRoom", "==", gameRoom),
+      where("gameRoomID", "==", gameRoom),
       where("gameSector", "==", gameSectors)
     );
 

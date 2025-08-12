@@ -32,6 +32,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ColorPickerComponent from "../../components/ColorPicker/ColorPicker";
+import SetupGameRoom from "../../app/screens/SetupGameRoom";
 
 export default function Settings() {
   const user = FIREBASE_AUTH.currentUser;
@@ -63,16 +64,7 @@ export default function Settings() {
   const [isFocus, setIsFocus] = useState(false);
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [isFocusValue, setIsFocusValue] = useState(false);
-  /*   console.log("User Selected Profile Picture In Settings:", userProfilePicture);
-  console.log("Characther Creation Picture In Settings:", profile); */
-
-  const showToast = () => {
-    Toast.show({
-      type: "success",
-      text1: "StarBound Conquest",
-      text2: "Saved!",
-    });
-  };
+  const [showGameRoomModal, setShowGameRoomModal] = useState(false);
 
   const toastNotification = () => {
     Toast.show({
@@ -122,7 +114,7 @@ export default function Settings() {
             setProfile(data.photoURL || "");
             setFaction(data.factionName || "");
             setGameValue(data.gameValue || "");
-            setGameRoom(data.gameRoom || "");
+            setGameRoom(data.gameRoomID || "");
             setUserFactionColor(data.userFactionColor || "");
             //console.log("User in Settings:", JSON.stringify(data, null, 2));
           }
@@ -165,7 +157,7 @@ export default function Settings() {
         factionName: String(faction),
         gameValue: String(gameValue),
         email: user.email,
-        gameRoom: gameRoom,
+        gameRoomID: gameRoom,
         userFactionColor: userFactionColor,
       });
       setUpdatingProfile(false);
@@ -279,7 +271,6 @@ export default function Settings() {
     try {
       console.log("Signing out...");
       await FIREBASE_AUTH.signOut();
-      //await AsyncStorage.clear();
       navigation.navigate("Login");
     } catch (error) {
       console.error("Error signing out:", error);
@@ -329,7 +320,29 @@ export default function Settings() {
               >
                 <ColorPickerComponent />
                 <DropdownComponentFactions />
-                <DropdownComponentCampaigns />
+                <View
+                  style={{
+                    gap: 10,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <TouchableOpacity
+                    style={styles.gameRoomButton}
+                    onPress={() => {
+                      setShowGameRoomModal(true);
+                    }}
+                  >
+                    <Text style={styles.gameRoom}>
+                      {" "}
+                      {gameRoom
+                        ? "Game Room ID: " + gameRoom
+                        : "Tap To Set A Game Room"}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* <DropdownComponentCampaigns /> */}
                 <View
                   style={{
                     flexDirection: "row",
@@ -383,46 +396,12 @@ export default function Settings() {
                 </Text>
               </View>
             )}
-
-            {/* <View style={{ flexDirection: "row", gap: 10 }}>
-              <View style={{ width: "68%", position: "relative" }}>
-                {renderLabel()}
-                <TextInput
-                  autoCorrect={false}
-                  spellCheck={false}
-                  style={styles.textInput}
-                  onChangeText={(text) => {
-                    setUsername(text.trimStart());
-                  }}
-                  placeholder={!isFocus ? "Username" : ""}
-                  value={username}
-                  onFocus={() => setIsFocus(true)}
-                  onBlur={() => setIsFocus(false)}
-                />
-              </View>
-              <View style={{ width: "25%", position: "relative" }}>
-                {renderLabelGameValue()}
-                <TextInput
-                  maxLength={12}
-                  keyboardType="numeric"
-                  style={styles.textInput}
-                  onChangeText={(text) => {
-                    setGameValue(text.trimStart());
-                  }}
-                  placeholder={!isFocusValue ? "Max Value" : ""}
-                  value={gameValue}
-                  onFocus={() => setIsFocusValue(true)}
-                  onBlur={() => setIsFocusValue(false)}
-                />
-              </View>
-            </View> */}
-
             <View style={styles.heroModalContainerButtons}>
               <TouchableOpacity
                 disabled={data.length > 0}
                 style={data.length > 0 ? styles.buttonDisabled : styles.button}
-                onPress={() => {
-                  checkForUsernamePhotoFaction();
+                onPress={async () => {
+                  await checkForUsernamePhotoFaction();
                 }}
               >
                 <Text
@@ -486,6 +465,13 @@ export default function Settings() {
             </TouchableOpacity>
           </View>
         </View>
+        <SetupGameRoom
+          showGameRoomModal={showGameRoomModal}
+          setShowGameRoomModal={setShowGameRoomModal}
+          gameRoomId={gameRoom}
+          setGameRoomId={setGameRoom}
+          handleSaveGameRoom={updateUserProfile}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -654,5 +640,23 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: "center",
     fontFamily: "LeagueSpartan-Bold",
+  },
+  gameRoom: {
+    color: Colors.hud,
+    fontSize: 10,
+    textAlign: "center",
+    fontFamily: "LeagueSpartan-Bold",
+  },
+  gameRoomButton: {
+    width: "95%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    borderRadius: 3,
+    backgroundColor: Colors.hudDarker,
+    padding: 5,
+    marginBottom: 15,
   },
 });

@@ -117,7 +117,7 @@ export default function PushNotifications() {
 
           const shipsRef = query(
             collection(FIREBASE_DB, "users", user.uid, "ships"),
-            where("gameRoom", "==", gameRoom)
+            where("gameRoomID", "==", gameRoom)
           );
           const docRef = doc(FIREBASE_DB, "users", user.uid);
           //console.log("Ship Counts:", numberOfShips);

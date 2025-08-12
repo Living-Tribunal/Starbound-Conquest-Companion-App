@@ -539,7 +539,7 @@ export default function FleetMap() {
           // Step 1: Fetch user's own ships
           const userQuery = query(
             collection(FIREBASE_DB, "users", user.uid, "ships"),
-            where("gameRoom", "==", gameRoom),
+            where("gameRoomID", "==", gameRoom),
             where("gameSector", "==", gameSectors)
           );
           const userSnapshot = await getDocs(userQuery);

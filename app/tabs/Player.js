@@ -297,7 +297,7 @@ export default function Player() {
           isSelected: false,
           isToggled: false,
           hasBeenInteractedWith: false,
-          gameRoom: gameRoom,
+          gameRoomID: gameRoom,
           factionColor: userFactionColor,
           hit: false,
           miss: false,
@@ -344,7 +344,7 @@ export default function Player() {
         setUsername(data.displayName || "");
         setProfile(data.photoURL || "");
         setFaction(data.factionName || "");
-        setGameRoom(data.gameRoom || "");
+        setGameRoom(data.gameRoomID || "");
         setUserFactionColor(data.userFactionColor || "");
         setGameValue(data.gameValue || "");
       }
@@ -358,7 +358,7 @@ export default function Player() {
 
       const shipsRef = query(
         collection(FIREBASE_DB, "users", user.uid, "ships"),
-        where("gameRoom", "==", gameRoom)
+        where("gameRoomID", "==", gameRoom)
       );
 
       try {
@@ -441,7 +441,7 @@ export default function Player() {
     try {
       // 1. Get players
       const usersRef = collection(FIREBASE_DB, "users");
-      const usersQuery = query(usersRef, where("gameRoom", "==", gameRoom));
+      const usersQuery = query(usersRef, where("gameRoomID", "==", gameRoom));
       const snapshot = await getDocs(usersQuery);
 
       const players = snapshot.docs.map((doc) => ({
@@ -555,7 +555,7 @@ export default function Player() {
   const updateRoundForAllUsers = async () => {
     if (!user || !gameRoom) return;
     const usersCollection = collection(FIREBASE_DB, "users");
-    const myQuery = query(usersCollection, where("gameRoom", "==", gameRoom));
+    const myQuery = query(usersCollection, where("gameRoomID", "==", gameRoom));
     const querySnapshot = await getDocs(myQuery);
     const updatePromises = querySnapshot.docs.map((doc) => {
       updateDoc(doc.ref, {
@@ -570,7 +570,7 @@ export default function Player() {
     if (!gameRoom) return;
 
     const usersRef = collection(FIREBASE_DB, "users");
-    const userQuery = query(usersRef, where("gameRoom", "==", gameRoom));
+    const userQuery = query(usersRef, where("gameRoomID", "==", gameRoom));
     const userSnapshots = await getDocs(userQuery);
 
     const batch = writeBatch(FIREBASE_DB);
@@ -627,7 +627,7 @@ export default function Player() {
 
     const ref = query(
       collection(FIREBASE_DB, "users", user.uid, "ships"),
-      where("gameRoom", "==", gameRoom)
+      where("gameRoomID", "==", gameRoom)
     );
 
     const unsubscribe = onSnapshot(ref, (snap) => {
@@ -742,7 +742,7 @@ export default function Player() {
       const usersRef = collection(FIREBASE_DB, "users");
       const opponentsQuery = query(
         usersRef,
-        where("gameRoom", "==", gameRoom),
+        where("gameRoomID", "==", gameRoom),
         where("email", "!=", user.email)
       );
       const opponentSnapshots = await getDocs(opponentsQuery);
@@ -854,7 +854,7 @@ export default function Player() {
       await updateRoundForAllUsers();
 
       // ✅ Now update player turn states
-      const usersQuery = query(usersRef, where("gameRoom", "==", gameRoom));
+      const usersQuery = query(usersRef, where("gameRoomID", "==", gameRoom));
       const snapshot = await getDocs(usersQuery);
 
       const sortedPlayers = snapshot.docs
@@ -950,7 +950,7 @@ export default function Player() {
         colorsMap[uid] = userData.userFactionColor || "#FFFFFF";
 
         const shipsRef = collection(FIREBASE_DB, "users", uid, "ships");
-        const shipsQuery = query(shipsRef, where("gameRoom", "==", gameRoom));
+        const shipsQuery = query(shipsRef, where("gameRoomID", "==", gameRoom));
 
         const unsub = onSnapshot(shipsQuery, (shipsSnap) => {
           const userShips = shipsSnap.docs.map((doc) => doc.data());
