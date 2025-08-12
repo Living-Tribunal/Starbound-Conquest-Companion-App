@@ -11,10 +11,12 @@ import {
   ScrollView,
   Alert,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 import uuid from "react-native-uuid";
 import Clipboard from "@react-native-clipboard/clipboard";
+import LoadingComponent from "@/components/loading/LoadingComponent";
 
 export default function SetupGameRoom({
   showGameRoomModal,
@@ -26,6 +28,7 @@ export default function SetupGameRoom({
   const [isFocusValue, setIsFocusValue] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const disableSaveButton =
     inputValue.trim() === "" || inputValue.trim() === gameRoomId;
@@ -55,7 +58,7 @@ export default function SetupGameRoom({
   };
 
   const handleUpdateGameRoom = async () => {
-    const next = inputValue.trimStart();
+    const next = inputValue.trim();
     console.log("Next:", next);
     if (!next) {
       Alert.alert("Game Room ID Required", "Please enter a Game Room ID.");
@@ -78,17 +81,34 @@ export default function SetupGameRoom({
           {
             text: "Yes",
             onPress: async () => {
-              setGameRoomId(next);
-              await handleSaveGameRoom(next);
-              setShowGameRoomModal(false);
+              setLoading(true);
+              try {
+                await handleSaveGameRoom(next);
+                setGameRoomId(next);
+                setShowGameRoomModal(false);
+              } catch (e) {
+                console.error("Error saving game room:", e);
+              } finally {
+                setLoading(false);
+              }
             },
           },
         ]
       );
-    } else {
+      return;
+    }
+
+    // No existing room: save directly
+    setLoading(true);
+    try {
+      await handleSaveGameRoom(next);
       setGameRoomId(next);
-      handleSaveGameRoom();
-      setShowGameRoomModal(false);
+      setTimeout(() => setShowGameRoomModal(false), 300);
+    } catch (e) {
+      console.error(e);
+      Alert.alert("Save failed", "Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -133,9 +153,7 @@ export default function SetupGameRoom({
             placeholderTextColor={Colors.hud}
             value={inputValue}
             style={styles.textInput}
-            onChangeText={(text) => {
-              setInputValue(text.trimStart());
-            }}
+            onChangeText={setInputValue}
             placeholder={!isFocusValue ? "Game Room ID" : ""}
             onFocus={() => setIsFocusValue(true)}
             onBlur={() => setIsFocusValue(false)}
@@ -163,6 +181,13 @@ export default function SetupGameRoom({
             </TouchableOpacity>
           </View>
         </View>
+        <View style={{ marginTop: 10 }}>
+          <Text
+            style={{ fontFamily: "LeagueSpartan-Regular", color: Colors.hud }}
+          >
+            {loading ? "Hang Tight, Creating Game Room..." : ""}
+          </Text>
+        </View>
 
         <View
           style={{
@@ -174,6 +199,7 @@ export default function SetupGameRoom({
           }}
         >
           <TouchableOpacity
+            disabled={loading}
             style={[
               styles.gameRoomButton,
               { opacity: disableSaveButton ? 0.5 : 1 },
@@ -181,18 +207,24 @@ export default function SetupGameRoom({
             onPress={handleUpdateGameRoom}
             disabled={disableSaveButton}
           >
-            <Text style={styles.gameRoomID}>Save</Text>
+            <Text style={styles.gameRoomID}>
+              {loading ? <ActivityIndicator size="small" /> : "Save"}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={loading}
             style={[
               styles.gameRoomButton,
               { backgroundColor: Colors.dark_gray },
             ]}
             onPress={() => {
               setShowGameRoomModal(false);
+              setLoading(false);
             }}
           >
-            <Text style={styles.gameRoomID}>Cancel</Text>
+            <Text style={styles.gameRoomID}>
+              {loading ? <ActivityIndicator size="small" /> : "Cancel"}
+            </Text>
           </TouchableOpacity>
         </View>
         {gameRoomId && (

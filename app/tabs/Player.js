@@ -455,27 +455,39 @@ export default function Player() {
     setIsEndingTurn(true);
     try {
       // 1. Get players
+      if (!user || !gameRoomID) throw new Error("Missing user or room");
       const usersRef = collection(FIREBASE_DB, "users");
       const usersQuery = query(usersRef, where("gameRoomID", "==", gameRoomID));
       const snapshot = await getDocs(usersQuery);
 
-      const players = snapshot.docs.map((doc) => ({
-        uid: doc.id,
-        ...doc.data(),
-      }));
+      const players = snapshot.docs.map((d) => ({ uid: d.id, ...d.data() }));
       const sortedPlayers = players.sort((a, b) => a.uid.localeCompare(b.uid));
+
       const currentIndex = sortedPlayers.findIndex((p) => p.uid === user.uid);
+      if (currentIndex === -1) throw new Error("You’re not in this room");
       const nextIndex = (currentIndex + 1) % sortedPlayers.length;
       const currentPlayer = sortedPlayers[currentIndex];
       const nextPlayer = sortedPlayers[nextIndex];
 
       // 2. Update turn state in Firestore
-      const currentRef = doc(FIREBASE_DB, "users", currentPlayer.uid);
-      const nextRef = doc(FIREBASE_DB, "users", nextPlayer.uid);
-      await Promise.all([
-        updateDoc(currentRef, { isUserTurn: false }),
-        updateDoc(nextRef, { isUserTurn: true }),
-      ]);
+      if (!currentPlayer.isUserTurn) {
+        Toast.show({
+          type: "info",
+          text1: "Not your turn anymore",
+          position: "top",
+        });
+        return;
+      }
+
+      const userBatch = writeBatch(FIREBASE_DB);
+
+      userBatch.update(doc(FIREBASE_DB, "users", currentPlayer.uid), {
+        isUserTurn: false,
+      });
+      userBatch.update(doc(FIREBASE_DB, "users", nextPlayer.uid), {
+        isUserTurn: true,
+      });
+      await userBatch.commit();
 
       //3. Update ship isToggled for non-toggled ships
       const shipsRef = collection(FIREBASE_DB, "users", user.uid, "ships");
@@ -1169,7 +1181,7 @@ export default function Player() {
                     gap: 20,
                   }}
                 >
-                  {isShowPlayers ? (
+                  {gameRoomID && isShowPlayers ? (
                     playersInGameRoom
                       .filter((player) => isUsersTurn[player.uid])
                       .map((player) => (
@@ -1203,7 +1215,9 @@ export default function Player() {
                             marginBottom: 5,
                           }}
                         >
-                          All Players:
+                          {gameRoomID
+                            ? "All Players:"
+                            : "Waiting for players..."}
                         </Text>
                       </View>
 
@@ -1241,11 +1255,11 @@ export default function Player() {
                   )}
                 </View>
               </TouchableOpacity>
-              {!isPlayerTurn && (
+              {gameRoomID && !isPlayerTurn ? (
                 <Text style={{ textAlign: "center", color: Colors.hud }}>
                   Waiting for your turn...
                 </Text>
-              )}
+              ) : null}
 
               <ViewShot
                 style={{ justifyContent: "center", alignItems: "center" }}
@@ -1394,8 +1408,8 @@ export default function Player() {
                       </TouchableOpacity>
                     ) : (
                       <Text style={styles.gameRoomText}>
-                        Game Room not selected, head over to Settings to pick
-                        one
+                        Game Room not selected, head over to Settings to create
+                        or join one!
                       </Text>
                     )}
                     <Text
@@ -1530,7 +1544,10 @@ export default function Player() {
                           borderWidth: 1,
                           width: "30%",
                           opacity:
-                            shouldEndRound || myToggledOrDestroyingShips
+                            shouldEndRound ||
+                            myToggledOrDestroyingShips ||
+                            !gameRoomID ||
+                            hasNoShips
                               ? 0.5
                               : 1,
                           borderColor:
@@ -1568,17 +1585,28 @@ export default function Player() {
                           styles.editContainer,
                           {
                             opacity:
-                              !isPlayerTurn || hasNoShips || shouldEndRound
+                              !isPlayerTurn ||
+                              hasNoShips ||
+                              shouldEndRound ||
+                              !gameRoomID
                                 ? 0.5
                                 : 1,
                             backgroundColor:
-                              !isPlayerTurn || hasNoShips || shouldEndRound
+                              !isPlayerTurn ||
+                              hasNoShips ||
+                              shouldEndRound ||
+                              !gameRoomID
                                 ? Colors.hudDarker
                                 : Colors.hud,
                             width: "35%",
                           },
                         ]}
-                        disabled={!isPlayerTurn || hasNoShips || shouldEndRound}
+                        disabled={
+                          !isPlayerTurn ||
+                          hasNoShips ||
+                          shouldEndRound ||
+                          !gameRoomID
+                        }
                         onPress={async () => setShowEndTurnModal(true)}
                       >
                         <Text
@@ -1586,7 +1614,10 @@ export default function Player() {
                             styles.textValue,
                             {
                               color:
-                                !isPlayerTurn || hasNoShips || shouldEndRound
+                                !isPlayerTurn ||
+                                hasNoShips ||
+                                shouldEndRound ||
+                                !gameRoomID
                                   ? Colors.hud
                                   : Colors.hudDarker,
                               fontSize: 12,
@@ -1951,7 +1982,7 @@ const styles = StyleSheet.create({
     fontFamily: "LeagueSpartan-Light",
     textAlign: "center",
     marginBottom: 5,
-    marginTop: 5,
+    marginTop: 15,
     borderWidth: 1,
     borderColor: Colors.hud,
     backgroundColor: Colors.hudDarker,

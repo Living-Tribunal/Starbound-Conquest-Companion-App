@@ -13,11 +13,17 @@ import {
 import React, { useState, useEffect, useCallback } from "react";
 import { Colors } from "@/constants/Colors";
 import { getAuth } from "firebase/auth";
-import { updateDoc, doc, getDoc } from "firebase/firestore";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
+import {
+  updateDoc,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+import { SafeAreaView } from "react-native-safe-area-context";
 import DropdownComponentFactions from "../../components/dropdown/DropdownComponentFactions";
 //import DropdownComponentCampaigns from "../../components/dropdown/DropdownComponentCampaigns";
-import { FIREBASE_AUTH, FIREBASE_STORE, FIREBASE_DB } from "@/FirebaseConfig";
+import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { updateProfile } from "firebase/auth";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
 import { useFocusEffect } from "@react-navigation/native";
@@ -101,8 +107,6 @@ export default function Settings() {
     useCallback(() => {
       const getUserData = async () => {
         try {
-          const auth = getAuth();
-          const user = auth.currentUser;
           if (!user) return;
 
           const docRef = doc(FIREBASE_DB, "users", user.uid);
@@ -130,6 +134,40 @@ export default function Settings() {
   );
 
   //updating the logged in user profile
+
+  async function updateGameRoomId(newId) {
+    const uid = FIREBASE_AUTH.currentUser?.uid;
+    if (!uid) return;
+
+    const trimmedNewId = String(newId).trim();
+    if (!trimmedNewId) return;
+
+    try {
+      const userRef = doc(FIREBASE_DB, "users", FIREBASE_AUTH.currentUser.uid);
+      await updateDoc(userRef, {
+        gameRoomID: trimmedNewId,
+      });
+
+      /*       const gameRoomRef = doc(FIREBASE_DB, "gameRooms", trimmedNewId);
+      await getDoc(gameRoomRef);
+      await setDoc(
+        gameRoomRef,
+        {
+          createdAt: serverTimestamp(),
+          createdBy: uid,
+          started: false,
+          turnOrder: [uid],
+          currentTurnIndex: 0,
+          currentTurnUid: uid,
+        },
+        { merge: true }
+      );*/
+      console.log("Game Room Created:", trimmedNewId);
+    } catch (e) {
+      console.error("Error updating game room ID:", e);
+    }
+  }
+
   const updateUserProfile = async (gameRoomID) => {
     if (!user) return;
     setUpdatingProfile(true);
@@ -152,13 +190,12 @@ export default function Settings() {
       );
       console.log("Game Room ID Being Saved:", gameRoomID);
       await updateDoc(userDocRef, {
-        displayName: username,
-        photoURL: finalPhotourl,
-        factionName: String(faction),
-        gameValue: String(gameValue),
-        email: user.email,
-        gameRoomID: gameRoomID,
-        userFactionColor: userFactionColor,
+        displayName: username ?? "",
+        photoURL: finalPhotourl ?? "",
+        factionName: String(faction ?? ""),
+        gameValue: String(gameValue ?? ""),
+        email: user.email ?? "",
+        userFactionColor: userFactionColor ?? "",
       });
       setUpdatingProfile(false);
     } catch (error) {
@@ -485,7 +522,7 @@ export default function Settings() {
           setShowGameRoomModal={setShowGameRoomModal}
           gameRoomId={gameRoomID}
           setGameRoomId={setGameRoom}
-          handleSaveGameRoom={updateUserProfile}
+          handleSaveGameRoom={updateGameRoomId}
         />
       </ScrollView>
     </SafeAreaView>
@@ -670,7 +707,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.hud,
     borderRadius: 3,
-    backgroundColor: Colors.hudDarker,
+    backgroundColor: Colors.dark_gray,
     padding: 5,
     marginBottom: 15,
   },
