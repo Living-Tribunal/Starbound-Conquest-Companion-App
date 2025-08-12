@@ -242,6 +242,20 @@ export default function Player() {
     }
   };
 
+  const addingShipToFleet = () => {
+    if (!gameRoomID) {
+      Toast.show({
+        type: "info",
+        text1: "Starbound Conquest",
+        text2: "You must select/join a game room to add a ship.",
+        position: "top",
+      });
+      return;
+    } else {
+      addShipToFleet(item.ships[0], shipCounts[item.type] || 1);
+    }
+  };
+
   const getRandomColorForCarrier = () => {
     return (
       "#" +
@@ -1208,7 +1222,9 @@ export default function Player() {
                       <View>
                         <Text
                           style={{
-                            color: Colors.gold,
+                            color: gameRoomID
+                              ? Colors.gold
+                              : Colors.green_toggle,
                             fontFamily: "LeagueSpartan-Bold",
                             fontSize: 15,
                             textAlign: "center",
@@ -1451,7 +1467,7 @@ export default function Player() {
                     >
                       Total Fleet Value: {totalFleetValue}/{gameValue}
                     </Text>
-                    {gameRoomID ? (
+                    {gameRoomID && (
                       <TouchableOpacity
                         disabled={!isPlayerTurn}
                         onLongPress={resetRoundForCurretUser}
@@ -1477,8 +1493,6 @@ export default function Player() {
                           Round: {gameRound || 0}
                         </Text>
                       </TouchableOpacity>
-                    ) : (
-                      <Text style={styles.gameRoomText}>0</Text>
                     )}
                   </View>
                   <View
@@ -1771,9 +1785,7 @@ export default function Player() {
                   shouldEndRound ||
                   myToggledOrDestroyingShips
                 }
-                onPress={() =>
-                  addShipToFleet(item.ships[0], shipCounts[item.type] || 1)
-                }
+                onPress={addingShipToFleet}
                 style={styles.button}
               >
                 <Text style={styles.addButtonText}>
