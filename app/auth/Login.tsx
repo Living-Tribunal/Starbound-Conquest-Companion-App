@@ -86,6 +86,7 @@ const Login = () => {
       try {
         const storedUsername = await AsyncStorage.getItem("UserName");
         setGetUsername(storedUsername || "Commander");
+        console.log("Username:", storedUsername);
       } catch (error) {
         console.error("Failed to retrieve username:", error);
       }

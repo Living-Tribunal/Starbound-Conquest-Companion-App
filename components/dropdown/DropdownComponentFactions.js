@@ -32,6 +32,7 @@ const DropdownComponentFactions = () => {
         style={[styles.dropdown, isFocus && { borderColor: Colors.hud }]}
         placeholderStyle={styles.placeholderStyle}
         selectedTextStyle={styles.selectedTextStyle}
+        containerStyle={styles.containerStyle}
         inputSearchStyle={styles.inputSearchStyle}
         iconStyle={styles.iconStyle}
         data={GameFactions}
@@ -57,6 +58,26 @@ const DropdownComponentFactions = () => {
             name="Safety"
             size={20}
           />
+        )}
+        renderItem={(item) => (
+          <View
+            style={{
+              padding: 10,
+              borderBottomWidth: 1,
+              borderColor: Colors.hud,
+              backgroundColor: Colors.hudDarker,
+            }}
+          >
+            <Text
+              style={{
+                color: Colors.hud,
+                fontFamily: "LeagueSpartan-Regular",
+                fontSize: 18,
+              }}
+            >
+              {item.value}
+            </Text>
+          </View>
         )}
       />
     </View>
@@ -96,18 +117,32 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 16,
+    color: Colors.hud,
   },
   selectedTextStyle: {
     fontSize: 13,
     color: Colors.hud,
     backgroundColor: Colors.hudDarker,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
   iconStyle: {
     width: 20,
     height: 20,
   },
   inputSearchStyle: {
-    height: 40,
+    height: 45,
     fontSize: 16,
+    borderColor: Colors.hud,
+    color: Colors.hud,
+    borderRadius: 5,
+  },
+  containerStyle: {
+    backgroundColor: Colors.hudDarker,
+    borderColor: Colors.hud,
+    borderWidth: 1,
+    borderRadius: 4,
+    marginTop: 5,
+    padding: 8,
   },
 });

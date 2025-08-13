@@ -148,16 +148,19 @@ export default function SetupGameRoom({
           creating a new one. Just make sure you tap save!)
         </Text>
         <View style={{ flexDirection: "row", gap: 10 }}>
-          {renderLabelGameValue()}
-          <TextInput
-            placeholderTextColor={Colors.hud}
-            value={inputValue}
-            style={styles.textInput}
-            onChangeText={setInputValue}
-            placeholder={!isFocusValue ? "Game Room ID" : ""}
-            onFocus={() => setIsFocusValue(true)}
-            onBlur={() => setIsFocusValue(false)}
-          />
+          <View style={{ width: "80%", position: "relative" }}>
+            {renderLabelGameValue()}
+            <TextInput
+              placeholderTextColor={Colors.hud}
+              value={inputValue}
+              style={styles.textInput}
+              onChangeText={setInputValue}
+              placeholder={!isFocusValue ? "Game Room ID" : ""}
+              onFocus={() => setIsFocusValue(true)}
+              onBlur={() => setIsFocusValue(false)}
+            />
+          </View>
+
           <View style={{ flexDirection: "row", gap: 10 }}>
             <TouchableOpacity
               style={styles.gameRoomIDButton}
@@ -325,19 +328,16 @@ const styles = StyleSheet.create({
     borderColor: Colors.hud,
     borderWidth: 1,
     color: Colors.hud,
-    fontFamily: "monospace",
-    fontSize: 9,
-    borderRadius: 2,
+    fontFamily: "LeagueSpartan-Light",
+    fontSize: 16,
+    borderRadius: 5,
     backgroundColor: Colors.hudDarker,
-    paddingHorizontal: 10,
-    width: "75%",
-    alignSelf: "center",
   },
   label: {
     position: "absolute",
     backgroundColor: Colors.dark_gray,
-    left: 20,
-    top: -10,
+    left: 10,
+    top: -15,
     zIndex: 999,
     paddingHorizontal: 8,
     fontSize: 12,

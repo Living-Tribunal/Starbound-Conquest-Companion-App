@@ -134,6 +134,7 @@ export default function Settings() {
   );
 
   //updating the logged in user profile
+  console.log("DIsplay Name:", data.displayName);
 
   async function updateGameRoomId(newId) {
     const uid = FIREBASE_AUTH.currentUser?.uid;
@@ -345,23 +346,24 @@ export default function Settings() {
               }}
             >
               <Text style={styles.subHeaderText}>
-                Enter or update your information below, then tap 'Save' to apply
-                the changes. Make sure to select your faction, game room, and
-                faction color, set your game value, and choose a profile
-                picture.
+                Fill in or update your details below, then{" "}
+                <Text
+                  style={{
+                    color: Colors.green_toggle,
+                    fontWeight: "bold",
+                    fontSize: 9,
+                  }}
+                >
+                  tap Save to confirm your changes.
+                </Text>{" "}
+                Be sure to choose your faction, game room, and faction color,
+                set your game limit value, and select a profile picture.
               </Text>
             </View>
           </View>
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
-            {gameRoomID ? (
-              <Text style={styles.text1}>Game Room: {gameRoomID}</Text>
-            ) : (
-              <Text style={styles.text1}>
-                Game Room not selected, select one below.
-              </Text>
-            )}
             <ImagePicker factionColor={userFactionColor} />
             {!data.length ? (
               <View
@@ -384,8 +386,12 @@ export default function Settings() {
                     style={styles.gameRoomButton}
                     onPress={handleOpenGameRoom}
                   >
-                    <Text style={styles.gameRoomID}>
-                      {" "}
+                    <Text
+                      style={[
+                        styles.gameRoomID,
+                        { fontSize: gameRoomID ? 10 : 15 },
+                      ]}
+                    >
                       {gameRoomID
                         ? "Game Room ID: " + gameRoomID
                         : "Tap To Set A Game Room"}
@@ -425,6 +431,7 @@ export default function Settings() {
                       onChangeText={(text) => {
                         setGameValue(text.trimStart());
                       }}
+                      placeholderTextColor={Colors.hud}
                       placeholder={!isFocusValue ? "Max Value" : ""}
                       value={gameValue}
                       onFocus={() => setIsFocusValue(true)}
@@ -455,11 +462,7 @@ export default function Settings() {
                   await checkForUsernamePhotoFaction();
                 }}
               >
-                <Text
-                  style={data.length > 0 ? styles.titleDisabled : styles.title}
-                >
-                  Save User Info
-                </Text>
+                <Text style={styles.title}>Save User Info</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -585,6 +588,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     backgroundColor: Colors.underTextGray,
     borderRadius: 5,
+    padding: 5,
   },
   textInput: {
     height: 50,
@@ -593,8 +597,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: Colors.hud,
     fontFamily: "monospace",
-    fontSize: 16,
-    borderRadius: 2,
+    fontSize: 13,
+    borderRadius: 5,
     backgroundColor: Colors.hudDarker,
     paddingHorizontal: 10,
   },
@@ -694,7 +698,7 @@ const styles = StyleSheet.create({
     fontFamily: "LeagueSpartan-Bold",
   },
   gameRoomID: {
-    color: Colors.hud,
+    color: Colors.hudDarker,
     fontSize: 10,
     textAlign: "center",
     fontFamily: "LeagueSpartan-Bold",
@@ -707,7 +711,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.hud,
     borderRadius: 3,
-    backgroundColor: Colors.dark_gray,
+    backgroundColor: Colors.hud,
     padding: 5,
     marginBottom: 15,
   },

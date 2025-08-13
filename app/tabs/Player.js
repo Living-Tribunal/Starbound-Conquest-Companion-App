@@ -46,7 +46,6 @@ import {
   setDoc,
   increment,
   onSnapshot,
-  deleteDoc,
   writeBatch,
 } from "firebase/firestore";
 
@@ -1133,9 +1132,10 @@ export default function Player() {
                     Welcome to Starbound Conquest! Prepare to command your fleet
                     and conquer the stars. Below, you'll find a quick snapshot
                     of your fleet's status. Use the buttons to navigate to
-                    screens where you can manage your ships' stats, toggle their
-                    turns, and issue orders. Also tap on the settings to change
-                    your Faction, Username and Profile Picture.
+                    screens where you can manage your ship's stats, view the
+                    galaxy map and issue orders. Also tap on the settings to
+                    change your Faction, Username, Profile Picture, and create a
+                    Game Room.
                   </Text>
                 ) : (
                   <Text style={styles.subHeaderText}>Game Info</Text>
@@ -1182,8 +1182,10 @@ export default function Player() {
                 <View
                   style={{
                     borderWidth: 1,
-                    borderColor: currentTurnColor,
-                    boxShadow: `0px 0px 10px ${currentTurnColor}`,
+                    borderColor: gameRoomID ? currentTurnColor : Colors.hud,
+                    boxShadow: gameRoomID
+                      ? `0px 0px 10px ${currentTurnColor}`
+                      : `0px 0px 10px ${Colors.hud}`,
                     borderRadius: 5,
                     padding: 10,
                     marginTop: 10,
@@ -1223,8 +1225,8 @@ export default function Player() {
                         <Text
                           style={{
                             color: gameRoomID
-                              ? Colors.gold
-                              : Colors.green_toggle,
+                              ? player.userFactionColor
+                              : Colors.hud,
                             fontFamily: "LeagueSpartan-Bold",
                             fontSize: 15,
                             textAlign: "center",
@@ -1310,16 +1312,17 @@ export default function Player() {
                         alignItems: "center",
                       }}
                     >
-                      <ActivityIndicator size="large" color={Colors.gold} />
+                      <ActivityIndicator size="large" color={Colors.hud} />
                       <Text
                         style={{
-                          color: Colors.gold,
+                          color: Colors.hud,
                           textAlign: "center",
                           fontFamily: "LeagueSpartan-Light",
                           fontSize: 15,
                         }}
                       >
-                        Loading Profile
+                        Head over to Settings to build your character and choose
+                        a profile picture.
                       </Text>
                     </View>
                   )}
@@ -1465,7 +1468,7 @@ export default function Player() {
                         },
                       ]}
                     >
-                      Total Fleet Value: {totalFleetValue}/{gameValue}
+                      Total Fleet Value: {totalFleetValue || 0}/{gameValue || 0}
                     </Text>
                     {gameRoomID && (
                       <TouchableOpacity
@@ -1709,7 +1712,7 @@ export default function Player() {
                       {shipInSector.length > 0 ? shipInSector.length : "0"} */}
                     </Text>
                   </View>
-                  {!toggleToDelete && (
+                  {!toggleToDelete && gameRoomID && (
                     <DropdownComponentSectors getShips={getFleetData} />
                   )}
                 </View>
@@ -1999,6 +2002,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.hud,
     backgroundColor: Colors.hudDarker,
     borderRadius: 5,
+    padding: 5,
   },
   shareButton: {
     justifyContent: "center",

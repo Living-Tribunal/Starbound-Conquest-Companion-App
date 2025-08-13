@@ -81,23 +81,34 @@ export default function ImagePickerExample({ factionColor }) {
     }
   };
 
-  //console.log("User profile Image in Picker: ", profile);
-
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={pickImage}>
-        <Text style={styles.text}>Choose Your Profile Picture</Text>
-      </TouchableOpacity>
+      <View
+        style={{
+          width: "100%",
+        }}
+      >
+        <TouchableOpacity style={styles.button} onPress={pickImage}>
+          <Text style={styles.text}>Choose Your Profile Picture</Text>
+        </TouchableOpacity>
+      </View>
+
       <Image
         style={[
           styles.image,
           {
-            boxShadow: `0px 0px 10px ${factionColor}`,
-            borderColor: { factionColor } || Colors.hud,
+            boxShadow: factionColor
+              ? `0px 0px 10px ${factionColor}`
+              : `0px 0px 10px ${Colors.hud}`,
+            borderColor: factionColor || Colors.hud,
           },
         ]}
         source={
-          userProfilePicture ? { uri: userProfilePicture } : { uri: profile }
+          userProfilePicture
+            ? { uri: userProfilePicture }
+            : {
+                uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/avatarimages%2Fpe.webp?alt=media&token=eaf5837e-adf6-4a86-9fc9-33b66cfde88e",
+              }
         }
       />
     </View>
@@ -112,6 +123,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginTop: 10,
     marginBottom: 10,
+    width: "100%",
   },
   image: {
     width: 200,
@@ -123,17 +135,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.hud,
     borderWidth: 1,
     borderColor: Colors.hudDarker,
-    borderRadius: 10,
+    borderRadius: 5,
     padding: 5,
     marginBottom: 15,
-    width: "80%",
+    width: "95%",
+    alignSelf: "center",
   },
   text: {
     color: Colors.hudDarker,
-    fontFamily: "monospace",
-    fontSize: 12,
+    fontFamily: "LeagueSpartan-Bold",
+    fontSize: 15,
     padding: 5,
     textAlign: "center",
-    fontWeight: "bold",
   },
 });

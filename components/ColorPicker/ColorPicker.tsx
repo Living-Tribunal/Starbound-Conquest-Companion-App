@@ -43,9 +43,10 @@ export default function Example() {
       <Pressable style={styles.openButton} onPress={() => setShowModal(true)}>
         <Text
           style={{
-            color: userFactionColor || "#707070",
-            fontWeight: "bold",
+            color: userFactionColor || Colors.hudDarker,
+            fontSize: 15,
             textAlign: "center",
+            fontFamily: "LeagueSpartan-Bold",
           }}
         >
           Choose a Faction Color
@@ -187,7 +188,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 40,
     paddingVertical: 10,
-    backgroundColor: Colors.dark_gray,
+    backgroundColor: Colors.hud,
     borderWidth: 1,
     borderColor: Colors.hud,
 
