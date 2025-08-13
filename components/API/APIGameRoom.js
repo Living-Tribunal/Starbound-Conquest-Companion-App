@@ -8,7 +8,8 @@ export const getAllShipsInGameRoom = async ({
   setLoading,
 }) => {
   const user = FIREBASE_AUTH.currentUser;
-  if (!user || !gameRoomID) return;
+  if (!user) return;
+  if (!gameRoomID) return;
 
   if (setLoading) setLoading(true);
   const shipUnsubs = [];

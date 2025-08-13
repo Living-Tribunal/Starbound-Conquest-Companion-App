@@ -16,7 +16,7 @@ import {
 import { Colors } from "@/constants/Colors";
 import uuid from "react-native-uuid";
 import Clipboard from "@react-native-clipboard/clipboard";
-import LoadingComponent from "@/components/loading/LoadingComponent";
+import Toast from "react-native-toast-message";
 
 export default function SetupGameRoom({
   showGameRoomModal,
@@ -24,6 +24,8 @@ export default function SetupGameRoom({
   gameRoomId,
   setGameRoomId,
   handleSaveGameRoom,
+  isJoiningGameRoom,
+  setIsJoiningGameRoom,
 }) {
   const [isFocusValue, setIsFocusValue] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
@@ -49,9 +51,6 @@ export default function SetupGameRoom({
     try {
       Clipboard.setString(gameRoomId);
       setCopiedText(true);
-      setTimeout(() => {
-        setShowGameRoomModal(false);
-      }, 2000);
     } catch (error) {
       console.error("Error copying to clipboard:", error);
     }
@@ -66,7 +65,12 @@ export default function SetupGameRoom({
     }
 
     if (next === gameRoomId) {
-      setShowGameRoomModal(false);
+      Toast.show({
+        type: "info",
+        text1: "Starbound Conquest",
+        text2: "Game Room ID already exists.",
+        position: "top",
+      });
       return;
     }
 
@@ -103,25 +107,12 @@ export default function SetupGameRoom({
     try {
       await handleSaveGameRoom(next);
       setGameRoomId(next);
-      setTimeout(() => setShowGameRoomModal(false), 300);
     } catch (e) {
       console.error(e);
       Alert.alert("Save failed", "Please try again.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const renderLabelGameValue = () => {
-    if (isFocusValue) {
-      /*  console.log(isFocus); */
-      return (
-        <Text style={[styles.label, isFocusValue && { color: Colors.hud }]}>
-          Game Room ID
-        </Text>
-      );
-    }
-    return null;
   };
 
   return (
@@ -138,51 +129,168 @@ export default function SetupGameRoom({
           style={{ width: 315, height: 161 }}
           source={require("../../assets/images/SC_logo1.png")}
         />
-        <Text style={styles.text1}>
-          Create a Game Room by entering a unique Game Room ID. This ID will
-          identify your room and can be shared with other players. Tap Save to
-          confirm and apply your changes.
-        </Text>
-        <Text style={styles.text2}>
-          (If you already have a Game Room ID, you can paste it below instead of
-          creating a new one. Just make sure you tap save!)
-        </Text>
+        {!isJoiningGameRoom && (
+          <>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={[styles.text1, { alignSelf: "center" }]}>
+                Create a Game Room ID by tapping
+              </Text>
+              <Image
+                style={[
+                  styles.image,
+                  {
+                    width: 25,
+                    height: 25,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    borderColor: Colors.hud,
+                    marginLeft: 5,
+                    backgroundColor: Colors.hudDarker,
+                  },
+                ]}
+                source={require("../../assets/icons/icons8-random-50.png")}
+              />
+            </View>
+
+            <Text style={styles.text1}>
+              This ID will identify your room and can be shared with other
+              players. Tap Save to confirm and apply your changes.
+            </Text>
+          </>
+        )}
+
+        {isJoiningGameRoom && (
+          <Text style={styles.text2}>
+            Paste your Game Room ID below to join an existing Game Room.
+          </Text>
+        )}
+
         <View style={{ flexDirection: "row", gap: 10 }}>
-          <View style={{ width: "80%", position: "relative" }}>
-            {renderLabelGameValue()}
+          <View
+            style={{
+              width: "80%",
+              justifyContent: "space-between",
+              flexDirection: "row",
+              gap: 10,
+              borderWidth: 1,
+              borderColor: isJoiningGameRoom ? Colors.green_toggle : Colors.hud,
+              borderRadius: 5,
+              backgroundColor: isJoiningGameRoom
+                ? Colors.darker_green_toggle
+                : Colors.hudDarker,
+            }}
+          >
             <TextInput
-              placeholderTextColor={Colors.hud}
+              editable={isJoiningGameRoom}
+              placeholderTextColor={
+                !isJoiningGameRoom ? Colors.hud : Colors.green_toggle
+              }
               value={inputValue}
-              style={styles.textInput}
+              style={[
+                styles.textInput,
+                { color: isJoiningGameRoom ? Colors.green_toggle : Colors.hud },
+              ]}
               onChangeText={setInputValue}
-              placeholder={!isFocusValue ? "Game Room ID" : ""}
+              placeholder={
+                !isJoiningGameRoom
+                  ? "Game Room ID"
+                  : "Paste your Game Room ID here"
+              }
               onFocus={() => setIsFocusValue(true)}
               onBlur={() => setIsFocusValue(false)}
             />
-          </View>
-
-          <View style={{ flexDirection: "row", gap: 10 }}>
             <TouchableOpacity
-              style={styles.gameRoomIDButton}
-              onPress={randomGameRoomId}
-            >
-              <Image
-                style={styles.image}
-                source={require("../../assets/icons/icons8-random-50.png")}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.gameRoomIDButton}
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                right: 20,
+              }}
               onPress={() => {
                 setInputValue("");
               }}
             >
               <Image
-                style={styles.image}
+                style={[
+                  styles.image,
+                  {
+                    tintColor: isJoiningGameRoom
+                      ? Colors.green_toggle
+                      : Colors.hud,
+                  },
+                ]}
                 source={require("../../assets/icons/icons8-trash-48.png")}
               />
             </TouchableOpacity>
           </View>
+          {!isJoiningGameRoom && (
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <TouchableOpacity
+                style={styles.gameRoomIDButton}
+                onPress={randomGameRoomId}
+              >
+                <Image
+                  style={styles.image}
+                  source={require("../../assets/icons/icons8-random-50.png")}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+        <View style={{ marginTop: 10, marginBottom: 10 }}>
+          <TouchableOpacity
+            onPress={() => {
+              setIsJoiningGameRoom((prev) => !prev);
+              setInputValue("");
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 5,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                style={[
+                  styles.text1,
+                  {
+                    color: isJoiningGameRoom ? Colors.green_toggle : Colors.hud,
+                    borderBottomColor: isJoiningGameRoom
+                      ? Colors.green_toggle
+                      : Colors.hud,
+                  },
+                ]}
+              >
+                {isJoiningGameRoom ? "Join Game Room" : "Create Game Room"}
+              </Text>
+              <Text
+                style={{
+                  color: isJoiningGameRoom ? Colors.hud : Colors.green_toggle,
+                }}
+              >
+                /
+              </Text>
+              <Text
+                style={[
+                  styles.text1,
+                  {
+                    color: !isJoiningGameRoom
+                      ? Colors.green_toggle
+                      : Colors.hud,
+                  },
+                ]}
+              >
+                {!isJoiningGameRoom ? "Join Game Room" : "Create Game Room"}
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
         <View style={{ marginTop: 10 }}>
           <Text
@@ -202,13 +310,12 @@ export default function SetupGameRoom({
           }}
         >
           <TouchableOpacity
-            disabled={loading}
+            disabled={loading || disableSaveButton}
             style={[
               styles.gameRoomButton,
               { opacity: disableSaveButton ? 0.5 : 1 },
             ]}
             onPress={handleUpdateGameRoom}
-            disabled={disableSaveButton}
           >
             <Text style={styles.gameRoomID}>
               {loading ? <ActivityIndicator size="small" /> : "Save"}
@@ -221,12 +328,14 @@ export default function SetupGameRoom({
               { backgroundColor: Colors.dark_gray },
             ]}
             onPress={() => {
-              setShowGameRoomModal(false);
               setLoading(false);
+              setIsJoiningGameRoom(false);
+              setInputValue("");
+              setShowGameRoomModal(false);
             }}
           >
             <Text style={styles.gameRoomID}>
-              {loading ? <ActivityIndicator size="small" /> : "Cancel"}
+              {loading ? <ActivityIndicator size="small" /> : "Close"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -325,13 +434,11 @@ const styles = StyleSheet.create({
   },
   textInput: {
     height: 50,
-    borderColor: Colors.hud,
-    borderWidth: 1,
     color: Colors.hud,
     fontFamily: "LeagueSpartan-Light",
-    fontSize: 16,
-    borderRadius: 5,
-    backgroundColor: Colors.hudDarker,
+    fontSize: 11,
+    paddingHorizontal: 10,
+    width: "90%",
   },
   label: {
     position: "absolute",
@@ -351,7 +458,7 @@ const styles = StyleSheet.create({
   },
   text2: {
     color: Colors.green_toggle,
-    fontSize: 12,
+    fontSize: 15,
     textAlign: "center",
     fontFamily: "LeagueSpartan-Bold",
     marginBottom: 10,
@@ -369,5 +476,17 @@ const styles = StyleSheet.create({
     borderColor: Colors.hud,
     backgroundColor: Colors.hudDarker,
     borderRadius: 3,
+    padding: 10,
+  },
+  joinGameRoomButton: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    borderRadius: 3,
+    backgroundColor: Colors.hudDarker,
+    padding: 5,
   },
 });

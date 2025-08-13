@@ -4,7 +4,6 @@ const StarBoundContext = createContext();
 
 export const StarBoundProvider = ({ children, shipType }) => {
   const [disabledButton, setDisabledButton] = React.useState(false);
-  const [isUsersTurn, setIsUsersTurn] = useState(false);
   const [fighterImages, setFighterImages] = useState([]);
   const [destroyerImages, setDestroyerImages] = useState([]);
   const [cruiserImages, setCruiserImages] = useState([]);
@@ -133,8 +132,6 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setDiceValueToShare,
         fromGameMap,
         setFromGameMap,
-        isUsersTurn,
-        setIsUsersTurn,
         myShips,
         setMyShips,
       }}

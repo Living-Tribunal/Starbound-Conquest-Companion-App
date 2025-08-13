@@ -22,6 +22,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import ShipFlatlist from "../../components/shipdata/ShipFlatlist";
 import { getFleetData } from "../../components/API/API";
+import useMyTurn from "../../components/API/useMyTurn";
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import { shipObject } from "../../constants/shipObjects";
 import Toast from "react-native-toast-message";
@@ -47,6 +48,8 @@ import {
   increment,
   onSnapshot,
   writeBatch,
+  runTransaction,
+  serverTimestamp,
 } from "firebase/firestore";
 
 export default function Player() {
@@ -74,8 +77,6 @@ export default function Player() {
   const [isEndingRound, setIsEndingRound] = useState(false);
   const [isEndingTurn, setIsEndingTurn] = useState(false);
   const {
-    isUsersTurn,
-    setIsUsersTurn,
     username,
     setUsername,
     profile,
@@ -97,15 +98,11 @@ export default function Player() {
     myShips,
     setMyShips,
   } = useStarBoundContext();
+  const { myTurn, state: gameState } = useMyTurn(gameRoomID);
+  console.log("My turn:", myTurn);
 
   const hasShownEndRoundModal = useRef(false);
-
-  const currentTurnUid = Object.keys(isUsersTurn).find(
-    (uid) => isUsersTurn[uid]
-  );
-  const isPlayerTurn = isUsersTurn?.[user?.uid] === true;
-
-  const currentTurnColor = isUsersColors?.[currentTurnUid] || "#FFFFFF";
+  const isPlayerTurn = myTurn;
 
   const currentUserShips = playersInGameRoom.some((player) => {
     if (player.uid === user.uid) {
@@ -241,7 +238,7 @@ export default function Player() {
     }
   };
 
-  const addingShipToFleet = () => {
+  const addingShipToFleet = (item) => {
     if (!gameRoomID) {
       Toast.show({
         type: "info",
@@ -363,7 +360,8 @@ export default function Player() {
     : 0;
 
   useEffect(() => {
-    if (!FIREBASE_AUTH.currentUser) return;
+    const auth = FIREBASE_AUTH;
+    if (!auth.currentUser) return;
     if (!user) return;
     const userDocRef = doc(FIREBASE_DB, "users", user.uid);
     const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
@@ -464,43 +462,45 @@ export default function Player() {
     request.send(JSON.stringify(params)) */
   }
 
+  async function advanceTurn(gameRoomID, myUId) {
+    const ref = doc(FIREBASE_DB, "gameRooms", gameRoomID);
+    let nextUidOut = null;
+
+    await runTransaction(FIREBASE_DB, async (transaction) => {
+      const snap = await transaction.get(ref);
+      if (!snap.exists()) throw new Error("No such document!");
+
+      const data = snap.data();
+      console.log("Data:", data);
+
+      if (data.currentTurnUid !== myUId) throw new Error("No current turn!");
+      const order = Array.isArray(data.turnOrder) ? data.turnOrder : [];
+
+      const currentIndex =
+        typeof data.currentTurnIndex === "number" &&
+        data.currentTurnIndex >= 0 &&
+        data.currentTurnIndex < order.length
+          ? data.currentTurnIndex
+          : Math.max(0, order.indexOf(data.currentTurnUid)); // -1 -> 0
+
+      const nextIndex = (currentIndex + 1) % order.length;
+      const nextUid = order[nextIndex];
+
+      transaction.update(ref, {
+        currentTurnUid: nextUid,
+        currentTurnIndex: nextIndex,
+        updatedAt: serverTimestamp(),
+      });
+      nextUidOut = nextUid;
+    });
+    return nextUidOut;
+  }
+
   async function endYourTurnAndSendMessage() {
     setIsEndingTurn(true);
     try {
       // 1. Get players
       if (!user || !gameRoomID) throw new Error("Missing user or room");
-      const usersRef = collection(FIREBASE_DB, "users");
-      const usersQuery = query(usersRef, where("gameRoomID", "==", gameRoomID));
-      const snapshot = await getDocs(usersQuery);
-
-      const players = snapshot.docs.map((d) => ({ uid: d.id, ...d.data() }));
-      const sortedPlayers = players.sort((a, b) => a.uid.localeCompare(b.uid));
-
-      const currentIndex = sortedPlayers.findIndex((p) => p.uid === user.uid);
-      if (currentIndex === -1) throw new Error("You’re not in this room");
-      const nextIndex = (currentIndex + 1) % sortedPlayers.length;
-      const currentPlayer = sortedPlayers[currentIndex];
-      const nextPlayer = sortedPlayers[nextIndex];
-
-      // 2. Update turn state in Firestore
-      if (!currentPlayer.isUserTurn) {
-        Toast.show({
-          type: "info",
-          text1: "Not your turn anymore",
-          position: "top",
-        });
-        return;
-      }
-
-      const userBatch = writeBatch(FIREBASE_DB);
-
-      userBatch.update(doc(FIREBASE_DB, "users", currentPlayer.uid), {
-        isUserTurn: false,
-      });
-      userBatch.update(doc(FIREBASE_DB, "users", nextPlayer.uid), {
-        isUserTurn: true,
-      });
-      await userBatch.commit();
 
       //3. Update ship isToggled for non-toggled ships
       const shipsRef = collection(FIREBASE_DB, "users", user.uid, "ships");
@@ -523,6 +523,11 @@ export default function Player() {
 
       await batch.commit();
 
+      const nextUid = await advanceTurn(gameRoomID, user.uid);
+      const nextName =
+        playersInGameRoom.find((p) => p.uid === nextUid)?.displayName ||
+        "Next Player";
+
       /*     // 4. THEN send Discord message
       const discordMessage = {
         username: "Starbound Conquest",
@@ -542,7 +547,7 @@ export default function Player() {
       Toast.show({
         type: "success",
         text1: "Turn Ended",
-        text2: `${nextPlayer.displayName} is up next!`,
+        text2: `${nextName} is up next!`,
         position: "top",
       });
     } catch (error) {
@@ -648,7 +653,9 @@ export default function Player() {
 
   //listen for gameround changes and update the round for all users
   useEffect(() => {
-    if (!FIREBASE_AUTH.currentUser || !user || !gameRoomID) return;
+    const auth = FIREBASE_AUTH;
+    if (!auth.currentUser) return;
+    if (!user || !gameRoomID) return;
     const docRef = doc(FIREBASE_DB, "users", user.uid); // or "gameRooms", depending on your structure
 
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
@@ -666,7 +673,9 @@ export default function Player() {
   }, [getAllUsersShipToggled]);
 
   useEffect(() => {
-    if (!FIREBASE_AUTH.currentUser || !gameRoomID) return;
+    const auth = FIREBASE_AUTH;
+    if (!auth.currentUser) return;
+    if (!gameRoomID) return;
 
     const ref = query(
       collection(FIREBASE_DB, "users", user.uid, "ships"),
@@ -681,6 +690,25 @@ export default function Player() {
 
     return () => unsubscribe();
   }, [FIREBASE_AUTH.currentUser, gameRoomID]);
+
+  async function resetToFirstPerson(gameRoomID) {
+    const roomRef = doc(FIREBASE_DB, "gameRooms", gameRoomID);
+    await runTransaction(FIREBASE_DB, async (transaction) => {
+      const snap = await transaction.get(roomRef);
+      if (!snap.exists()) throw new Error("No such document!");
+
+      const roomData = snap.data();
+      const order = Array.isArray(roomData.turnOrder) ? roomData.turnOrder : [];
+      if (order.length === 0) throw new Error("No players in game room!");
+
+      const nextUid = order[0];
+      transaction.update(roomRef, {
+        currentTurnUid: nextUid,
+        currentTurnIndex: 0,
+        updatedAt: serverTimestamp(),
+      });
+    });
+  }
 
   const endRound = async () => {
     if (!user || !gameRoomID) return;
@@ -895,35 +923,7 @@ export default function Player() {
 
       // ✅ Then, update round for all users
       await updateRoundForAllUsers();
-
-      // ✅ Now update player turn states
-      const usersQuery = query(usersRef, where("gameRoomID", "==", gameRoomID));
-      const snapshot = await getDocs(usersQuery);
-
-      const sortedPlayers = snapshot.docs
-        .map((doc) => ({ uid: doc.id, ...doc.data() }))
-        .sort((a, b) => a.uid.localeCompare(b.uid));
-
-      const updateTurnPromises = sortedPlayers.map((player, index) => {
-        const isFirstPlayer = index === 0;
-        return updateDoc(doc(FIREBASE_DB, "users", player.uid), {
-          isUserTurn: isFirstPlayer,
-        });
-      });
-
-      await Promise.all(updateTurnPromises);
-      console.log(
-        "✅ Round ended. Next player is:",
-        sortedPlayers[0]?.displayName
-      );
-      Toast.show({
-        type: "success",
-        text1: "Round Ended",
-        text2: `${
-          sortedPlayers[0]?.displayName || "Next Player"
-        } is now active!`,
-        position: "top",
-      });
+      await resetToFirstPerson(gameRoomID);
 
       //setGetAllUsersShipToggled([]);
       setGetAllUsersShipTotals(0);
@@ -934,14 +934,14 @@ export default function Player() {
     } catch (e) {
       console.error("Error in endYourTurn:", e);
     } finally {
-      setShowEndOfRound(false); // Ensures it's always turned off
+      setShowEndOfRound(false);
     }
   };
 
   const handleEndRoundPress = async () => {
     if (canEndRoundForAllPlayers && currentUserShips) {
       setIsEndingRound(true);
-      endRound();
+      await endRound();
 
       await cleanUpPendingDestruction();
 
@@ -958,12 +958,13 @@ export default function Player() {
   };
 
   useEffect(() => {
-    if (!gameRoomID || !FIREBASE_AUTH.currentUser) return;
+    const auth = FIREBASE_AUTH;
+    if (!auth.currentUser) return;
+    if (!gameRoomID) return;
     setIsLoadingActivePlayers(true);
 
     const userShipUnsubs = [];
     const allShipMap = {};
-    const turnsMap = {};
     const colorsMap = {};
 
     const usersRef = collection(FIREBASE_DB, "users");
@@ -974,7 +975,6 @@ export default function Player() {
 
       // Reset temp storage
       Object.keys(allShipMap).forEach((key) => delete allShipMap[key]);
-      Object.keys(turnsMap).forEach((key) => delete turnsMap[key]);
       Object.keys(colorsMap).forEach((key) => delete colorsMap[key]);
 
       const activePlayers = [];
@@ -989,7 +989,6 @@ export default function Player() {
             userFactionColor: userData.userFactionColor || "#FFFFFF",
           });
         }
-        turnsMap[uid] = userData.isUserTurn || false;
         colorsMap[uid] = userData.userFactionColor || "#FFFFFF";
 
         const shipsRef = collection(FIREBASE_DB, "users", uid, "ships");
@@ -1010,8 +1009,6 @@ export default function Player() {
 
         userShipUnsubs.push(unsub);
       });
-
-      setIsUsersTurn({ ...turnsMap });
       setIsUsersColors({ ...colorsMap });
       setPlayersInGameRoom(activePlayers);
     });
@@ -1021,6 +1018,10 @@ export default function Player() {
       userShipUnsubs.forEach((unsub) => unsub());
     };
   }, [gameRoomID, FIREBASE_AUTH.currentUser]);
+
+  useEffect(() => {
+    console.log("Players in Game Room:", playersInGameRoom.length);
+  }, [playersInGameRoom]);
 
   //show end round modal if all ships are toggled or hp is zero
   useFocusEffect(
@@ -1141,7 +1142,6 @@ export default function Player() {
                   <Text style={styles.subHeaderText}>Game Info</Text>
                 )}
               </TouchableOpacity>
-
               {toggleToDelete && (
                 <View>
                   <Text
@@ -1182,10 +1182,8 @@ export default function Player() {
                 <View
                   style={{
                     borderWidth: 1,
-                    borderColor: gameRoomID ? currentTurnColor : Colors.hud,
-                    boxShadow: gameRoomID
-                      ? `0px 0px 10px ${currentTurnColor}`
-                      : `0px 0px 10px ${Colors.hud}`,
+                    borderColor: Colors.hud,
+                    boxShadow: `0px 0px 10px ${Colors.hud}`,
                     borderRadius: 5,
                     padding: 10,
                     marginTop: 10,
@@ -1198,21 +1196,22 @@ export default function Player() {
                   }}
                 >
                   {gameRoomID && isShowPlayers ? (
-                    playersInGameRoom
-                      .filter((player) => isUsersTurn[player.uid])
-                      .map((player) => (
-                        <Text
-                          key={player.uid}
-                          style={{
-                            color: player.userFactionColor || Colors.hud,
-                            fontFamily: "LeagueSpartan-Bold",
-                            fontSize: 13,
-                            textAlign: "center",
-                          }}
-                        >
-                          Current Player's Turn: {player.displayName}
-                        </Text>
-                      ))
+                    <Text
+                      style={{
+                        color: Colors.hud,
+                        fontFamily: "LeagueSpartan-Bold",
+                        fontSize: 13,
+                        textAlign: "center",
+                      }}
+                    >
+                      {playersInGameRoom.length <= 1
+                        ? `Waiting for other players...`
+                        : `Current Player's Turn: ${
+                            playersInGameRoom.find(
+                              (p) => p.uid === gameState?.currentTurnUid
+                            )?.displayName || "—"
+                          }`}
+                    </Text>
                   ) : (
                     <View
                       style={{
@@ -1224,9 +1223,7 @@ export default function Player() {
                       <View>
                         <Text
                           style={{
-                            color: gameRoomID
-                              ? player.userFactionColor
-                              : Colors.hud,
+                            color: Colors.hud,
                             fontFamily: "LeagueSpartan-Bold",
                             fontSize: 15,
                             textAlign: "center",
@@ -1235,7 +1232,7 @@ export default function Player() {
                         >
                           {gameRoomID
                             ? "All Players:"
-                            : "Waiting for players..."}
+                            : "No Game Room Selected"}
                         </Text>
                       </View>
 
@@ -1259,7 +1256,7 @@ export default function Player() {
                               borderRadius: 5,
                               padding: 3,
                               borderColor:
-                                (isUsersTurn[player.uid] &&
+                                (player.uid === gameState?.currentTurnUid &&
                                   player.userFactionColor) ||
                                 "transparent",
                               borderBottomWidth: 1,
@@ -1278,7 +1275,6 @@ export default function Player() {
                   Waiting for your turn...
                 </Text>
               ) : null}
-
               <ViewShot
                 style={{ justifyContent: "center", alignItems: "center" }}
                 ref={ref}
@@ -1296,7 +1292,9 @@ export default function Player() {
                         ? Colors.lighter_red
                         : userFactionColor || Colors.hud,
                       boxShadow: `0px 0px 10px ${
-                        toggleToDelete ? Colors.lighter_red : userFactionColor
+                        toggleToDelete
+                          ? Colors.lighter_red
+                          : userFactionColor || Colors.hud
                       }`,
                     },
                   ]}
@@ -1321,8 +1319,7 @@ export default function Player() {
                           fontSize: 15,
                         }}
                       >
-                        Head over to Settings to build your character and choose
-                        a profile picture.
+                        Head over to Settings and choose a profile picture.
                       </Text>
                     </View>
                   )}
@@ -1602,6 +1599,7 @@ export default function Player() {
                           styles.editContainer,
                           {
                             opacity:
+                              !!toggleToDelete ||
                               !isPlayerTurn ||
                               hasNoShips ||
                               shouldEndRound ||
@@ -1788,7 +1786,7 @@ export default function Player() {
                   shouldEndRound ||
                   myToggledOrDestroyingShips
                 }
-                onPress={addingShipToFleet}
+                onPress={() => addingShipToFleet(item)}
                 style={styles.button}
               >
                 <Text style={styles.addButtonText}>

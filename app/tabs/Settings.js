@@ -19,6 +19,7 @@ import {
   getDoc,
   setDoc,
   serverTimestamp,
+  arrayUnion,
 } from "firebase/firestore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropdownComponentFactions from "../../components/dropdown/DropdownComponentFactions";
@@ -71,6 +72,7 @@ export default function Settings() {
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [isFocusValue, setIsFocusValue] = useState(false);
   const [showGameRoomModal, setShowGameRoomModal] = useState(false);
+  const [isJoiningGameRoom, setIsJoiningGameRoom] = useState(false);
 
   const toastNotification = () => {
     Toast.show({
@@ -133,9 +135,6 @@ export default function Settings() {
     }, [])
   );
 
-  //updating the logged in user profile
-  console.log("DIsplay Name:", data.displayName);
-
   async function updateGameRoomId(newId) {
     const uid = FIREBASE_AUTH.currentUser?.uid;
     if (!uid) return;
@@ -147,22 +146,31 @@ export default function Settings() {
       const userRef = doc(FIREBASE_DB, "users", FIREBASE_AUTH.currentUser.uid);
       await updateDoc(userRef, {
         gameRoomID: trimmedNewId,
+        gameRoomAdmin: !isJoiningGameRoom,
       });
 
-      /*       const gameRoomRef = doc(FIREBASE_DB, "gameRooms", trimmedNewId);
-      await getDoc(gameRoomRef);
-      await setDoc(
-        gameRoomRef,
-        {
-          createdAt: serverTimestamp(),
+      const gameRoomRef = doc(FIREBASE_DB, "gameRooms", trimmedNewId);
+      console.log("Game Room Ref:", gameRoomRef);
+      const snap = await getDoc(gameRoomRef);
+      console.log("Snap:", snap.exists());
+      if (!snap.exists()) {
+        //if this fails, it means the game room already exists
+        //it will do this the first time a game room is created
+        //this is the path for a new game room
+        await setDoc(gameRoomRef, {
           createdBy: uid,
+          createdAt: serverTimestamp(),
           started: false,
           turnOrder: [uid],
           currentTurnIndex: 0,
           currentTurnUid: uid,
-        },
-        { merge: true }
-      );*/
+        });
+      } else {
+        //this is the path for someone to join an existing game room
+        await updateDoc(gameRoomRef, {
+          turnOrder: arrayUnion(uid),
+        });
+      }
       console.log("Game Room Created:", trimmedNewId);
     } catch (e) {
       console.error("Error updating game room ID:", e);
@@ -189,7 +197,7 @@ export default function Settings() {
         "users",
         FIREBASE_AUTH.currentUser.uid
       );
-      console.log("Game Room ID Being Saved:", gameRoomID);
+      //console.log("Game Room ID Being Saved:", gameRoomID);
       await updateDoc(userDocRef, {
         displayName: username ?? "",
         photoURL: finalPhotourl ?? "",
@@ -269,7 +277,7 @@ export default function Settings() {
 
   const renderLabel = () => {
     if (isFocus) {
-      /*  console.log(isFocus); */
+      console.log(isFocus);
       return (
         <Text style={[styles.label, isFocus && { color: Colors.hud }]}>
           Enter a Username
@@ -318,6 +326,7 @@ export default function Settings() {
       );
     } else {
       setShowGameRoomModal(true);
+      setIsJoiningGameRoom(false);
     }
   };
 
@@ -456,42 +465,36 @@ export default function Settings() {
             )}
             <View style={styles.heroModalContainerButtons}>
               <TouchableOpacity
-                disabled={data.length > 0}
-                style={data.length > 0 ? styles.buttonDisabled : styles.button}
+                disabled={!gameRoomID}
+                style={!gameRoomID ? styles.buttonDisabled : styles.button}
                 onPress={async () => {
                   await checkForUsernamePhotoFaction();
                 }}
               >
-                <Text style={styles.title}>Save User Info</Text>
+                <Text
+                  style={[!gameRoomID ? styles.titleDisabled : styles.title]}
+                >
+                  Save User Info
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
           <View style={styles.TouchableOpacityContainer}>
             <TouchableOpacity
               onPress={handleSignOut}
-              style={styles.deleteButton}
+              style={styles.logoutButton}
             >
               <Text
                 style={{
-                  color: Colors.white,
-                  fontFamily: "monospace",
-                  fontSize: 15,
+                  color: Colors.green_toggle,
+                  fontFamily: "LeagueSpartan-Bold",
+                  fontSize: 20,
                   textAlign: "center",
-                  padding: 10,
-                  top: 30,
-                  zIndex: 100,
+                  padding: 5,
                 }}
               >
                 Logout
               </Text>
-              <Image
-                style={{
-                  width: 160,
-                  height: 100,
-                  position: "absolute",
-                }}
-                source={require("../../assets/images/logout.png")}
-              />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -501,21 +504,15 @@ export default function Settings() {
             >
               <Text
                 style={{
-                  color: Colors.white,
-                  fontFamily: "monospace",
-                  fontSize: 15,
+                  color: Colors.lighter_red,
+                  fontFamily: "LeagueSpartan-Bold",
+                  fontSize: 20,
                   textAlign: "center",
-                  padding: 10,
-                  top: 35,
-                  zIndex: 100,
+                  padding: 5,
                 }}
               >
                 Delete
               </Text>
-              <Image
-                style={{ width: 130, height: 90, position: "absolute" }}
-                source={require("../../assets/images/delete.png")}
-              />
             </TouchableOpacity>
           </View>
         </View>
@@ -526,6 +523,8 @@ export default function Settings() {
           gameRoomId={gameRoomID}
           setGameRoomId={setGameRoom}
           handleSaveGameRoom={updateGameRoomId}
+          setIsJoiningGameRoom={setIsJoiningGameRoom}
+          isJoiningGameRoom={isJoiningGameRoom}
         />
       </ScrollView>
     </SafeAreaView>
@@ -627,8 +626,20 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   deleteButton: {
-    width: 100,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: Colors.lighter_red,
+    borderRadius: 3,
+    backgroundColor: Colors.deep_red,
+    width: "45%",
+  },
+  logoutButton: {
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: Colors.green_toggle,
+    borderRadius: 3,
+    backgroundColor: Colors.darker_green_toggle,
+    width: "45%",
   },
   label: {
     position: "absolute",
@@ -690,9 +701,16 @@ const styles = StyleSheet.create({
     borderColor: Colors.hud,
     borderRadius: 3,
     backgroundColor: Colors.hudDarker,
+    opacity: 0.5,
   },
   titleDisabled: {
     color: Colors.hud,
+    fontSize: 15,
+    textAlign: "center",
+    fontFamily: "LeagueSpartan-Bold",
+  },
+  title: {
+    color: Colors.hudDarker,
     fontSize: 15,
     textAlign: "center",
     fontFamily: "LeagueSpartan-Bold",

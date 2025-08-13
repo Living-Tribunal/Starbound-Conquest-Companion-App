@@ -44,12 +44,14 @@ import BattleModal from "@/components/Modals/BattleModal/BattleModal";
 import { updateShipIsToggled } from "../../components/Functions/updateShipIsToggled";
 import ShipInfo from "@/components/shipdata/ShipInfo";
 import { factionIcons } from "../../constants/shipIcons";
+import { useTurnContext } from "@/components/Global/TurnContext";
 
 export default function FleetMap() {
   const navigation = useNavigation();
   const user = FIREBASE_AUTH.currentUser;
   const { gameSectors, setGameSectors } = useMapImageContext();
-  const { data, setData, gameRoomID, isUsersTurn } = useStarBoundContext();
+  const { data, setData, gameRoomID } = useStarBoundContext();
+  const { myTurn, setMyTurn } = useTurnContext();
   const [ships, setShips] = useState([]);
   const [shipPressed, setShipPressed] = useState(null);
   const [showFiringArcs, setShowFiringArcs] = useState(true);
@@ -66,7 +68,7 @@ export default function FleetMap() {
   const [shipsEnteringBattle, setShipsEnteringBattle] = useState([]);
   const [originalShipPosition, setOriginalShipPosition] = useState(null);
   const [isScanBattleField, setIsScanBattleField] = useState(false);
-  const isPlayerTurn = isUsersTurn?.[user?.uid] === true;
+  const isPlayerTurn = myTurn;
 
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);
@@ -1226,7 +1228,7 @@ export default function FleetMap() {
                         ship={ship}
                         showFiringArcs={showFiringArcs}
                         currentUserId={user.uid}
-                        isUsersTurn={isUsersTurn}
+                        isUsersTurn={isPlayerTurn}
                         isScanning={isScanBattleField}
                       />
                     )}

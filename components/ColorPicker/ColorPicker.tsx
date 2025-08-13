@@ -43,7 +43,7 @@ export default function Example() {
       <Pressable style={styles.openButton} onPress={() => setShowModal(true)}>
         <Text
           style={{
-            color: userFactionColor || Colors.hudDarker,
+            color: Colors.hudDarker,
             fontSize: 15,
             textAlign: "center",
             fontFamily: "LeagueSpartan-Bold",

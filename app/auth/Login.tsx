@@ -28,6 +28,7 @@ import { useNavigation } from "@react-navigation/native";
 import { collection, addDoc, getDoc, doc, setDoc } from "firebase/firestore";
 import Toast from "react-native-toast-message";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 GoogleSignin.configure({
   webClientId:
@@ -86,7 +87,6 @@ const Login = () => {
       try {
         const storedUsername = await AsyncStorage.getItem("UserName");
         setGetUsername(storedUsername || "Commander");
-        console.log("Username:", storedUsername);
       } catch (error) {
         console.error("Failed to retrieve username:", error);
       }
@@ -120,8 +120,9 @@ const Login = () => {
       );
 
       const user = userCredential.user;
+      console.log("User:", user.displayName);
       //await updateProfile(user, { displayName: username || "Commander" });
-      await AsyncStorage.setItem("UserName", username || "Commander");
+      await AsyncStorage.setItem("UserName", user.displayName || "Commander");
       await saveFaction();
       //console.log("User Name:" + JSON.stringify(user.displayName));
 
@@ -134,12 +135,11 @@ const Login = () => {
             email: user.email,
             displayName: user.displayName || "Commander",
             id: user.uid,
-            isUserTurn: false,
             factionName:
               faction || "Head over to settings to build your character",
           });
-          //console.log("User document written with ID:", user.uid);
-          // console.log("Users Profile:", user);
+          console.log("User document written with ID:", user.uid);
+          console.log("Users Profile:", user);
         } catch (e) {
           console.error("Error adding document:", e);
         }
@@ -239,7 +239,6 @@ const Login = () => {
             displayName: user.displayName,
             id: user.uid,
             factionName: faction,
-            isUserTurn: false,
           });
           // console.log("User document written with ID:", user.uid);
           //  console.log("Users Profile:", user);
@@ -339,6 +338,7 @@ const Login = () => {
               autoCapitalize="none"
               autoCorrect={false}
               placeholder="Email"
+              placeholderTextColor={Colors.hud}
               style={styles.inputField}
               value={email}
               onChangeText={setEmail}
@@ -349,6 +349,7 @@ const Login = () => {
                 autoCorrect={false}
                 placeholder="Password"
                 style={styles.inputField}
+                placeholderTextColor={Colors.hud}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -373,6 +374,7 @@ const Login = () => {
                     autoCapitalize="none"
                     autoCorrect={false}
                     placeholder="Confirm Password"
+                    placeholderTextColor={Colors.hud}
                     style={styles.inputField}
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
@@ -382,6 +384,7 @@ const Login = () => {
                     autoCapitalize="none"
                     autoCorrect={false}
                     placeholder="Username"
+                    placeholderTextColor={Colors.hud}
                     style={styles.inputField}
                     value={username}
                     onChangeText={setUsername}
@@ -488,6 +491,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: Colors.hudDarker,
     color: Colors.hud,
+    fontFamily: "monospace",
   },
   btnPrimaryText: {
     color: Colors.hud,

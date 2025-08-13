@@ -27,6 +27,7 @@ export const getFleetData = async ({
     }));
 
     setData(ships);
+    console.log("Data:", ships.length);
 
     // Store in AsyncStorage if changed
     if (JSON.stringify(ships) !== JSON.stringify(data)) {
