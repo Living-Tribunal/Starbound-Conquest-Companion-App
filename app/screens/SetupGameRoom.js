@@ -18,26 +18,42 @@ import uuid from "react-native-uuid";
 import Clipboard from "@react-native-clipboard/clipboard";
 import Toast from "react-native-toast-message";
 import { validateInviteCode } from "../../components/API/ValidateInviteCode/ValidateInviteCode";
+import useMyTurn from "@/components/API/useMyTurn";
+import { FIREBASE_AUTH } from "@/FirebaseConfig";
 
 export default function SetupGameRoom({
   showGameRoomModal,
   setShowGameRoomModal,
-  gameRoomId,
-  setGameRoomId,
   handleSaveGameRoom,
   isJoiningGameRoom,
   setIsJoiningGameRoom,
   gameValue,
   setGameValue,
+  setGameRoomUserID,
 }) {
   const [isFocusValue, setIsFocusValue] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [isValid, setIsValid] = useState(null);
+  const [showGameRoomJoined, setShowGameRoomJoined] = useState(false);
+  const [showGameRoomCreated, setShowGameRoomCreated] = useState(false);
+  const [gameRoomIDWarning, setGameRoomIDWarning] = useState(false);
+  const { state: gameState } = useMyTurn();
+  const uid = FIREBASE_AUTH.currentUser?.uid;
+  const gameRoomID = gameState?.id ?? null;
 
-  const disableSaveButton =
-    inputValue.trim() === "" || inputValue.trim() === gameRoomId;
+  /*   const disableSaveButton =
+    inputValue.trim() === "" || inputValue.trim() === gameRoomID; */
+
+  const handleIsJoiningGameRoom = () => {
+    setIsJoiningGameRoom((prev) => !prev);
+    console.log("Is joinh game room:", isJoiningGameRoom);
+  };
+
+  /*   console.log("Game Value:", gameValue);
+  console.log("gameRoomID in setup:", gameRoomID); */
+  /* console.log("GameRoomIDWarning:", gameRoomIDWarning); */
 
   const renderLabelGameValue = () => {
     if (isFocusValue) {
@@ -73,20 +89,24 @@ export default function SetupGameRoom({
   };
 
   const randomGameRoomId = () => {
+    /*  if (gameRoomID === inputValue.trim()) {
+      setGameRoomIDWarning(true);
+      return;
+    } */
     const id = String(uuid.v4());
     setInputValue(id);
   };
 
   useEffect(() => {
     if (showGameRoomModal) {
-      setInputValue(gameRoomId || "");
+      setInputValue(gameRoomID || "");
       setCopiedText(false);
     }
   }, [showGameRoomModal]);
 
   const copyToClipboard = () => {
     try {
-      Clipboard.setString(gameRoomId);
+      Clipboard.setString(gameRoomID);
       setCopiedText(true);
     } catch (error) {
       console.error("Error copying to clipboard:", error);
@@ -94,33 +114,34 @@ export default function SetupGameRoom({
   };
 
   const handleUpdateGameRoom = async () => {
-    const next = inputValue.trim();
+    const next = !isJoiningGameRoom ? uid : inputValue.trim();
+    console.log("Game Value in UpdateGameRoom:", gameValue);
+
     if (!next) {
       Alert.alert("Game Room ID Required", "Please enter a Game Room ID.");
       return;
     }
 
-    if (next === gameRoomId) {
-      Toast.show({
-        type: "info",
-        text1: "Starbound Conquest",
-        text2: "Game Room ID already exists.",
-        position: "top",
-      });
+    /*  if (next === gameRoomID) {
+      setGameRoomIDWarning(true);
       return;
+    } */
+
+    if (isJoiningGameRoom) {
+      const validRoom = await validateInviteCode(next);
+      console.log("Is Valid:", validRoom);
+      setIsValid(validRoom);
+      console.log("Is Valid:", isValid);
+
+      if (!validRoom) return;
     }
 
-    const validRoom = await validateInviteCode(next);
-    console.log("Is Valid:", validRoom);
-    setIsValid(validRoom);
-    console.log("Is Valid:", isValid);
+    console.log("Game Value in UpdateGameRoom:", gameValue);
 
-    if (!validRoom) return;
-
-    if (gameRoomId) {
+    if (!isJoiningGameRoom && gameValue) {
       Alert.alert(
         "Game Room Exists",
-        "You already have a Game Room ID. Do you want to change it?",
+        "Are you sure you want to create a game room with this information?",
         [
           { text: "Cancel", style: "cancel" },
           {
@@ -129,12 +150,14 @@ export default function SetupGameRoom({
               setLoading(true);
               try {
                 await handleSaveGameRoom(next);
-                setGameRoomId(next);
-                setShowGameRoomModal(false);
+                setGameRoomUserID(next);
+                //setShowGameRoomModal(false);
               } catch (e) {
                 console.error("Error saving game room:", e);
               } finally {
                 setLoading(false);
+                if (!isJoiningGameRoom) setShowGameRoomCreated(true);
+                if (isJoiningGameRoom) setShowGameRoomJoined(true);
               }
             },
           },
@@ -146,12 +169,14 @@ export default function SetupGameRoom({
     setLoading(true);
     try {
       await handleSaveGameRoom(next);
-      setGameRoomId(next);
+      setGameRoomUserID(next);
     } catch (e) {
       console.error(e);
       Alert.alert("Save failed", "Please try again.");
     } finally {
       setLoading(false);
+      if (!isJoiningGameRoom) setShowGameRoomCreated(true);
+      if (isJoiningGameRoom) setShowGameRoomJoined(true);
     }
   };
 
@@ -172,7 +197,7 @@ export default function SetupGameRoom({
         />
         {!isJoiningGameRoom && (
           <>
-            <View
+            {/*  <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -197,11 +222,12 @@ export default function SetupGameRoom({
                 ]}
                 source={require("../../assets/icons/icons8-random-50.png")}
               />
-            </View>
+            </View> */}
 
             <Text style={styles.text1}>
-              This ID will identify your room and can be shared with other
+              You user ID will identify your room and can be shared with other
               players. Also, set your game limit value. Tap Save to confirm and
+              create your game room.
             </Text>
           </>
         )}
@@ -210,10 +236,18 @@ export default function SetupGameRoom({
             Paste your Game Room ID below to join an existing Game Room.
           </Text>
         )}
+        <Text
+          style={[
+            styles.text2,
+            { fontFamily: "LeagueSpartan-Light", fontSize: 13 },
+          ]}
+        >
+          (Currently, you can have only one game room per user.)
+        </Text>
         <View style={{ flexDirection: "row", gap: 10 }}>
           <View
             style={{
-              width: "80%",
+              width: "95%",
               justifyContent: "space-between",
               flexDirection: "row",
               position: "relative",
@@ -233,12 +267,16 @@ export default function SetupGameRoom({
               placeholderTextColor={
                 !isJoiningGameRoom ? Colors.hud : Colors.green_toggle
               }
-              value={inputValue}
+              value={!isJoiningGameRoom ? uid : inputValue}
               style={[
                 styles.textInput,
                 { color: isJoiningGameRoom ? Colors.green_toggle : Colors.hud },
               ]}
-              onChangeText={setInputValue}
+              onChangeText={(text) => {
+                setInputValue(text);
+                if (isValid === false) setIsValid(null);
+                if (gameRoomIDWarning) setGameRoomIDWarning(false);
+              }}
               placeholder={
                 !isJoiningGameRoom
                   ? "Game Room ID"
@@ -247,7 +285,8 @@ export default function SetupGameRoom({
               onFocus={() => setIsFocusValue(true)}
               onBlur={() => setIsFocusValue(false)}
             />
-            <TouchableOpacity
+            {/*  for now remove this and let the user ID be the game room ID making only one room per user */}
+            {/* <TouchableOpacity
               style={{
                 alignItems: "center",
                 justifyContent: "center",
@@ -268,9 +307,10 @@ export default function SetupGameRoom({
                 ]}
                 source={require("../../assets/icons/icons8-trash-48.png")}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
-          {!isJoiningGameRoom && (
+          {/*  for now remove this and let the user ID be the game room ID making only one room per user */}
+          {/* {!isJoiningGameRoom && (
             <View style={{ flexDirection: "row", gap: 10, marginTop: 20 }}>
               <TouchableOpacity
                 style={styles.gameRoomIDButton}
@@ -282,7 +322,7 @@ export default function SetupGameRoom({
                 />
               </TouchableOpacity>
             </View>
-          )}
+          )} */}
         </View>
         {!isJoiningGameRoom && (
           <View
@@ -326,9 +366,11 @@ export default function SetupGameRoom({
         <View style={{ marginTop: 10, marginBottom: 10 }}>
           <TouchableOpacity
             onPress={() => {
-              setIsJoiningGameRoom((prev) => !prev);
+              handleIsJoiningGameRoom();
               setInputValue("");
               setIsValid(null);
+              setIsFocusValue(false);
+              setGameRoomIDWarning(false);
             }}
           >
             <View
@@ -375,38 +417,74 @@ export default function SetupGameRoom({
           </TouchableOpacity>
         </View>
         <View>
-          {isValid === false && (
+          {isValid === false ? (
             <Text style={styles.error}>That Invite Code is Invalid</Text>
+          ) : (
+            ""
           )}
+          {showGameRoomJoined ? (
+            <Text
+              style={[styles.text2, { fontFamily: "LeagueSpartan-Regular" }]}
+            >
+              Game Room Joined!
+            </Text>
+          ) : null}
+          {showGameRoomCreated ? (
+            <Text
+              style={[styles.text2, { fontFamily: "LeagueSpartan-Regular" }]}
+            >
+              Game Room Created!
+            </Text>
+          ) : null}
         </View>
-        <View style={{ marginTop: 10 }}>
+        <View style={{}}>
           <Text
             style={{ fontFamily: "LeagueSpartan-Regular", color: Colors.hud }}
           >
-            {loading ? "Hang Tight, Creating Game Room..." : ""}
+            {!isJoiningGameRoom && loading
+              ? "Hang Tight, Creating Game Room..."
+              : ""}
           </Text>
         </View>
         <View
           style={{
             flexDirection: "row",
             gap: 10,
-            marginTop: 10,
             justifyContent: "center",
             alignItems: "center",
           }}
         >
           <TouchableOpacity
-            disabled={loading || disableSaveButton}
+            disabled={
+              (!isJoiningGameRoom && !gameRoomID && !gameValue) ||
+              loading ||
+              isValid === false ||
+              showGameRoomJoined ||
+              (isJoiningGameRoom && !inputValue)
+            }
             style={[
               styles.gameRoomButton,
               {
-                opacity: disableSaveButton ? 0.5 : 1,
+                opacity:
+                  (!isJoiningGameRoom && !gameRoomID && !gameValue) ||
+                  loading ||
+                  isValid === false ||
+                  showGameRoomJoined ||
+                  (isJoiningGameRoom && !inputValue)
+                    ? 0.5
+                    : 1,
               },
             ]}
             onPress={handleUpdateGameRoom}
           >
-            <Text style={styles.gameRoomID}>
-              {loading ? <ActivityIndicator size="small" /> : "Save"}
+            <Text style={[styles.gameRoomID, { color: Colors.hudDarker }]}>
+              {loading ? (
+                <ActivityIndicator size="small" />
+              ) : isJoiningGameRoom ? (
+                "Join Game Room"
+              ) : (
+                "Create Game Room"
+              )}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -421,6 +499,10 @@ export default function SetupGameRoom({
               setInputValue("");
               setShowGameRoomModal(false);
               setIsValid(null);
+              setGameRoomIDWarning(false);
+              setIsFocusValue(false);
+              setShowGameRoomJoined(false);
+              setShowGameRoomCreated(false);
             }}
           >
             <Text style={styles.gameRoomID}>
@@ -428,7 +510,7 @@ export default function SetupGameRoom({
             </Text>
           </TouchableOpacity>
         </View>
-        {gameRoomId && (
+        {gameRoomID && (
           <View
             style={{
               flexDirection: "column",
@@ -458,11 +540,14 @@ export default function SetupGameRoom({
                     source={require("../../assets/icons/icons8-copy-50.png")}
                   />
                   <Text
-                    style={[styles.text1, { fontSize: 12 }]}
+                    style={[
+                      styles.text1,
+                      { fontSize: 12, color: Colors.hudDarker },
+                    ]}
                     numberOfLines={1}
                     ellipsizeMode="middle"
                   >
-                    {gameRoomId}
+                    {gameRoomID}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -505,7 +590,7 @@ const styles = StyleSheet.create({
   },
   gameRoomID: {
     color: Colors.hud,
-    fontSize: 15,
+    fontSize: 14,
     textAlign: "center",
     fontFamily: "LeagueSpartan-Bold",
   },
@@ -517,7 +602,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.hud,
     borderRadius: 3,
-    backgroundColor: Colors.hudDarker,
+    backgroundColor: Colors.hud,
     padding: 5,
     marginBottom: 10,
   },
@@ -527,7 +612,7 @@ const styles = StyleSheet.create({
     fontFamily: "LeagueSpartan-Light",
     fontSize: 11,
     paddingHorizontal: 10,
-    width: "90%",
+    width: "95%",
   },
   label: {
     position: "absolute",
@@ -556,7 +641,7 @@ const styles = StyleSheet.create({
   image: {
     width: 25,
     height: 25,
-    tintColor: Colors.hud,
+    tintColor: Colors.hudDarker,
   },
   gameRoomIDButton: {
     alignItems: "center",

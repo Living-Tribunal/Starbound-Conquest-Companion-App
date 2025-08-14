@@ -7,7 +7,7 @@ import { useStarBoundContext } from "../Global/StarBoundProvider";
 import { campaigns } from "@/constants/Campaigns";
 
 const DropdownComponentCampaigns = () => {
-  const { gameRoomID, setGameRoom, data } = useStarBoundContext();
+  const { gameRoomID, setGameRoomID, data } = useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
 
   const renderLabel = () => {
@@ -45,7 +45,7 @@ const DropdownComponentCampaigns = () => {
           setIsFocus(false);
         }}
         onChange={(item) => {
-          setGameRoom(item.value);
+          setGameRoomID(item.value);
           setIsFocus(false);
         }}
         renderLeftIcon={() => (

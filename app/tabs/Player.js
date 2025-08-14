@@ -85,12 +85,9 @@ export default function Player() {
     setProfile,
     data,
     setData,
-    gameValue,
     setGameValue,
     toggleToDelete,
     setToggleToDelete,
-    gameRoomID,
-    setGameRoom,
     userFactionColor,
     setUserFactionColor,
     getAllUsersShipToggled,
@@ -98,7 +95,9 @@ export default function Player() {
     myShips,
     setMyShips,
   } = useStarBoundContext();
-  const { myTurn, state: gameState } = useMyTurn(gameRoomID);
+
+  const { myTurn, state: gameState } = useMyTurn();
+  const gameRoomID = gameState?.id ?? null;
 
   const hasShownEndRoundModal = useRef(false);
   const isPlayerTurn = myTurn;
@@ -166,7 +165,6 @@ export default function Player() {
     const bIds = new Set(b.map((x) => x.shipId ?? x.id));
     return a.every((x) => bIds.has(x.shipId ?? x.id));
   };
-
   useEffect(() => {
     setMyShips((prev) => (sameIds(prev, myShipsToSave) ? prev : myShipsToSave));
   }, [myShipsToSave, setMyShips]);
@@ -369,11 +367,12 @@ export default function Player() {
         setUsername(data.displayName || "");
         setProfile(data.photoURL || "");
         setFaction(data.factionName || "");
-        setGameRoom(data.gameRoomID || "");
+        //setGameRoomID(data.id || "");
         setUserFactionColor(data.userFactionColor || "");
         setGameValue(data.gameValue || "");
       }
     });
+    // console.log("Game Room ID in Player:", gameRoomID);
     return () => unsubscribe();
   }, [user?.uid, FIREBASE_AUTH.currentUser]);
 

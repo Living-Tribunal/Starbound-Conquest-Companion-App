@@ -45,12 +45,13 @@ import { updateShipIsToggled } from "../../components/Functions/updateShipIsTogg
 import ShipInfo from "@/components/shipdata/ShipInfo";
 import { factionIcons } from "../../constants/shipIcons";
 import { useTurnContext } from "@/components/Global/TurnContext";
+import useMyTurn from "@/components/API/useMyTurn";
 
 export default function FleetMap() {
   const navigation = useNavigation();
   const user = FIREBASE_AUTH.currentUser;
   const { gameSectors, setGameSectors } = useMapImageContext();
-  const { data, setData, gameRoomID } = useStarBoundContext();
+  const { data, setData } = useStarBoundContext();
   const { myTurn, setMyTurn } = useTurnContext();
   const [ships, setShips] = useState([]);
   const [shipPressed, setShipPressed] = useState(null);
@@ -68,7 +69,9 @@ export default function FleetMap() {
   const [shipsEnteringBattle, setShipsEnteringBattle] = useState([]);
   const [originalShipPosition, setOriginalShipPosition] = useState(null);
   const [isScanBattleField, setIsScanBattleField] = useState(false);
+  const { state: gameState } = useMyTurn(gameRoomID);
   const isPlayerTurn = myTurn;
+  const gameRoomID = gameState?.id ?? null;
 
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);

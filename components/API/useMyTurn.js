@@ -3,15 +3,16 @@ import { useEffect, useState } from "react";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { useTurnContext } from "../Global/TurnContext";
 
-export default function useMyTurn(gameRoomID) {
+export default function useMyTurn() {
   const { myTurn, setMyTurn } = useTurnContext();
   const [state, setState] = useState(null);
 
   const uid = FIREBASE_AUTH.currentUser?.uid;
-  useEffect(() => {
-    if (!gameRoomID || !uid) return;
 
-    const gameRoomRef = doc(FIREBASE_DB, "gameRooms", gameRoomID);
+  useEffect(() => {
+    if (!uid) return;
+
+    const gameRoomRef = doc(FIREBASE_DB, "gameRooms", uid);
     const unsubscribe = onSnapshot(gameRoomRef, (docSnap) => {
       if (!docSnap.exists()) {
         setMyTurn(false);
@@ -20,12 +21,10 @@ export default function useMyTurn(gameRoomID) {
       }
       const s = docSnap.data();
       setMyTurn(s.currentTurnUid === uid);
-      setState(s);
+      setState({ id: docSnap.id, ...s });
     });
-    //console.log("Game Room Ref:", gameRoomRef);
-
     return unsubscribe;
-  }, [gameRoomID, uid]);
+  }, [setMyTurn, uid]);
 
   return { myTurn, state };
 }

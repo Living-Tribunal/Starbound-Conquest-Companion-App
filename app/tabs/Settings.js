@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
 import { Colors } from "@/constants/Colors";
-import { getAuth } from "firebase/auth";
+import useMyTurn from "@/components/API/useMyTurn";
 import {
   updateDoc,
   doc,
@@ -44,6 +44,7 @@ import SetupGameRoom from "../../app/screens/SetupGameRoom";
 export default function Settings() {
   const user = FIREBASE_AUTH.currentUser;
   const navigation = useNavigation();
+  const { state: gameState } = useMyTurn(gameState?.gameRoomID);
   GoogleSignin.configure({
     webClientId:
       "633304307229-acjrh8tpf2eddgdjcutludsg7vqf1pru.apps.googleusercontent.com",
@@ -60,8 +61,6 @@ export default function Settings() {
     setGameValue,
     userProfilePicture,
     data,
-    gameRoomID,
-    setGameRoom,
     userFactionColor,
     setUserFactionColor,
   } = useStarBoundContext();
@@ -69,6 +68,8 @@ export default function Settings() {
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [showGameRoomModal, setShowGameRoomModal] = useState(false);
   const [isJoiningGameRoom, setIsJoiningGameRoom] = useState(false);
+  const [gameRoomUserID, setGameRoomUserID] = useState("");
+  const gameRoomID = gameState?.id ?? null;
 
   const toastNotification = () => {
     Toast.show({
@@ -123,9 +124,13 @@ export default function Settings() {
             setUsername(data.displayName || "");
             setProfile(data.photoURL || "");
             setFaction(data.factionName || "");
-            setGameRoom(data.gameRoomID || "");
             setUserFactionColor(data.userFactionColor || "");
-            //console.log("User in Settings:", JSON.stringify(data, null, 2));
+            setGameRoomUserID(data.id || "");
+            console.log(
+              "User in GameRoomID Settings:",
+              JSON.stringify(gameRoomUserID, null, 2)
+            );
+            console.log("User in GameValue Settings:", gameRoomID);
           }
         } catch (error) {
           console.error("Failed to retrieve user data:", error);
@@ -138,21 +143,21 @@ export default function Settings() {
     }, [])
   );
 
-  async function updateGameRoomId(newId) {
+  async function updateGameRoomId(gameRoomID) {
     const uid = FIREBASE_AUTH.currentUser?.uid;
     if (!uid) return;
 
-    const trimmedNewId = String(newId).trim();
-    if (!trimmedNewId) return;
+    /*     const trimmedNewId = String(newId).trim();
+    if (!trimmedNewId) return; */
 
     try {
       const userRef = doc(FIREBASE_DB, "users", FIREBASE_AUTH.currentUser.uid);
       await updateDoc(userRef, {
-        gameRoomID: trimmedNewId,
+        gameRoomID: gameRoomID,
         gameRoomAdmin: !isJoiningGameRoom,
       });
 
-      const gameRoomRef = doc(FIREBASE_DB, "gameRooms", trimmedNewId);
+      const gameRoomRef = doc(FIREBASE_DB, "gameRooms", gameRoomID);
       //console.log("Game Room Ref:", gameRoomRef);
       const snap = await getDoc(gameRoomRef);
       //console.log("Snap:", snap.exists());
@@ -176,7 +181,7 @@ export default function Settings() {
           turnOrder: arrayUnion(uid),
         });
       }
-      console.log("Game Room Created:", trimmedNewId);
+      console.log("Game Room Created:", gameRoomID);
     } catch (e) {
       console.error("Error updating game room ID:", e);
     }
@@ -310,7 +315,7 @@ export default function Settings() {
     if (gameRoomID) {
       Alert.alert(
         "Game Room Exists",
-        "You already have a Game Room ID. Do you want to change it?",
+        "You already have a Game Room. Do you want to modify it?",
         [
           { text: "Cancel", style: "cancel" },
           { text: "Yes", onPress: () => setShowGameRoomModal(true) },
@@ -492,13 +497,13 @@ export default function Settings() {
           showGameRoomModal={showGameRoomModal}
           handleOpenGameRoom={handleOpenGameRoom}
           setShowGameRoomModal={setShowGameRoomModal}
-          gameRoomId={gameRoomID}
-          setGameRoomId={setGameRoom}
           handleSaveGameRoom={updateGameRoomId}
           setIsJoiningGameRoom={setIsJoiningGameRoom}
           isJoiningGameRoom={isJoiningGameRoom}
           gameValue={gameValue}
           setGameValue={setGameValue}
+          gameRoomUserID={gameRoomUserID}
+          setGameRoomUserID={setGameRoomUserID}
         />
       </ScrollView>
     </SafeAreaView>
