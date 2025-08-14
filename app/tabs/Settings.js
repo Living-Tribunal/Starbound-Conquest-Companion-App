@@ -23,7 +23,7 @@ import {
 } from "firebase/firestore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropdownComponentFactions from "../../components/dropdown/DropdownComponentFactions";
-//import DropdownComponentCampaigns from "../../components/dropdown/DropdownComponentCampaigns";
+import { validateInviteCode } from "../../components/API/ValidateInviteCode/ValidateInviteCode";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { updateProfile } from "firebase/auth";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
@@ -56,12 +56,9 @@ export default function Settings() {
     setFaction,
     profile,
     setProfile,
-    email,
-    serverConnected,
     gameValue,
     setGameValue,
     userProfilePicture,
-    setUserProfilePicture,
     data,
     gameRoomID,
     setGameRoom,
@@ -70,7 +67,6 @@ export default function Settings() {
   } = useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
   const [updatingProfile, setUpdatingProfile] = useState(false);
-  const [isFocusValue, setIsFocusValue] = useState(false);
   const [showGameRoomModal, setShowGameRoomModal] = useState(false);
   const [isJoiningGameRoom, setIsJoiningGameRoom] = useState(false);
 
@@ -90,12 +86,20 @@ export default function Settings() {
     Toast.show({
       type: "error",
       text1: "StarBound Conquest",
-      text2: "Check Your Fields!",
+      text2: "You must select a profile picture, faction, and color.",
+    });
+  };
+
+  const showErrorLogout = () => {
+    Toast.show({
+      type: "error",
+      text1: "StarBound Conquest",
+      text2: "Long Press the button to logout.",
     });
   };
 
   const checkForUsernamePhotoFaction = async () => {
-    if (!username) {
+    if (!profile || !faction || !userFactionColor) {
       showErrorToast();
       return false;
     } else {
@@ -119,7 +123,6 @@ export default function Settings() {
             setUsername(data.displayName || "");
             setProfile(data.photoURL || "");
             setFaction(data.factionName || "");
-            setGameValue(data.gameValue || "");
             setGameRoom(data.gameRoomID || "");
             setUserFactionColor(data.userFactionColor || "");
             //console.log("User in Settings:", JSON.stringify(data, null, 2));
@@ -150,13 +153,14 @@ export default function Settings() {
       });
 
       const gameRoomRef = doc(FIREBASE_DB, "gameRooms", trimmedNewId);
-      console.log("Game Room Ref:", gameRoomRef);
+      //console.log("Game Room Ref:", gameRoomRef);
       const snap = await getDoc(gameRoomRef);
-      console.log("Snap:", snap.exists());
+      //console.log("Snap:", snap.exists());
+
+      //if this fails, it means the game room already exists
+      //it will do this the first time a game room is created
+      //this is also the path for a new game room
       if (!snap.exists()) {
-        //if this fails, it means the game room already exists
-        //it will do this the first time a game room is created
-        //this is the path for a new game room
         await setDoc(gameRoomRef, {
           createdBy: uid,
           createdAt: serverTimestamp(),
@@ -164,6 +168,7 @@ export default function Settings() {
           turnOrder: [uid],
           currentTurnIndex: 0,
           currentTurnUid: uid,
+          gameValue: String(gameValue ?? ""),
         });
       } else {
         //this is the path for someone to join an existing game room
@@ -202,7 +207,6 @@ export default function Settings() {
         displayName: username ?? "",
         photoURL: finalPhotourl ?? "",
         factionName: String(faction ?? ""),
-        gameValue: String(gameValue ?? ""),
         email: user.email ?? "",
         userFactionColor: userFactionColor ?? "",
       });
@@ -301,18 +305,6 @@ export default function Settings() {
     );
   }
 
-  const renderLabelGameValue = () => {
-    if (isFocusValue) {
-      /*  console.log(isFocus); */
-      return (
-        <Text style={[styles.label, isFocusValue && { color: Colors.hud }]}>
-          Game Value
-        </Text>
-      );
-    }
-    return null;
-  };
-
   //instead of just opening the modal, prompt the user to change the game room id
   const handleOpenGameRoom = () => {
     if (gameRoomID) {
@@ -383,7 +375,6 @@ export default function Settings() {
                 }}
               >
                 <ColorPickerComponent />
-                <DropdownComponentFactions />
                 <View
                   style={{
                     gap: 10,
@@ -407,6 +398,7 @@ export default function Settings() {
                     </Text>
                   </TouchableOpacity>
                 </View>
+                <DropdownComponentFactions />
 
                 {/* <DropdownComponentCampaigns /> */}
                 <View
@@ -416,7 +408,7 @@ export default function Settings() {
                     justifyContent: "center",
                   }}
                 >
-                  <View style={{ width: "68%", position: "relative" }}>
+                  <View style={{ width: "95%", position: "relative" }}>
                     {renderLabel()}
                     <TextInput
                       autoCorrect={false}
@@ -429,22 +421,6 @@ export default function Settings() {
                       value={username}
                       onFocus={() => setIsFocus(true)}
                       onBlur={() => setIsFocus(false)}
-                    />
-                  </View>
-                  <View style={{ width: "25%", position: "relative" }}>
-                    {renderLabelGameValue()}
-                    <TextInput
-                      maxLength={12}
-                      keyboardType="numeric"
-                      style={styles.textInput}
-                      onChangeText={(text) => {
-                        setGameValue(text.trimStart());
-                      }}
-                      placeholderTextColor={Colors.hud}
-                      placeholder={!isFocusValue ? "Max Value" : ""}
-                      value={gameValue}
-                      onFocus={() => setIsFocusValue(true)}
-                      onBlur={() => setIsFocusValue(false)}
                     />
                   </View>
                 </View>
@@ -465,23 +441,19 @@ export default function Settings() {
             )}
             <View style={styles.heroModalContainerButtons}>
               <TouchableOpacity
-                disabled={!gameRoomID}
-                style={!gameRoomID ? styles.buttonDisabled : styles.button}
+                style={styles.button}
                 onPress={async () => {
                   await checkForUsernamePhotoFaction();
                 }}
               >
-                <Text
-                  style={[!gameRoomID ? styles.titleDisabled : styles.title]}
-                >
-                  Save User Info
-                </Text>
+                <Text style={[styles.title]}>Save User Info</Text>
               </TouchableOpacity>
             </View>
           </View>
           <View style={styles.TouchableOpacityContainer}>
             <TouchableOpacity
-              onPress={handleSignOut}
+              onPress={showErrorLogout}
+              onLongPress={handleSignOut}
               style={styles.logoutButton}
             >
               <Text
@@ -525,6 +497,8 @@ export default function Settings() {
           handleSaveGameRoom={updateGameRoomId}
           setIsJoiningGameRoom={setIsJoiningGameRoom}
           isJoiningGameRoom={isJoiningGameRoom}
+          gameValue={gameValue}
+          setGameValue={setGameValue}
         />
       </ScrollView>
     </SafeAreaView>
@@ -653,7 +627,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderColor: Colors.hud,
     color: Colors.hud,
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 3,
     paddingHorizontal: 8,
   },

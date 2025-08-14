@@ -22,7 +22,7 @@ export default function useMyTurn(gameRoomID) {
       setMyTurn(s.currentTurnUid === uid);
       setState(s);
     });
-    console.log("Game Room Ref:", gameRoomRef);
+    //console.log("Game Room Ref:", gameRoomRef);
 
     return unsubscribe;
   }, [gameRoomID, uid]);

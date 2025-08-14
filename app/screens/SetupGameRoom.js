@@ -17,6 +17,7 @@ import { Colors } from "@/constants/Colors";
 import uuid from "react-native-uuid";
 import Clipboard from "@react-native-clipboard/clipboard";
 import Toast from "react-native-toast-message";
+import { validateInviteCode } from "../../components/API/ValidateInviteCode/ValidateInviteCode";
 
 export default function SetupGameRoom({
   showGameRoomModal,
@@ -26,14 +27,50 @@ export default function SetupGameRoom({
   handleSaveGameRoom,
   isJoiningGameRoom,
   setIsJoiningGameRoom,
+  gameValue,
+  setGameValue,
 }) {
   const [isFocusValue, setIsFocusValue] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isValid, setIsValid] = useState(null);
 
   const disableSaveButton =
     inputValue.trim() === "" || inputValue.trim() === gameRoomId;
+
+  const renderLabelGameValue = () => {
+    if (isFocusValue) {
+      /*  console.log(isFocus); */
+      return (
+        <Text style={[styles.label, isFocusValue && { color: Colors.hud }]}>
+          Game Value
+        </Text>
+      );
+    }
+    return null;
+  };
+
+  const renderGameRoomLabel = () => {
+    if (isFocusValue && isJoiningGameRoom) {
+      /*  console.log(isFocus); */
+      return (
+        <Text
+          style={[
+            styles.label,
+            isFocusValue && {
+              color: Colors.green_toggle,
+              borderColor: Colors.green_toggle,
+              backgroundColor: Colors.dark_gray,
+            },
+          ]}
+        >
+          Game Room ID
+        </Text>
+      );
+    }
+    return null;
+  };
 
   const randomGameRoomId = () => {
     const id = String(uuid.v4());
@@ -58,7 +95,6 @@ export default function SetupGameRoom({
 
   const handleUpdateGameRoom = async () => {
     const next = inputValue.trim();
-    console.log("Next:", next);
     if (!next) {
       Alert.alert("Game Room ID Required", "Please enter a Game Room ID.");
       return;
@@ -74,9 +110,14 @@ export default function SetupGameRoom({
       return;
     }
 
+    const validRoom = await validateInviteCode(next);
+    console.log("Is Valid:", validRoom);
+    setIsValid(validRoom);
+    console.log("Is Valid:", isValid);
+
+    if (!validRoom) return;
+
     if (gameRoomId) {
-      console.log("Next in alert:", next);
-      console.log("Game Room ID Already Exists:", gameRoomId);
       Alert.alert(
         "Game Room Exists",
         "You already have a Game Room ID. Do you want to change it?",
@@ -101,7 +142,6 @@ export default function SetupGameRoom({
       );
       return;
     }
-
     // No existing room: save directly
     setLoading(true);
     try {
@@ -122,6 +162,7 @@ export default function SetupGameRoom({
       animationType="fade"
       onRequestClose={() => {
         setShowGameRoomModal(false);
+        setIsValid(null);
       }}
     >
       <View style={styles.mainContainer}>
@@ -160,24 +201,24 @@ export default function SetupGameRoom({
 
             <Text style={styles.text1}>
               This ID will identify your room and can be shared with other
-              players. Tap Save to confirm and apply your changes.
+              players. Also, set your game limit value. Tap Save to confirm and
             </Text>
           </>
         )}
-
         {isJoiningGameRoom && (
           <Text style={styles.text2}>
             Paste your Game Room ID below to join an existing Game Room.
           </Text>
         )}
-
         <View style={{ flexDirection: "row", gap: 10 }}>
           <View
             style={{
               width: "80%",
               justifyContent: "space-between",
               flexDirection: "row",
+              position: "relative",
               gap: 10,
+              marginTop: 20,
               borderWidth: 1,
               borderColor: isJoiningGameRoom ? Colors.green_toggle : Colors.hud,
               borderRadius: 5,
@@ -186,6 +227,7 @@ export default function SetupGameRoom({
                 : Colors.hudDarker,
             }}
           >
+            {renderGameRoomLabel()}
             <TextInput
               editable={isJoiningGameRoom}
               placeholderTextColor={
@@ -229,7 +271,7 @@ export default function SetupGameRoom({
             </TouchableOpacity>
           </View>
           {!isJoiningGameRoom && (
-            <View style={{ flexDirection: "row", gap: 10 }}>
+            <View style={{ flexDirection: "row", gap: 10, marginTop: 20 }}>
               <TouchableOpacity
                 style={styles.gameRoomIDButton}
                 onPress={randomGameRoomId}
@@ -242,11 +284,51 @@ export default function SetupGameRoom({
             </View>
           )}
         </View>
+        {!isJoiningGameRoom && (
+          <View
+            style={{
+              width: "95%",
+              marginTop: 20,
+              justifyContent: "space-between",
+              flexDirection: "row",
+              gap: 10,
+              borderWidth: 1,
+              borderColor: isJoiningGameRoom ? Colors.green_toggle : Colors.hud,
+              borderRadius: 5,
+              backgroundColor: isJoiningGameRoom
+                ? Colors.darker_green_toggle
+                : Colors.hudDarker,
+            }}
+          >
+            <View
+              style={{
+                width: "100%",
+                position: "relative",
+              }}
+            >
+              {renderLabelGameValue()}
+              <TextInput
+                maxLength={12}
+                keyboardType="numeric"
+                style={styles.textInput}
+                onChangeText={(text) => {
+                  setGameValue(text.trimStart());
+                }}
+                placeholderTextColor={Colors.hud}
+                placeholder={!isFocusValue ? "Max Value" : ""}
+                value={gameValue}
+                onFocus={() => setIsFocusValue(true)}
+                onBlur={() => setIsFocusValue(false)}
+              />
+            </View>
+          </View>
+        )}
         <View style={{ marginTop: 10, marginBottom: 10 }}>
           <TouchableOpacity
             onPress={() => {
               setIsJoiningGameRoom((prev) => !prev);
               setInputValue("");
+              setIsValid(null);
             }}
           >
             <View
@@ -292,6 +374,11 @@ export default function SetupGameRoom({
             </View>
           </TouchableOpacity>
         </View>
+        <View>
+          {isValid === false && (
+            <Text style={styles.error}>That Invite Code is Invalid</Text>
+          )}
+        </View>
         <View style={{ marginTop: 10 }}>
           <Text
             style={{ fontFamily: "LeagueSpartan-Regular", color: Colors.hud }}
@@ -299,7 +386,6 @@ export default function SetupGameRoom({
             {loading ? "Hang Tight, Creating Game Room..." : ""}
           </Text>
         </View>
-
         <View
           style={{
             flexDirection: "row",
@@ -313,7 +399,9 @@ export default function SetupGameRoom({
             disabled={loading || disableSaveButton}
             style={[
               styles.gameRoomButton,
-              { opacity: disableSaveButton ? 0.5 : 1 },
+              {
+                opacity: disableSaveButton ? 0.5 : 1,
+              },
             ]}
             onPress={handleUpdateGameRoom}
           >
@@ -332,6 +420,7 @@ export default function SetupGameRoom({
               setIsJoiningGameRoom(false);
               setInputValue("");
               setShowGameRoomModal(false);
+              setIsValid(null);
             }}
           >
             <Text style={styles.gameRoomID}>
@@ -488,5 +577,11 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: Colors.hudDarker,
     padding: 5,
+  },
+  error: {
+    color: Colors.lighter_red,
+    fontFamily: "LeagueSpartan-Bold",
+    fontSize: 15,
+    textAlign: "center",
   },
 });

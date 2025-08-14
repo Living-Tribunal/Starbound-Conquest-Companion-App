@@ -99,7 +99,6 @@ export default function Player() {
     setMyShips,
   } = useStarBoundContext();
   const { myTurn, state: gameState } = useMyTurn(gameRoomID);
-  console.log("My turn:", myTurn);
 
   const hasShownEndRoundModal = useRef(false);
   const isPlayerTurn = myTurn;
@@ -229,7 +228,7 @@ export default function Player() {
   };
 
   const valueWarning = () => {
-    if (totalFleetValue > gameValue) {
+    if (totalFleetValue > gameState?.gameValue) {
       return (
         <Text style={styles.valueWarning}>
           Warning: You are over your game value limit.
@@ -1019,9 +1018,10 @@ export default function Player() {
     };
   }, [gameRoomID, FIREBASE_AUTH.currentUser]);
 
-  useEffect(() => {
+  /*   useEffect(() => {
     console.log("Players in Game Room:", playersInGameRoom.length);
-  }, [playersInGameRoom]);
+    console.log("My turn:", myTurn);
+  }, [playersInGameRoom, myTurn]); */
 
   //show end round modal if all ships are toggled or hp is zero
   useFocusEffect(
@@ -1465,7 +1465,8 @@ export default function Player() {
                         },
                       ]}
                     >
-                      Total Fleet Value: {totalFleetValue || 0}/{gameValue || 0}
+                      Total Fleet Value: {totalFleetValue || 0}/
+                      {gameState?.gameValue || 0}
                     </Text>
                     {gameRoomID && (
                       <TouchableOpacity
@@ -1557,13 +1558,13 @@ export default function Player() {
                         {
                           borderWidth: 1,
                           width: "30%",
-                          opacity:
+                          /* opacity:
                             shouldEndRound ||
                             myToggledOrDestroyingShips ||
                             !gameRoomID ||
                             hasNoShips
                               ? 0.5
-                              : 1,
+                              : 1, */
                           borderColor:
                             shouldEndRound || myToggledOrDestroyingShips
                               ? Colors.lighter_red
