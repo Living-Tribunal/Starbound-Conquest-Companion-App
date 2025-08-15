@@ -6,9 +6,6 @@ export const updateShipIsToggled = async (user, selectedShip, setData) => {
   try {
     const { move, attack, specialOrder } = selectedShip.shipActions || {};
     const actionsTaken = [move, attack, specialOrder].filter(Boolean).length;
-    console.log("Actions Taken:", actionsTaken);
-    console.log("User:", user.uid);
-    console.log("shipActions:", selectedShip.shipActions);
     if (actionsTaken >= 2) {
       const shipRef = doc(
         FIREBASE_DB,

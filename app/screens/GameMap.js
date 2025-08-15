@@ -18,6 +18,7 @@ import {
 } from "react-native";
 import { getAllShipsInGameRoom } from "@/components/API/APIGameRoom";
 import { useStarBoundContext } from "@/components/Global/StarBoundProvider";
+import { unstable_batchedUpdates } from "react-native";
 import {
   doc,
   updateDoc,
@@ -44,15 +45,13 @@ import BattleModal from "@/components/Modals/BattleModal/BattleModal";
 import { updateShipIsToggled } from "../../components/Functions/updateShipIsToggled";
 import ShipInfo from "@/components/shipdata/ShipInfo";
 import { factionIcons } from "../../constants/shipIcons";
-import { useTurnContext } from "@/components/Global/TurnContext";
-import useMyTurn from "@/components/API/useMyTurn";
+import useMyTurn from "@/components/Functions/useMyTurn";
 
 export default function FleetMap() {
   const navigation = useNavigation();
   const user = FIREBASE_AUTH.currentUser;
   const { gameSectors, setGameSectors } = useMapImageContext();
-  const { data, setData } = useStarBoundContext();
-  const { myTurn, setMyTurn } = useTurnContext();
+  const { data, setData, gameRoomID } = useStarBoundContext();
   const [ships, setShips] = useState([]);
   const [shipPressed, setShipPressed] = useState(null);
   const [showFiringArcs, setShowFiringArcs] = useState(true);
@@ -69,12 +68,14 @@ export default function FleetMap() {
   const [shipsEnteringBattle, setShipsEnteringBattle] = useState([]);
   const [originalShipPosition, setOriginalShipPosition] = useState(null);
   const [isScanBattleField, setIsScanBattleField] = useState(false);
-  const { state: gameState } = useMyTurn(gameRoomID);
-  const isPlayerTurn = myTurn;
-  const gameRoomID = gameState?.id ?? null;
-
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);
+
+  const { state: gameState, myTurn } = useMyTurn(gameRoomID);
+  const isPlayerTurn = myTurn;
+
+  const gameStarted = gameState?.started;
+
   const [removeAllIcons, setRemoveAllIcons] = useState(true);
   const [circleBorderColor, setCircleBorderColor] = useState(
     "rgba(0,200,255,0.5)"
@@ -284,15 +285,18 @@ export default function FleetMap() {
 
     if (alreadyExists) return;
 
-    setShipsEnteringBattle((prev) => [
-      ...prev,
-      { attackingShip, targetedShip },
-    ]);
+    unstable_batchedUpdates(() => {
+      setShipsEnteringBattle((prev) => [
+        ...prev,
+        { attackingShip, targetedShip },
+      ]);
+      console.log("Doing Stuff in Maps");
 
-    setShipPressed(null);
-    setTargetedShip(null);
-    setShowConfirmModal(false);
-    setPendingBattle(null);
+      setShipPressed(null);
+      setTargetedShip(null);
+      setShowConfirmModal(false);
+      setPendingBattle(null);
+    });
 
     // Uncomment to navigate immediately:
     navigation.navigate("BattleGround", {
@@ -526,13 +530,15 @@ export default function FleetMap() {
         setLoading(true);
 
         // Reset local battle/selection UI state
-        setShipsEnteringBattle([]);
-        setShipPressed(null);
-        setTargetedShip(null);
-        setPendingBattle(null);
-        setShowConfirmModal(false);
-        setShips([]); // Clear animated ship instances
-        setData([]); // Clear context data
+        unstable_batchedUpdates(() => {
+          setShipsEnteringBattle([]);
+          setShipPressed(null);
+          setTargetedShip(null);
+          setPendingBattle(null);
+          setShowConfirmModal(false);
+          setShips([]); // Clear animated ship instances
+          setData([]); // Clear context data
+        });
 
         // Validate inputs
         if (!user?.uid || !gameRoomID || !gameSectors) {
@@ -731,6 +737,7 @@ export default function FleetMap() {
         isPlayerTurn={isPlayerTurn || false}
         isScanningBattleField={isScanBattleField}
         isScanning={setIsScanBattleField}
+        gameState={gameState}
       />
       {selectedShip?.hasRolledDToHit === false &&
         getShipsActionsTakenCount(selectedShip) < 2 && (
@@ -924,7 +931,7 @@ export default function FleetMap() {
               if (
                 shipPressed === currentPanShipId &&
                 movementDistanceCircle &&
-                !tempDisableMovementRestriction
+                gameStarted
               ) {
                 const circleX = movementDistanceCircle.x;
                 const circleY = movementDistanceCircle.y;

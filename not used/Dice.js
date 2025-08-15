@@ -1,4 +1,4 @@
-import React from "react";
+/* import React from "react";
 import { Text, View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -177,3 +177,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
+ */

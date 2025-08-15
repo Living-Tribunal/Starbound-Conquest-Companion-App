@@ -106,7 +106,7 @@ export default function ImagePickerExample({ factionColor }) {
                 }
           }
         />
-        {userProfilePicture === profile && (
+        {userProfilePicture && (
           <Image
             style={styles.image2}
             source={require("../../assets/icons/icons8-check-mark-50.png")}

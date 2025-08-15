@@ -16,10 +16,10 @@ import {
 import { Colors } from "@/constants/Colors";
 import uuid from "react-native-uuid";
 import Clipboard from "@react-native-clipboard/clipboard";
-import Toast from "react-native-toast-message";
 import { validateInviteCode } from "../../components/API/ValidateInviteCode/ValidateInviteCode";
-import useMyTurn from "@/components/API/useMyTurn";
+import useMyTurn from "@/components/Functions/useMyTurn";
 import { FIREBASE_AUTH } from "@/FirebaseConfig";
+import { useStarBoundContext } from "@/components/Global/StarBoundProvider";
 
 export default function SetupGameRoom({
   showGameRoomModal,
@@ -39,9 +39,8 @@ export default function SetupGameRoom({
   const [showGameRoomJoined, setShowGameRoomJoined] = useState(false);
   const [showGameRoomCreated, setShowGameRoomCreated] = useState(false);
   const [gameRoomIDWarning, setGameRoomIDWarning] = useState(false);
-  const { state: gameState } = useMyTurn();
   const uid = FIREBASE_AUTH.currentUser?.uid;
-  const gameRoomID = gameState?.id ?? null;
+  const { gameRoomID, setGameRoomID } = useStarBoundContext();
 
   /*   const disableSaveButton =
     inputValue.trim() === "" || inputValue.trim() === gameRoomID; */
@@ -510,7 +509,7 @@ export default function SetupGameRoom({
             </Text>
           </TouchableOpacity>
         </View>
-        {gameRoomID && (
+        {showGameRoomCreated && (
           <View
             style={{
               flexDirection: "column",

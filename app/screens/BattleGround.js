@@ -36,7 +36,7 @@ import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import { getDoc } from "firebase/firestore";
 import { useFocusEffect } from "expo-router";
 import PulsingGlow from "@/components/Pusle/PulsingGlow.js";
-import useMyTurn from "@/components/API/useMyTurn";
+import useMyTurn from "@/components/Functions/useMyTurn";
 
 export default function BattleGround(props) {
   const { from } = props.route.params;
@@ -70,7 +70,6 @@ export default function BattleGround(props) {
   const [isNavingModal, setIsNavingModal] = useState(false);
   const { state: gameState } = useMyTurn(gameRoomID);
   const gameRoomID = gameState?.id ?? null;
-  console.log("Game Room ID in BattleGround:", gameRoomID);
 
   const user = FIREBASE_AUTH.currentUser;
   const scaleAnim = useRef(new Animated.Value(0)).current;

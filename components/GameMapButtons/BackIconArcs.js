@@ -17,6 +17,7 @@ export default function BackIconArcs({
   isPlayerTurn,
   isScanningBattleField,
   isScanning,
+  gameState,
 }) {
   /*   console.log(
     "backIconArcs:",
@@ -44,6 +45,7 @@ export default function BackIconArcs({
         isPlayerTurn={isPlayerTurn}
         isScanningBattleField={isScanningBattleField}
         isScanning={isScanning}
+        gameState={gameState}
       />
       {!isPlayerTurn && <WaitingForTurn />}
       <TouchableOpacity
@@ -63,7 +65,7 @@ export default function BackIconArcs({
           source={require("../../assets/icons/icons8-back-arrow-50.png")}
         />
       </TouchableOpacity>
-      <TouchableOpacity
+      {/*  <TouchableOpacity
         onLongPress={() => {
           setTempDisableMovementRestriction((prev) => {
             const next = !prev;
@@ -104,7 +106,7 @@ export default function BackIconArcs({
               : require("../../assets/icons/icons8-check-mark-50.png")
           }
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity
         onPress={() => {
           setRemoveAllIcons((prev) => {
@@ -121,7 +123,7 @@ export default function BackIconArcs({
         }}
         style={{
           position: "absolute",
-          top: 93,
+          top: 50,
           left: 10,
           padding: 0,
           margin: 0,
@@ -160,7 +162,7 @@ export default function BackIconArcs({
             style={[
               styles.shipTypeTag,
               {
-                top: 135 + index * 35, // space between lines
+                top: 100 + index * 35, // space between lines
                 borderColor: Colors.green_toggle,
                 color: Colors.green_toggle,
               },

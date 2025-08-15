@@ -138,7 +138,6 @@ const Login = () => {
               faction || "Head over to settings to build your character",
           });
           console.log("User document written with ID:", user.uid);
-          console.log("Users Profile:", user);
         } catch (e) {
           console.error("Error adding document:", e);
         }
@@ -239,8 +238,6 @@ const Login = () => {
             id: user.uid,
             factionName: faction,
           });
-          // console.log("User document written with ID:", user.uid);
-          //  console.log("Users Profile:", user);
         } catch (e) {
           console.error("Error adding document:", e);
         }

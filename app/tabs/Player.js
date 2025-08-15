@@ -22,7 +22,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import ShipFlatlist from "../../components/shipdata/ShipFlatlist";
 import { getFleetData } from "../../components/API/API";
-import useMyTurn from "../../components/API/useMyTurn";
+import useMyTurn from "../../components/Functions/useMyTurn";
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import { shipObject } from "../../constants/shipObjects";
 import Toast from "react-native-toast-message";
@@ -35,6 +35,7 @@ import { ActivityIndicator } from "react-native";
 import EndRoundModal from "../../components/Modals/EndRoundModal/EndRoundModal";
 import EndTurnModal from "../../components/Modals/EndTurnModal/EndTurnModal";
 import Clipboard from "@react-native-clipboard/clipboard";
+import { startGame } from "../../components/Functions/StartGame";
 import {
   collection,
   query,
@@ -76,6 +77,7 @@ export default function Player() {
   const [isShowRules, setIsShowRules] = useState(false);
   const [isEndingRound, setIsEndingRound] = useState(false);
   const [isEndingTurn, setIsEndingTurn] = useState(false);
+  const [playerGameRoomID, setPlayerGameRoomID] = useState("");
   const {
     username,
     setUsername,
@@ -94,10 +96,11 @@ export default function Player() {
     setGetAllUsersShipToggled,
     myShips,
     setMyShips,
+    gameRoomID,
+    setGameRoomID,
   } = useStarBoundContext();
 
-  const { myTurn, state: gameState } = useMyTurn();
-  const gameRoomID = gameState?.id ?? null;
+  const { myTurn, state: gameState } = useMyTurn(gameRoomID);
 
   const hasShownEndRoundModal = useRef(false);
   const isPlayerTurn = myTurn;
@@ -117,6 +120,15 @@ export default function Player() {
     }
     return false;
   });
+
+  const toastStartGame = () => {
+    Toast.show({
+      type: "info",
+      text1: "StarBound Conquest",
+      text2: "Long Press the button to start the game.",
+      position: "top",
+    });
+  };
 
   const copyToClipboard = () => {
     try {
@@ -168,6 +180,10 @@ export default function Player() {
   useEffect(() => {
     setMyShips((prev) => (sameIds(prev, myShipsToSave) ? prev : myShipsToSave));
   }, [myShipsToSave, setMyShips]);
+
+  useEffect(() => {
+    setGameRoomID(playerGameRoomID);
+  }, [playerGameRoomID]);
 
   //get the number of ships that are toggled or pending destruction
   const myToggledOrDestroyingShips =
@@ -367,7 +383,7 @@ export default function Player() {
         setUsername(data.displayName || "");
         setProfile(data.photoURL || "");
         setFaction(data.factionName || "");
-        //setGameRoomID(data.id || "");
+        setPlayerGameRoomID(data.gameRoomID || "");
         setUserFactionColor(data.userFactionColor || "");
         setGameValue(data.gameValue || "");
       }
@@ -471,7 +487,8 @@ export default function Player() {
       const data = snap.data();
       console.log("Data:", data);
 
-      if (data.currentTurnUid !== myUId) throw new Error("No current turn!");
+      if (data.currentTurnUid.uid !== myUId)
+        throw new Error("No current turn!");
       const order = Array.isArray(data.turnOrder) ? data.turnOrder : [];
 
       const currentIndex =
@@ -479,7 +496,7 @@ export default function Player() {
         data.currentTurnIndex >= 0 &&
         data.currentTurnIndex < order.length
           ? data.currentTurnIndex
-          : Math.max(0, order.indexOf(data.currentTurnUid)); // -1 -> 0
+          : Math.max(0, order.indexOf(data.currentTurnUid.uid));
 
       const nextIndex = (currentIndex + 1) % order.length;
       const nextUid = order[nextIndex];
@@ -522,9 +539,7 @@ export default function Player() {
       await batch.commit();
 
       const nextUid = await advanceTurn(gameRoomID, user.uid);
-      const nextName =
-        playersInGameRoom.find((p) => p.uid === nextUid)?.displayName ||
-        "Next Player";
+      const nextName = nextUid.username || "Next Player";
 
       /*     // 4. THEN send Discord message
       const discordMessage = {
@@ -1050,10 +1065,12 @@ export default function Player() {
     if (showEndOfRound) return "Round has ended. Resetting your ships...";
     if (loading) return "Summoning your fleet...";
     if (isLoading) return "Adding ships to your Fleet...";
+    if (!gameState && gameRoomID) return "Loading your fleet...";
     return null;
   };
 
   const loadingMessage = getLoadingMessage();
+
   if (loadingMessage) {
     return <LoadingComponent whatToSay={loadingMessage} />;
   }
@@ -1115,748 +1132,822 @@ export default function Player() {
       </View>
     );
   }
-
-  return (
-    <SafeAreaView style={{ backgroundColor: Colors.dark_gray, flex: 1 }}>
-      <FlatList
-        data={fleetData}
-        keyExtractor={(item, index) =>
-          item.id ? item.id.toString() : index.toString()
-        }
-        ListHeaderComponent={
-          <>
-            <View style={styles.container}>
-              <TouchableOpacity onPress={() => setIsShowRules((prev) => !prev)}>
-                {isShowRules ? (
-                  <Text style={styles.subHeaderText}>
-                    Welcome to Starbound Conquest! Prepare to command your fleet
-                    and conquer the stars. Below, you'll find a quick snapshot
-                    of your fleet's status. Use the buttons to navigate to
-                    screens where you can manage your ship's stats, view the
-                    galaxy map and issue orders. Also tap on the settings to
-                    change your Faction, Username, Profile Picture, and create a
-                    Game Room.
-                  </Text>
-                ) : (
-                  <Text style={styles.subHeaderText}>Game Info</Text>
-                )}
-              </TouchableOpacity>
-              {toggleToDelete && (
-                <View>
-                  <Text
-                    style={[
-                      styles.valueWarning,
-                      { fontSize: 17, padding: 5, marginTop: 10 },
-                    ]}
-                  >
-                    Delete Mode Has Been Enabled
-                  </Text>
-                </View>
-              )}
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "flex-end",
-                  width: "100%",
-                  marginHorizontal: -20,
-                }}
-              >
+  if (gameState || !gameRoomID) {
+    return (
+      <SafeAreaView style={{ backgroundColor: Colors.dark_gray, flex: 1 }}>
+        <FlatList
+          data={fleetData}
+          keyExtractor={(item, index) =>
+            item.id ? item.id.toString() : index.toString()
+          }
+          ListHeaderComponent={
+            <>
+              <View style={styles.container}>
                 <TouchableOpacity
-                  style={styles.shareButton}
-                  onPress={saveCharacterImage}
+                  onPress={() => setIsShowRules((prev) => !prev)}
                 >
-                  <Image
-                    style={{
-                      width: 25,
-                      height: 25,
-                      tintColor: Colors.gold,
-                    }}
-                    source={require("../../assets/icons/icons8-share-100.png")}
-                  />
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity
-                onPress={() => setIsShowPlayers(!isShowPlayers)}
-              >
-                <View
-                  style={{
-                    borderWidth: 1,
-                    borderColor: Colors.hud,
-                    boxShadow: `0px 0px 10px ${Colors.hud}`,
-                    borderRadius: 5,
-                    padding: 10,
-                    marginTop: 10,
-                    margin: 10,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: "row",
-                    flexWrap: "wrap",
-                    gap: 20,
-                  }}
-                >
-                  {gameRoomID && isShowPlayers ? (
-                    <Text
-                      style={{
-                        color: Colors.hud,
-                        fontFamily: "LeagueSpartan-Bold",
-                        fontSize: 13,
-                        textAlign: "center",
-                      }}
-                    >
-                      {playersInGameRoom.length <= 1
-                        ? `Waiting for other players...`
-                        : `Current Player's Turn: ${
-                            playersInGameRoom.find(
-                              (p) => p.uid === gameState?.currentTurnUid
-                            )?.displayName || "—"
-                          }`}
+                  {isShowRules ? (
+                    <Text style={styles.subHeaderText}>
+                      Welcome to Starbound Conquest! Prepare to command your
+                      fleet and conquer the stars. Below, you'll find a quick
+                      snapshot of your fleet's status. Use the buttons to
+                      navigate to screens where you can manage your ship's
+                      stats, view the galaxy map and issue orders. Also tap on
+                      the settings to change your Faction, Username, Profile
+                      Picture, and create a Game Room.
                     </Text>
                   ) : (
-                    <View
-                      style={{
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <View>
-                        <Text
-                          style={{
-                            color: Colors.hud,
-                            fontFamily: "LeagueSpartan-Bold",
-                            fontSize: 15,
-                            textAlign: "center",
-                            marginBottom: 5,
-                          }}
-                        >
-                          {gameRoomID
-                            ? "All Players:"
-                            : "No Game Room Selected"}
-                        </Text>
-                      </View>
-
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          gap: 10,
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        {playersInGameRoom.map((player, index) => (
-                          <Text
-                            key={player.uid}
-                            numberOfLines={1}
-                            style={{
-                              color: player.userFactionColor || Colors.hud,
-                              fontFamily: "LeagueSpartan-Regular",
-                              fontSize: 10,
-                              textAlign: "center",
-                              borderWidth: 1,
-                              borderRadius: 5,
-                              padding: 3,
-                              borderColor:
-                                (player.uid === gameState?.currentTurnUid &&
-                                  player.userFactionColor) ||
-                                "transparent",
-                              borderBottomWidth: 1,
-                            }}
-                          >
-                            {index + 1}. {player.displayName}
-                          </Text>
-                        ))}
-                      </View>
-                    </View>
+                    <Text style={styles.subHeaderText}>Game Info</Text>
                   )}
-                </View>
-              </TouchableOpacity>
-              {gameRoomID && !isPlayerTurn ? (
-                <Text style={{ textAlign: "center", color: Colors.hud }}>
-                  Waiting for your turn...
-                </Text>
-              ) : null}
-              <ViewShot
-                style={{ justifyContent: "center", alignItems: "center" }}
-                ref={ref}
-                options={{
-                  fileName: username,
-                  format: "jpg",
-                  quality: 1,
-                }}
-              >
-                <View
-                  style={[
-                    styles.profileContainer,
-                    {
-                      borderColor: toggleToDelete
-                        ? Colors.lighter_red
-                        : userFactionColor || Colors.hud,
-                      boxShadow: `0px 0px 10px ${
-                        toggleToDelete
-                          ? Colors.lighter_red
-                          : userFactionColor || Colors.hud
-                      }`,
-                    },
-                  ]}
-                >
-                  {profile ? (
-                    <Image style={styles.profile} source={{ uri: profile }} />
-                  ) : (
-                    <View
-                      style={{
-                        width: 275,
-                        height: 275,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
+                </TouchableOpacity>
+                {toggleToDelete && (
+                  <View>
+                    <Text
+                      style={[
+                        styles.valueWarning,
+                        { fontSize: 17, padding: 5, marginTop: 10 },
+                      ]}
                     >
-                      <ActivityIndicator size="large" color={Colors.hud} />
+                      Delete Mode Has Been Enabled
+                    </Text>
+                  </View>
+                )}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "100%",
+                    gap: 10,
+                  }}
+                >
+                  {!gameState?.started && gameState?.createdBy === user.uid && (
+                    <TouchableOpacity
+                      onPress={toastStartGame}
+                      disabled={playersInGameRoom.length <= 1}
+                      onLongPress={async () => await startGame(gameRoomID)}
+                      style={[
+                        styles.gameStartTextButton,
+                        {
+                          opacity: playersInGameRoom.length <= 1 ? 0.5 : 1,
+                        },
+                      ]}
+                    >
+                      <Text style={styles.startTextValue}>Start Game</Text>
+                    </TouchableOpacity>
+                  )}
+                  <TouchableOpacity
+                    style={styles.shareButton}
+                    onPress={saveCharacterImage}
+                  >
+                    <Image
+                      style={{
+                        width: 27,
+                        height: 27,
+                        tintColor: Colors.gold,
+                      }}
+                      source={require("../../assets/icons/icons8-share-100.png")}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  onPress={() => setIsShowPlayers(!isShowPlayers)}
+                >
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: Colors.hud,
+                      boxShadow: `0px 0px 10px ${Colors.hud}`,
+                      borderRadius: 5,
+                      padding: 10,
+                      marginTop: 10,
+                      margin: 10,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      flexDirection: "row",
+                      flexWrap: "wrap",
+                      gap: 20,
+                    }}
+                  >
+                    {gameRoomID && isShowPlayers ? (
                       <Text
                         style={{
                           color: Colors.hud,
+                          fontFamily: "LeagueSpartan-Bold",
+                          fontSize: 13,
                           textAlign: "center",
-                          fontFamily: "LeagueSpartan-Light",
-                          fontSize: 15,
                         }}
                       >
-                        Head over to Settings and choose a profile picture.
+                        {gameState && playersInGameRoom.length <= 1
+                          ? `Waiting for other players...`
+                          : `Current Player's Turn: ${
+                              gameState?.currentTurnUid?.username || ""
+                            }`}
+                        {!gameState?.currentTurnUid?.username && (
+                          <ActivityIndicator
+                            size="small"
+                            color={Colors.hud}
+                            style={{ marginLeft: 5 }}
+                          />
+                        )}
                       </Text>
-                    </View>
-                  )}
-                  <Text
-                    style={[
-                      styles.playerText,
-                      {
-                        color: toggleToDelete
-                          ? Colors.lighter_red
-                          : userFactionColor || Colors.hud,
-                      },
-                    ]}
-                  >
-                    {username}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.factionText,
-                      {
-                        color: toggleToDelete
-                          ? Colors.lighter_red
-                          : userFactionColor || Colors.hud,
-                      },
-                    ]}
-                  >
-                    {faction}
-                  </Text>
-                </View>
-              </ViewShot>
-              {faction !== "Choose a Faction" && (
-                <View>
-                  <View
-                    style={{
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {gameRoomID ? (
-                      <TouchableOpacity
-                        onPress={copyToClipboard}
-                        style={[
-                          styles.gameRoomTextButton,
-                          {
-                            backgroundColor: toggleToDelete
-                              ? Colors.deep_red
-                              : Colors.hudDarker,
-                            borderColor: toggleToDelete
-                              ? Colors.lighter_red
-                              : Colors.hud,
-                          },
-                        ]}
+                    ) : (
+                      <View
+                        style={{
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
                       >
+                        <View>
+                          <Text
+                            style={{
+                              color: Colors.hud,
+                              fontFamily: "LeagueSpartan-Bold",
+                              fontSize: 15,
+                              textAlign: "center",
+                              marginBottom: 5,
+                            }}
+                          >
+                            {gameRoomID
+                              ? "All Players:"
+                              : "No Game Room Selected"}
+                          </Text>
+                        </View>
+
                         <View
                           style={{
                             flexDirection: "row",
                             gap: 10,
-                            justifyContent: "center",
-                            alignItems: "center",
-                            backgroundColor: toggleToDelete
-                              ? Colors.deep_red
-                              : "transparent",
-                            borderColor: toggleToDelete
-                              ? Colors.lighter_red
-                              : Colors.hud,
+                            flexWrap: "wrap",
                           }}
                         >
-                          <Image
-                            style={[
-                              styles.image,
-                              {
-                                tintColor: toggleToDelete
-                                  ? Colors.lighter_red
-                                  : Colors.hud,
-                              },
-                            ]}
-                            source={require("../../assets/icons/icons8-copy-50.png")}
-                          />
-                          <Text
-                            style={[
-                              {
+                          {playersInGameRoom.map((player, index) => (
+                            <Text
+                              key={player.uid}
+                              numberOfLines={1}
+                              style={{
+                                color: player.userFactionColor || Colors.hud,
+                                fontFamily: "LeagueSpartan-Regular",
                                 fontSize: 10,
-                                backgroundColor: "transparent",
                                 textAlign: "center",
-                                fontFamily: "monospace",
-                                padding: 5,
-                                color: toggleToDelete
-                                  ? Colors.lighter_red
-                                  : Colors.hud,
-                                backgroundColor: toggleToDelete
-                                  ? Colors.deep_red
-                                  : "transparent",
-                                borderColor: toggleToDelete
-                                  ? Colors.lighter_red
-                                  : Colors.hud,
-                              },
-                            ]}
-                          >
-                            {gameRoomID || "Not Connected"}
-                          </Text>
+                                borderWidth: 1,
+                                borderRadius: 5,
+                                padding: 3,
+                                borderColor:
+                                  (player.uid ===
+                                    gameState?.currentTurnUid.uid &&
+                                    player.userFactionColor) ||
+                                  "transparent",
+                                borderBottomWidth: 1,
+                              }}
+                            >
+                              {index + 1}. {player.displayName}
+                            </Text>
+                          ))}
                         </View>
-                      </TouchableOpacity>
-                    ) : (
-                      <Text style={styles.gameRoomText}>
-                        Game Room not selected, head over to Settings to create
-                        or join one!
-                      </Text>
+                      </View>
                     )}
-                    <Text
-                      style={[
-                        styles.textSub,
-                        {
-                          color: toggleToDelete
-                            ? Colors.lighter_red
-                            : Colors.white,
-                        },
-                      ]}
-                    >
-                      Fleet Overview
-                    </Text>
                   </View>
+                </TouchableOpacity>
+                {gameRoomID && !isPlayerTurn ? (
+                  <Text style={{ textAlign: "center", color: Colors.hud }}>
+                    Waiting for your turn...
+                  </Text>
+                ) : null}
+                <ViewShot
+                  style={{ justifyContent: "center", alignItems: "center" }}
+                  ref={ref}
+                  options={{
+                    fileName: username,
+                    format: "jpg",
+                    quality: 1,
+                  }}
+                >
                   <View
                     style={[
-                      styles.valueContainer,
+                      styles.profileContainer,
                       {
                         borderColor: toggleToDelete
                           ? Colors.lighter_red
-                          : Colors.hud,
-                        backgroundColor: toggleToDelete
-                          ? Colors.deep_red
-                          : Colors.hudDarker,
+                          : userFactionColor || Colors.hud,
+                        boxShadow: `0px 0px 10px ${
+                          toggleToDelete
+                            ? Colors.lighter_red
+                            : userFactionColor || Colors.hud
+                        }`,
                       },
                     ]}
                   >
-                    {valueWarning()}
+                    {profile ? (
+                      <Image style={styles.profile} source={{ uri: profile }} />
+                    ) : (
+                      <View
+                        style={{
+                          width: 275,
+                          height: 275,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <ActivityIndicator size="large" color={Colors.hud} />
+                        <Text
+                          style={{
+                            color: Colors.hud,
+                            textAlign: "center",
+                            fontFamily: "LeagueSpartan-Light",
+                            fontSize: 15,
+                          }}
+                        >
+                          Head over to Settings and choose a profile picture.
+                        </Text>
+                      </View>
+                    )}
                     <Text
                       style={[
-                        styles.textValue,
+                        styles.playerText,
                         {
                           color: toggleToDelete
                             ? Colors.lighter_red
-                            : Colors.hud,
+                            : userFactionColor || Colors.hud,
                         },
                       ]}
                     >
-                      Total Fleet Value: {totalFleetValue || 0}/
-                      {gameState?.gameValue || 0}
+                      {username}
                     </Text>
-                    {gameRoomID && (
-                      <TouchableOpacity
-                        disabled={!isPlayerTurn}
-                        onLongPress={resetRoundForCurretUser}
-                      >
-                        <Text
+                    <Text
+                      style={[
+                        styles.factionText,
+                        {
+                          color: toggleToDelete
+                            ? Colors.lighter_red
+                            : userFactionColor || Colors.hud,
+                        },
+                      ]}
+                    >
+                      {faction}
+                    </Text>
+                  </View>
+                </ViewShot>
+                {faction !== "Choose a Faction" && (
+                  <View>
+                    <View
+                      style={{
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {gameRoomID ? (
+                        <TouchableOpacity
+                          onPress={copyToClipboard}
                           style={[
-                            styles.gameRoomText,
+                            styles.gameRoomTextButton,
                             {
-                              marginTop: 10,
-                              padding: 5,
-                              color: toggleToDelete
-                                ? Colors.lighter_red
-                                : Colors.hud,
                               backgroundColor: toggleToDelete
                                 ? Colors.deep_red
-                                : Colors.dark_gray,
+                                : Colors.hudDarker,
                               borderColor: toggleToDelete
                                 ? Colors.lighter_red
                                 : Colors.hud,
                             },
                           ]}
                         >
-                          Round: {gameRound || 0}
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              gap: 10,
+                              justifyContent: "center",
+                              alignItems: "center",
+                              backgroundColor: toggleToDelete
+                                ? Colors.deep_red
+                                : "transparent",
+                              borderColor: toggleToDelete
+                                ? Colors.lighter_red
+                                : Colors.hud,
+                            }}
+                          >
+                            <Image
+                              style={[
+                                styles.image,
+                                {
+                                  tintColor: toggleToDelete
+                                    ? Colors.lighter_red
+                                    : Colors.hud,
+                                },
+                              ]}
+                              source={require("../../assets/icons/icons8-copy-50.png")}
+                            />
+                            <Text
+                              style={[
+                                {
+                                  fontSize: 10,
+                                  backgroundColor: "transparent",
+                                  textAlign: "center",
+                                  fontFamily: "monospace",
+                                  padding: 5,
+                                  color: toggleToDelete
+                                    ? Colors.lighter_red
+                                    : Colors.hud,
+                                  backgroundColor: toggleToDelete
+                                    ? Colors.deep_red
+                                    : "transparent",
+                                  borderColor: toggleToDelete
+                                    ? Colors.lighter_red
+                                    : Colors.hud,
+                                },
+                              ]}
+                            >
+                              {gameRoomID || "Not Connected"}
+                            </Text>
+                          </View>
+                        </TouchableOpacity>
+                      ) : (
+                        <Text style={styles.gameRoomText}>
+                          Game Room not selected, head over to Settings to
+                          create or join one!
                         </Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 5,
-                    }}
-                  >
-                    <TouchableOpacity
-                      disabled={!isPlayerTurn || !canEndRoundForEveryone}
-                      onPress={handleEndRoundPress}
+                      )}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          gap: 10,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text
+                          style={[
+                            styles.textSub,
+                            {
+                              color: toggleToDelete
+                                ? Colors.lighter_red
+                                : Colors.white,
+                            },
+                          ]}
+                        >
+                          Fleet Overview
+                        </Text>
+                        <Image
+                          style={[
+                            styles.image2,
+                            {
+                              opacity: !gameState?.started ? 0.5 : 1,
+                              borderColor: !gameState?.started
+                                ? Colors.hudDarker
+                                : Colors.gold,
+                              tintColor: !gameState?.started
+                                ? Colors.hudDarker
+                                : Colors.goldenrod,
+                              backgroundColor: !gameState?.started
+                                ? Colors.dark_gray
+                                : Colors.gold,
+                            },
+                          ]}
+                          source={require("../../assets/icons/icons8-check-mark-50.png")}
+                        />
+                      </View>
+                    </View>
+                    <View
                       style={[
-                        styles.editContainer,
+                        styles.valueContainer,
                         {
-                          borderWidth: 1,
-                          width: "30%",
-                          shadowColor:
-                            !isPlayerTurn || !canEndRoundForEveryone
-                              ? Colors.lighter_red
-                              : Colors.gold,
-                          borderColor:
-                            !isPlayerTurn || !canEndRoundForEveryone
-                              ? Colors.lighter_red
-                              : Colors.gold,
-                          backgroundColor:
-                            !isPlayerTurn || !canEndRoundForEveryone
-                              ? Colors.deep_red
-                              : Colors.goldenrod,
-                          opacity:
-                            !isPlayerTurn || !canEndRoundForEveryone ? 0.5 : 1,
+                          borderColor: toggleToDelete
+                            ? Colors.lighter_red
+                            : Colors.hud,
+                          backgroundColor: toggleToDelete
+                            ? Colors.deep_red
+                            : Colors.hudDarker,
                         },
                       ]}
                     >
+                      {valueWarning()}
                       <Text
                         style={[
                           styles.textValue,
                           {
-                            color:
-                              !isPlayerTurn || !canEndRoundForEveryone
-                                ? Colors.lighter_red
-                                : Colors.gold,
-                            fontSize: 12,
+                            color: toggleToDelete
+                              ? Colors.lighter_red
+                              : Colors.hud,
                           },
                         ]}
                       >
-                        End Round
+                        Total Fleet Value: {totalFleetValue || 0}/
+                        {gameState?.gameValue || 0}
                       </Text>
-                    </TouchableOpacity>
-
-                    {/*  <PushNotifications /> */}
-
-                    <TouchableOpacity
-                      disabled={
-                        !isPlayerTurn ||
-                        shouldEndRound ||
-                        myToggledOrDestroyingShips
-                      }
-                      style={[
-                        styles.editContainer,
-                        {
-                          borderWidth: 1,
-                          width: "30%",
-                          /* opacity:
-                            shouldEndRound ||
-                            myToggledOrDestroyingShips ||
-                            !gameRoomID ||
-                            hasNoShips
-                              ? 0.5
-                              : 1, */
-                          borderColor:
-                            shouldEndRound || myToggledOrDestroyingShips
-                              ? Colors.lighter_red
-                              : Colors.green_toggle,
-                          backgroundColor:
-                            shouldEndRound || myToggledOrDestroyingShips
-                              ? Colors.deep_red
-                              : Colors.darker_green_toggle,
-                        },
-                      ]}
-                      onPress={() => {
-                        setIsShowWarning(true);
+                      {gameRoomID && (
+                        <TouchableOpacity
+                          disabled={!isPlayerTurn}
+                          onLongPress={resetRoundForCurretUser}
+                        >
+                          <Text
+                            style={[
+                              styles.gameRoomText,
+                              {
+                                marginTop: 10,
+                                padding: 5,
+                                color: toggleToDelete
+                                  ? Colors.lighter_red
+                                  : Colors.hud,
+                                backgroundColor: toggleToDelete
+                                  ? Colors.deep_red
+                                  : Colors.dark_gray,
+                                borderColor: toggleToDelete
+                                  ? Colors.lighter_red
+                                  : Colors.hud,
+                              },
+                            ]}
+                          >
+                            Round: {gameRound || 0}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 5,
                       }}
                     >
-                      <Text
-                        style={[
-                          styles.textValue,
-                          {
-                            color:
-                              shouldEndRound || myToggledOrDestroyingShips
-                                ? Colors.lighter_red
-                                : Colors.green_toggle,
-                            fontSize: 12,
-                          },
-                        ]}
-                      >
-                        Delete a ship
-                      </Text>
-                    </TouchableOpacity>
-                    {!shouldEndRound && (
                       <TouchableOpacity
+                        disabled={!isPlayerTurn || !canEndRoundForEveryone}
+                        onPress={handleEndRoundPress}
                         style={[
                           styles.editContainer,
                           {
+                            borderWidth: 1,
+                            width: "30%",
+                            shadowColor:
+                              !isPlayerTurn || !canEndRoundForEveryone
+                                ? Colors.lighter_red
+                                : Colors.gold,
+                            borderColor:
+                              !isPlayerTurn || !canEndRoundForEveryone
+                                ? Colors.lighter_red
+                                : Colors.gold,
+                            backgroundColor:
+                              !isPlayerTurn || !canEndRoundForEveryone
+                                ? Colors.deep_red
+                                : Colors.goldenrod,
                             opacity:
-                              !!toggleToDelete ||
-                              !isPlayerTurn ||
-                              hasNoShips ||
-                              shouldEndRound ||
-                              !gameRoomID
+                              !isPlayerTurn || !canEndRoundForEveryone
                                 ? 0.5
                                 : 1,
-                            backgroundColor:
-                              !isPlayerTurn ||
-                              hasNoShips ||
-                              shouldEndRound ||
-                              !gameRoomID
-                                ? Colors.hudDarker
-                                : Colors.hud,
-                            width: "35%",
                           },
                         ]}
-                        disabled={
-                          !isPlayerTurn ||
-                          hasNoShips ||
-                          shouldEndRound ||
-                          !gameRoomID
-                        }
-                        onPress={async () => setShowEndTurnModal(true)}
                       >
                         <Text
                           style={[
                             styles.textValue,
                             {
                               color:
-                                !isPlayerTurn ||
-                                hasNoShips ||
-                                shouldEndRound ||
-                                !gameRoomID
-                                  ? Colors.hud
-                                  : Colors.hudDarker,
+                                !isPlayerTurn || !canEndRoundForEveryone
+                                  ? Colors.lighter_red
+                                  : Colors.gold,
                               fontSize: 12,
                             },
                           ]}
                         >
-                          End Turn
+                          End Round
                         </Text>
                       </TouchableOpacity>
-                    )}
-                  </View>
 
-                  <View
-                    style={{
-                      justifyContent: "center",
-                      alignSelf: "center",
-                      borderRadius: 5,
-                      marginTop: 10,
-                      padding: 5,
-                      width: "95%",
-                      alignItems: "center",
-                      borderWidth: 1,
-                      borderColor: toggleToDelete
-                        ? Colors.lighter_red
-                        : Colors.hud,
-                      backgroundColor: Colors.dark_gray,
-                    }}
-                  >
-                    <Text
+                      {/*  <PushNotifications /> */}
+
+                      <TouchableOpacity
+                        disabled={
+                          !isPlayerTurn ||
+                          shouldEndRound ||
+                          myToggledOrDestroyingShips
+                        }
+                        style={[
+                          styles.editContainer,
+                          {
+                            borderWidth: 1,
+                            width: "30%",
+                            /* opacity:
+                            shouldEndRound ||
+                            myToggledOrDestroyingShips ||
+                            !gameRoomID ||
+                            hasNoShips
+                              ? 0.5
+                              : 1, */
+                            borderColor:
+                              shouldEndRound || myToggledOrDestroyingShips
+                                ? Colors.lighter_red
+                                : Colors.green_toggle,
+                            backgroundColor:
+                              shouldEndRound || myToggledOrDestroyingShips
+                                ? Colors.deep_red
+                                : Colors.darker_green_toggle,
+                          },
+                        ]}
+                        onPress={() => {
+                          setIsShowWarning(true);
+                        }}
+                      >
+                        <Text
+                          style={[
+                            styles.textValue,
+                            {
+                              color:
+                                shouldEndRound || myToggledOrDestroyingShips
+                                  ? Colors.lighter_red
+                                  : Colors.green_toggle,
+                              fontSize: 12,
+                            },
+                          ]}
+                        >
+                          Delete a ship
+                        </Text>
+                      </TouchableOpacity>
+                      {!shouldEndRound && (
+                        <TouchableOpacity
+                          style={[
+                            styles.editContainer,
+                            {
+                              opacity:
+                                !!toggleToDelete ||
+                                !isPlayerTurn ||
+                                hasNoShips ||
+                                shouldEndRound ||
+                                !gameRoomID ||
+                                !gameState?.started
+                                  ? 0.5
+                                  : 1,
+                              backgroundColor:
+                                !isPlayerTurn ||
+                                hasNoShips ||
+                                shouldEndRound ||
+                                !gameRoomID ||
+                                !gameState?.started
+                                  ? Colors.hudDarker
+                                  : Colors.hud,
+                              width: "35%",
+                            },
+                          ]}
+                          disabled={
+                            !isPlayerTurn ||
+                            hasNoShips ||
+                            shouldEndRound ||
+                            !gameRoomID ||
+                            !gameState?.started
+                          }
+                          onPress={async () => setShowEndTurnModal(true)}
+                        >
+                          <Text
+                            style={[
+                              styles.textValue,
+                              {
+                                color:
+                                  !isPlayerTurn ||
+                                  hasNoShips ||
+                                  shouldEndRound ||
+                                  !gameRoomID ||
+                                  !gameState?.started
+                                    ? Colors.hud
+                                    : Colors.hudDarker,
+                                fontSize: 12,
+                              },
+                            ]}
+                          >
+                            End Turn
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+
+                    <View
                       style={{
-                        color: toggleToDelete ? Colors.lighter_red : Colors.hud,
-                        fontFamily: "LeagueSpartan-Light",
-                        fontSize: 15,
-                        textAlign: "center",
+                        justifyContent: "center",
+                        alignSelf: "center",
+                        borderRadius: 5,
+                        marginTop: 10,
+                        padding: 5,
+                        width: "95%",
+                        alignItems: "center",
+                        borderWidth: 1,
+                        borderColor: toggleToDelete
+                          ? Colors.lighter_red
+                          : Colors.hud,
+                        backgroundColor: Colors.dark_gray,
                       }}
                     >
-                      {gameSectors === "Show All Ships..." ? (
-                        <Text
-                          style={{
-                            color: toggleToDelete
-                              ? Colors.lighter_red
-                              : Colors.hud,
-                            fontFamily: "LeagueSpartan-Light",
-                            fontSize: 15,
-                            textAlign: "center",
-                          }}
-                        >
-                          Total Ships in All Sectors:{" "}
-                          {shipInSector.length > 0 ? shipInSector.length : "0"}
-                        </Text>
-                      ) : (
-                        <Text
-                          style={{
-                            color: toggleToDelete
-                              ? Colors.lighter_red
-                              : Colors.hud,
-                            fontFamily: "LeagueSpartan-Light",
-                            fontSize: 15,
-                            textAlign: "center",
-                          }}
-                        >
-                          {!gameSectors ? (
-                            <Text>No Sector Selected</Text>
-                          ) : (
-                            <Text>
-                              Total Ships in {gameSectors}:{" "}
-                              {shipInSector.length > 0
-                                ? shipInSector.length
-                                : "0"}
-                            </Text>
-                          )}
-                        </Text>
-                      )}
-                      {/*     Total Ships in {gameSectors}:{" "}
+                      <Text
+                        style={{
+                          color: toggleToDelete
+                            ? Colors.lighter_red
+                            : Colors.hud,
+                          fontFamily: "LeagueSpartan-Light",
+                          fontSize: 15,
+                          textAlign: "center",
+                        }}
+                      >
+                        {gameSectors === "Show All Ships..." ? (
+                          <Text
+                            style={{
+                              color: toggleToDelete
+                                ? Colors.lighter_red
+                                : Colors.hud,
+                              fontFamily: "LeagueSpartan-Light",
+                              fontSize: 15,
+                              textAlign: "center",
+                            }}
+                          >
+                            Total Ships in All Sectors:{" "}
+                            {shipInSector.length > 0
+                              ? shipInSector.length
+                              : "0"}
+                          </Text>
+                        ) : (
+                          <Text
+                            style={{
+                              color: toggleToDelete
+                                ? Colors.lighter_red
+                                : Colors.hud,
+                              fontFamily: "LeagueSpartan-Light",
+                              fontSize: 15,
+                              textAlign: "center",
+                            }}
+                          >
+                            {!gameSectors ? (
+                              <Text>No Sector Selected</Text>
+                            ) : (
+                              <Text>
+                                Total Ships in {gameSectors}:{" "}
+                                {shipInSector.length > 0
+                                  ? shipInSector.length
+                                  : "0"}
+                              </Text>
+                            )}
+                          </Text>
+                        )}
+                        {/*     Total Ships in {gameSectors}:{" "}
                       {shipInSector.length > 0 ? shipInSector.length : "0"} */}
-                    </Text>
+                      </Text>
+                    </View>
+                    {!toggleToDelete && gameRoomID && (
+                      <DropdownComponentSectors getShips={getFleetData} />
+                    )}
                   </View>
-                  {!toggleToDelete && gameRoomID && (
-                    <DropdownComponentSectors getShips={getFleetData} />
-                  )}
-                </View>
-              )}
-            </View>
-          </>
-        }
-        renderItem={({ item }) => (
-          <View style={styles.shipContainer}>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 10,
-                margin: 10,
-              }}
-            >
+                )}
+              </View>
+            </>
+          }
+          renderItem={({ item }) => (
+            <View style={styles.shipContainer}>
               <View
                 style={{
-                  borderWidth: 1,
-                  borderRadius: 5,
-                  borderColor: toggleToDelete ? Colors.lighter_red : Colors.hud,
-                  padding: 5,
-                  justifyContent: "center",
+                  flexDirection: "row",
                   alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 10,
+                  margin: 10,
                 }}
               >
-                <Image
-                  source={factionIcons[item.type.toLowerCase()]}
+                <View
                   style={{
-                    width: 35,
-                    height: 35,
-                    tintColor: toggleToDelete ? Colors.lighter_red : Colors.hud,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    borderColor: toggleToDelete
+                      ? Colors.lighter_red
+                      : Colors.hud,
+                    padding: 5,
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
-                  resizeMode="contain"
-                />
+                >
+                  <Image
+                    source={factionIcons[item.type.toLowerCase()]}
+                    style={{
+                      width: 35,
+                      height: 35,
+                      tintColor: toggleToDelete
+                        ? Colors.lighter_red
+                        : Colors.hud,
+                    }}
+                    resizeMode="contain"
+                  />
+                </View>
+
+                <Text
+                  style={[
+                    styles.textUnder,
+                    {
+                      color: toggleToDelete ? Colors.lighter_red : Colors.white,
+                    },
+                  ]}
+                >
+                  {item.type}
+                </Text>
+                {/* //minus button */}
+                <TouchableOpacity
+                  disabled={
+                    !isPlayerTurn ||
+                    toggleToDelete ||
+                    shouldEndRound ||
+                    myToggledOrDestroyingShips
+                  }
+                  onPress={() => decrementShipCount(item.type)}
+                  style={styles.button}
+                >
+                  <Image
+                    source={require("../../assets/icons/icons8-minus-100.png")}
+                    style={{
+                      width: 25,
+                      height: 25,
+                      marginTop: 5,
+                      tintColor: toggleToDelete
+                        ? Colors.lighter_red
+                        : Colors.hud,
+                    }}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  disabled={
+                    !isPlayerTurn ||
+                    toggleToDelete ||
+                    shouldEndRound ||
+                    myToggledOrDestroyingShips
+                  }
+                  onPress={() => addingShipToFleet(item)}
+                  style={styles.button}
+                >
+                  <Text style={styles.addButtonText}>
+                    {shipCounts[item.type] || 1}
+                  </Text>
+                  <Image
+                    style={{
+                      width: 50,
+                      height: 50,
+                      position: "absolute",
+                      tintColor: toggleToDelete
+                        ? Colors.lighter_red
+                        : Colors.hud,
+                    }}
+                    source={require("../../assets/images/edithud.png")}
+                  />
+                </TouchableOpacity>
+                {/* //add button */}
+                <TouchableOpacity
+                  disabled={
+                    !isPlayerTurn ||
+                    toggleToDelete ||
+                    shouldEndRound ||
+                    myToggledOrDestroyingShips
+                  }
+                  onPress={() => incrementShipCount(item.type)}
+                  style={styles.button}
+                >
+                  <Image
+                    source={require("../../assets/icons/icons8-plus-100.png")}
+                    style={{
+                      width: 25,
+                      height: 25,
+                      marginTop: 5,
+                      tintColor: toggleToDelete
+                        ? Colors.lighter_red
+                        : Colors.hud,
+                    }}
+                  />
+                </TouchableOpacity>
               </View>
 
-              <Text
-                style={[
-                  styles.textUnder,
-                  { color: toggleToDelete ? Colors.lighter_red : Colors.white },
-                ]}
-              >
-                {item.type}
-              </Text>
-              {/* //minus button */}
-              <TouchableOpacity
-                disabled={
-                  !isPlayerTurn ||
-                  toggleToDelete ||
-                  shouldEndRound ||
-                  myToggledOrDestroyingShips
-                }
-                onPress={() => decrementShipCount(item.type)}
-                style={styles.button}
-              >
-                <Image
-                  source={require("../../assets/icons/icons8-minus-100.png")}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    marginTop: 5,
-                    tintColor: toggleToDelete ? Colors.lighter_red : Colors.hud,
-                  }}
+              <View style={{ flexDirection: "column" }}>
+                <ShipFlatlist
+                  toggleToDelete={toggleToDelete}
+                  type={item.type}
+                  usersColor={userFactionColor}
+                  isPlayerTurn={isPlayerTurn}
+                  myToggledOrDestroyingShips={myToggledOrDestroyingShips}
+                  myShips={myShips}
                 />
-              </TouchableOpacity>
-              <TouchableOpacity
-                disabled={
-                  !isPlayerTurn ||
-                  toggleToDelete ||
-                  shouldEndRound ||
-                  myToggledOrDestroyingShips
-                }
-                onPress={() => addingShipToFleet(item)}
-                style={styles.button}
-              >
-                <Text style={styles.addButtonText}>
-                  {shipCounts[item.type] || 1}
-                </Text>
-                <Image
-                  style={{
-                    width: 50,
-                    height: 50,
-                    position: "absolute",
-                    tintColor: toggleToDelete ? Colors.lighter_red : Colors.hud,
-                  }}
-                  source={require("../../assets/images/edithud.png")}
-                />
-              </TouchableOpacity>
-              {/* //add button */}
-              <TouchableOpacity
-                disabled={
-                  !isPlayerTurn ||
-                  toggleToDelete ||
-                  shouldEndRound ||
-                  myToggledOrDestroyingShips
-                }
-                onPress={() => incrementShipCount(item.type)}
-                style={styles.button}
-              >
-                <Image
-                  source={require("../../assets/icons/icons8-plus-100.png")}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    marginTop: 5,
-                    tintColor: toggleToDelete ? Colors.lighter_red : Colors.hud,
-                  }}
-                />
-              </TouchableOpacity>
+              </View>
             </View>
-
-            <View style={{ flexDirection: "column" }}>
-              <ShipFlatlist
-                toggleToDelete={toggleToDelete}
-                type={item.type}
-                usersColor={userFactionColor}
-                isPlayerTurn={isPlayerTurn}
-                myToggledOrDestroyingShips={myToggledOrDestroyingShips}
-                myShips={myShips}
-              />
-            </View>
-          </View>
-        )}
-        contentContainerStyle={{ paddingBottom: tabBarHeight }}
-      />
-      <EndRoundModal
-        showEndRoundModal={showEndRoundModal}
-        setShowEndRoundModal={setShowEndRoundModal}
-        handleEndRoundPress={handleEndRoundPress}
-        isEndingRound={isEndingRound}
-      />
-      <EndTurnModal
-        showEndTurnModal={showEndTurnModal}
-        setShowEndTurnModal={setShowEndTurnModal}
-        endYourTurnAndSendMessage={endYourTurnAndSendMessage}
-        myToggledOrDestroyingShips={myToggledOrDestroyingShips}
-        myToggledShipsCount={myToggledShipsCount}
-        myUntoggledShipsCount={myUntoggledShipsCount}
-        myShipsBySectorNotToggled={myUntoggledShipsBySector}
-        isEndingTurn={isEndingTurn}
-      />
-    </SafeAreaView>
-  );
+          )}
+          contentContainerStyle={{ paddingBottom: tabBarHeight }}
+        />
+        <EndRoundModal
+          showEndRoundModal={showEndRoundModal}
+          setShowEndRoundModal={setShowEndRoundModal}
+          handleEndRoundPress={handleEndRoundPress}
+          isEndingRound={isEndingRound}
+        />
+        <EndTurnModal
+          showEndTurnModal={showEndTurnModal}
+          setShowEndTurnModal={setShowEndTurnModal}
+          endYourTurnAndSendMessage={endYourTurnAndSendMessage}
+          myToggledOrDestroyingShips={myToggledOrDestroyingShips}
+          myToggledShipsCount={myToggledShipsCount}
+          myUntoggledShipsCount={myUntoggledShipsCount}
+          myShipsBySectorNotToggled={myUntoggledShipsBySector}
+          isEndingTurn={isEndingTurn}
+        />
+      </SafeAreaView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -2042,9 +2133,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
+  gameStartTextButton: {
+    width: "80%",
+    backgroundColor: Colors.goldenrod,
+    padding: 5,
+    borderWidth: 1,
+    borderColor: Colors.gold,
+    borderRadius: 5,
+    alignSelf: "center",
+  },
+  startTextValue: {
+    color: Colors.gold,
+    fontFamily: "LeagueSpartan-Bold",
+    fontSize: 15,
+    textAlign: "center",
+  },
   image: {
     width: 25,
     height: 25,
     tintColor: Colors.hud,
+  },
+  image2: {
+    width: 20,
+    height: 20,
+    borderRadius: 50,
+    borderWidth: 1,
   },
 });

@@ -17,10 +17,10 @@ import Login from "./auth/Login";
 import Settings from "./tabs/Settings";
 import Player from "./tabs/Player";
 import SpecialOrdersScreen from "./screens/SpecialOrdersScreen";
+import Chat from "./tabs/Chat";
 import WeaponTypes from "./screens/WeaponTypes";
 import GameLore from "./screens/GameLore";
 import FactionInfoScreen from "./screens/FactionInfoScreen";
-import DiceRoller from "./tabs/Dice";
 import BattleGround from "./screens/BattleGround";
 import GameMap from "./screens/GameMap";
 import Map from "./tabs/Map";
@@ -152,8 +152,8 @@ function MainTabs() {
                   }}
                 />
                 <Tab.Screen
-                  name="Dice"
-                  component={DiceRoller}
+                  name="Chat"
+                  component={Chat}
                   options={{
                     tabBarIcon: ({ focused, size }) => (
                       <Image

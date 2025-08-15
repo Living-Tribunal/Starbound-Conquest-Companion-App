@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -40,18 +47,51 @@ export default function Example() {
 
   return (
     <>
-      <Pressable style={styles.openButton} onPress={() => setShowModal(true)}>
-        <Text
-          style={{
-            color: Colors.hudDarker,
-            fontSize: 15,
-            textAlign: "center",
-            fontFamily: "LeagueSpartan-Bold",
-          }}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 10,
+        }}
+      >
+        <TouchableOpacity
+          style={styles.openButton}
+          onPress={() => setShowModal(true)}
         >
-          Choose a Faction Color
-        </Text>
-      </Pressable>
+          <Text
+            style={{
+              color: Colors.hudDarker,
+              fontSize: 14,
+              textAlign: "center",
+              fontFamily: "LeagueSpartan-Bold",
+            }}
+          >
+            Choose a faction color
+          </Text>
+        </TouchableOpacity>
+        <View
+          style={[
+            styles.factionColorContainer,
+            { borderColor: userFactionColor },
+          ]}
+        >
+          <Text
+            style={[
+              styles.factionColorText,
+              {
+                color: userFactionColor
+                  ? userFactionColor
+                  : selectedColor.value
+                  ? selectedColor.value
+                  : Colors.hudDarker,
+              },
+            ]}
+          >
+            Current faction color {selectedColor.value}
+          </Text>
+        </View>
+      </View>
 
       <Modal
         onRequestClose={() => setShowModal(false)}
@@ -183,24 +223,12 @@ const styles = StyleSheet.create({
     marginVertical: 0,
   },
   openButton: {
-    width: "95%",
+    width: "45%",
     alignSelf: "center",
     borderRadius: 5,
-    paddingHorizontal: 40,
-    paddingVertical: 10,
     backgroundColor: Colors.hud,
     borderWidth: 1,
     borderColor: Colors.hud,
-
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-
-    elevation: 5,
   },
   closeButton: {
     position: "absolute",
@@ -210,15 +238,19 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignSelf: "center",
     backgroundColor: "#fff",
-
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-
-    elevation: 5,
+  },
+  factionColorContainer: {
+    color: Colors.hudDarker,
+    borderWidth: 2,
+    borderColor: Colors.hudDarker,
+    borderRadius: 5,
+    padding: 5,
+    width: "45%",
+  },
+  factionColorText: {
+    color: Colors.hudDarker,
+    fontSize: 12,
+    textAlign: "center",
+    fontFamily: "LeagueSpartan-Bold",
   },
 });

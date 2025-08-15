@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
 import { Colors } from "@/constants/Colors";
-import useMyTurn from "@/components/API/useMyTurn";
+import useMyTurn from "../../components/Functions/useMyTurn";
 import {
   updateDoc,
   doc,
@@ -23,7 +23,6 @@ import {
 } from "firebase/firestore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropdownComponentFactions from "../../components/dropdown/DropdownComponentFactions";
-import { validateInviteCode } from "../../components/API/ValidateInviteCode/ValidateInviteCode";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { updateProfile } from "firebase/auth";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
@@ -44,7 +43,6 @@ import SetupGameRoom from "../../app/screens/SetupGameRoom";
 export default function Settings() {
   const user = FIREBASE_AUTH.currentUser;
   const navigation = useNavigation();
-  const { state: gameState } = useMyTurn(gameState?.gameRoomID);
   GoogleSignin.configure({
     webClientId:
       "633304307229-acjrh8tpf2eddgdjcutludsg7vqf1pru.apps.googleusercontent.com",
@@ -63,13 +61,15 @@ export default function Settings() {
     data,
     userFactionColor,
     setUserFactionColor,
+    gameRoomID,
+    setGameRoomID,
   } = useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [showGameRoomModal, setShowGameRoomModal] = useState(false);
   const [isJoiningGameRoom, setIsJoiningGameRoom] = useState(false);
   const [gameRoomUserID, setGameRoomUserID] = useState("");
-  const gameRoomID = gameState?.id ?? null;
+  const { state: gameState } = useMyTurn(gameRoomID);
 
   const toastNotification = () => {
     Toast.show({
@@ -100,7 +100,13 @@ export default function Settings() {
   };
 
   const checkForUsernamePhotoFaction = async () => {
-    if (!profile || !faction || !userFactionColor) {
+    console.log(
+      "Profile, Faction, and Faction Color:",
+      userProfilePicture,
+      faction,
+      userFactionColor
+    );
+    if (!userProfilePicture || !faction || !userFactionColor) {
       showErrorToast();
       return false;
     } else {
@@ -126,11 +132,11 @@ export default function Settings() {
             setFaction(data.factionName || "");
             setUserFactionColor(data.userFactionColor || "");
             setGameRoomUserID(data.gameRoomID || "");
-            console.log(
+            /* console.log(
               "User in GameRoomID Settings:",
               JSON.stringify(gameRoomUserID, null, 2)
-            );
-            console.log("User in game roomm id in Settings:", gameRoomID);
+            ); */
+            //console.log("User in game roomm id in Settings:", gameRoomID);
           }
         } catch (error) {
           console.error("Failed to retrieve user data:", error);
@@ -172,13 +178,14 @@ export default function Settings() {
           started: false,
           turnOrder: [uid],
           currentTurnIndex: 0,
-          currentTurnUid: uid,
+          currentTurnUid: { uid, username },
           gameValue: String(gameValue ?? ""),
+          turnOrder: [{ uid, username, profile }],
         });
       } else {
         //this is the path for someone to join an existing game room
         await updateDoc(gameRoomRef, {
-          turnOrder: arrayUnion(uid),
+          turnOrder: arrayUnion({ uid, username, profile }),
         });
       }
       console.log("Game Room Created:", gameRoomID);
@@ -186,7 +193,6 @@ export default function Settings() {
       console.error("Error updating game room ID:", e);
     }
   }
-
   const updateUserProfile = async (gameRoomID) => {
     if (!user) return;
     setUpdatingProfile(true);
@@ -397,7 +403,9 @@ export default function Settings() {
                         { fontSize: gameRoomID ? 10 : 15 },
                       ]}
                     >
-                      {gameRoomID ? "Game Room ID: " + gameRoomID : "Tap"}
+                      {gameRoomID
+                        ? "Game Room ID: " + gameRoomID
+                        : "Tap to create/join a game room"}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -512,7 +520,6 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: Colors.dark_gray,
-    paddingBottom: 20,
   },
   title: {
     color: Colors.hudDarker,

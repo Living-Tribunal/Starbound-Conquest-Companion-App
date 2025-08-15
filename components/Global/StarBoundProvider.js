@@ -40,6 +40,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [damageDone, setDamageDone] = useState(0);
   const [userFactionColor, setUserFactionColor] = useState(null);
   const [hasBeenInteractedWith, setHasBeenInteractedWith] = useState(false);
+  const [gameRoomID, setGameRoomID] = useState(null);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [myShips, setMyShips] = useState([]);
@@ -131,6 +132,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setFromGameMap,
         myShips,
         setMyShips,
+        gameRoomID,
+        setGameRoomID,
       }}
     >
       {children}
