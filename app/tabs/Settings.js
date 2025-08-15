@@ -399,7 +399,7 @@ export default function Settings() {
                     >
                       {gameRoomID
                         ? "Game Room ID: " + gameRoomID
-                        : "Tap To Set A Game Room"}
+                        : "Tap"}
                     </Text>
                   </TouchableOpacity>
                 </View>
