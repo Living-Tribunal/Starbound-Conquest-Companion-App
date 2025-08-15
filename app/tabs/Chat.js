@@ -92,11 +92,12 @@ export default function Chat() {
             value={text}
             onChangeText={setText}
             style={{
-              width: "100%",
+              width: "95%",
               color: Colors.hud,
               fontFamily: "monospace",
               fontSize: 13,
               height: 50,
+              marginLeft: 15,
             }}
             placeholder="Enter your message here"
             placeholderTextColor={Colors.hud}
