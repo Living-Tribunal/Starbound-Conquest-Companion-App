@@ -125,12 +125,12 @@ export default function Settings() {
             setProfile(data.photoURL || "");
             setFaction(data.factionName || "");
             setUserFactionColor(data.userFactionColor || "");
-            setGameRoomUserID(data.id || "");
+            setGameRoomUserID(data.gameRoomID || "");
             console.log(
               "User in GameRoomID Settings:",
               JSON.stringify(gameRoomUserID, null, 2)
             );
-            console.log("User in GameValue Settings:", gameRoomID);
+            console.log("User in game roomm id in Settings:", gameRoomID);
           }
         } catch (error) {
           console.error("Failed to retrieve user data:", error);
@@ -397,9 +397,7 @@ export default function Settings() {
                         { fontSize: gameRoomID ? 10 : 15 },
                       ]}
                     >
-                      {gameRoomID
-                        ? "Game Room ID: " + gameRoomID
-                        : "Tap"}
+                      {gameRoomID ? "Game Room ID: " + gameRoomID : "Tap"}
                     </Text>
                   </TouchableOpacity>
                 </View>

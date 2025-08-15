@@ -54,19 +54,12 @@ export default function ImagePickerExample({ factionColor }) {
       const filename = `userProfilePhotos/${userId}/${Date.now()}.jpg`;
       console.log("Filename:", filename);
       const storageRef = ref(storage, filename);
-      console.log("Storage Ref:", storageRef);
-
       const metadata = {
         contentType: "image/jpeg",
       };
-      console.log("Metadata:", metadata);
-
       await uploadBytes(storageRef, blob, metadata);
       console.log("✅ Upload success!");
-
       const downloadURL = await getDownloadURL(storageRef);
-      console.log("📎 File available at:", downloadURL);
-
       if (downloadURL) {
         try {
           console.log(downloadURL, "were saved to Auth");
@@ -92,25 +85,34 @@ export default function ImagePickerExample({ factionColor }) {
           <Text style={styles.text}>Choose Your Profile Picture</Text>
         </TouchableOpacity>
       </View>
-
-      <Image
-        style={[
-          styles.image,
-          {
-            boxShadow: factionColor
-              ? `0px 0px 10px ${factionColor}`
-              : `0px 0px 10px ${Colors.hud}`,
-            borderColor: factionColor || Colors.hud,
-          },
-        ]}
-        source={
-          userProfilePicture
-            ? { uri: userProfilePicture }
-            : {
-                uri: "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/avatarimages%2Fpe.webp?alt=media&token=eaf5837e-adf6-4a86-9fc9-33b66cfde88e",
-              }
-        }
-      />
+      <View>
+        <Image
+          style={[
+            styles.image,
+            {
+              boxShadow: factionColor
+                ? `0px 0px 10px ${factionColor}`
+                : `0px 0px 10px ${Colors.hud}`,
+              borderColor: factionColor || Colors.hud,
+            },
+          ]}
+          source={
+            userProfilePicture
+              ? { uri: userProfilePicture }
+              : {
+                  uri: profile
+                    ? profile
+                    : "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/avatarimages%2Fpe.webp?alt=media&token=eaf5837e-adf6-4a86-9fc9-33b66cfde88e",
+                }
+          }
+        />
+        {userProfilePicture === profile && (
+          <Image
+            style={styles.image2}
+            source={require("../../assets/icons/icons8-check-mark-50.png")}
+          />
+        )}
+      </View>
     </View>
   );
 }
@@ -130,6 +132,18 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 10,
     borderWidth: 1,
+  },
+  image2: {
+    position: "absolute",
+    right: 10,
+    top: 10,
+    width: 35,
+    height: 35,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: Colors.green_toggle,
+    tintColor: Colors.green_toggle,
+    backgroundColor: Colors.darker_green_toggle,
   },
   button: {
     backgroundColor: Colors.hud,
