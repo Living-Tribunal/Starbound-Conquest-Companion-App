@@ -96,7 +96,7 @@ export default function Chat() {
               color: Colors.hud,
               fontFamily: "monospace",
               fontSize: 13,
-              height: 50,
+              height: 55,
               marginLeft: 15,
             }}
             placeholder="Enter your message here"
