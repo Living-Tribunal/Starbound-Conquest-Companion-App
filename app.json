@@ -1,0 +1,77 @@
+{
+  "expo": {
+    "name": "StarBoundConquest",
+    "slug": "StarBoundConquest",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "newArchEnabled": true,
+    "icon": "./assets/images/SC.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/SC.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0a1d30"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "usesAppleSignIn": true,
+      "googleServicesFile": "./GoogleService-Info.plist"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/SC.png",
+        "backgroundColor": "#0a1d31"
+      },
+      "package": "com.happybob59.StarBoundConquest",
+      "googleServicesFile": "./google-services.json"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/SC.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-notifications",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Aboreto-Regular.ttf",
+            "./assets/fonts/LeagueSpartan-Black.ttf",
+            "./assets/fonts/LeagueSpartan-Bold.ttf",
+            "./assets/fonts/LeagueSpartan-Light.ttf",
+            "./assets/fonts/LeagueSpartan-ExtraLight.ttf",
+            "./assets/fonts/LeagueSpartan-Medium.ttf",
+            "./assets/fonts/LeagueSpartan-Regular.ttf",
+            "./assets/fonts/LeagueSpartan-SemiBold.ttf",
+            "./assets/fonts/LeagueSpartan-ExtraBold.ttf",
+            "./assets/fonts/LeagueSpartan-Thin.ttf",
+            "./assets/fonts/SpaceMono-Regular.ttf"
+          ]
+        }
+      ],
+      "@react-native-google-signin/google-signin",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "34d8afa6-b067-467c-95c1-f8627513bc00"
+      }
+    },
+    "owner": "happybob59"
+  },
+  "owner": "happybob59"
+}

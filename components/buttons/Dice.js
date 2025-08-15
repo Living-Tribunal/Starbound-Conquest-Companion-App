@@ -1,0 +1,55 @@
+import Dice from "../dice/D4Dice.js";
+import { Colors } from "@/constants/Colors.js";
+
+const shipDiceMapping = {
+  Destroyer: [
+    <Dice
+      text="Roll to Hit"
+      number1={1}
+      number2={20}
+      tintColor={Colors.goldenrod}
+      textStyle={{ color: Colors.gold }}
+      borderColor={{ borderColor: Colors.goldenrod }}
+    />,
+    <Dice text="Medium Cannon" number1={1} number2={6} />,
+  ],
+  Cruiser: [
+    <Dice
+      text="Roll to Hit"
+      number1={1}
+      number2={20}
+      tintColor={Colors.goldenrod}
+      textStyle={{ color: Colors.gold }}
+      borderColor={{ borderColor: Colors.goldenrod }}
+    />,
+    <Dice text="Heavy Cannon" number1={1} number2={8} />,
+    <Dice text="Plasma Cannon" number1={1} number2={10} />,
+  ],
+  Carrier: [
+    <Dice
+      text="Roll to Hit"
+      number1={1}
+      number2={20}
+      tintColor={Colors.goldenrod}
+      textStyle={{ color: Colors.gold }}
+      borderColor={{ borderColor: Colors.goldenrod }}
+    />,
+    <Dice text="350mm Railgun" number1={1} number2={8} />,
+    <Dice text="Missile Battery" number1={1} number2={6} />,
+  ],
+  Dreadnought: [
+    <Dice
+      text="Roll to Hit"
+      number1={1}
+      number2={20}
+      tintColor={Colors.goldenrod}
+      textStyle={{ color: Colors.gold }}
+      borderColor={{ borderColor: Colors.goldenrod }}
+    />,
+    <Dice text="Ion Particle Beam" number1={1} number2={12} />,
+    <Dice text="Plasma Cannon" number1={1} number2={10} />,
+    <Dice text="350mm Railgun" number1={1} number2={8} />,
+  ],
+};
+
+export { shipDiceMapping };

@@ -1,0 +1,101 @@
+import { Colors } from "@/constants/Colors";
+
+export const shipBattleDiceMapping = {
+  Destroyer: [
+    {
+      id: "D20",
+      text: "Roll to Hit",
+      number1: 1,
+      number2: 20,
+      numberOfDice: 1,
+      tintColor: Colors.goldenrod,
+      textStyle: { color: Colors.gold },
+      borderColor: { borderColor: Colors.goldenrod },
+    },
+    {
+      id: "Medium Cannon",
+      text: "Medium Cannon",
+      number1: 1,
+      number2: 6,
+      numberOfDice: 1,
+    },
+  ],
+  Cruiser: [
+    {
+      id: "D20",
+      text: "Roll to Hit",
+      number1: 1,
+      number2: 20,
+      numberOfDice: 1,
+      tintColor: Colors.goldenrod,
+      textStyle: { color: Colors.gold },
+      borderColor: { borderColor: Colors.goldenrod },
+    },
+    {
+      id: "Heavy Cannon",
+      text: "Heavy Cannon",
+      number1: 1,
+      number2: 8,
+      numberOfDice: 1,
+    },
+    {
+      id: "Plasma Cannon",
+      text: "Plasma Cannon",
+      number1: 1,
+      number2: 10,
+      numberOfDice: 1,
+    },
+  ],
+  Carrier: [
+    {
+      id: "D20",
+      text: "Roll to Hit",
+      number1: 1,
+      number2: 20,
+      numberOfDice: 1,
+      tintColor: Colors.goldenrod,
+      textStyle: { color: Colors.gold },
+      borderColor: { borderColor: Colors.goldenrod },
+    },
+    {
+      id: "350mm Railgun",
+      text: "350mm Railgun",
+      number1: 1,
+      number2: 8,
+      numberOfDice: 1,
+    },
+    {
+      id: "Missile Battery",
+      text: "Missile Battery",
+      number1: 1,
+      number2: 6,
+      numberOfDice: 1,
+    },
+  ],
+  Dreadnought: [
+    {
+      id: "D20",
+      text: "Roll to Hit",
+      number1: 1,
+      number2: 20,
+      numberOfDice: 1,
+      tintColor: Colors.goldenrod,
+      textStyle: { color: Colors.gold },
+      borderColor: { borderColor: Colors.goldenrod },
+    },
+    {
+      id: "Plasma Cannon",
+      text: "Plasma Cannon",
+      number1: 1,
+      number2: 10,
+      numberOfDice: 1,
+    },
+    {
+      id: "350mm Railgun",
+      text: "350mm Railgun",
+      number1: 1,
+      number2: 8,
+      numberOfDice: 1,
+    },
+  ],
+};
