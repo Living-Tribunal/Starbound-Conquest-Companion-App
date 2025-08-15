@@ -96,7 +96,7 @@ export default function ImagePickerExample({ factionColor }) {
           },
         ]}
         source={
-          userProfilePicture ? { uri: userProfilePicture } : { uri: profile }
+          //userProfilePicture ? { uri: userProfilePicture } : { uri: profile }
         }
       />
     </View>
