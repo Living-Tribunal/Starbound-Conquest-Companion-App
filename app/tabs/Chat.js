@@ -68,11 +68,13 @@ export default function Chat() {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.container}>
-        <Chatlist
-          gameRoomID={gameRoomID}
-          users={playersInChat}
-          gameState={gameState}
-        />
+        <View style={{ flex: 1, justifyContent: "left" }}>
+          <Chatlist
+            gameRoomID={gameRoomID}
+            users={playersInChat}
+            gameState={gameState}
+          />
+        </View>
 
         <View
           style={{
@@ -131,11 +133,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.dark_gray,
-    justifyContent: "center",
-    alignItems: "center",
-    margin: 10,
+    alignItems: "flex-start",
+    margin: 5,
     borderRadius: 5,
-    boxShadow: `0px 0px 15px ${Colors.hud}`,
+    boxShadow: `0px 0px 5px ${Colors.hud}`,
   },
   chatMessage: {
     color: Colors.hud,

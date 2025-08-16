@@ -180,12 +180,12 @@ export default function Settings() {
           currentTurnIndex: 0,
           currentTurnUid: { uid, username },
           gameValue: String(gameValue ?? ""),
-          turnOrder: [{ uid, username, profile }],
+          turnOrder: [{ uid, username, profile, userFactionColor }],
         });
       } else {
         //this is the path for someone to join an existing game room
         await updateDoc(gameRoomRef, {
-          turnOrder: arrayUnion({ uid, username, profile }),
+          turnOrder: arrayUnion({ uid, username, profile, userFactionColor }),
         });
       }
       console.log("Game Room Created:", gameRoomID);
@@ -342,7 +342,8 @@ export default function Settings() {
       console.error("Error signing out:", error);
     }
   };
-  /* console.log("profile picture is in Logout Screen:", profile); */
+  /* console.log("profile picture is in Logout Screen:", profile); 
+  console.log("User Faction Color Here:", userFactionColor);*/
 
   return (
     <SafeAreaView style={[styles.mainContainer]}>
@@ -385,7 +386,10 @@ export default function Settings() {
                   justifyContent: "center",
                 }}
               >
-                <ColorPickerComponent />
+                <ColorPickerComponent
+                  userFactionColor={userFactionColor}
+                  setUserFactionColor={setUserFactionColor}
+                />
                 <View
                   style={{
                     gap: 10,

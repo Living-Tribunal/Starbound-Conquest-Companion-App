@@ -25,9 +25,9 @@ import ColorPicker, {
 import type { ColorFormatsObject } from "reanimated-color-picker";
 import { runOnJS } from "react-native-reanimated";
 
-export default function Example() {
+export default function Example({userFactionColor, setUserFactionColor}) {
   const [showModal, setShowModal] = useState(false);
-  const { userFactionColor, setUserFactionColor } = useStarBoundContext();
+  //const { userFactionColor, setUserFactionColor } = useStarBoundContext();
 
   const customSwatches = new Array(6)
     .fill("#fff")
@@ -88,7 +88,7 @@ export default function Example() {
               },
             ]}
           >
-            Current faction color {selectedColor.value}
+            Current faction color {userFactionColor || selectedColor.value}
           </Text>
         </View>
       </View>
