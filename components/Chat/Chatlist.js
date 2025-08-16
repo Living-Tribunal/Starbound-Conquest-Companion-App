@@ -80,7 +80,11 @@ export default function Chatlist({ messages, gameRoomID, users, gameState }) {
     return (
       <Animated.View style={{ transform: [{ translateY }], opacity }}>
         <View style={{ padding: 5, width: "100%" }}>
-          <ChatItem item={item} index={index} />
+          <ChatItem
+            item={item}
+            index={index}
+            noBorder={index + 1 === users.length}
+          />
         </View>
       </Animated.View>
     );
