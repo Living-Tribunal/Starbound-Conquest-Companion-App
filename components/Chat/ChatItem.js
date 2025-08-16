@@ -19,15 +19,15 @@ export default function ChatItem({ item, index, noBorder }) {
           flexDirection: "row",
           backgroundColor: Colors.hudDarker,
           alignItems: "center",
-          borderBottomWidth: 2,
-          borderBottomColor: Colors.blue_gray,
+          borderBottomWidth: noBorder ? 0 : 2,
+          borderBottomColor: noBorder ? Colors.hudDarker : Colors.blue_gray,
         }}
       >
         <Image
           style={{ width: 20, height: 20, borderRadius: 50 }}
           source={{ uri: item.profile }}
           blurHash={item.blurHash}
-          transition={500}
+          transition={500 + index * 100}
         />
         <Text
           style={[

@@ -107,7 +107,7 @@ export default function Chatlist({ messages, gameRoomID, users, gameState }) {
         {testData.length > 0 ? (
           showPlayerList && (
             <FlatList
-              data={testData}
+              data={users}
               keyExtractor={(_, index) => index.toString()}
               renderItem={({ item, index }) => (
                 <AnimatedItem item={item} index={index} />
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   },
   chatHeader: {
     color: Colors.hud,
-    fontFamily: "LeagueSpartan-Bold",
+    fontFamily: "LeagueSpartan-Regular",
     borderWidth: 2,
     borderColor: Colors.hud,
     borderRadius: 5,
