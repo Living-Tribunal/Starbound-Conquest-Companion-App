@@ -100,14 +100,28 @@ export default function Chatlist({ messages, gameRoomID, users, gameState }) {
           <Text style={styles.chatHeader}>Players</Text>
         </TouchableOpacity>
 
-        {showPlayerList && (
-          <FlatList
-            data={testData}
-            keyExtractor={(_, index) => index.toString()}
-            renderItem={({ item, index }) => (
-              <AnimatedItem item={item} index={index} />
-            )}
-          />
+        {testData.length > 0 ? (
+          showPlayerList && (
+            <FlatList
+              data={testData}
+              keyExtractor={(_, index) => index.toString()}
+              renderItem={({ item, index }) => (
+                <AnimatedItem item={item} index={index} />
+              )}
+            />
+          )
+        ) : (
+          <Text
+            style={{
+              color: Colors.hud,
+              fontFamily: "LeagueSpartan-Bold",
+              fontSize: 10,
+              textAlign: "center",
+              padding: 5,
+            }}
+          >
+            No Players in Chat
+          </Text>
         )}
       </View>
     </View>

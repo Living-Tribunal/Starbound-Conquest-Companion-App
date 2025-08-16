@@ -12,12 +12,13 @@ export default function ChatItem({ item, index }) {
       <View
         style={{
           gap: 5,
-          justifyContent: "center",
+          justifyContent: "left",
           flexDirection: "row",
           backgroundColor: Colors.hudDarker,
           alignItems: "center",
           borderBottomWidth: 2,
           borderBottomColor: Colors.blue_gray,
+          marginLeft: 2,
         }}
       >
         <Image
