@@ -76,6 +76,7 @@ export default function Chat() {
   };
 
   useEffect(() => {
+    if (!gameRoomID) return;
     const messageRef = collection(
       FIREBASE_DB,
       "gameRooms",
@@ -161,6 +162,7 @@ export default function Chat() {
           }}
         >
           <TextInput
+            disabled={!gameRoomID || isSendMessage}
             ref={textInputRef}
             onChangeText={(value) => (textRef.current = value)}
             style={{
@@ -176,8 +178,11 @@ export default function Chat() {
           />
           <TouchableOpacity
             onPress={async () => await createPublicChatRoom()}
-            style={[styles.sendButton, { opacity: isSendMessage ? 0.5 : 1 }]}
-            disabled={isSendMessage}
+            style={[
+              styles.sendButton,
+              { opacity: !gameRoomID || isSendMessage ? 0.5 : 1 },
+            ]}
+            disabled={isSendMessage || !gameRoomID}
           >
             <Image
               style={{

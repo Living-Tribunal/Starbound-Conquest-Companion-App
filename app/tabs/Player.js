@@ -36,6 +36,9 @@ import EndRoundModal from "../../components/Modals/EndRoundModal/EndRoundModal";
 import EndTurnModal from "../../components/Modals/EndTurnModal/EndTurnModal";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { startGame } from "../../components/Functions/StartGame";
+import useAllUsersAndDataFromGameRoom from "../../components/Functions/useAllUsersAndDataFromGameRoom";
+import { useNavigation } from "expo-router";
+import NewUser from "../../components/NewUser/NewUser";
 import {
   collection,
   query,
@@ -57,7 +60,6 @@ export default function Player() {
   const ref = useRef();
   const user = FIREBASE_AUTH.currentUser;
   const tabBarHeight = useBottomTabBarHeight();
-  const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isShowWarning, setIsShowWarning] = useState(false);
   const [shipCounts, setShipCounts] = useState({});
@@ -66,13 +68,14 @@ export default function Player() {
   const { gameSectors, setGameSectors } = useMapImageContext();
   const [showEndRoundModal, setShowEndRoundModal] = useState(false);
   const [isShowPlayers, setIsShowPlayers] = useState(true);
-  const [playersInGameRoom, setPlayersInGameRoom] = useState([]);
+  //const [playersInGameRoom, setPlayersInGameRoom] = useState([]);
   const [shouldEndRound, setShouldEndRound] = useState(false);
   const [showEndTurnModal, setShowEndTurnModal] = useState(false);
   const [isShowRules, setIsShowRules] = useState(false);
   const [isEndingRound, setIsEndingRound] = useState(false);
   const [isEndingTurn, setIsEndingTurn] = useState(false);
   const [playerGameRoomID, setPlayerGameRoomID] = useState("");
+  const [acknowledgement, setAcknowledgement] = useState(false);
   const {
     username,
     setUsername,
@@ -87,15 +90,18 @@ export default function Player() {
     setToggleToDelete,
     userFactionColor,
     setUserFactionColor,
-    getAllUsersShipToggled,
-    setGetAllUsersShipToggled,
+    /* getAllUsersShipToggled,
+    setGetAllUsersShipToggled, */
     myShips,
     setMyShips,
     gameRoomID,
     setGameRoomID,
   } = useStarBoundContext();
+  const navigation = useNavigation();
 
   const { myTurn, state: gameState } = useMyTurn(gameRoomID);
+  const { playersInGameRoom, getAllUsersShipToggled } =
+    useAllUsersAndDataFromGameRoom(gameRoomID);
 
   const hasShownEndRoundModal = useRef(false);
   const isPlayerTurn = myTurn;
@@ -944,77 +950,12 @@ export default function Player() {
     setIsEndingRound(false);
   };
 
-  useEffect(() => {
-    const auth = FIREBASE_AUTH;
-    if (!auth.currentUser) return;
-    if (!gameRoomID) return;
-
-    const userShipUnsubs = [];
-    const allShipMap = {};
-    const colorsMap = {};
-
-    const usersRef = collection(FIREBASE_DB, "users");
-    const unsubscribeUsers = onSnapshot(usersRef, (userSnapshot) => {
-      // Clear previous listeners
-      userShipUnsubs.forEach((unsub) => unsub());
-      userShipUnsubs.length = 0;
-
-      // Reset temp storage
-      Object.keys(allShipMap).forEach((key) => delete allShipMap[key]);
-      Object.keys(colorsMap).forEach((key) => delete colorsMap[key]);
-
-      const activePlayers = [];
-
-      userSnapshot.docs.forEach((userDoc) => {
-        const uid = userDoc.id;
-        const userData = userDoc.data();
-        if (userData.gameRoomID === gameRoomID) {
-          activePlayers.push({
-            uid,
-            displayName: userData.displayName,
-            userFactionColor: userData.userFactionColor || "#FFFFFF",
-            photoURL: userData.photoURL || "",
-          });
-        }
-        colorsMap[uid] = userData.userFactionColor || "#FFFFFF";
-
-        const shipsRef = collection(FIREBASE_DB, "users", uid, "ships");
-        const shipsQuery = query(
-          shipsRef,
-          where("gameRoomID", "==", gameRoomID)
-        );
-
-        const unsub = onSnapshot(shipsQuery, (shipsSnap) => {
-          const userShips = shipsSnap.docs.map((doc) => doc.data());
-
-          allShipMap[uid] = userShips;
-
-          // Flatten and update
-          const allShips = Object.values(allShipMap).flat();
-          setGetAllUsersShipToggled(allShips);
-        });
-
-        userShipUnsubs.push(unsub);
-      });
-      setPlayersInGameRoom(activePlayers);
-    });
-    return () => {
-      unsubscribeUsers();
-      userShipUnsubs.forEach((unsub) => unsub());
-    };
-  }, [gameRoomID, FIREBASE_AUTH.currentUser]);
-
-  /*   useEffect(() => {
-    console.log("Players in Game Room:", playersInGameRoom.length);
-    console.log("My turn:", myTurn);
-  }, [playersInGameRoom, myTurn]); */
-
   //show end round modal if all ships are toggled or hp is zero
   useFocusEffect(
     useCallback(() => {
       if (!isPlayerTurn) return;
       const timer = setTimeout(() => {
-        if (!loading && !isLoading) {
+        if (!isLoading) {
           setShouldEndRound(canEndRoundForAllPlayers && currentUserShips);
           if (
             canEndRoundForAllPlayers &&
@@ -1030,14 +971,12 @@ export default function Player() {
         }
       }, 500);
       return () => clearTimeout(timer);
-    }, [canEndRoundForAllPlayers, currentUserShips, loading, isLoading])
+    }, [canEndRoundForAllPlayers, currentUserShips, isLoading])
   );
 
   const getLoadingMessage = () => {
     if (showEndOfRound) return "Round has ended. Resetting your ships...";
-    if (loading) return "Summoning your fleet...";
     if (isLoading) return "Adding ships to your Fleet...";
-    if (!gameState && gameRoomID) return "Loading your fleet...";
     return null;
   };
 
@@ -1104,7 +1043,7 @@ export default function Player() {
       </View>
     );
   }
-  if (gameState || !gameRoomID) {
+  if (gameState || (gameRoomID && profile) || acknowledgement) {
     return (
       <SafeAreaView style={{ backgroundColor: Colors.dark_gray, flex: 1 }}>
         <FlatList
@@ -1339,7 +1278,6 @@ export default function Player() {
                           alignItems: "center",
                         }}
                       >
-                        <ActivityIndicator size="large" color={Colors.hud} />
                         <Text
                           style={{
                             color: Colors.hud,
@@ -1935,6 +1873,13 @@ export default function Player() {
           isEndingTurn={isEndingTurn}
         />
       </SafeAreaView>
+    );
+  } else {
+    return (
+      <NewUser
+        acknowledgement={acknowledgement}
+        setAcknowledgement={setAcknowledgement}
+      />
     );
   }
 }

@@ -25,7 +25,7 @@ import ColorPicker, {
 import type { ColorFormatsObject } from "reanimated-color-picker";
 import { runOnJS } from "react-native-reanimated";
 
-export default function Example({userFactionColor, setUserFactionColor}) {
+export default function Example({ userFactionColor, setUserFactionColor }) {
   const [showModal, setShowModal] = useState(false);
   //const { userFactionColor, setUserFactionColor } = useStarBoundContext();
 
@@ -73,7 +73,11 @@ export default function Example({userFactionColor, setUserFactionColor}) {
         <View
           style={[
             styles.factionColorContainer,
-            { borderColor: userFactionColor },
+            {
+              borderColor: userFactionColor
+                ? userFactionColor
+                : selectedColor.value,
+            },
           ]}
         >
           <Text
