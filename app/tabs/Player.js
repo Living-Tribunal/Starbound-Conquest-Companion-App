@@ -610,7 +610,7 @@ export default function Player() {
   };
 
   //users in a game room, increment the round
-  const updateRoundForAllUsers = async () => {
+ /*  const updateRoundForAllUsers = async () => {
     if (!user || !gameRoomID) return;
     const usersCollection = collection(FIREBASE_DB, "users");
     const myQuery = query(
@@ -624,7 +624,7 @@ export default function Player() {
       });
     });
     await Promise.all(updatePromises);
-  };
+  }; */
 
   //clean up ships with isPendingDestruction
   const cleanUpPendingDestruction = async () => {
@@ -935,7 +935,7 @@ export default function Player() {
       await Promise.all(allResetPromises);
 
       // ✅ Then, update round for all users
-      await updateRoundForAllUsers();
+      //await updateRoundForAllUsers();
       await resetToFirstPerson(gameRoomID);
 
       //setGetAllUsersShipToggled([]);

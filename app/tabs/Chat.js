@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -15,7 +15,24 @@ import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import Chatlist from "../../components/Chat/Chatlist";
 import useMyTurn from "../../components/Functions/useMyTurn";
-import { collection, onSnapshot } from "firebase/firestore";
+import ChatBubble from "../../components/Chat/ChatBubble";
+import {
+  addDoc,
+  collection,
+  onSnapshot,
+  orderBy,
+  doc,
+  query,
+} from "firebase/firestore";
+import { serverTimestamp } from "firebase/firestore";
+import Toast from "react-native-toast-message";
+
+//to prevent re-renders and flickers move the component outside of the chat component
+const PlayersList = React.memo(({ users, gameState, gameRoomID }) => {
+  return (
+    <Chatlist gameRoomID={gameRoomID} users={users} gameState={gameState} />
+  );
+});
 
 export default function Chat() {
   const userName = FIREBASE_AUTH.currentUser?.displayName;
@@ -25,15 +42,54 @@ export default function Chat() {
   const { data, setData, userFactionColor } = useStarBoundContext();
   const [playersInChat, setPlayersInChat] = useState([]);
   const [isLoadingActivePlayers, setIsLoadingActivePlayers] = useState(false);
-  const [text, setText] = useState("");
+  const [isSendMessage, setIsSendMessage] = useState(false);
+  const [messages, setMessages] = useState([]);
+  /*   const [text, setText] = useState(""); */
+  const textRef = useRef("");
+  const textInputRef = useRef(null);
 
-  /*   useEffect(() => {
-    console.log("Chat:", text);
-    console.log("User:", userName);
-    console.log("User:", userFactionColor);
-    console.log("GameRoomID:", gameRoomID);
-    console.log("PlayersInChat:", playersInChat.displayName);
-  }, [text, gameRoomID]); */
+  const createPublicChatRoom = async () => {
+    let text = textRef.current.trim();
+    try {
+      setIsSendMessage(true);
+      if (!gameRoomID || !text) return;
+      textRef.current = "";
+      if (textInputRef) textInputRef.current.clear();
+      const publicChatRef = collection(
+        FIREBASE_DB,
+        "gameRooms",
+        gameRoomID,
+        "publicChat"
+      );
+
+      await addDoc(publicChatRef, {
+        createdBy: user.uid,
+        createdAt: serverTimestamp(),
+        userName: user.displayName,
+        userProfilePicture: user.photoURL,
+        message: text,
+      });
+      setIsSendMessage(false);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
+  useEffect(() => {
+    const messageRef = collection(
+      FIREBASE_DB,
+      "gameRooms",
+      gameRoomID,
+      "publicChat"
+    );
+    const q = query(messageRef, orderBy("createdAt", "desc"));
+
+    const unsubscribe = onSnapshot(q, (docSnap) => {
+      let messages = docSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setMessages(messages);
+    });
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     const auth = FIREBASE_AUTH;
@@ -57,7 +113,7 @@ export default function Chat() {
         }
       });
       setPlayersInChat(activePlayers);
-      console.log("Players in Chat:", activePlayers);
+      // console.log("Players in Chat:", activePlayers);
     });
     setIsLoadingActivePlayers(false);
     return () => {
@@ -69,17 +125,31 @@ export default function Chat() {
     <View style={styles.mainContainer}>
       <View style={styles.container}>
         <View style={{ flex: 1, justifyContent: "left" }}>
-          <Chatlist
+          <PlayersList
             gameRoomID={gameRoomID}
             users={playersInChat}
             gameState={gameState}
           />
         </View>
+        <ScrollView
+          nestedScrollEnabled
+          contentContainerStyle={{
+            flexGrow: 1,
+          }}
+        >
+          {messages.map((message) => (
+            <ChatBubble
+              key={message.id}
+              message={message.message}
+              userName={message.userName}
+            />
+          ))}
+        </ScrollView>
 
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "center",
+            justifyContent: "space-between",
             alignItems: "center",
             alignSelf: "center",
             borderRadius: 10,
@@ -91,10 +161,10 @@ export default function Chat() {
           }}
         >
           <TextInput
-            value={text}
-            onChangeText={setText}
+            ref={textInputRef}
+            onChangeText={(value) => (textRef.current = value)}
             style={{
-              width: "95%",
+              width: "82%",
               color: Colors.hud,
               fontFamily: "monospace",
               fontSize: 13,
@@ -104,7 +174,11 @@ export default function Chat() {
             placeholder="Enter your message here"
             placeholderTextColor={Colors.hud}
           />
-          <TouchableOpacity style={styles.sendButton}>
+          <TouchableOpacity
+            onPress={async () => await createPublicChatRoom()}
+            style={[styles.sendButton, { opacity: isSendMessage ? 0.5 : 1 }]}
+            disabled={isSendMessage}
+          >
             <Image
               style={{
                 width: 35,

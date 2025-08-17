@@ -164,13 +164,20 @@ export default function Settings() {
       });
 
       const gameRoomRef = doc(FIREBASE_DB, "gameRooms", gameRoomID);
+      const chatRoomRef = doc(
+        FIREBASE_DB,
+        "gameRooms",
+        gameRoomID,
+        "publicChat",
+        gameRoomID
+      );
       //console.log("Game Room Ref:", gameRoomRef);
       const snap = await getDoc(gameRoomRef);
       //console.log("Snap:", snap.exists());
 
       //if this fails, it means the game room already exists
       //it will do this the first time a game room is created
-      //this is also the path for a new game room
+      //this is also the path for a new game room chat room comes in later
       if (!snap.exists()) {
         await setDoc(gameRoomRef, {
           createdBy: uid,
@@ -181,6 +188,7 @@ export default function Settings() {
           currentTurnUid: { uid, username },
           gameValue: String(gameValue ?? ""),
           turnOrder: [{ uid, username, profile, userFactionColor }],
+          round: 0,
         });
       } else {
         //this is the path for someone to join an existing game room
