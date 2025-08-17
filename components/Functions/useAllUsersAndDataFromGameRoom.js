@@ -1,13 +1,14 @@
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { FIREBASE_DB } from "@/FirebaseConfig";
+import { FIREBASE_DB, FIREBASE_AUTH } from "@/FirebaseConfig";
 import { useEffect, useState } from "react";
 
 export default function useAllUsersAndDataFromGameRoom(gameRoomID) {
-  console.log("Game Room ID in get:", gameRoomID);
   const [playersInGameRoom, setPlayersInGameRoom] = useState([]);
   const [getAllUsersShipToggled, setGetAllUsersShipToggled] = useState([]);
+  const user = FIREBASE_AUTH.currentUser;
 
   useEffect(() => {
+    if (!user) return;
     if (!gameRoomID) return;
 
     const userShipUnsubs = [];
@@ -55,7 +56,6 @@ export default function useAllUsersAndDataFromGameRoom(gameRoomID) {
         userShipUnsubs.push(unsub);
       });
       setPlayersInGameRoom(activePlayers);
-      console.log("Players in Game Room:", activePlayers);
     });
     return () => {
       unsubscribeUsers();

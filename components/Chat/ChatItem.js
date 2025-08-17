@@ -27,7 +27,7 @@ export default function ChatItem({ item, index, noBorder }) {
           style={{ width: 20, height: 20, borderRadius: 50 }}
           source={{ uri: item.profile }}
           blurHash={item.blurHash}
-          //transition={500 + index * 100}
+          transition={500 + index * 100}
         />
         <Text
           style={[

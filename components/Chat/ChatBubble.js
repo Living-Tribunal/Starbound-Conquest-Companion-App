@@ -3,52 +3,57 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
   FlatList,
   TouchableOpacity,
   ScrollView,
   Alert,
   TextInput,
+  Image,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { FIREBASE_AUTH } from "@/FirebaseConfig";
 import { useStarBoundContext } from "../Global/StarBoundProvider";
 
-export default function ChatBubble({ message, userName }) {
+export default function ChatBubble({ message, userName, photoURL }) {
   const user = FIREBASE_AUTH.currentUser;
-  const { data, setData, userFactionColor } = useStarBoundContext();
-  const [text, setText] = useState("");
-
-  useEffect(() => {
-    console.log("Chat:", text);
-    console.log("User:", userName);
-  }, [text]);
+  const currentUser = user.displayName === userName;
 
   return (
-    <View
-      style={[
-        styles.bubbleContainer,
-        { borderColor: userFactionColor || Colors.hudDarker, borderWidth: 5 },
-      ]}
-    >
-      <View style={styles.userNameContainer}>
-        <Text style={styles.userName}>{userName}</Text>
+    <View style={{ alignItems: currentUser ? "flex-end" : "flex-start" }}>
+      <View style={[styles.bubbleContainer]}>
+        <View
+          style={[
+            styles.userNameContainer,
+            {
+              justifyContent: currentUser ? "flex-end" : "flex-start",
+            },
+          ]}
+        >
+          <Image
+            style={{ width: 30, height: 30, borderRadius: 50 }}
+            source={{ uri: photoURL }}
+          />
+          <Text style={styles.userName}>{userName}</Text>
+        </View>
+        <Text style={styles.chatMessage}>{message}</Text>
       </View>
-      <Text style={styles.chatMessage}>{message}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   bubbleContainer: {
-    backgroundColor: Colors.hudDarker,
-    width: "100%",
+    backgroundColor: Colors.dark_gray,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    width: "60%",
+    marginLeft: 10,
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    width: "80%",
-    height: "auto",
     flexDirection: "column",
+    marginBottom: 20,
+    marginTop: 20,
   },
   chatMessage: {
     color: Colors.hud,
@@ -58,15 +63,21 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   userName: {
-    color: Colors.hudDarker,
+    color: Colors.hud,
     fontFamily: "LeagueSpartan-Bold",
     fontSize: 15,
     textAlign: "center",
   },
   userNameContainer: {
+    postion: "absolute",
+    gap: 10,
+    bottom: 15,
     width: "100%",
-    backgroundColor: Colors.missiles,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    backgroundColor: Colors.hudDarker,
+    borderWidth: 1,
+    borderColor: Colors.hud,
+    borderRadius: 10,
+    padding: 5,
+    flexDirection: "row",
   },
 });

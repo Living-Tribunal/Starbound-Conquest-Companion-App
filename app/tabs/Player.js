@@ -97,9 +97,9 @@ export default function Player() {
     gameRoomID,
     setGameRoomID,
   } = useStarBoundContext();
-  const navigation = useNavigation();
+  const uid = user?.uid ?? null;
 
-  const { myTurn, state: gameState } = useMyTurn(gameRoomID);
+  const { myTurn, state: gameState, loading } = useMyTurn(gameRoomID);
   const { playersInGameRoom, getAllUsersShipToggled } =
     useAllUsersAndDataFromGameRoom(gameRoomID);
 
@@ -107,9 +107,10 @@ export default function Player() {
   const isPlayerTurn = myTurn;
 
   const currentUserShips = playersInGameRoom.some((player) => {
-    if (player.uid === user.uid) {
+    if (!uid) return false;
+    if (player.uid === uid) {
       const currentUserShips = getAllUsersShipToggled.filter(
-        (ship) => ship.user === user.uid
+        (ship) => ship.user === uid
       );
       if (currentUserShips.length === 0) return false;
       return (
@@ -146,7 +147,7 @@ export default function Player() {
   };
 
   const canEndRoundForAllPlayers = playersInGameRoom
-    .filter((player) => player.uid !== user.uid)
+    .filter((player) => player.uid !== uid)
     .every((player) => {
       const otherPlayerShips = getAllUsersShipToggled.filter(
         (ship) => ship.user === player.uid
@@ -164,7 +165,6 @@ export default function Player() {
   const canEndRoundForEveryone = canEndRoundForAllPlayers && currentUserShips;
 
   //filtering out the ships from the current user
-  const uid = user?.uid ?? null;
 
   const myShipsToSave = useMemo(() => {
     const all = getAllUsersShipToggled ?? [];
@@ -253,6 +253,7 @@ export default function Player() {
   };
 
   const addingShipToFleet = (item) => {
+    if (!uid) return false;
     if (!gameRoomID) {
       Toast.show({
         type: "info",
@@ -330,7 +331,7 @@ export default function Player() {
           ...shipData,
           id: newShipId,
           shipId: ShipId,
-          user: user.uid,
+          user: uid,
           username: username || "Commander",
           factionName: faction,
           isSelected: false,
@@ -353,7 +354,7 @@ export default function Player() {
         };
         // Add to Firestore
         const docRef = await addDoc(
-          collection(FIREBASE_DB, "users", user.uid, "ships"),
+          collection(FIREBASE_DB, "users", uid, "ships"),
           shipToSave
         );
 
@@ -377,7 +378,7 @@ export default function Player() {
     const auth = FIREBASE_AUTH;
     if (!auth.currentUser) return;
     if (!user) return;
-    const userDocRef = doc(FIREBASE_DB, "users", user.uid);
+    const userDocRef = doc(FIREBASE_DB, "users", uid);
     const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
@@ -499,7 +500,7 @@ export default function Player() {
       if (!user || !gameRoomID) throw new Error("Missing user or room");
 
       //3. Update ship isToggled for non-toggled ships
-      const shipsRef = collection(FIREBASE_DB, "users", user.uid, "ships");
+      const shipsRef = collection(FIREBASE_DB, "users", uid, "ships");
       const shipsSnap = await getDocs(shipsRef);
       const batch = writeBatch(FIREBASE_DB);
 
@@ -519,7 +520,7 @@ export default function Player() {
 
       await batch.commit();
 
-      const nextUid = await advanceTurn(gameRoomID, user.uid);
+      const nextUid = await advanceTurn(gameRoomID, uid);
       const nextName = nextUid.username || "Next Player";
 
       /*     // 4. THEN send Discord message
@@ -574,7 +575,7 @@ export default function Player() {
     if (getAllUsersShipToggled.length <= 0)
       // console.log("Resetting round for current user");
       try {
-        const userRef = doc(FIREBASE_DB, "users", user.uid);
+        const userRef = doc(FIREBASE_DB, "users", uid);
         await updateDoc(userRef, {
           round: 0,
         });
@@ -650,7 +651,7 @@ export default function Player() {
     const auth = FIREBASE_AUTH;
     if (!auth.currentUser) return;
     if (!user || !gameRoomID) return;
-    const docRef = doc(FIREBASE_DB, "users", user.uid); // or "gameRooms", depending on your structure
+    const docRef = doc(FIREBASE_DB, "users", uid); // or "gameRooms", depending on your structure
 
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -672,7 +673,7 @@ export default function Player() {
     if (!gameRoomID) return;
 
     const ref = query(
-      collection(FIREBASE_DB, "users", user.uid, "ships"),
+      collection(FIREBASE_DB, "users", uid, "ships"),
       where("gameRoomID", "==", gameRoomID)
     );
 
@@ -711,7 +712,7 @@ export default function Player() {
       const allResetPromises = [];
 
       // restting my ships back to default values
-      const myShipsRef = collection(FIREBASE_DB, "users", user.uid, "ships");
+      const myShipsRef = collection(FIREBASE_DB, "users", uid, "ships");
       const myShipsSnapshot = await getDocs(myShipsRef);
 
       for (const myShipDoc of myShipsSnapshot.docs) {
@@ -719,7 +720,7 @@ export default function Player() {
         const myShipDocRef = doc(
           FIREBASE_DB,
           "users",
-          user.uid,
+          uid,
           "ships",
           myShipDoc.id
         );
@@ -1043,7 +1044,7 @@ export default function Player() {
       </View>
     );
   }
-  if (gameState || (gameRoomID && profile) || acknowledgement) {
+  if (gameState) {
     return (
       <SafeAreaView style={{ backgroundColor: Colors.dark_gray, flex: 1 }}>
         <FlatList
@@ -1092,7 +1093,7 @@ export default function Player() {
                     gap: 10,
                   }}
                 >
-                  {!gameState?.started && gameState?.createdBy === user.uid && (
+                  {!gameState?.started && gameState?.createdBy === uid && (
                     <TouchableOpacity
                       onPress={toastStartGame}
                       disabled={playersInGameRoom.length <= 1}
@@ -1876,9 +1877,9 @@ export default function Player() {
     );
   } else {
     return (
-      <NewUser
-        acknowledgement={acknowledgement}
-        setAcknowledgement={setAcknowledgement}
+      <LoadingComponent
+        whatToSay={`Loading your current player. 
+          If you hanve't created a profile yet head over to Settings to create or join one.`}
       />
     );
   }

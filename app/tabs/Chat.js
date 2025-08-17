@@ -83,7 +83,7 @@ export default function Chat() {
       gameRoomID,
       "publicChat"
     );
-    const q = query(messageRef, orderBy("createdAt", "desc"));
+    const q = query(messageRef, orderBy("createdAt", "asc"));
 
     const unsubscribe = onSnapshot(q, (docSnap) => {
       let messages = docSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
@@ -124,81 +124,80 @@ export default function Chat() {
 
   return (
     <View style={styles.mainContainer}>
-      <View style={styles.container}>
-        <View style={{ flex: 1, justifyContent: "left" }}>
-          <PlayersList
-            gameRoomID={gameRoomID}
-            users={playersInChat}
-            gameState={gameState}
+      <View style={{ flex: 1, justifyContent: "left" }}>
+        {/*  <PlayersList
+          gameRoomID={gameRoomID}
+          users={playersInChat}
+          gameState={gameState}
+        /> */}
+      </View>
+      <ScrollView
+        nestedScrollEnabled
+        contentContainerStyle={{
+          flexGrow: 1,
+        }}
+      >
+        {messages.map((message) => (
+          <ChatBubble
+            key={message.id}
+            message={message.message}
+            userName={message.userName}
+            photoURL={message.userProfilePicture}
           />
-        </View>
-        <ScrollView
-          nestedScrollEnabled
-          contentContainerStyle={{
-            flexGrow: 1,
-          }}
-        >
-          {messages.map((message) => (
-            <ChatBubble
-              key={message.id}
-              message={message.message}
-              userName={message.userName}
-            />
-          ))}
-        </ScrollView>
+        ))}
+      </ScrollView>
 
-        <View
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          alignSelf: "center",
+          borderRadius: 10,
+          backgroundColor: Colors.hudDarker,
+          borderColor: Colors.hud,
+          borderWidth: 1,
+          width: "95%",
+          marginBottom: 10,
+        }}
+      >
+        <TextInput
+          disabled={!gameRoomID || isSendMessage}
+          ref={textInputRef}
+          onChangeText={(value) => (textRef.current = value)}
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            alignSelf: "center",
-            borderRadius: 10,
-            backgroundColor: Colors.hudDarker,
-            borderColor: Colors.hud,
-            borderWidth: 1,
-            width: "95%",
-            marginBottom: 10,
+            width: "82%",
+            color: Colors.hud,
+            fontFamily: "monospace",
+            fontSize: 13,
+            height: 55,
+            marginLeft: 15,
           }}
+          placeholder="Enter your message here"
+          placeholderTextColor={Colors.hud}
+        />
+        <TouchableOpacity
+          onPress={async () => await createPublicChatRoom()}
+          style={[
+            styles.sendButton,
+            { opacity: !gameRoomID || isSendMessage ? 0.5 : 1 },
+          ]}
+          disabled={isSendMessage || !gameRoomID}
         >
-          <TextInput
-            disabled={!gameRoomID || isSendMessage}
-            ref={textInputRef}
-            onChangeText={(value) => (textRef.current = value)}
+          <Image
             style={{
-              width: "82%",
-              color: Colors.hud,
-              fontFamily: "monospace",
-              fontSize: 13,
-              height: 55,
-              marginLeft: 15,
+              width: 35,
+              height: 35,
+              tintColor: Colors.hudDarker,
+              backgroundColor: Colors.hud,
+              borderWidth: 1,
+              borderColor: Colors.hudDarker,
+              borderRadius: 10,
+              padding: 5,
             }}
-            placeholder="Enter your message here"
-            placeholderTextColor={Colors.hud}
+            source={require("../../assets/icons/icons8-send-50.png")}
           />
-          <TouchableOpacity
-            onPress={async () => await createPublicChatRoom()}
-            style={[
-              styles.sendButton,
-              { opacity: !gameRoomID || isSendMessage ? 0.5 : 1 },
-            ]}
-            disabled={isSendMessage || !gameRoomID}
-          >
-            <Image
-              style={{
-                width: 35,
-                height: 35,
-                tintColor: Colors.hudDarker,
-                backgroundColor: Colors.hud,
-                borderWidth: 1,
-                borderColor: Colors.hudDarker,
-                borderRadius: 10,
-                padding: 5,
-              }}
-              source={require("../../assets/icons/icons8-send-50.png")}
-            />
-          </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -207,11 +206,11 @@ export default function Chat() {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: Colors.blue_gray,
+    backgroundColor: Colors.dark_gray,
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.dark_gray,
+    backgroundColor: Colors.green_toggle,
     alignItems: "flex-start",
     margin: 5,
     borderRadius: 5,
