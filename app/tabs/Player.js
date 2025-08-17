@@ -61,18 +61,13 @@ export default function Player() {
   const [isLoading, setIsLoading] = useState(false);
   const [isShowWarning, setIsShowWarning] = useState(false);
   const [shipCounts, setShipCounts] = useState({});
-  const [numberOfShips, setNumberOfShips] = useState(0);
   const [showEndOfRound, setShowEndOfRound] = useState(false);
   const [gameRound, setGameRound] = useState(0);
-  const [getAllUsersShipTotals, setGetAllUsersShipTotals] = useState(0);
   const { gameSectors, setGameSectors } = useMapImageContext();
-  const [usersInRoom, setUsersInRoom] = useState([]);
-  const [isUsersColors, setIsUsersColors] = useState(false);
   const [showEndRoundModal, setShowEndRoundModal] = useState(false);
   const [isShowPlayers, setIsShowPlayers] = useState(true);
   const [playersInGameRoom, setPlayersInGameRoom] = useState([]);
   const [shouldEndRound, setShouldEndRound] = useState(false);
-  const [isLoadingActivePlayers, setIsLoadingActivePlayers] = useState(false);
   const [showEndTurnModal, setShowEndTurnModal] = useState(false);
   const [isShowRules, setIsShowRules] = useState(false);
   const [isEndingRound, setIsEndingRound] = useState(false);
@@ -363,7 +358,7 @@ export default function Player() {
     } catch (e) {
       console.error("Error adding document: ", e);
     } finally {
-      getFleetData({ data, setData, setUsersInRoom, gameRoomID, gameSectors });
+      getFleetData({ data, setData, gameRoomID, gameSectors });
       setIsLoading(false);
     }
   };
@@ -391,26 +386,6 @@ export default function Player() {
     // console.log("Game Room ID in Player:", gameRoomID);
     return () => unsubscribe();
   }, [user?.uid, FIREBASE_AUTH.currentUser]);
-
-  useEffect(() => {
-    const fetchShipCount = async () => {
-      if (!user || !gameRoomID) return;
-
-      const shipsRef = query(
-        collection(FIREBASE_DB, "users", user.uid, "ships"),
-        where("gameRoomID", "==", gameRoomID)
-      );
-
-      try {
-        const countSnap = await getCountFromServer(shipsRef);
-        setNumberOfShips(countSnap.data().count);
-      } catch (err) {
-        console.error("Failed to get ship count:", err);
-      }
-    };
-
-    fetchShipCount();
-  }, [user?.uid, gameRoomID]);
 
   const incrementShipCount = (type) => {
     setShipCounts((prev) => ({
@@ -610,7 +585,7 @@ export default function Player() {
   };
 
   //users in a game room, increment the round
- /*  const updateRoundForAllUsers = async () => {
+  /*  const updateRoundForAllUsers = async () => {
     if (!user || !gameRoomID) return;
     const usersCollection = collection(FIREBASE_DB, "users");
     const myQuery = query(
@@ -680,10 +655,10 @@ export default function Player() {
     return () => unsubscribe();
   }, [gameRoomID, user?.uid, FIREBASE_AUTH.currentUser]);
 
-  useEffect(() => {
+  /*   useEffect(() => {
     const count = getAllUsersShipToggled.filter((s) => s.isToggled).length;
     setGetAllUsersShipTotals(count);
-  }, [getAllUsersShipToggled]);
+  }, [getAllUsersShipToggled]); */
 
   useEffect(() => {
     const auth = FIREBASE_AUTH;
@@ -698,7 +673,6 @@ export default function Player() {
     const unsubscribe = onSnapshot(ref, (snap) => {
       const userShips = snap.docs.map((doc) => doc.data());
       setData(userShips); // live update your fleet
-      setNumberOfShips(userShips.length); // keep ship count updated
     });
 
     return () => unsubscribe();
@@ -939,10 +913,10 @@ export default function Player() {
       await resetToFirstPerson(gameRoomID);
 
       //setGetAllUsersShipToggled([]);
-      setGetAllUsersShipTotals(0);
+      //setGetAllUsersShipTotals(0);
 
       // 🔄 Refresh local fleet state
-      getFleetData({ data, setData, setUsersInRoom, gameRoomID, gameSectors });
+      getFleetData({ data, setData, gameRoomID, gameSectors });
       setShowEndOfRound(false);
     } catch (e) {
       console.error("Error in endYourTurn:", e);
@@ -974,7 +948,6 @@ export default function Player() {
     const auth = FIREBASE_AUTH;
     if (!auth.currentUser) return;
     if (!gameRoomID) return;
-    setIsLoadingActivePlayers(true);
 
     const userShipUnsubs = [];
     const allShipMap = {};
@@ -1000,6 +973,7 @@ export default function Player() {
             uid,
             displayName: userData.displayName,
             userFactionColor: userData.userFactionColor || "#FFFFFF",
+            photoURL: userData.photoURL || "",
           });
         }
         colorsMap[uid] = userData.userFactionColor || "#FFFFFF";
@@ -1022,10 +996,8 @@ export default function Player() {
 
         userShipUnsubs.push(unsub);
       });
-      setIsUsersColors({ ...colorsMap });
       setPlayersInGameRoom(activePlayers);
     });
-    setIsLoadingActivePlayers(false);
     return () => {
       unsubscribeUsers();
       userShipUnsubs.forEach((unsub) => unsub());
@@ -1283,14 +1255,13 @@ export default function Player() {
                           }}
                         >
                           {playersInGameRoom.map((player, index) => (
-                            <Text
-                              key={player.uid}
-                              numberOfLines={1}
+                            <View
+                              key={index}
                               style={{
-                                color: player.userFactionColor || Colors.hud,
-                                fontFamily: "LeagueSpartan-Regular",
-                                fontSize: 10,
-                                textAlign: "center",
+                                flexDirection: "row",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                gap: 5,
                                 borderWidth: 1,
                                 borderRadius: 5,
                                 padding: 3,
@@ -1299,11 +1270,29 @@ export default function Player() {
                                     gameState?.currentTurnUid.uid &&
                                     player.userFactionColor) ||
                                   "transparent",
-                                borderBottomWidth: 1,
                               }}
                             >
-                              {index + 1}. {player.displayName}
-                            </Text>
+                              <Image
+                                style={{
+                                  width: 25,
+                                  height: 25,
+                                  borderRadius: 50,
+                                }}
+                                source={{ uri: player?.photoURL }}
+                              />
+                              <Text
+                                key={player.uid}
+                                numberOfLines={1}
+                                style={{
+                                  color: player.userFactionColor || Colors.hud,
+                                  fontFamily: "LeagueSpartan-Regular",
+                                  fontSize: 10,
+                                  textAlign: "center",
+                                }}
+                              >
+                                {index + 1}. {player.displayName}
+                              </Text>
+                            </View>
                           ))}
                         </View>
                       </View>
