@@ -14,18 +14,37 @@ import { Colors } from "@/constants/Colors";
 import { FIREBASE_AUTH } from "@/FirebaseConfig";
 import { useStarBoundContext } from "../Global/StarBoundProvider";
 
-export default function ChatBubble({ message, userName, photoURL }) {
+export default function ChatBubble({
+  message,
+  userName,
+  photoURL,
+  userFactionColor,
+}) {
   const user = FIREBASE_AUTH.currentUser;
   const currentUser = user.displayName === userName;
 
   return (
     <View style={{ alignItems: currentUser ? "flex-end" : "flex-start" }}>
-      <View style={[styles.bubbleContainer]}>
+      <View
+        style={[
+          styles.bubbleContainer,
+          {
+            borderColor: userFactionColor ? userFactionColor : Colors.hud,
+            backgroundColor: Colors.hudDarker,
+            boxShadow: `0px 0px 10px ${
+              userFactionColor ? userFactionColor : Colors.hud
+            }`,
+          },
+        ]}
+      >
         <View
           style={[
             styles.userNameContainer,
             {
-              justifyContent: currentUser ? "flex-end" : "flex-start",
+              borderColor: userFactionColor ? userFactionColor : Colors.hud,
+              justifyContent: "center",
+              left: currentUser ? 30 : 15,
+              backgroundColor: Colors.hudDarker,
             },
           ]}
         >
@@ -35,7 +54,14 @@ export default function ChatBubble({ message, userName, photoURL }) {
           />
           <Text style={styles.userName}>{userName}</Text>
         </View>
-        <Text style={styles.chatMessage}>{message}</Text>
+        <View
+          style={{
+            flex: 1,
+            alignSelf: "center",
+          }}
+        >
+          <Text style={styles.chatMessage}>{message}</Text>
+        </View>
       </View>
     </View>
   );
@@ -46,19 +72,19 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark_gray,
     borderWidth: 1,
     borderColor: Colors.hud,
-    width: "60%",
+    width: "50%",
     marginLeft: 10,
+    marginRight: 10,
     borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
     flexDirection: "column",
     marginBottom: 20,
-    marginTop: 20,
+    marginTop: 30,
+    boxShadow: `0px 0px 10px ${Colors.hud}`,
   },
   chatMessage: {
     color: Colors.hud,
     fontFamily: "LeagueSpartan-Regular",
-    fontSize: 15,
+    fontSize: 14,
     textAlign: "center",
     padding: 5,
   },
@@ -71,8 +97,8 @@ const styles = StyleSheet.create({
   userNameContainer: {
     postion: "absolute",
     gap: 10,
-    bottom: 15,
-    width: "100%",
+    bottom: 25,
+    width: "80%",
     backgroundColor: Colors.hudDarker,
     borderWidth: 1,
     borderColor: Colors.hud,

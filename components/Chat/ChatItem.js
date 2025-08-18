@@ -3,7 +3,6 @@ import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useStarBoundContext } from "../Global/StarBoundProvider";
 import { Image } from "expo-image";
-import ChatBubble from "./ChatBubble";
 
 export default function ChatItem({ item, index, noBorder }) {
   const { data, setData, userFactionColor } = useStarBoundContext();

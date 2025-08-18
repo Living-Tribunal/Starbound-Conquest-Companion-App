@@ -35,11 +35,8 @@ const PlayersList = React.memo(({ users, gameState, gameRoomID }) => {
 });
 
 export default function Chat() {
-  const userName = FIREBASE_AUTH.currentUser?.displayName;
-  const { gameRoomID, setGameRoomID } = useStarBoundContext();
-  const { myTurn, state: gameState } = useMyTurn(gameRoomID);
+  const { gameRoomID, setGameRoomID, userFactionColor } = useStarBoundContext();
   const user = FIREBASE_AUTH.currentUser;
-  const { data, setData, userFactionColor } = useStarBoundContext();
   const [playersInChat, setPlayersInChat] = useState([]);
   const [isLoadingActivePlayers, setIsLoadingActivePlayers] = useState(false);
   const [isSendMessage, setIsSendMessage] = useState(false);
@@ -47,9 +44,11 @@ export default function Chat() {
   /*   const [text, setText] = useState(""); */
   const textRef = useRef("");
   const textInputRef = useRef(null);
+  //console.log("Chat:", messages);
 
   const createPublicChatRoom = async () => {
     let text = textRef.current.trim();
+    console.log(userFactionColor);
     try {
       setIsSendMessage(true);
       if (!gameRoomID || !text) return;
@@ -67,6 +66,7 @@ export default function Chat() {
         createdAt: serverTimestamp(),
         userName: user.displayName,
         userProfilePicture: user.photoURL,
+        userFactionColor,
         message: text,
       });
       setIsSendMessage(false);
@@ -110,11 +110,12 @@ export default function Chat() {
             uid,
             displayName: userData.displayName,
             profile: userData.photoURL,
+            userFactionColor: userData.userFactionColor,
           });
         }
       });
       setPlayersInChat(activePlayers);
-      // console.log("Players in Chat:", activePlayers);
+      console.log("Players in Chat:", JSON.stringify(activePlayers, null, 2));
     });
     setIsLoadingActivePlayers(false);
     return () => {
@@ -124,13 +125,11 @@ export default function Chat() {
 
   return (
     <View style={styles.mainContainer}>
-      <View style={{ flex: 1, justifyContent: "left" }}>
-        {/*  <PlayersList
+      {/*  <PlayersList
           gameRoomID={gameRoomID}
           users={playersInChat}
           gameState={gameState}
         /> */}
-      </View>
       <ScrollView
         nestedScrollEnabled
         contentContainerStyle={{
@@ -143,6 +142,7 @@ export default function Chat() {
             message={message.message}
             userName={message.userName}
             photoURL={message.userProfilePicture}
+            userFactionColor={message.userFactionColor}
           />
         ))}
       </ScrollView>
