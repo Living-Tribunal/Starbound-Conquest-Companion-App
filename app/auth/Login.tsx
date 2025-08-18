@@ -136,6 +136,8 @@ const Login = () => {
             id: user.uid,
             factionName:
               faction || "Head over to settings to build your character",
+            photoURL:
+              "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/avatarimages%2Ftemp.jpg?alt=media&token=a3afd17f-d045-4c2a-9364-a578dfa51de5",
           });
           console.log("User document written with ID:", user.uid);
         } catch (e) {
@@ -236,7 +238,10 @@ const Login = () => {
             email: user.email,
             displayName: user.displayName,
             id: user.uid,
-            factionName: faction,
+            factionName:
+              faction || "Head over to settings to build your character",
+            photoURL:
+              "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/avatarimages%2Ftemp.jpg?alt=media&token=a3afd17f-d045-4c2a-9364-a578dfa51de5",
           });
         } catch (e) {
           console.error("Error adding document:", e);

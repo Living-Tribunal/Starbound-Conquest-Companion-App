@@ -14,7 +14,6 @@ import { Colors } from "@/constants/Colors";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import Chatlist from "../../components/Chat/Chatlist";
-import useMyTurn from "../../components/Functions/useMyTurn";
 import ChatBubble from "../../components/Chat/ChatBubble";
 import {
   addDoc,
@@ -25,17 +24,20 @@ import {
   query,
 } from "firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
-import Toast from "react-native-toast-message";
+import useMyTurn from "@/components/Functions/useMyTurn";
 
 //to prevent re-renders and flickers move the component outside of the chat component
 const PlayersList = React.memo(({ users, gameState, gameRoomID }) => {
   return (
-    <Chatlist gameRoomID={gameRoomID} users={users} gameState={gameState} />
+    <View style={styles.chatListContainer}>
+      <Chatlist gameRoomID={gameRoomID} users={users} gameState={gameState} />
+    </View>
   );
 });
 
 export default function Chat() {
   const { gameRoomID, setGameRoomID, userFactionColor } = useStarBoundContext();
+  const { state: gameState } = useMyTurn(gameRoomID);
   const user = FIREBASE_AUTH.currentUser;
   const [playersInChat, setPlayersInChat] = useState([]);
   const [isLoadingActivePlayers, setIsLoadingActivePlayers] = useState(false);
@@ -125,27 +127,30 @@ export default function Chat() {
 
   return (
     <View style={styles.mainContainer}>
-      {/*  <PlayersList
-          gameRoomID={gameRoomID}
-          users={playersInChat}
-          gameState={gameState}
-        /> */}
-      <ScrollView
-        nestedScrollEnabled
-        contentContainerStyle={{
-          flexGrow: 1,
-        }}
-      >
-        {messages.map((message) => (
-          <ChatBubble
-            key={message.id}
-            message={message.message}
-            userName={message.userName}
-            photoURL={message.userProfilePicture}
-            userFactionColor={message.userFactionColor}
-          />
-        ))}
-      </ScrollView>
+      <PlayersList
+        gameRoomID={gameRoomID}
+        users={playersInChat}
+        gameState={gameState}
+      />
+
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          nestedScrollEnabled
+          contentContainerStyle={{
+            flexGrow: 1,
+          }}
+        >
+          {messages.map((message) => (
+            <ChatBubble
+              key={message.id}
+              message={message.message}
+              userName={message.userName}
+              photoURL={message.userProfilePicture}
+              userFactionColor={message.userFactionColor}
+            />
+          ))}
+        </ScrollView>
+      </View>
 
       <View
         style={{
@@ -204,6 +209,7 @@ export default function Chat() {
 }
 
 const styles = StyleSheet.create({
+  chatListContainer: {},
   mainContainer: {
     flex: 1,
     backgroundColor: Colors.dark_gray,

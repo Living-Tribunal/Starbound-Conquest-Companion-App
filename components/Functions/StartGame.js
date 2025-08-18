@@ -2,8 +2,17 @@ import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { FIREBASE_DB } from "../../FirebaseConfig";
 import Toast from "react-native-toast-message";
 
-export const startGame = async (gameRoomID) => {
+export const startGame = async (gameRoomID, playersInGameRoom) => {
   console.log("Saving game:", gameRoomID);
+  if (playersInGameRoom.length <= 1) {
+    Toast.show({
+      type: "error",
+      text1: "StarBound Conquest",
+      text2: "You need at least 2 players to start a game.",
+      position: "top",
+    });
+    return;
+  }
   try {
     const gameRoomRef = doc(FIREBASE_DB, "gameRooms", gameRoomID);
     await updateDoc(gameRoomRef, {

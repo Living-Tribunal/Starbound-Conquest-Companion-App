@@ -14,7 +14,7 @@ import { updateProfile, deleteUser } from "firebase/auth";
 export default function ImagePickerExample({ factionColor }) {
   const { userProfilePicture, setUserProfilePicture, profile } =
     useStarBoundContext();
-  const user = FIREBASE_AUTH.currentUser;
+  const [photoUploaded, setPhotoUploaded] = useState(false);
   const storage = getStorage();
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -26,6 +26,19 @@ export default function ImagePickerExample({ factionColor }) {
     });
 
     if (!result.canceled) {
+      const user = FIREBASE_AUTH.currentUser; // Get the current user
+      console.log(
+        "Current Firebase Auth User UID:",
+        user ? user.uid : "No user authenticated!"
+      ); // <-- ADD THIS LOG
+
+      if (!user) {
+        console.error(
+          "Upload failed: No authenticated user to associate with the photo."
+        );
+        // You might want to show an alert to the user or redirect to a login screen
+        return; // Stop execution if no user
+      }
       try {
         const downloadURL = await uploadImageAsync(
           result.assets[0].uri,
@@ -54,12 +67,26 @@ export default function ImagePickerExample({ factionColor }) {
       const filename = `userProfilePhotos/${userId}/${Date.now()}.jpg`;
       console.log("Filename:", filename);
       const storageRef = ref(storage, filename);
+      console.log("Storage Ref:", storageRef);
+
       const metadata = {
         contentType: "image/jpeg",
       };
-      await uploadBytes(storageRef, blob, metadata);
-      console.log("✅ Upload success!");
+      setPhotoUploaded(false);
+      try {
+        console.log("Metadata:", metadata, storageRef, blob);
+
+        await uploadBytes(storageRef, blob, metadata);
+        console.log("✅ Upload success!");
+        setPhotoUploaded(true);
+      } catch (error) {
+        console.error("🔥 Upload failed:", error);
+        throw error;
+      }
+
       const downloadURL = await getDownloadURL(storageRef);
+      console.log("📎 File available at:", downloadURL);
+
       if (downloadURL) {
         try {
           console.log(downloadURL, "were saved to Auth");
@@ -86,6 +113,12 @@ export default function ImagePickerExample({ factionColor }) {
         </TouchableOpacity>
       </View>
       <View>
+        {photoUploaded && (
+          <Image
+            style={styles.checkImage}
+            source={require("../../assets/icons/icons8-check-mark-50.png")}
+          />
+        )}
         <Image
           style={[
             styles.image,
@@ -97,21 +130,9 @@ export default function ImagePickerExample({ factionColor }) {
             },
           ]}
           source={
-            userProfilePicture
-              ? { uri: userProfilePicture }
-              : {
-                  uri: profile
-                    ? profile
-                    : "https://firebasestorage.googleapis.com/v0/b/starbound-conquest-a1adc.firebasestorage.app/o/avatarimages%2Fpe.webp?alt=media&token=eaf5837e-adf6-4a86-9fc9-33b66cfde88e",
-                }
+            userProfilePicture ? { uri: userProfilePicture } : { uri: profile }
           }
         />
-        {userProfilePicture && (
-          <Image
-            style={styles.image2}
-            source={require("../../assets/icons/icons8-check-mark-50.png")}
-          />
-        )}
       </View>
     </View>
   );
@@ -133,17 +154,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
   },
-  image2: {
-    position: "absolute",
-    right: 10,
-    top: 10,
+  checkImage: {
     width: 35,
     height: 35,
     borderRadius: 50,
     borderWidth: 1,
-    borderColor: Colors.green_toggle,
+    position: "absolute",
+    top: 10,
+    right: 10,
     tintColor: Colors.green_toggle,
+    borderWidth: 1,
+    borderColor: Colors.green_toggle,
     backgroundColor: Colors.darker_green_toggle,
+    zIndex: 999,
   },
   button: {
     backgroundColor: Colors.hud,

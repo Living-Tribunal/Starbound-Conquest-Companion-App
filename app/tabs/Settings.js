@@ -106,13 +106,13 @@ export default function Settings() {
       faction,
       userFactionColor
     );
-    if (!userProfilePicture || !faction || !userFactionColor) {
+    /*   if (!userProfilePicture || !faction || !userFactionColor) {
       showErrorToast();
       return false;
-    } else {
-      updateUserProfile();
-      return true;
-    }
+    } else { */
+    updateUserProfile();
+    /*   return true;
+    } */
   };
 
   //getting the logged in user data
@@ -203,6 +203,7 @@ export default function Settings() {
   }
   const updateUserProfile = async (gameRoomID) => {
     if (!user) return;
+    console.log("Photo URL:", userProfilePicture);
     setUpdatingProfile(true);
     try {
       await reload(user);
@@ -350,7 +351,7 @@ export default function Settings() {
       console.error("Error signing out:", error);
     }
   };
-  /* console.log("profile picture is in Logout Screen:", profile); 
+  /* console.log("profile picture is in Logout Screen:", profile);
   console.log("User Faction Color Here:", userFactionColor);*/
 
   return (
@@ -385,7 +386,7 @@ export default function Settings() {
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
-            <ImagePicker factionColor={userFactionColor} />
+            <ImagePicker user={user} factionColor={userFactionColor} />
             {!data.length ? (
               <View
                 width="100%"

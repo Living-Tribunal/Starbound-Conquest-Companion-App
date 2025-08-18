@@ -8,24 +8,26 @@ export default function ChatItem({ item, index, noBorder }) {
   const { data, setData, userFactionColor } = useStarBoundContext();
   const blurhash =
     "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
-  //console.log("ChatItem:", item.profile);
+
   return (
     <TouchableOpacity>
       <View
         style={{
-          gap: 5,
-          justifyContent: "left",
+          justifyContent: "center",
+          alignItems: "center",
           flexDirection: "row",
           backgroundColor: Colors.hudDarker,
-          alignItems: "center",
-          borderBottomWidth: noBorder ? 0 : 2,
-          borderBottomColor: noBorder ? Colors.hudDarker : Colors.blue_gray,
+          padding: 2,
+          margin: 10,
+          borderWidth: 1,
+          borderColor: Colors.hud,
+          borderRadius: 5,
         }}
       >
         <Image
           style={{ width: 20, height: 20, borderRadius: 50 }}
           source={{ uri: item.profile }}
-          blurHash={item.blurHash}
+          blurHash={blurhash}
           transition={500 + index * 100}
         />
         <Text
@@ -45,7 +47,6 @@ export default function ChatItem({ item, index, noBorder }) {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    flex: 1,
     backgroundColor: Colors.blue_gray,
   },
   playerName: {

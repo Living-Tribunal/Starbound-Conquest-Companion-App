@@ -124,6 +124,15 @@ export default function Player() {
   });
 
   const toastStartGame = () => {
+    if (playersInGameRoom.length <= 1) {
+      Toast.show({
+        type: "error",
+        text1: "StarBound Conquest",
+        text2: "You need at least 2 players to start a game.",
+        position: "top",
+      });
+      return;
+    }
     Toast.show({
       type: "info",
       text1: "StarBound Conquest",
@@ -1096,8 +1105,10 @@ export default function Player() {
                   {!gameState?.started && gameState?.createdBy === uid && (
                     <TouchableOpacity
                       onPress={toastStartGame}
-                      disabled={playersInGameRoom.length <= 1}
-                      onLongPress={async () => await startGame(gameRoomID)}
+                      // disabled={playersInGameRoom.length <= 1}
+                      onLongPress={async () =>
+                        await startGame(gameRoomID, playersInGameRoom)
+                      }
                       style={[
                         styles.gameStartTextButton,
                         {
@@ -1108,19 +1119,6 @@ export default function Player() {
                       <Text style={styles.startTextValue}>Start Game</Text>
                     </TouchableOpacity>
                   )}
-                  <TouchableOpacity
-                    style={styles.shareButton}
-                    onPress={saveCharacterImage}
-                  >
-                    <Image
-                      style={{
-                        width: 27,
-                        height: 27,
-                        tintColor: Colors.gold,
-                      }}
-                      source={require("../../assets/icons/icons8-share-100.png")}
-                    />
-                  </TouchableOpacity>
                 </View>
                 <TouchableOpacity
                   onPress={() => setIsShowPlayers(!isShowPlayers)}
@@ -1268,29 +1266,38 @@ export default function Player() {
                       },
                     ]}
                   >
-                    {profile ? (
-                      <Image style={styles.profile} source={{ uri: profile }} />
-                    ) : (
-                      <View
-                        style={{
-                          width: 275,
-                          height: 275,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Text
+                    <TouchableOpacity
+                      style={styles.shareButton}
+                      onPress={saveCharacterImage}
+                    >
+                      {profile ? (
+                        <Image
+                          style={styles.profile}
+                          source={{ uri: profile }}
+                        />
+                      ) : (
+                        <View
                           style={{
-                            color: Colors.hud,
-                            textAlign: "center",
-                            fontFamily: "LeagueSpartan-Light",
-                            fontSize: 15,
+                            width: 275,
+                            height: 275,
+                            justifyContent: "center",
+                            alignItems: "center",
                           }}
                         >
-                          Head over to Settings and choose a profile picture.
-                        </Text>
-                      </View>
-                    )}
+                          <Text
+                            style={{
+                              color: Colors.hud,
+                              textAlign: "center",
+                              fontFamily: "LeagueSpartan-Light",
+                              fontSize: 15,
+                            }}
+                          >
+                            Head over to Settings and choose a profile picture.
+                          </Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+
                     <Text
                       style={[
                         styles.playerText,
@@ -1878,7 +1885,7 @@ export default function Player() {
   } else {
     return (
       <LoadingComponent
-        whatToSay={`Loading your current player. 
+        whatToSay={`Loading your current player.
           If you hanve't created a profile yet head over to Settings to create or join one.`}
       />
     );
@@ -2032,9 +2039,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 5,
-    borderWidth: 1,
-    borderColor: Colors.gold,
-    backgroundColor: Colors.goldenrod,
     padding: 5,
   },
   underText: {

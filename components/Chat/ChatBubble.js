@@ -24,86 +24,94 @@ export default function ChatBubble({
   const currentUser = user.displayName === userName;
 
   return (
-    <View style={{ alignItems: currentUser ? "flex-end" : "flex-start" }}>
+    <>
       <View
-        style={[
-          styles.bubbleContainer,
-          {
-            borderColor: userFactionColor ? userFactionColor : Colors.hud,
-            backgroundColor: Colors.hudDarker,
-            boxShadow: `0px 0px 10px ${
-              userFactionColor ? userFactionColor : Colors.hud
-            }`,
-          },
-        ]}
+        style={{
+          flexDirection: "row",
+          gap: 10,
+          justifyContent: currentUser ? "flex-end" : "flex-start",
+          marginVertical: 5,
+          alignItems: "center",
+          padding: 5,
+        }}
       >
-        <View
-          style={[
-            styles.userNameContainer,
-            {
-              borderColor: userFactionColor ? userFactionColor : Colors.hud,
-              justifyContent: "center",
-              left: currentUser ? 30 : 15,
-              backgroundColor: Colors.hudDarker,
-            },
-          ]}
-        >
-          <Image
-            style={{ width: 30, height: 30, borderRadius: 50 }}
-            source={{ uri: photoURL }}
-          />
-          <Text style={styles.userName}>{userName}</Text>
-        </View>
+        {!currentUser && (
+          <View>
+            <Image
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 50,
+                alignSelf: "left",
+              }}
+              source={{ uri: photoURL }}
+            />
+          </View>
+        )}
+
         <View
           style={{
-            flex: 1,
-            alignSelf: "center",
+            alignSelf: "left",
+            flexDirection: "column",
           }}
         >
-          <Text style={styles.chatMessage}>{message}</Text>
+          <Text
+            style={[
+              styles.userName,
+              {
+                color: userFactionColor ? userFactionColor : Colors.hud,
+                textAlign: currentUser ? "right" : "left",
+              },
+            ]}
+          >
+            {userName}
+          </Text>
+          <Text
+            style={[
+              styles.chatMessage,
+              { textAlign: currentUser ? "right" : "left" },
+            ]}
+          >
+            {message}
+          </Text>
         </View>
+        {currentUser && (
+          <View>
+            <Image
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 50,
+                alignSelf: "left",
+              }}
+              source={{ uri: photoURL }}
+            />
+          </View>
+        )}
       </View>
-    </View>
+      <View
+        style={{
+          backgroundColor: "#26C2ED77",
+          height: 1,
+          width: "90%",
+          borderRadius: 5,
+          boxShadow: `0px 0px 5px #26C2ED77`,
+          alignSelf: currentUser ? "flex-end" : "flex-start",
+        }}
+      />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  bubbleContainer: {
-    backgroundColor: Colors.dark_gray,
-    borderWidth: 1,
-    borderColor: Colors.hud,
-    width: "50%",
-    marginLeft: 10,
-    marginRight: 10,
-    borderRadius: 10,
-    flexDirection: "column",
-    marginBottom: 20,
-    marginTop: 30,
-    boxShadow: `0px 0px 10px ${Colors.hud}`,
-  },
   chatMessage: {
-    color: Colors.hud,
+    color: Colors.white,
     fontFamily: "LeagueSpartan-Regular",
     fontSize: 14,
-    textAlign: "center",
-    padding: 5,
   },
   userName: {
-    color: Colors.hud,
     fontFamily: "LeagueSpartan-Bold",
-    fontSize: 15,
-    textAlign: "center",
-  },
-  userNameContainer: {
-    postion: "absolute",
-    gap: 10,
-    bottom: 25,
-    width: "80%",
-    backgroundColor: Colors.hudDarker,
-    borderWidth: 1,
-    borderColor: Colors.hud,
-    borderRadius: 10,
-    padding: 5,
-    flexDirection: "row",
+    fontSize: 17,
+    textAlign: "left",
   },
 });
