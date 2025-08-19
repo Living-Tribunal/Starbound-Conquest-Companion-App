@@ -25,6 +25,7 @@ import {
   where,
   doc,
   setDoc,
+  limit,
 } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import ChatBubble from "../../components/Chat/ChatBubble";
@@ -128,7 +129,7 @@ export default function PrivateChat({ route }) {
       combinedGameRoomID,
       "messages"
     );
-    const q = query(messageRef, orderBy("createdAt", "desc"));
+    const q = query(messageRef, orderBy("createdAt", "desc"), limit(50));
 
     const unsubscribe = onSnapshot(q, (docSnap) => {
       let messages = docSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));

@@ -23,6 +23,7 @@ import {
   orderBy,
   doc,
   query,
+  limit,
 } from "firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
 import useMyTurn from "@/components/Functions/useMyTurn";
@@ -101,7 +102,7 @@ export default function Chat() {
       gameRoomID,
       "publicChat"
     );
-    const q = query(messageRef, orderBy("createdAt", "desc"));
+    const q = query(messageRef, orderBy("createdAt", "desc"), limit(50));
 
     const unsubscribe = onSnapshot(q, (docSnap) => {
       let messages = docSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
