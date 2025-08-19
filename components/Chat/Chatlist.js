@@ -11,13 +11,8 @@ import { Colors } from "@/constants/Colors";
 import ChatItem from "./ChatItem";
 
 export default function Chatlist({ messages, gameRoomID, users, gameState }) {
-  const [showPlayerList, setShowPlayerList] = useState(false);
-
-  const handlePress = () => {
-    setShowPlayerList((prev) => !prev);
-  };
-
-  const testData = [
+  
+    const testData = [
     {
       displayName: "Cody",
       profile: "https://avatars.githubusercontent.com/u/10049574?v=4",

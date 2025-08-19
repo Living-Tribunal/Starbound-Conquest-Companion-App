@@ -3,14 +3,21 @@ import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useStarBoundContext } from "../Global/StarBoundProvider";
 import { Image } from "expo-image";
+import { FIREBASE_AUTH } from "@/FirebaseConfig";
 
 export default function ChatItem({ item, index, noBorder }) {
   const { data, setData, userFactionColor } = useStarBoundContext();
+  const user = FIREBASE_AUTH.currentUser;
   const blurhash =
     "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
   return (
-    <TouchableOpacity>
+    <TouchableOpacity
+      disabled={item.uid === user.uid}
+      onPress={() =>
+        console.log("Pressed " + JSON.stringify(item.displayName, null, 2))
+      }
+    >
       <View
         style={{
           justifyContent: "center",
