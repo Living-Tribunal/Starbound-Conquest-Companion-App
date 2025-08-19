@@ -41,6 +41,19 @@ export default function PrivateChat({ route }) {
   const textInputRef = useRef(null);
   const scrollViewRef = useRef();
 
+  const scrollToBottom = useCallback(() => {
+    requestAnimationFrame(() => {
+      scrollViewRef.current?.scrollToOffset({ offset: 0, animated: true });
+    });
+  }, []);
+
+  // whenever the messages array length changes, stick to bottom
+  useEffect(() => {
+    if (messages.length) {
+      scrollToBottom();
+    }
+  }, [messages.length, scrollToBottom]);
+
   //console.log("Item:", item?.displayName, user?.displayName);
   //console.log("Game Room ID:", gameRoomID);
   /* console.log("User Faction Color:", userFactionColor);
@@ -98,6 +111,7 @@ export default function PrivateChat({ route }) {
       );
 
       setIsSendMessage(false);
+      scrollToBottom();
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -114,7 +128,7 @@ export default function PrivateChat({ route }) {
       combinedGameRoomID,
       "messages"
     );
-    const q = query(messageRef, orderBy("createdAt", "asc"));
+    const q = query(messageRef, orderBy("createdAt", "desc"));
 
     const unsubscribe = onSnapshot(q, (docSnap) => {
       let messages = docSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
@@ -152,8 +166,13 @@ export default function PrivateChat({ route }) {
               userFactionColor={item.userFactionColor}
             />
           )}
-          inverted // 👈 this keeps the newest messages at the bottom
-          contentContainerStyle={{ flexGrow: 1 }}
+          inverted
+          // Good defaults for chat; prevents jumpiness when items prepend
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 0,
+            autoscrollToTopThreshold: 10, // small threshold is fine
+          }}
+          onLayout={scrollToBottom}
         />
       </View>
 

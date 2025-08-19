@@ -85,9 +85,9 @@ export default function Chat() {
         userFactionColor,
         message: text,
       });
-      textInputRef.current?.focus();
-      scrollToBottom();
+
       setIsSendMessage(false);
+      scrollToBottom();
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -140,6 +140,8 @@ export default function Chat() {
       unsubscribeUsers();
     };
   }, [gameRoomID, FIREBASE_AUTH.currentUser]);
+
+  console.log("Messages:", isSendMessage);
 
   return (
     <SafeAreaView style={styles.mainContainer}>
