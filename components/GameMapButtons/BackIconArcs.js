@@ -47,7 +47,7 @@ export default function BackIconArcs({
         isScanning={isScanning}
         gameState={gameState}
       />
-      {!isPlayerTurn && <WaitingForTurn />}
+      {!isPlayerTurn && gameState?.started && <WaitingForTurn />}
       <TouchableOpacity
         onPress={() => navigation.navigate("Map")}
         style={{
@@ -65,48 +65,6 @@ export default function BackIconArcs({
           source={require("../../assets/icons/icons8-back-arrow-50.png")}
         />
       </TouchableOpacity>
-      {/*  <TouchableOpacity
-        onLongPress={() => {
-          setTempDisableMovementRestriction((prev) => {
-            const next = !prev;
-            Toast.show({
-              type: "success",
-              text1: "StarBound Conquest",
-              text2: next
-                ? "Movement restriction disabled"
-                : "Movement restriction enabled",
-              position: "top",
-              visibilityTime: 2000,
-            });
-            return next;
-          });
-        }}
-        style={{
-          position: "absolute",
-          top: 50,
-          left: 10,
-          padding: 0,
-          margin: 0,
-          backgroundColor: "transparent",
-          zIndex: 10000,
-        }}
-      >
-        <Image
-          style={[
-            styles.image,
-            {
-              tintColor: tempDisableMovementRestriction
-                ? Colors.lighter_red
-                : Colors.green_toggle,
-            },
-          ]}
-          source={
-            tempDisableMovementRestriction
-              ? require("../../assets/icons/icons8-cancel-50.png")
-              : require("../../assets/icons/icons8-check-mark-50.png")
-          }
-        />
-      </TouchableOpacity> */}
       <TouchableOpacity
         onPress={() => {
           setRemoveAllIcons((prev) => {

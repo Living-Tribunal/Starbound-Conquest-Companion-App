@@ -1,6 +1,7 @@
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "@/FirebaseConfig";
 import { useEffect, useState } from "react";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function useAllUsersAndDataFromGameRoom(gameRoomID) {
   const [playersInGameRoom, setPlayersInGameRoom] = useState([]);

@@ -41,6 +41,7 @@ export default function SetupGameRoom({
   const [gameRoomIDWarning, setGameRoomIDWarning] = useState(false);
   const uid = FIREBASE_AUTH.currentUser?.uid;
   const { gameRoomID, setGameRoomID } = useStarBoundContext();
+  const { state: gameState } = useMyTurn(gameRoomID);
 
   /*   const disableSaveButton =
     inputValue.trim() === "" || inputValue.trim() === gameRoomID; */
@@ -235,14 +236,12 @@ export default function SetupGameRoom({
             Paste your Game Room ID below to join an existing Game Room.
           </Text>
         )}
-        <Text
-          style={[
-            styles.text2,
-            { fontFamily: "LeagueSpartan-Light", fontSize: 13 },
-          ]}
-        >
-          (Currently, you can have only one game room per user.)
-        </Text>
+        <View style={{ marginTop: 10, marginBottom: 10 }}>
+          <Text style={[styles.subHeaderText, { marginBottom: 10 }]}>
+            ⚠️Info: Once a game has started, you can't change your game limit
+            value
+          </Text>
+        </View>
         <View style={{ flexDirection: "row", gap: 10 }}>
           <View
             style={{
@@ -347,6 +346,7 @@ export default function SetupGameRoom({
             >
               {renderLabelGameValue()}
               <TextInput
+                editable={gameState?.gameValue === "" || null}
                 maxLength={12}
                 keyboardType="numeric"
                 style={styles.textInput}
@@ -667,5 +667,14 @@ const styles = StyleSheet.create({
     fontFamily: "LeagueSpartan-Bold",
     fontSize: 15,
     textAlign: "center",
+  },
+  subHeaderText: {
+    fontFamily: "monospace",
+    color: Colors.white,
+    fontSize: 9,
+    textAlign: "center",
+    backgroundColor: Colors.underTextGray,
+    borderRadius: 5,
+    padding: 5,
   },
 });

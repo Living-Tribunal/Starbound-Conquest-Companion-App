@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
 import { Colors } from "@/constants/Colors";
-import useMyTurn from "../../components/Functions/useMyTurn";
 import {
   updateDoc,
   doc,
@@ -39,6 +38,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ColorPickerComponent from "../../components/ColorPicker/ColorPicker";
 import SetupGameRoom from "../../app/screens/SetupGameRoom";
+import useMyTurn from "../../components/Functions/useMyTurn";
 
 export default function Settings() {
   const user = FIREBASE_AUTH.currentUser;
@@ -71,6 +71,18 @@ export default function Settings() {
   const [gameRoomUserID, setGameRoomUserID] = useState("");
   const { state: gameState } = useMyTurn(gameRoomID);
 
+  const gameHasStarted = () => {
+    if (gameState?.started) {
+      Toast.show({
+        type: "error",
+        text1: "StarBound Conquest",
+        text2: "Unable to modify your game room once started.",
+        position: "top",
+      });
+      return false;
+    }
+    handleOpenGameRoom();
+  };
   const toastNotification = () => {
     Toast.show({
       type: "error",
@@ -80,14 +92,6 @@ export default function Settings() {
       text1Style1: { fontFamily: "monospace", fontSize: 40 },
       text2Style1: { fontFamily: "monospace", fontSize: 15 },
       autoHide: true,
-    });
-  };
-
-  const showErrorToast = () => {
-    Toast.show({
-      type: "error",
-      text1: "StarBound Conquest",
-      text2: "You must select a profile picture, faction, and color.",
     });
   };
 
@@ -407,8 +411,11 @@ export default function Settings() {
                   }}
                 >
                   <TouchableOpacity
-                    style={styles.gameRoomButton}
-                    onPress={handleOpenGameRoom}
+                    style={[
+                      styles.gameRoomButton,
+                      { opacity: gameState?.started ? 0.5 : 1 },
+                    ]}
+                    onPress={gameHasStarted}
                   >
                     <Text
                       style={[
@@ -422,7 +429,7 @@ export default function Settings() {
                     </Text>
                   </TouchableOpacity>
                 </View>
-                <DropdownComponentFactions />
+                <DropdownComponentFactions gameRoomID={gameRoomID} />
 
                 {/* <DropdownComponentCampaigns /> */}
                 <View
@@ -435,9 +442,13 @@ export default function Settings() {
                   <View style={{ width: "95%", position: "relative" }}>
                     {renderLabel()}
                     <TextInput
+                      editable={gameRoomUserID === ""}
                       autoCorrect={false}
                       spellCheck={false}
-                      style={styles.textInput}
+                      style={[
+                        styles.textInput,
+                        { opacity: gameRoomUserID === "" ? 1 : 0.5 },
+                      ]}
                       onChangeText={(text) => {
                         setUsername(text.trimStart());
                       }}
@@ -446,6 +457,10 @@ export default function Settings() {
                       onFocus={() => setIsFocus(true)}
                       onBlur={() => setIsFocus(false)}
                     />
+                    <Text style={[styles.subHeaderText, { marginBottom: 10 }]}>
+                      ⚠️ Info: Once you have created or joined a game room, you
+                      can't change your username.
+                    </Text>
                   </View>
                 </View>
               </View>

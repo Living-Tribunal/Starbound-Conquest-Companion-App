@@ -4,51 +4,56 @@ import { Colors } from "@/constants/Colors";
 import { useStarBoundContext } from "../Global/StarBoundProvider";
 import { Image } from "expo-image";
 import { FIREBASE_AUTH } from "@/FirebaseConfig";
+import { useNavigation } from "@react-navigation/native";
 
 export default function ChatItem({ item, index, noBorder }) {
   const { data, setData, userFactionColor } = useStarBoundContext();
   const user = FIREBASE_AUTH.currentUser;
+  const navigation = useNavigation();
   const blurhash =
     "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
   return (
-    <TouchableOpacity
-      disabled={item.uid === user.uid}
-      onPress={() =>
-        console.log("Pressed " + JSON.stringify(item.displayName, null, 2))
-      }
-    >
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "row",
-          backgroundColor: Colors.hudDarker,
-          padding: 2,
-          margin: 10,
-          borderWidth: 1,
-          borderColor: Colors.hud,
-          borderRadius: 5,
-        }}
-      >
-        <Image
-          style={{ width: 20, height: 20, borderRadius: 50 }}
-          source={{ uri: item.profile }}
-          blurHash={blurhash}
-          transition={500 + index * 100}
-        />
-        <Text
-          style={[
-            styles.playerName,
-            {
-              color: item.userFactionColor ? item.userFactionColor : Colors.hud,
-            },
-          ]}
+    <>
+      {item.uid !== user.uid && (
+        <TouchableOpacity
+          onPress={() => navigation.navigate("PrivateChat", { item })}
         >
-          {item.displayName}
-        </Text>
-      </View>
-    </TouchableOpacity>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "row",
+              backgroundColor: Colors.hudDarker,
+              padding: 2,
+              margin: 10,
+              borderWidth: 1,
+              borderColor: Colors.hud,
+              borderRadius: 5,
+            }}
+          >
+            <Image
+              style={{ width: 20, height: 20, borderRadius: 50 }}
+              source={{ uri: item.profile }}
+              blurHash={blurhash}
+              transition={500 + index * 100}
+            />
+            <Text
+              style={[
+                styles.playerName,
+                {
+                  color: item.userFactionColor
+                    ? item.userFactionColor
+                    : Colors.hud,
+                },
+              ]}
+            >
+              {item.displayName}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      )}
+    </>
   );
 }
 

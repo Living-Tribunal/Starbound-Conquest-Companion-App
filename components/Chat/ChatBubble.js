@@ -66,16 +66,15 @@ export default function ChatBubble({
 
         <View
           style={{
-            alignSelf: "left",
             flexDirection: "column",
+            backgroundColor: Colors.underTextGray,
+            borderRadius: 20,
+            padding: 10,
+            maxWidth: "100%",
+            alignItems: "center",
           }}
         >
-          <Text
-            style={[
-              styles.chatMessage,
-              { textAlign: currentUser ? "right" : "left", padding: 5 },
-            ]}
-          >
+          <Text style={[styles.chatMessage, { textAlign: "left", padding: 5 }]}>
             {message}
           </Text>
         </View>

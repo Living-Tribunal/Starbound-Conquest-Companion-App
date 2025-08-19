@@ -29,7 +29,6 @@ import SpecialOrderBonuses from "@/components/switch/ShipSpecialOrders.js";
 import RecallFightersModal from "@/components/Modals/RecallFightersModal/RecallFighters";
 
 export default function ShipStats({ route }) {
-  const navigation = useNavigation();
   const user = FIREBASE_AUTH.currentUser;
   const { shipId, from, isPlayerTurn } = route.params || {};
   const [isModalVisible, setIsModalVisible] = useState(false);

@@ -41,6 +41,7 @@ export const StarBoundProvider = ({ children, shipType }) => {
   const [userFactionColor, setUserFactionColor] = useState(null);
   const [hasBeenInteractedWith, setHasBeenInteractedWith] = useState(false);
   const [gameRoomID, setGameRoomID] = useState(null);
+  const [adminStatus, setAdminStatus] = useState(false);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [myShips, setMyShips] = useState([]);
@@ -134,6 +135,8 @@ export const StarBoundProvider = ({ children, shipType }) => {
         setMyShips,
         gameRoomID,
         setGameRoomID,
+        setAdminStatus,
+        adminStatus,
       }}
     >
       {children}

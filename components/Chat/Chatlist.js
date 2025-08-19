@@ -11,8 +11,7 @@ import { Colors } from "@/constants/Colors";
 import ChatItem from "./ChatItem";
 
 export default function Chatlist({ messages, gameRoomID, users, gameState }) {
-  
-    const testData = [
+  const testData = [
     {
       displayName: "Cody",
       profile: "https://avatars.githubusercontent.com/u/10049574?v=4",
@@ -62,7 +61,7 @@ export default function Chatlist({ messages, gameRoomID, users, gameState }) {
 
   return (
     <View style={styles.mainContainer}>
-      <Text style={styles.chatHeader}>Players</Text>
+      <Text style={styles.chatHeader}>All Players</Text>
       <View
         style={{ borderBottomWidth: 2, borderBottomColor: Colors.hudDarker }}
       >

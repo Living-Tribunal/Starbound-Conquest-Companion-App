@@ -6,87 +6,97 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
-  ScrollView,
-  Alert,
-  TextInput,
   SafeAreaView,
+  StatusBar,
+  ScrollView,
+  TextInput,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
-import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
-import Chatlist from "../../components/Chat/Chatlist";
-import ChatBubble from "../../components/Chat/ChatBubble";
+import HeaderComponent from "../../components/header/HeaderComponent";
+import useMyTurn from "../../components/Functions/useMyTurn";
 import {
-  addDoc,
   collection,
-  onSnapshot,
-  orderBy,
-  doc,
   query,
+  orderBy,
+  serverTimestamp,
+  onSnapshot,
+  addDoc,
+  where,
+  doc,
+  setDoc,
 } from "firebase/firestore";
-import { serverTimestamp } from "firebase/firestore";
-import useMyTurn from "@/components/Functions/useMyTurn";
+import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
+import ChatBubble from "../../components/Chat/ChatBubble";
+import { getCombinedGameRoomID } from "../../components/Functions/getCombinedGameRoomID";
 
-//to prevent re-renders and flickers move the component outside of the chat component
-const PlayersList = React.memo(({ users, gameState, gameRoomID }) => {
-  return (
-    <View style={styles.chatListContainer}>
-      <Chatlist gameRoomID={gameRoomID} users={users} gameState={gameState} />
-    </View>
-  );
-});
-
-export default function Chat() {
+export default function PrivateChat({ route }) {
+  const { item } = route.params || {};
   const { gameRoomID, setGameRoomID, userFactionColor } = useStarBoundContext();
   const { state: gameState } = useMyTurn(gameRoomID);
   const user = FIREBASE_AUTH.currentUser;
-  const [playersInChat, setPlayersInChat] = useState([]);
-  const [isLoadingActivePlayers, setIsLoadingActivePlayers] = useState(false);
   const [isSendMessage, setIsSendMessage] = useState(false);
   const [messages, setMessages] = useState([]);
-  /*   const [text, setText] = useState(""); */
   const textRef = useRef("");
   const textInputRef = useRef(null);
   const scrollViewRef = useRef();
 
-  const scrollToBottom = useCallback(() => {
-    requestAnimationFrame(() => {
-      scrollViewRef.current?.scrollToOffset({ offset: 0, animated: true });
-    });
-  }, []);
+  //console.log("Item:", item?.displayName, user?.displayName);
+  //console.log("Game Room ID:", gameRoomID);
+  /* console.log("User Faction Color:", userFactionColor);
+  console.log("Game State:", gameState);
+  console.log("User:", user);
+  console.log("Messages:", messages);
+  console.log("Item:", item);*/
 
-  // whenever the messages array length changes, stick to bottom
-  useEffect(() => {
-    if (messages.length) {
-      scrollToBottom();
-    }
-  }, [messages.length, scrollToBottom]);
-  //console.log("Chat:", messages);
-
-  const createPublicChatRoom = async () => {
+  const createPrivateChatRoom = async () => {
     let text = textRef.current.trim();
+    let combinedGameRoomID = getCombinedGameRoomID({ user, item });
     try {
       setIsSendMessage(true);
       if (!gameRoomID || !text) return;
       textRef.current = "";
       if (textInputRef) textInputRef.current.clear();
-      const publicChatRef = collection(
-        FIREBASE_DB,
-        "gameRooms",
-        gameRoomID,
-        "publicChat"
+      await setDoc(
+        doc(
+          FIREBASE_DB,
+          "gameRooms",
+          gameRoomID,
+          "privateChat",
+          combinedGameRoomID
+        ),
+        {
+          participants: [user.uid, item.uid],
+          participantMap: { [user.uid]: true, [item.uid]: true },
+          createdBy: user.uid,
+          createdAt: serverTimestamp(),
+          lastMessage: text,
+          lastMessageAt: serverTimestamp(),
+          lastSenderId: user.uid,
+        },
+        { merge: true }
       );
 
-      await addDoc(publicChatRef, {
-        createdBy: user.uid,
-        createdAt: serverTimestamp(),
-        userName: user.displayName,
-        userProfilePicture: user.photoURL,
-        userFactionColor,
-        message: text,
-      });
-      textInputRef.current?.focus();
-      scrollToBottom();
+      await addDoc(
+        collection(
+          FIREBASE_DB,
+          "gameRooms",
+          gameRoomID,
+          "privateChat",
+          combinedGameRoomID,
+          "messages"
+        ),
+        {
+          text,
+          sentFrom: user.uid,
+          sentTo: item.uid,
+          createdAt: serverTimestamp(),
+          userName: user.displayName,
+          userProfilePicture: user.photoURL,
+          userFactionColor,
+        }
+      );
+
       setIsSendMessage(false);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -95,60 +105,40 @@ export default function Chat() {
 
   useEffect(() => {
     if (!gameRoomID) return;
+    let combinedGameRoomID = getCombinedGameRoomID({ user, item });
     const messageRef = collection(
       FIREBASE_DB,
       "gameRooms",
       gameRoomID,
-      "publicChat"
+      "privateChat",
+      combinedGameRoomID,
+      "messages"
     );
-    const q = query(messageRef, orderBy("createdAt", "desc"));
+    const q = query(messageRef, orderBy("createdAt", "asc"));
 
     const unsubscribe = onSnapshot(q, (docSnap) => {
       let messages = docSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setMessages(messages);
     });
     return unsubscribe;
-  }, [gameRoomID]);
-
-  useEffect(() => {
-    const auth = FIREBASE_AUTH;
-    if (!auth.currentUser) return;
-    if (!gameRoomID) return;
-    setIsLoadingActivePlayers(true);
-
-    const usersRef = collection(FIREBASE_DB, "users");
-    const unsubscribeUsers = onSnapshot(usersRef, (userSnapshot) => {
-      const activePlayers = [];
-
-      userSnapshot.docs.forEach((userDoc) => {
-        const uid = userDoc.id;
-        const userData = userDoc.data();
-        if (userData.gameRoomID === gameRoomID) {
-          activePlayers.push({
-            uid,
-            displayName: userData.displayName,
-            profile: userData.photoURL,
-            userFactionColor: userData.userFactionColor,
-          });
-        }
-      });
-      setPlayersInChat(activePlayers);
-      //console.log("Players in Chat:", JSON.stringify(activePlayers, null, 2));
-    });
-    setIsLoadingActivePlayers(false);
-    return () => {
-      unsubscribeUsers();
-    };
-  }, [gameRoomID, FIREBASE_AUTH.currentUser]);
+  }, [gameRoomID, user, item]);
 
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <PlayersList
-        gameRoomID={gameRoomID}
-        users={playersInChat}
-        gameState={gameState}
+      <HeaderComponent
+        text={item.displayName}
+        NavToWhere="Chat"
+        color={item.userFactionColor}
+        image={item.profile}
       />
-
+      <View
+        style={{
+          width: "95%",
+          height: 2,
+          alignSelf: "center",
+          backgroundColor: Colors.underTextGray,
+        }}
+      />
       <View style={{ flex: 1 }}>
         <FlatList
           ref={scrollViewRef}
@@ -156,19 +146,14 @@ export default function Chat() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <ChatBubble
-              message={item.message}
+              message={item.text}
               userName={item.userName}
               photoURL={item.userProfilePicture}
               userFactionColor={item.userFactionColor}
             />
           )}
-          inverted
-          // Good defaults for chat; prevents jumpiness when items prepend
-          maintainVisibleContentPosition={{
-            minIndexForVisible: 0,
-            autoscrollToTopThreshold: 10, // small threshold is fine
-          }}
-          onLayout={scrollToBottom}
+          inverted // 👈 this keeps the newest messages at the bottom
+          contentContainerStyle={{ flexGrow: 1 }}
         />
       </View>
 
@@ -202,7 +187,7 @@ export default function Chat() {
           placeholderTextColor={Colors.hud}
         />
         <TouchableOpacity
-          onPress={async () => await createPublicChatRoom()}
+          onPress={async () => await createPrivateChatRoom()}
           style={[
             styles.sendButton,
             { opacity: !gameRoomID || isSendMessage ? 0.5 : 1 },

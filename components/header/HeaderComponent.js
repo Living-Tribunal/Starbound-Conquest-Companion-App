@@ -11,6 +11,7 @@ export default function HeaderComponent({
   onPress,
   disabled,
   color,
+  image,
 }) {
   const navigation = useNavigation();
   const { gameSectors } = useMapImageContext();
@@ -39,11 +40,23 @@ export default function HeaderComponent({
           source={require("../../assets/icons/icons8-back-arrow-50.png")}
         />
       </TouchableOpacity>
-      <Text
-        style={[styles.headerText, { left: 40, color: color || Colors.hud }]}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          width: "70%",
+        }}
       >
-        {text}
-      </Text>
+        <Image
+          style={[styles.profileImage, { left: 30 }]}
+          source={{ uri: image }}
+        />
+        <Text
+          style={[styles.headerText, { left: 40, color: color || Colors.hud }]}
+        >
+          {text}
+        </Text>
+      </View>
     </View>
   );
 }
@@ -62,5 +75,10 @@ const styles = StyleSheet.create({
     fontSize: 25,
     textAlign: "center",
     fontFamily: FONTS.leagueRegular,
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 50,
   },
 });

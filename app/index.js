@@ -23,6 +23,7 @@ import GameLore from "./screens/GameLore";
 import FactionInfoScreen from "./screens/FactionInfoScreen";
 import BattleGround from "./screens/BattleGround";
 import GameMap from "./screens/GameMap";
+import PrivateChat from "./screens/PrivateChat";
 import Map from "./tabs/Map";
 import { Colors } from "../constants/Colors";
 import { StarBoundProvider } from "../components/Global/StarBoundProvider";
@@ -250,6 +251,15 @@ function MainTabs() {
                 <Tab.Screen
                   name="BattleGround"
                   component={BattleGround}
+                  options={{
+                    tabBarItemStyle: { display: "none" },
+                    tabBarStyle: { display: "none" },
+                    headerShown: false,
+                  }}
+                />
+                <Tab.Screen
+                  name="PrivateChat"
+                  component={PrivateChat}
                   options={{
                     tabBarItemStyle: { display: "none" },
                     tabBarStyle: { display: "none" },

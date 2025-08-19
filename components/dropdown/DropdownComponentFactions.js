@@ -7,10 +7,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import { GameFactions } from "@/constants/GameFactions";
 import FactionAvatars from "@/constants/FactionAvatars";
+import useMyTurn from "../Functions/useMyTurn";
 
-const DropdownComponentFactions = () => {
+const DropdownComponentFactions = ({ gameRoomID }) => {
   const { faction, setFaction, data } = useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
+  const { state: gameState } = useMyTurn(gameRoomID);
 
   const renderLabel = () => {
     if (isFocus) {
@@ -26,14 +28,20 @@ const DropdownComponentFactions = () => {
   //console.log("faction:", faction);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { opacity: gameState?.started ? 0.5 : 1 }]}>
       {renderLabel()}
       <Dropdown
-        style={[styles.dropdown, isFocus && { borderColor: Colors.hud }]}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        containerStyle={styles.containerStyle}
-        inputSearchStyle={styles.inputSearchStyle}
+        disable={gameState?.started}
+        style={[
+          styles.dropdown,
+          isFocus && {
+            borderColor: Colors.hud,
+          },
+        ]}
+        placeholderStyle={[styles.placeholderStyle]}
+        selectedTextStyle={[styles.selectedTextStyle]}
+        containerStyle={[styles.containerStyle]}
+        inputSearchStyle={[styles.inputSearchStyle]}
         iconStyle={styles.iconStyle}
         data={GameFactions}
         search
@@ -118,11 +126,12 @@ const styles = StyleSheet.create({
   placeholderStyle: {
     fontSize: 16,
     color: Colors.hud,
+    backgroundColor: "transparent",
   },
   selectedTextStyle: {
     fontSize: 13,
     color: Colors.hud,
-    backgroundColor: Colors.hudDarker,
+    backgroundColor: "transparent",
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
   },
