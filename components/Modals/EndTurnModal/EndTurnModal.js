@@ -39,11 +39,6 @@ export default function EndTurnModal({
     return acc;
   }, {});
 
-  console.log("Untoggled ships count:", myUntoggledShipsCount);
-
-  console.log("Untoggled ships:", myUntoggledShips.length);
-  console.log("My ships", myShips);
-
   const sectorData = Object.entries(myUntoggledShipsBySector).map(
     ([sector, ships]) => ({
       sector,
