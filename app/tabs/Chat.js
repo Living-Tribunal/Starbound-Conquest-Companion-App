@@ -142,8 +142,6 @@ export default function Chat() {
     };
   }, [gameRoomID, FIREBASE_AUTH.currentUser]);
 
-  console.log("Messages:", isSendMessage);
-
   return (
     <SafeAreaView style={styles.mainContainer}>
       <PlayersList

@@ -160,8 +160,8 @@ function MainTabs() {
                       <Image
                         source={
                           focused
-                            ? require("../assets/icons/icons8-dice-80.png")
-                            : require("../assets/icons/icons8-dice-cubes-64.png")
+                            ? require("../assets/icons/icons8-chat-50.png")
+                            : require("../assets/icons/icons8-chat-50(1).png")
                         }
                         style={{
                           height: 25,

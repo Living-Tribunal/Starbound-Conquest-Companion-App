@@ -79,7 +79,7 @@ export default function ChatBubble({
           </Text>
         </View>
       </View>
-      <View
+      {/*   <View
         style={{
           backgroundColor: "#26c2ed47",
           height: 1,
@@ -89,7 +89,7 @@ export default function ChatBubble({
           alignSelf: currentUser ? "flex-end" : "flex-start",
           margin: 5,
         }}
-      />
+      /> */}
     </>
   );
 }

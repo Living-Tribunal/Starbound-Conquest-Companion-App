@@ -5,6 +5,8 @@ import Toast from "react-native-toast-message";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import WaitingForTurn from "@/components/WaitingForTurn/WaitingForTurn";
 import ScanBattleField from "@/components/GameMapButtons/ScanBattleField";
+import useMyTurn from "@/components/Functions/useMyTurn";
+import { useStarBoundContext } from "../Global/StarBoundProvider";
 
 export default function BackIconArcs({
   navigation,
@@ -17,7 +19,6 @@ export default function BackIconArcs({
   isPlayerTurn,
   isScanningBattleField,
   isScanning,
-  gameState,
 }) {
   /*   console.log(
     "backIconArcs:",
@@ -29,8 +30,11 @@ export default function BackIconArcs({
     Carrier: "Ca",
     Dreadnought: "Dr",
   };
+  const { gameRoomID } = useStarBoundContext();
 
-  const insets = useSafeAreaInsets();
+  const { state: gameState } = useMyTurn(gameRoomID);
+  const gameStarted = gameState?.started;
+  console.log("Game Started in Battle:", gameStarted);
 
   const playerShips = ships.filter((s) => s.user === user.uid);
 
@@ -47,7 +51,7 @@ export default function BackIconArcs({
         isScanning={isScanning}
         gameState={gameState}
       />
-      {!isPlayerTurn && gameState?.started && <WaitingForTurn />}
+      {!isPlayerTurn && gameStarted && <WaitingForTurn />}
       <TouchableOpacity
         onPress={() => navigation.navigate("Map")}
         style={{

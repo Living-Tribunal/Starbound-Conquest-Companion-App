@@ -14,19 +14,18 @@ import { Colors } from "../../constants/Colors.js";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { ShipAttributes } from "../../constants/ShipAttributes.js";
-import { FONTS } from "../../constants/fonts.js";
 import { useStarBoundContext } from "../../components/Global/StarBoundProvider.js";
 import { doc, or, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "../../FirebaseConfig";
 import HeaderComponent from "@/components/header/HeaderComponent.js";
 import Toast from "react-native-toast-message";
-import { useNavigation } from "@react-navigation/native";
 import BattleDice from "@/components/dice/BattleGroundDice.js";
 import { getFleetData } from "@/components/API/API.js";
 import { FactionImages } from "@/constants/FactionImages.js";
 import LoadingComponent from "@/components/loading/LoadingComponent.js";
 import SpecialOrderBonuses from "@/components/switch/ShipSpecialOrders.js";
 import RecallFightersModal from "@/components/Modals/RecallFightersModal/RecallFighters";
+import useMyTurn from "@/components/Functions/useMyTurn";
 
 export default function ShipStats({ route }) {
   const user = FIREBASE_AUTH.currentUser;
@@ -57,8 +56,12 @@ export default function ShipStats({ route }) {
     fromGameMap,
     setFromGameMap,
     myShips,
+    gameRoomID,
   } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
+  const { state: gameState } = useMyTurn(gameRoomID);
+  const gameStarted = gameState?.started;
+  console.log("Started in ShipStats:", gameStarted);
 
   const carrierId = ship?.id;
 
@@ -741,6 +744,7 @@ export default function ShipStats({ route }) {
                       >
                         <TouchableOpacity
                           disabled={
+                            !gameStarted ||
                             !isPlayerTurn ||
                             isDisabled ||
                             getShipsActionsTakenCount(ship) >= 2 ||

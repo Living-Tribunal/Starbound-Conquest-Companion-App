@@ -72,9 +72,14 @@ export default function FleetMap() {
     useState(false);
 
   const { state: gameState, myTurn } = useMyTurn(gameRoomID);
-  const isPlayerTurn = myTurn;
 
   const gameStarted = gameState?.started;
+
+  useEffect(() => {
+    console.log("Game Started in Map:", gameStarted);
+  });
+
+  const isPlayerTurn = myTurn;
 
   const [removeAllIcons, setRemoveAllIcons] = useState(true);
   const [circleBorderColor, setCircleBorderColor] = useState(
@@ -129,6 +134,7 @@ export default function FleetMap() {
   };
 
   const shipHasUsedItsTwoMoves = (ship, index) => {
+    if (!gameStarted) return;
     if (ship.user === user.uid) {
       const actions = [
         ship.shipActions?.move,
@@ -261,7 +267,12 @@ export default function FleetMap() {
 
   const navigateToStats = (shipId) => {
     //console.log("Navigating with shipId:", shipId);
-    navigation.navigate("Stats", { shipId, from: "GameMap", isPlayerTurn });
+    navigation.navigate("Stats", {
+      shipId,
+      from: "GameMap",
+      isPlayerTurn,
+      gameStarted,
+    });
   };
 
   const removeNonSerializableProperties = (ship) => {
@@ -316,7 +327,7 @@ export default function FleetMap() {
         y,
         rotation_angle: rotation,
         distanceTraveled: distanceTraveled,
-        "shipActions.move": true,
+        "shipActions.move": gameStarted ? true : false,
       });
       setData((prevData) =>
         prevData.map((s) =>
@@ -340,7 +351,9 @@ export default function FleetMap() {
           move: true,
         },
       };
-      await updateShipIsToggled(user, updatedShip, setData);
+      if (gameStarted) {
+        await updateShipIsToggled(user, updatedShip, setData);
+      }
     } catch (e) {
       console.error("Error updating document: ", e);
     }
@@ -598,7 +611,7 @@ export default function FleetMap() {
     if (
       shipHasMovedButNotConfirmed ||
       ship.isPendingDestruction === true ||
-      isPlayerTurn === false ||
+      !isPlayerTurn ||
       ship.user === user.uid
     )
       return;
@@ -607,6 +620,7 @@ export default function FleetMap() {
   };
 
   const attackingShip = (ship) => {
+    if (!gameStarted) return;
     if (ship.isToggled) return;
     if (ship.user !== user.uid) return;
     setShipPressed(ship.id);
@@ -740,6 +754,7 @@ export default function FleetMap() {
         gameState={gameState}
       />
       {selectedShip?.hasRolledDToHit === false &&
+        gameStarted &&
         getShipsActionsTakenCount(selectedShip) < 2 && (
           <BattleModal
             pendingBattle={pendingBattle}
@@ -772,6 +787,7 @@ export default function FleetMap() {
             setMovementDistanceCircle={setMovementDistanceCircle}
             setTargetedShip={setTargetedShip}
             isPlayerTurn={isPlayerTurn}
+            gameStarted={gameStarted}
           />
         )}
 
@@ -913,7 +929,7 @@ export default function FleetMap() {
             // Inside your PanResponder.create's onPanResponderMove function:
 
             onPanResponderMove: (e, gestureState) => {
-              if (!isPlayerTurn) return;
+              if (!isPlayerTurn && gameStarted) return;
               const actionsTaken = getShipsActionsTakenCount(ship);
 
               if (actionsTaken >= 2) return;
@@ -1121,24 +1137,24 @@ export default function FleetMap() {
                 {/* preventing user ship info from rotating */}
                 {removeAllIcons && ship.user === user.uid && (
                   <>
-                    {isPlayerTurn && (
-                      <Image
-                        source={
-                          factionIcons[ship.type.toLowerCase()] ||
-                          require("../../assets/icons/icons8-chevron-50.png")
-                        }
-                        style={{
-                          width: 25,
-                          height: 25,
-                          position: "absolute",
-                          top: 0,
-                          marginTop: 5,
-                          left: 80,
-                          tintColor: Colors.green_toggle,
-                        }}
-                        resizeMode="contain"
-                      />
-                    )}
+                    {/*   {isPlayerTurn && ( */}
+                    <Image
+                      source={
+                        factionIcons[ship.type.toLowerCase()] ||
+                        require("../../assets/icons/icons8-chevron-50.png")
+                      }
+                      style={{
+                        width: 25,
+                        height: 25,
+                        position: "absolute",
+                        top: 0,
+                        marginTop: 5,
+                        left: 80,
+                        tintColor: Colors.green_toggle,
+                      }}
+                      resizeMode="contain"
+                    />
+                    {/*   )} */}
 
                     <View
                       style={{

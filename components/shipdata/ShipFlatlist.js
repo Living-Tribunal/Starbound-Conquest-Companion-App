@@ -16,7 +16,7 @@ import { getFleetData } from "../../components/API/API";
 import Toast from "react-native-toast-message";
 import { FactionImages } from "../../constants/FactionImages";
 import { useMapImageContext } from "../Global/MapImageContext";
-//import { Shadow } from "react-native-neomorph-shadows";
+import useMyTurn from "../Functions/useMyTurn";
 
 export default function ShipFlatList({
   type,
@@ -39,6 +39,9 @@ export default function ShipFlatList({
 
   const launchAllFightersStatusColor = (ship) => {
     const fightersLaunched = ship.specialOrders?.["Launch Fighters"] === true;
+    const { state: gameState } = useMyTurn(gameRoomID);
+    const gameStarted = gameState?.started;
+    console.log("Game Started in ShipFlatlist:", gameStarted);
 
     if (fightersLaunched) return Colors.green_toggle;
     return Colors.blue_gray;
@@ -131,6 +134,7 @@ export default function ShipFlatList({
               from: "Player",
               isPlayerTurn,
               myShips,
+              gameStarted,
             });
             //console.log("Navigated to Stats:", item.id);
           }

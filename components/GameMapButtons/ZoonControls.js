@@ -9,6 +9,8 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { Colors } from "@/constants/Colors";
 import Toast from "react-native-toast-message";
+import useMyTurn from "@/components/Functions/useMyTurn";
+import { useStarBoundContext } from "../Global/StarBoundProvider";
 
 export default function ZoomControls({
   ships,
@@ -29,7 +31,11 @@ export default function ZoomControls({
   setTargetedShip,
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const { gameRoomID } = useStarBoundContext();
   const [isCancelling, setIsCancelling] = useState(false);
+  const { state: gameState, myTurn } = useMyTurn(gameRoomID);
+  const gameStarted = gameState?.started;
+  console.log("Game started in ZoomControls:", gameStarted);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -111,7 +117,7 @@ export default function ZoomControls({
                   onPress={() => handleShipRotation(shipPressed, -45)}
                   onLongPress={() => handleShipRotation(shipPressed, -90)}
                   disabled={
-                    !isPlayerTurn ||
+                    (!isPlayerTurn && gameStarted) ||
                     updatingRotation ||
                     selectedShip?.hasRolledDToHit ||
                     selectedShip?.shipActions?.move
@@ -127,7 +133,7 @@ export default function ZoomControls({
                   onPress={() => handleShipRotation(shipPressed, 45)}
                   onLongPress={() => handleShipRotation(shipPressed, 90)}
                   disabled={
-                    !isPlayerTurn ||
+                    (!isPlayerTurn && gameStarted) ||
                     updatingRotation ||
                     selectedShip?.hasRolledDToHit
                   }

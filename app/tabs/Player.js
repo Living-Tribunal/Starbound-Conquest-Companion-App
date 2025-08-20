@@ -55,7 +55,6 @@ import {
   runTransaction,
   serverTimestamp,
 } from "firebase/firestore";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function Player() {
   const ref = useRef();
@@ -76,7 +75,6 @@ export default function Player() {
   const [isEndingRound, setIsEndingRound] = useState(false);
   const [isEndingTurn, setIsEndingTurn] = useState(false);
   const [playerGameRoomID, setPlayerGameRoomID] = useState("");
-  const [acknowledgement, setAcknowledgement] = useState(false);
   const {
     username,
     setUsername,
@@ -91,8 +89,6 @@ export default function Player() {
     setToggleToDelete,
     userFactionColor,
     setUserFactionColor,
-    /* getAllUsersShipToggled,
-    setGetAllUsersShipToggled, */
     myShips,
     setMyShips,
     gameRoomID,
@@ -105,6 +101,8 @@ export default function Player() {
   const { myTurn, state: gameState, loading } = useMyTurn(gameRoomID);
   const { playersInGameRoom, getAllUsersShipToggled } =
     useAllUsersAndDataFromGameRoom(gameRoomID);
+
+  const gameStarted = gameState?.started;
 
   //console.log(getAllUsersShipToggled.length, playersInGameRoom.length);
 
@@ -184,7 +182,7 @@ export default function Player() {
     return a.every((x) => bIds.has(x.shipId ?? x.id));
   };
   useEffect(() => {
-    setMyShips((prev) => (sameIds(prev, myShipsToSave) ? prev : myShipsToSave));
+    setMyShips(myShipsToSave);
   }, [myShipsToSave, setMyShips]);
 
   useEffect(() => {
@@ -196,9 +194,6 @@ export default function Player() {
     myShips.length > 0 &&
     myShips.every((ship) => ship.isToggled || ship.isPendingDestruction);
 
-  //get the number of ships that ARE toggled
-  const myToggledShipsCount = myShips.filter((ship) => ship.isToggled).length;
-
   //get all ships by sector for user
   /*   const myShipsBySector = myShips.reduce((acc, ship) => {
     const sector = ship.gameSector || "Unassigned";
@@ -208,22 +203,8 @@ export default function Player() {
   }, {}); */
 
   //get ships not toggled count using length
-  const myUntoggledShipsCount = myShips.filter(
-    (ship) => !ship.isToggled && !ship.isPendingDestruction
-  ).length;
-
-  //get the actual ships that are untoggled
-  const myUntoggledShips = myShips.filter(
-    (ship) => !ship.isToggled && !ship.isPendingDestruction
-  );
 
   //reduce the untoggled ships to a dictionary of sectors and ships
-  const myUntoggledShipsBySector = myUntoggledShips.reduce((acc, ship) => {
-    const sector = ship.gameSector || "Unassigned";
-    if (!acc[sector]) acc[sector] = [];
-    acc[sector].push(ship);
-    return acc;
-  }, {});
 
   const shipInSector = useMemo(() => {
     if (!myShips || !Array.isArray(myShips)) return [];
@@ -1568,7 +1549,7 @@ export default function Player() {
 
                     <TouchableOpacity
                       disabled={
-                        !isPlayerTurn ||
+                        (!isPlayerTurn && gameStarted) ||
                         shouldEndRound ||
                         myToggledOrDestroyingShips
                       }
@@ -1859,6 +1840,7 @@ export default function Player() {
                 isPlayerTurn={isPlayerTurn}
                 myToggledOrDestroyingShips={myToggledOrDestroyingShips}
                 myShips={myShips}
+                gameStarted={gameStarted}
               />
             </View>
           </View>
@@ -1876,10 +1858,6 @@ export default function Player() {
         setShowEndTurnModal={setShowEndTurnModal}
         endYourTurnAndSendMessage={endYourTurnAndSendMessage}
         myToggledOrDestroyingShips={myToggledOrDestroyingShips}
-        myToggledShipsCount={myToggledShipsCount}
-        myUntoggledShipsCount={myUntoggledShipsCount}
-        myShipsBySectorNotToggled={myUntoggledShipsBySector}
-        isEndingTurn={isEndingTurn}
       />
     </SafeAreaView>
   );

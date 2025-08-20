@@ -11,19 +11,40 @@ import {
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 import LoadingComponent from "@/components/loading/LoadingComponent";
+import { useStarBoundContext } from "../../../components/Global/StarBoundProvider";
 
 export default function EndTurnModal({
   showEndTurnModal,
   setShowEndTurnModal,
   endYourTurnAndSendMessage,
   myToggledOrDestroyingShips,
-  myToggledShipsCount,
-  myUntoggledShipsCount,
-  myShipsBySectorNotToggled,
   isEndingTurn,
 }) {
-  //flatten the data so the flatlist can render it
-  const sectorData = Object.entries(myShipsBySectorNotToggled).map(
+  const { myShips } = useStarBoundContext();
+  //get the number of ships that ARE toggled
+  const myToggledShipsCount = myShips.filter((ship) => ship.isToggled).length;
+  //get the actual ships that are untoggled
+  const myUntoggledShips = myShips.filter(
+    (ship) => ship.isToggled === false && ship.isPendingDestruction === false
+  );
+
+  const myUntoggledShipsCount = myShips.filter(
+    (ship) => ship.isToggled === false && ship.isPendingDestruction === false
+  ).length;
+
+  const myUntoggledShipsBySector = myUntoggledShips.reduce((acc, ship) => {
+    const sector = ship.gameSector || "Unassigned";
+    if (!acc[sector]) acc[sector] = [];
+    acc[sector].push(ship);
+    return acc;
+  }, {});
+
+  console.log("Untoggled ships count:", myUntoggledShipsCount);
+
+  console.log("Untoggled ships:", myUntoggledShips.length);
+  console.log("My ships", myShips);
+
+  const sectorData = Object.entries(myUntoggledShipsBySector).map(
     ([sector, ships]) => ({
       sector,
       ships,
