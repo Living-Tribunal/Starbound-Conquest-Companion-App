@@ -741,9 +741,9 @@ export default function FleetMap() {
     return <LoadingComponent whatToSay="Entering the battle..." />;
   }
 
-  if (resetingPosition) {
+  /*   if (resetingPosition) {
     return <LoadingComponent whatToSay="Resetting position..." />;
-  }
+  } */
   // console.log("Original Ship Position:", originalShipPosition);
 
   return (

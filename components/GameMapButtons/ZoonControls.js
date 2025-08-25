@@ -30,7 +30,6 @@ export default function ZoomControls({
   setMovementDistanceCircle,
   setTargetedShip,
   setResetingPosition,
-  resetingPosition,
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const { gameRoomID } = useStarBoundContext();
@@ -72,24 +71,43 @@ export default function ZoomControls({
     setIsCancelling(true);
 
     selectedShip.position.stopAnimation();
-    try {
-      setTimeout(() => {
-        setResetingPosition(true);
+    selectedShip.rotation.stopAnimation &&
+      selectedShip.rotation.stopAnimation();
 
-        selectedShip.position.setValue({ x: 0, y: 0 });
+    try {
+      setResetingPosition(true);
+
+      // animate position back instead of snap
+      Animated.timing(selectedShip.position, {
+        toValue: {
+          x: originalShipPosition.x - (selectedShip.position.x._offset ?? 0),
+          y: originalShipPosition.y - (selectedShip.position.y._offset ?? 0),
+        },
+        duration: 250,
+        useNativeDriver: false,
+      }).start(() => {
+        // normalize offset/value once finished
         selectedShip.position.setOffset({
           x: originalShipPosition.x,
           y: originalShipPosition.y,
         });
+        selectedShip.position.setValue({ x: 0, y: 0 });
+
+        // animate rotation back too
+        Animated.timing(selectedShip.rotation, {
+          toValue: originalShipPosition.rotation ?? 0,
+          duration: 250,
+          useNativeDriver: false,
+        }).start(() => {
+          setResetingPosition(false);
+        });
+
         selectedShip.x = originalShipPosition.x;
         selectedShip.y = originalShipPosition.y;
         selectedShip.rotation_angle = originalShipPosition.rotation ?? 0;
-        // Reset rotation
-        selectedShip.rotation.setValue(originalShipPosition.rotation ?? 0);
-        setTimeout(() => setResetingPosition(false), 300);
-      }, 500);
+      });
 
-      console.log("Resetting position");
+      console.log("Resetting position (animated)");
     } catch (e) {
       console.error("Error resetting position:", e);
     }
@@ -106,6 +124,7 @@ export default function ZoomControls({
       position: "top",
       duration: 1000,
     });
+
     setTimeout(() => setIsCancelling(false), 300);
   };
 
