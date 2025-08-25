@@ -34,7 +34,6 @@ export default function BackIconArcs({
 
   const { state: gameState } = useMyTurn(gameRoomID);
   const gameStarted = gameState?.started;
-  console.log("Game Started in Battle:", gameStarted);
 
   const playerShips = ships.filter((s) => s.user === user.uid);
 

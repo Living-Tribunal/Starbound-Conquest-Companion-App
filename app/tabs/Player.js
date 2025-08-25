@@ -181,6 +181,7 @@ export default function Player() {
     const bIds = new Set(b.map((x) => x.shipId ?? x.id));
     return a.every((x) => bIds.has(x.shipId ?? x.id));
   };
+
   useEffect(() => {
     setMyShips(myShipsToSave);
   }, [myShipsToSave, setMyShips]);
@@ -193,18 +194,6 @@ export default function Player() {
   const myToggledOrDestroyingShips =
     myShips.length > 0 &&
     myShips.every((ship) => ship.isToggled || ship.isPendingDestruction);
-
-  //get all ships by sector for user
-  /*   const myShipsBySector = myShips.reduce((acc, ship) => {
-    const sector = ship.gameSector || "Unassigned";
-    if (!acc[sector]) acc[sector] = [];
-    acc[sector].push(ship);
-    return acc;
-  }, {}); */
-
-  //get ships not toggled count using length
-
-  //reduce the untoggled ships to a dictionary of sectors and ships
 
   const shipInSector = useMemo(() => {
     if (!myShips || !Array.isArray(myShips)) return [];

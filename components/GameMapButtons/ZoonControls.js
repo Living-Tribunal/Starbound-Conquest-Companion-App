@@ -29,13 +29,14 @@ export default function ZoomControls({
   setShipPressed,
   setMovementDistanceCircle,
   setTargetedShip,
+  setResetingPosition,
+  resetingPosition,
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const { gameRoomID } = useStarBoundContext();
   const [isCancelling, setIsCancelling] = useState(false);
   const { state: gameState, myTurn } = useMyTurn(gameRoomID);
   const gameStarted = gameState?.started;
-  console.log("Game started in ZoomControls:", gameStarted);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -53,6 +54,10 @@ export default function ZoomControls({
 
     await updatingPosition(shipPressed, x, y, rotation, distanceTraveled);
     setOriginalShipPosition(null);
+    setShipPressed(null);
+    setMovementDistanceCircle(null);
+    setTargetedShip(null);
+
     Toast.show({
       type: "success",
       text1: "Starbound Conquest",
@@ -65,17 +70,30 @@ export default function ZoomControls({
     const selectedShip = ships.find((s) => s.id === shipPressed);
     if (isCancelling || !selectedShip || !originalShipPosition) return;
     setIsCancelling(true);
-    // Reset position
-    selectedShip.position.setValue({
-      x: originalShipPosition.x,
-      y: originalShipPosition.y,
-    });
 
-    selectedShip.x = originalShipPosition.x;
-    selectedShip.y = originalShipPosition.y;
-    selectedShip.rotation_angle = originalShipPosition.rotation ?? 0;
-    // Reset rotation
-    selectedShip.rotation.setValue(originalShipPosition.rotation ?? 0);
+    selectedShip.position.stopAnimation();
+    try {
+      setTimeout(() => {
+        setResetingPosition(true);
+
+        selectedShip.position.setValue({ x: 0, y: 0 });
+        selectedShip.position.setOffset({
+          x: originalShipPosition.x,
+          y: originalShipPosition.y,
+        });
+        selectedShip.x = originalShipPosition.x;
+        selectedShip.y = originalShipPosition.y;
+        selectedShip.rotation_angle = originalShipPosition.rotation ?? 0;
+        // Reset rotation
+        selectedShip.rotation.setValue(originalShipPosition.rotation ?? 0);
+        setTimeout(() => setResetingPosition(false), 300);
+      }, 500);
+
+      console.log("Resetting position");
+    } catch (e) {
+      console.error("Error resetting position:", e);
+    }
+
     setOriginalShipPosition(null);
     setShipPressed(null);
     setMovementDistanceCircle(null);
@@ -101,7 +119,6 @@ export default function ZoomControls({
       selectedShip.rotation.__getValue() !== selectedShip.rotation_angle);
 
   //console.log("Ship has moved but not confirmed:", shipHasMovedButNotConfirmed);
-
   const shipType = selectedShip?.type === "Carrier";
   return (
     <View style={styles.zoomControls}>

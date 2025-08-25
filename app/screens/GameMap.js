@@ -68,16 +68,13 @@ export default function FleetMap() {
   const [shipsEnteringBattle, setShipsEnteringBattle] = useState([]);
   const [originalShipPosition, setOriginalShipPosition] = useState(null);
   const [isScanBattleField, setIsScanBattleField] = useState(false);
+  const [resetingPosition, setResetingPosition] = useState(false);
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);
 
   const { state: gameState, myTurn } = useMyTurn(gameRoomID);
 
   const gameStarted = gameState?.started;
-
-  useEffect(() => {
-    console.log("Game Started in Map:", gameStarted);
-  });
 
   const isPlayerTurn = myTurn;
 
@@ -97,6 +94,7 @@ export default function FleetMap() {
   const selectedShip = ships.find((ships) => ships.id === shipPressed);
   const panX = useRef(new Animated.Value(0)).current;
   const panY = useRef(new Animated.Value(0)).current;
+  const shipAnim = useRef(new Animated.Value(0)).current;
   const filteredShips = ships.filter(
     (s) => s.gameRoomID === gameRoomID && s.gameSector === gameSectors
   );
@@ -211,7 +209,14 @@ export default function FleetMap() {
       Object.entries(updatedMap).forEach(([carrierId, shipsInRange]) => {
         const carrier = ships.find((s) => s.id === carrierId);
         if (!carrier && user.uid !== carrierId) return;
-        const carrierRef = doc(FIREBASE_DB, "users", user.uid, "ships", s.id);
+        //const carrierRef = doc(FIREBASE_DB, "users", user.uid, "ships", s.id);
+        const carrierRef = doc(
+          FIREBASE_DB,
+          "users",
+          user.uid,
+          "ships",
+          carrier.id
+        );
         batch.update(carrierRef, {
           numberOfShipsProtecting: shipsInRange.length,
         });
@@ -244,7 +249,7 @@ export default function FleetMap() {
 
     Animated.timing(ship.rotation, {
       toValue: next,
-      duration: 150,
+      duration: 400,
       useNativeDriver: false,
     }).start(async () => {
       try {
@@ -736,6 +741,9 @@ export default function FleetMap() {
     return <LoadingComponent whatToSay="Entering the battle..." />;
   }
 
+  if (resetingPosition) {
+    return <LoadingComponent whatToSay="Resetting position..." />;
+  }
   // console.log("Original Ship Position:", originalShipPosition);
 
   return (
@@ -788,6 +796,8 @@ export default function FleetMap() {
             setTargetedShip={setTargetedShip}
             isPlayerTurn={isPlayerTurn}
             gameStarted={gameStarted}
+            resetingPosition={resetingPosition}
+            setResetingPosition={setResetingPosition}
           />
         )}
 
