@@ -3,7 +3,7 @@ import { FIREBASE_DB } from "../../FirebaseConfig";
 import Toast from "react-native-toast-message";
 
 export const stopGame = async (gameRoomID, getAllUsersShipToggled) => {
-  console.log("Get All Users Ship Toggled in Stop:", getAllUsersShipToggled);
+  // console.log("Get All Users Ship Toggled in Stop:", getAllUsersShipToggled);
   if (getAllUsersShipToggled.length >= 1) {
     Toast.show({
       type: "error",

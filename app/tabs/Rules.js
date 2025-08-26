@@ -10,7 +10,7 @@ import React, { useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { weapons } from "../../constants/weapons.js";
-import { weaponDescriptions } from "@/constants/WeaponColors.js";
+import Divider from "@/components/Divider/Divider";
 
 import {
   GestureHandlerRootView,
@@ -20,7 +20,6 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 
 export default function Rules() {
-  const [showText, setShowText] = useState(false);
   const tabBarHeight = useBottomTabBarHeight();
   const navigation = useNavigation();
 
@@ -105,25 +104,59 @@ export default function Rules() {
 
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
-              <Text style={styles.textSection}>Movement Basics</Text>
+              <Text style={styles.textSection}>Movement</Text>
             </View>
             <View style={styles.textBodyContainer}>
               <Text style={styles.textBody}>
                 <Text style={styles.rulerCatHeader}>Player Turn Sequence:</Text>{" "}
-                All movement and combat actions are resolved during each
-                player's turn.
+                Each ship may perform up to two of the three available actions
+                on its turn: Move, Attack, or Issue a Special Order. All ships
+                under a player’s control can be activated during that player’s
+                turn, resolving their movement, combat, and special orders
+                before play passes to the next player.
               </Text>
+              <Image
+                style={{
+                  width: 300,
+                  height: 200,
+                  borderRadius: 10,
+                  alignSelf: "center",
+                  margin: 10,
+                  borderWidth: 1,
+                  borderColor: Colors.hudDarker,
+                  boxShadow: `0px 0px 10px ${Colors.hud}`,
+                  resizeMode: "contain",
+                }}
+                source={require("../../assets/images/rules/actions.png")}
+              />
+              <Divider />
               <Text style={styles.textBody}>
                 <Text style={styles.rulerCatHeader}>Movement Distance:</Text>{" "}
-                Each ship can move a number of feet equal to, or less than, its
-                Move Distance each turn.
+                Each ship may move anywhere within its predefined Movement
+                Circle during its turn. Movement cannot exceed this limit unless
+                a Special Order specifically allows otherwise.
               </Text>
+              <Image
+                style={{
+                  width: 170,
+                  height: 200,
+                  borderRadius: 10,
+                  alignSelf: "center",
+                  margin: 10,
+                  borderWidth: 1,
+                  borderColor: Colors.hudDarker,
+                  boxShadow: `0px 0px 10px ${Colors.hud}`,
+                  resizeMode: "contain",
+                }}
+                source={require("../../assets/images/rules/move.png")}
+              />
+              <Divider />
             </View>
           </View>
 
           <View style={styles.rulesSection}>
             <View style={styles.textSectionContainer}>
-              <Text style={styles.textSection}>Hit Roll</Text>
+              <Text style={styles.textSection}>Combat</Text>
             </View>
             <View style={styles.textBodyContainer}>
               <Text style={styles.textBody}>
@@ -371,7 +404,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   rulerCatHeader: {
-    fontFamily: "LeagueSpartan-Regular",
+    fontFamily: "LeagueSpartan-Bold",
     color: Colors.statDarker,
     fontSize: 12,
   },
