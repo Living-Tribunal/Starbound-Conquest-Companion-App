@@ -24,7 +24,7 @@ export default function ChatItem({ item, index, noBorder }) {
               justifyContent: "center",
               alignItems: "center",
               flexDirection: "row",
-              backgroundColor: Colors.hudDarker,
+              backgroundColor: Colors.underTextGray,
               padding: 2,
               margin: 10,
               borderWidth: 1,

@@ -183,8 +183,9 @@ export default function BattleGround(props) {
               : s
           )
         );
+        setIsDisableBackButton(false);
       }
-      setIsDisableBackButton(false);
+      // setIsDisableBackButton(false);
     } catch (e) {
       console.error("❌ Error updating ship after D20 roll:", e);
     }
@@ -192,7 +193,6 @@ export default function BattleGround(props) {
 
   const startChargingIonBeam = async (weaponName) => {
     if (!gameMapAttackingShip || !user) return;
-    setIsDisableBackButton(true);
     try {
       const shipRef = doc(
         FIREBASE_DB,
@@ -233,7 +233,7 @@ export default function BattleGround(props) {
 
   const setWeaponHasAttacked = async (weaponId) => {
     if (!gameMapAttackingShip || !user) return;
-    setIsDisableBackButton(true);
+    // setIsDisableBackButton(true);
     try {
       const shipRef = doc(
         FIREBASE_DB,
@@ -253,12 +253,10 @@ export default function BattleGround(props) {
         [weaponId]: true,
       };
 
-      // Send to Firestore
       await updateDoc(shipRef, {
         weaponStatus: updatedWeaponStatus,
       });
 
-      // Update local state
       setData((prevData) =>
         prevData.map((s) =>
           s.id === gameMapAttackingShip.id
@@ -598,8 +596,6 @@ export default function BattleGround(props) {
               <Text style={styles.specialWeapons}>Main Weapons</Text>
             </View>
             {selectedShipDice.map((dice, index) => {
-              const isIonParticleBeam = dice.id === "Ion Particle Beam";
-
               const destroyerPowerUpMainGuns =
                 liveShip.specialOrders?.["Power Up Main Guns"] === true &&
                 liveShip.miss === false;
@@ -608,9 +604,6 @@ export default function BattleGround(props) {
               const specialWeaponHasBeenAttempted = Object.values(
                 liveShip.specialWeaponStatusAttempted || {}
               ).some((fired) => fired === true);
-
-              const ipbHasBeenFired =
-                liveShip.weaponStatus?.["Ion Particle Beam"] === true;
 
               const anyWeaponFired = Object.values(
                 liveShip.weaponStatus || {}
@@ -636,11 +629,9 @@ export default function BattleGround(props) {
                   disabledButton={
                     anyWeaponFired || specialWeaponHasBeenAttempted
                   }
-                  onPress={() => {
-                    if (!(isIonParticleBeam && ipbHasBeenFired)) {
-                      setWeaponHasAttacked(dice.id);
-                      setWeaponId(dice.id);
-                    }
+                  onPress={async () => {
+                    await setWeaponHasAttacked(dice.id);
+                    setWeaponId(dice.id);
                   }}
                   onRoll={(value, id) => {
                     if (id === "D20" && singleUserShip?.threatLevel != null) {
@@ -666,6 +657,9 @@ export default function BattleGround(props) {
                 <Animated.View>
                   {Object.keys(liveShip.specialWeaponStatus || {}).map(
                     (weaponName, index) => {
+                      const hasFiredWeapon =
+                        liveShip.weaponStatus?.[weaponId] === true;
+                      console.log("hasFiredWeapon:", hasFiredWeapon);
                       const hasFired =
                         liveShip.specialWeaponStatus[weaponName] === true;
                       const canFire = liveShip.hit === true;
@@ -673,7 +667,7 @@ export default function BattleGround(props) {
                         <ChargingButton
                           key={index}
                           ship={liveShip}
-                          disabled={!canFire || hasFired}
+                          disabled={!canFire || hasFired || hasFiredWeapon}
                           specialWeapon={weaponName}
                           specialWeaponFunction={() =>
                             startChargingIonBeam(weaponName)

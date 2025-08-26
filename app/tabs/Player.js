@@ -443,7 +443,6 @@ export default function Player() {
       if (!snap.exists()) throw new Error("No such document!");
 
       const data = snap.data();
-      console.log("Data:", data);
 
       if (data.currentTurnUid.uid !== myUId)
         throw new Error("No current turn!");
@@ -1547,13 +1546,6 @@ export default function Player() {
                         {
                           borderWidth: 1,
                           width: "30%",
-                          /* opacity:
-                            shouldEndRound ||
-                            myToggledOrDestroyingShips ||
-                            !gameRoomID ||
-                            hasNoShips
-                              ? 0.5
-                              : 1, */
                           borderColor:
                             shouldEndRound || myToggledOrDestroyingShips
                               ? Colors.lighter_red
@@ -1605,7 +1597,7 @@ export default function Player() {
                               !gameState?.started
                                 ? Colors.hudDarker
                                 : Colors.hud,
-                            width: "35%",
+                            width: "30%",
                           },
                         ]}
                         disabled={

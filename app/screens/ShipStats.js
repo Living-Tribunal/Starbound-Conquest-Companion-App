@@ -61,7 +61,6 @@ export default function ShipStats({ route }) {
   const ship = data.find((s) => s.id === shipId);
   const { state: gameState } = useMyTurn(gameRoomID);
   const gameStarted = gameState?.started;
-  console.log("Started in ShipStats:", gameStarted);
 
   const carrierId = ship?.id;
 
