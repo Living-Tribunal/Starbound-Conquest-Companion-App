@@ -37,13 +37,27 @@ export default function ShipFlatList({
     Broadside: "BRS",
   };
 
+<<<<<<< HEAD
   const gameStarted = gameState?.started;
   console.log("Game Started in ShipFlatlist:", gameStarted);
   const { data, setData, setSetDeleting, gameRoomID } = useStarBoundContext();
   const { state: gameState } = useMyTurn(gameRoomID);
+=======
+  const launchAllFightersStatusColor = (ship) => {
+    const fightersLaunched = ship.specialOrders?.["Launch Fighters"] === true;
+    const gameStarted = gameState?.started;
+    console.log("Game Started in ShipFlatlist:", gameStarted);
+
+    if (fightersLaunched) return Colors.green_toggle;
+    return Colors.blue_gray;
+  };
+
+  const { data, setData, setSetDeleting, gameRoomID } = useStarBoundContext();
+>>>>>>> 39fa376799ddd8d777e925d37dc02754b8c988b3
   const { gameSectors } = useMapImageContext();
   const user = FIREBASE_AUTH.currentUser;
   const navigation = useNavigation();
+  const { state: gameState } = useMyTurn(gameRoomID);
 
   const fleetData = Array.isArray(data)
     ? data.filter(
