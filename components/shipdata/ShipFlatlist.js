@@ -39,7 +39,6 @@ export default function ShipFlatList({
 
   const launchAllFightersStatusColor = (ship) => {
     const fightersLaunched = ship.specialOrders?.["Launch Fighters"] === true;
-    const { state: gameState } = useMyTurn(gameRoomID);
     const gameStarted = gameState?.started;
     console.log("Game Started in ShipFlatlist:", gameStarted);
 
@@ -47,10 +46,11 @@ export default function ShipFlatList({
     return Colors.blue_gray;
   };
 
-  const { data, setData, setSetDeleting } = useStarBoundContext();
+  const { data, setData, setSetDeleting, gameRoomID } = useStarBoundContext();
   const { gameSectors } = useMapImageContext();
   const user = FIREBASE_AUTH.currentUser;
   const navigation = useNavigation();
+  const { state: gameState } = useMyTurn(gameRoomID);
 
   const fleetData = Array.isArray(data)
     ? data.filter(
