@@ -37,17 +37,10 @@ export default function ShipFlatList({
     Broadside: "BRS",
   };
 
-  const launchAllFightersStatusColor = (ship) => {
-    const fightersLaunched = ship.specialOrders?.["Launch Fighters"] === true;
-    const { state: gameState } = useMyTurn(gameRoomID);
-    const gameStarted = gameState?.started;
-    console.log("Game Started in ShipFlatlist:", gameStarted);
-
-    if (fightersLaunched) return Colors.green_toggle;
-    return Colors.blue_gray;
-  };
-
-  const { data, setData, setSetDeleting } = useStarBoundContext();
+  const gameStarted = gameState?.started;
+  console.log("Game Started in ShipFlatlist:", gameStarted);
+  const { data, setData, setSetDeleting, gameRoomID } = useStarBoundContext();
+  const { state: gameState } = useMyTurn(gameRoomID);
   const { gameSectors } = useMapImageContext();
   const user = FIREBASE_AUTH.currentUser;
   const navigation = useNavigation();
@@ -67,6 +60,13 @@ export default function ShipFlatList({
   console.log("----------------------"); */
 
   //console.log("In Ship Flatlist:", JSON.stringify(fleetData, null, 2));
+
+  const launchAllFightersStatusColor = (ship) => {
+    const fightersLaunched = ship.specialOrders?.["Launch Fighters"] === true;
+
+    if (fightersLaunched) return Colors.green_toggle;
+    return Colors.blue_gray;
+  };
 
   const deleteShip = async (ship) => {
     setSetDeleting(true);
@@ -134,7 +134,7 @@ export default function ShipFlatList({
               from: "Player",
               isPlayerTurn,
               myShips,
-              gameStarted,
+              gameStarted: gameStarted ?? false,
             });
             //console.log("Navigated to Stats:", item.id);
           }
