@@ -96,7 +96,6 @@ export default function RecallFightersModal({
           <View style={{ flexDirection: "row", gap: 10 }}>
             <TouchableOpacity
               onPress={() => {
-                //handleEndRoundPress();
                 setShowRecallFightersModal(false);
               }}
               style={[

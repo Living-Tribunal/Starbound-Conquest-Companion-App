@@ -37,10 +37,10 @@ export default function ShipFlatList({
     Broadside: "BRS",
   };
 
-  const gameStarted = gameState?.started;
   console.log("Game Started in ShipFlatlist:", gameStarted);
   const { data, setData, setSetDeleting, gameRoomID } = useStarBoundContext();
   const { state: gameState } = useMyTurn(gameRoomID);
+  const gameStarted = gameState?.started;
   const { gameSectors } = useMapImageContext();
   const user = FIREBASE_AUTH.currentUser;
   const navigation = useNavigation();
@@ -101,7 +101,7 @@ export default function ShipFlatList({
     }
   };
 
-  const ShipItem = ({ item, deleteShip, toggleToDelete }) => {
+  const ShipItem = React.memo(({ item, deleteShip, toggleToDelete }) => {
     const localImage = FactionImages[item.factionName]?.[item.type]?.classImage;
     const isIonCannonActive =
       item.type === "Dreadnought" &&
@@ -363,7 +363,7 @@ export default function ShipFlatList({
         </View>
       </TouchableOpacity>
     );
-  };
+  });
 
   return (
     <View style={{ alignItems: "center" }}>
