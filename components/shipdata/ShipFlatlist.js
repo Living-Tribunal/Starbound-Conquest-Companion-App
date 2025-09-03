@@ -37,7 +37,6 @@ export default function ShipFlatList({
     Broadside: "BRS",
   };
 
-  console.log("Game Started in ShipFlatlist:", gameStarted);
   const { data, setData, setSetDeleting, gameRoomID } = useStarBoundContext();
   const { state: gameState } = useMyTurn(gameRoomID);
   const gameStarted = gameState?.started;

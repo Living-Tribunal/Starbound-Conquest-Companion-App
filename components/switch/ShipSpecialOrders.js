@@ -611,7 +611,7 @@ export default async function SpecialOrderBonuses({
             [`specialOrders.${orderName}`]: true,
             [`specialOrdersAttempted.${orderName}`]: true,
             "shipActions.specialOrder": true,
-            currentCapacity: 20,
+            currentCapacity: ship.maxCapacity,
           });
           // Update local data
           setData((prevData) =>

@@ -6,17 +6,59 @@ import {
   TouchableOpacity,
   Image,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
+import { doc, updateDoc } from "firebase/firestore";
+import { FIREBASE_DB, FIREBASE_AUTH } from "../../../FirebaseConfig";
+import Toast from "react-native-toast-message";
 
 export default function RecallFightersModal({
   showRecallFightersModal,
   setShowRecallFightersModal,
   ship,
-  myShips,
-  shipId,
   protectedIds,
+  setData,
 }) {
+  const [recallingFighters, setRecallingFighters] = useState(false);
+  const user = FIREBASE_AUTH.currentUser;
+  const recallFightersFunction = async () => {
+    if (!user || ship.type !== "Carrier") return;
+    setRecallingFighters(true);
+    try {
+      const shipRef = doc(FIREBASE_DB, "users", user.uid, "ships", ship.id);
+      await updateDoc(shipRef, {
+        [`specialOrders.Launch Fighters`]: false,
+        maxCapacity: ship.currentCapacity,
+        numberOfShipsProtecting: 0,
+      });
+
+      setData((prevData) =>
+        prevData.map((s) =>
+          s.id === ship.id
+            ? {
+                ...s,
+                specialOrders: {
+                  ...(s.specialOrders || {}),
+                  ["Launch Fighters"]: false,
+                },
+              }
+            : s
+        )
+      );
+      setRecallingFighters(false);
+      setShowRecallFightersModal(false);
+      Toast.show({
+        type: "success",
+        text1: "Fighters Recalled!",
+        text2: "Fighters have been recalled.",
+        position: "top",
+      });
+    } catch (e) {
+      console.error("Error recalling fighters:", e);
+    }
+  };
+
   return (
     <Modal
       visible={showRecallFightersModal}
@@ -95,8 +137,9 @@ export default function RecallFightersModal({
 
           <View style={{ flexDirection: "row", gap: 10 }}>
             <TouchableOpacity
+              disabled={recallingFighters}
               onPress={() => {
-                setShowRecallFightersModal(false);
+                recallFightersFunction();
               }}
               style={[
                 styles.editContainer,
@@ -119,10 +162,15 @@ export default function RecallFightersModal({
                   },
                 ]}
               >
-                Recall Fighters
+                {recallingFighters ? (
+                  <ActivityIndicator size="small" color={Colors.hudDarker} />
+                ) : (
+                  "Recall Fighters"
+                )}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
+              disabled={recallingFighters}
               onPress={() => setShowRecallFightersModal(false)}
               style={[
                 styles.editContainer,
@@ -144,7 +192,11 @@ export default function RecallFightersModal({
                   },
                 ]}
               >
-                Cancel
+                {recallingFighters ? (
+                  <ActivityIndicator size="small" color={Colors.hud} />
+                ) : (
+                  "Cancel"
+                )}
               </Text>
             </TouchableOpacity>
           </View>
@@ -194,7 +246,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   shipIdText: {
-    color: Colors.dark_gray,
+    color: Colors.hud,
     fontSize: 15,
     marginBottom: 5,
     textAlign: "center",

@@ -44,7 +44,6 @@ import {
   query,
   where,
   getDocs,
-  getCountFromServer,
   updateDoc,
   doc,
   addDoc,
@@ -68,7 +67,6 @@ export default function Player() {
   const { gameSectors, setGameSectors } = useMapImageContext();
   const [showEndRoundModal, setShowEndRoundModal] = useState(false);
   const [isShowPlayers, setIsShowPlayers] = useState(true);
-  //const [playersInGameRoom, setPlayersInGameRoom] = useState([]);
   const [shouldEndRound, setShouldEndRound] = useState(false);
   const [showEndTurnModal, setShowEndTurnModal] = useState(false);
   const [isShowRules, setIsShowRules] = useState(false);

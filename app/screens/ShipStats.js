@@ -1003,6 +1003,7 @@ export default function ShipStats({ route }) {
           ship={ship}
           myShips={myShips}
           protectedIds={protectedIds}
+          setData={setData}
         />
       </ScrollView>
     </SafeAreaView>
