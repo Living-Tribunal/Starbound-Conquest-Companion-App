@@ -33,8 +33,9 @@ import { getCombinedGameRoomID } from "../../components/Functions/getCombinedGam
 
 export default function PrivateChat({ route }) {
   const { item } = route.params || {};
-  const { gameRoomID, setGameRoomID, userFactionColor } = useStarBoundContext();
-  const { state: gameState } = useMyTurn(gameRoomID);
+  const { playerGameRoomID, setPlayerGameRoomID, userFactionColor } =
+    useStarBoundContext();
+  const { state: gameState } = useMyTurn(playerGameRoomID);
   const user = FIREBASE_AUTH.currentUser;
   const [isSendMessage, setIsSendMessage] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -56,7 +57,7 @@ export default function PrivateChat({ route }) {
   }, [messages.length, scrollToBottom]);
 
   //console.log("Item:", item?.displayName, user?.displayName);
-  //console.log("Game Room ID:", gameRoomID);
+  //console.log("Game Room ID:", playerGameRoomID);
   /* console.log("User Faction Color:", userFactionColor);
   console.log("Game State:", gameState);
   console.log("User:", user);
@@ -68,14 +69,14 @@ export default function PrivateChat({ route }) {
     let combinedGameRoomID = getCombinedGameRoomID({ user, item });
     try {
       setIsSendMessage(true);
-      if (!gameRoomID || !text) return;
+      if (!playerGameRoomID || !text) return;
       textRef.current = "";
       if (textInputRef) textInputRef.current.clear();
       await setDoc(
         doc(
           FIREBASE_DB,
           "gameRooms",
-          gameRoomID,
+          playerGameRoomID,
           "privateChat",
           combinedGameRoomID
         ),
@@ -95,7 +96,7 @@ export default function PrivateChat({ route }) {
         collection(
           FIREBASE_DB,
           "gameRooms",
-          gameRoomID,
+          playerGameRoomID,
           "privateChat",
           combinedGameRoomID,
           "messages"
@@ -119,12 +120,12 @@ export default function PrivateChat({ route }) {
   };
 
   useEffect(() => {
-    if (!gameRoomID) return;
+    if (!playerGameRoomID) return;
     let combinedGameRoomID = getCombinedGameRoomID({ user, item });
     const messageRef = collection(
       FIREBASE_DB,
       "gameRooms",
-      gameRoomID,
+      playerGameRoomID,
       "privateChat",
       combinedGameRoomID,
       "messages"
@@ -136,7 +137,7 @@ export default function PrivateChat({ route }) {
       setMessages(messages);
     });
     return unsubscribe;
-  }, [gameRoomID, user, item]);
+  }, [playerGameRoomID, user, item]);
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -192,7 +193,7 @@ export default function PrivateChat({ route }) {
         }}
       >
         <TextInput
-          editable={!gameRoomID || !isSendMessage}
+          editable={!playerGameRoomID || !isSendMessage}
           ref={textInputRef}
           onChangeText={(value) => (textRef.current = value)}
           style={{
@@ -210,9 +211,9 @@ export default function PrivateChat({ route }) {
           onPress={async () => await createPrivateChatRoom()}
           style={[
             styles.sendButton,
-            { opacity: !gameRoomID || isSendMessage ? 0.5 : 1 },
+            { opacity: !playerGameRoomID || isSendMessage ? 0.5 : 1 },
           ]}
-          disabled={isSendMessage || !gameRoomID}
+          disabled={isSendMessage || !playerGameRoomID}
         >
           <Image
             style={{

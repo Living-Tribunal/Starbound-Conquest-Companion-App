@@ -37,8 +37,9 @@ export default function ShipFlatList({
     Broadside: "BRS",
   };
 
-  const { data, setData, setSetDeleting, gameRoomID } = useStarBoundContext();
-  const { state: gameState } = useMyTurn(gameRoomID);
+  const { data, setData, setSetDeleting, playerGameRoomID } =
+    useStarBoundContext();
+  const { state: gameState } = useMyTurn(playerGameRoomID);
   const gameStarted = gameState?.started;
   const { gameSectors } = useMapImageContext();
   const user = FIREBASE_AUTH.currentUser;

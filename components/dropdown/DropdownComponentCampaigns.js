@@ -7,7 +7,7 @@ import { useStarBoundContext } from "../Global/StarBoundProvider";
 import { campaigns } from "@/constants/Campaigns";
 
 const DropdownComponentCampaigns = () => {
-  const { gameRoomID, setGameRoomID, data } = useStarBoundContext();
+  const { playerGameRoomID, setPlayerGameRoomID, data } = useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
 
   const renderLabel = () => {
@@ -21,7 +21,7 @@ const DropdownComponentCampaigns = () => {
     return null;
   };
 
-  //console.log("Game Mode:", gameRoomID);
+  //console.log("Game Mode:", playerGameRoomID);
 
   return (
     <View style={styles.container}>
@@ -39,13 +39,13 @@ const DropdownComponentCampaigns = () => {
         valueField="value"
         placeholder={!isFocus ? "Choose a Game Room" : "..."}
         searchPlaceholder="Search..."
-        value={gameRoomID}
+        value={playerGameRoomID}
         onFocus={() => setIsFocus(true)}
         onBlur={() => {
           setIsFocus(false);
         }}
         onChange={(item) => {
-          setGameRoomID(item.value);
+          setPlayerGameRoomID(item.value);
           setIsFocus(false);
         }}
         renderLeftIcon={() => (

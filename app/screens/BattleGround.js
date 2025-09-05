@@ -61,6 +61,7 @@ export default function BattleGround(props) {
     setData,
     setHit,
     setWeaponId,
+    playerGameRoomID,
   } = useStarBoundContext();
   const [modal, setModal] = useState(false);
   const [newHP, setNewHP] = useState(0);
@@ -68,8 +69,7 @@ export default function BattleGround(props) {
   const [liveShip, setLiveShip] = useState(null);
   const [isDisableBackButton, setIsDisableBackButton] = useState(false);
   const [isNavingModal, setIsNavingModal] = useState(false);
-  const { state: gameState } = useMyTurn(gameRoomID);
-  const gameRoomID = gameState?.id ?? null;
+  const { state: gameState } = useMyTurn(playerGameRoomID);
 
   const user = FIREBASE_AUTH.currentUser;
   const scaleAnim = useRef(new Animated.Value(0)).current;
@@ -304,15 +304,15 @@ export default function BattleGround(props) {
     try {
       const allUsersArray = [];
       const currentUserEmail = FIREBASE_AUTH.currentUser.email;
-      //console.log("Game Room:", gameRoomID);
-      //console.log("Game Room:", user.gameRoomID);
-      if (!currentUserEmail || !gameRoomID) return [];
+      //console.log("Game Room:", playerGameRoomID);
+      //console.log("Game Room:", user.playerGameRoomID);
+      if (!currentUserEmail || !playerGameRoomID) return [];
 
       const usersCollection = collection(FIREBASE_DB, "users");
       const myQuery = query(
         usersCollection,
         where("email", "!=", currentUserEmail),
-        where("gameRoomID", "==", gameRoomID)
+        where("playerGameRoomID", "==", playerGameRoomID)
         //where("gameSector", "==", gameSectors)
       );
       const querySnapshot = await getDocs(myQuery);
@@ -399,7 +399,7 @@ export default function BattleGround(props) {
 
   //useEffect function to get ALL users and their ships from firestore
   useEffect(() => {
-    if (!FIREBASE_AUTH.currentUser || !gameRoomID) return;
+    if (!FIREBASE_AUTH.currentUser || !playerGameRoomID) return;
     let unsubscribers = [];
 
     const getAllUsersAndListen = async () => {
@@ -437,7 +437,7 @@ export default function BattleGround(props) {
     return () => {
       unsubscribers.forEach((unsubscribe) => unsubscribe());
     };
-  }, [gameRoomID, FIREBASE_AUTH.currentUser?.uid]);
+  }, [playerGameRoomID, FIREBASE_AUTH.currentUser?.uid]);
 
   //useEffect function to clamp the value from going lower than 0 when rolling for damage and setting it to state
   useEffect(() => {
@@ -659,7 +659,6 @@ export default function BattleGround(props) {
                     (weaponName, index) => {
                       const hasFiredWeapon =
                         liveShip.weaponStatus?.[weaponId] === true;
-                      console.log("hasFiredWeapon:", hasFiredWeapon);
                       const hasFired =
                         liveShip.specialWeaponStatus[weaponName] === true;
                       const canFire = liveShip.hit === true;

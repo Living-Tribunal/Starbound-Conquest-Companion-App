@@ -2,7 +2,7 @@ import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { FIREBASE_DB } from "../../FirebaseConfig";
 import Toast from "react-native-toast-message";
 
-export const stopGame = async (gameRoomID, getAllUsersShipToggled) => {
+export const stopGame = async (playerGameRoomID, getAllUsersShipToggled) => {
   // console.log("Get All Users Ship Toggled in Stop:", getAllUsersShipToggled);
   if (getAllUsersShipToggled.length >= 1) {
     Toast.show({
@@ -14,7 +14,7 @@ export const stopGame = async (gameRoomID, getAllUsersShipToggled) => {
     return;
   }
   try {
-    const gameRoomRef = doc(FIREBASE_DB, "gameRooms", gameRoomID);
+    const gameRoomRef = doc(FIREBASE_DB, "gameRooms", playerGameRoomID);
     await updateDoc(gameRoomRef, {
       started: false,
       startTime: serverTimestamp(),
@@ -31,8 +31,8 @@ export const stopGame = async (gameRoomID, getAllUsersShipToggled) => {
   }
 };
 
-export const startGame = async (gameRoomID, playersInGameRoom) => {
-  console.log("Saving game:", gameRoomID);
+export const startGame = async (playerGameRoomID, playersInGameRoom) => {
+  console.log("Saving game:", playerGameRoomID);
   if (playersInGameRoom.length <= 1) {
     Toast.show({
       type: "error",
@@ -44,7 +44,7 @@ export const startGame = async (gameRoomID, playersInGameRoom) => {
   }
 
   try {
-    const gameRoomRef = doc(FIREBASE_DB, "gameRooms", gameRoomID);
+    const gameRoomRef = doc(FIREBASE_DB, "gameRooms", playerGameRoomID);
     await updateDoc(gameRoomRef, {
       started: true,
       startTime: serverTimestamp(),

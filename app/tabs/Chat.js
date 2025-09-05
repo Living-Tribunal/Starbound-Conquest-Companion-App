@@ -29,17 +29,17 @@ import { serverTimestamp } from "firebase/firestore";
 import useMyTurn from "@/components/Functions/useMyTurn";
 
 //to prevent re-renders and flickers move the component outside of the chat component
-const PlayersList = React.memo(({ users, gameState, gameRoomID }) => {
+const PlayersList = React.memo(({ users, gameState, playerGameRoomID }) => {
   return (
     <View style={styles.chatListContainer}>
-      <Chatlist gameRoomID={gameRoomID} users={users} gameState={gameState} />
+      <Chatlist users={users} />
     </View>
   );
 });
 
 export default function Chat() {
-  const { gameRoomID, setGameRoomID, userFactionColor } = useStarBoundContext();
-  const { state: gameState } = useMyTurn(gameRoomID);
+  const { playerGameRoomID, userFactionColor } = useStarBoundContext();
+  const { state: gameState } = useMyTurn(playerGameRoomID);
   const user = FIREBASE_AUTH.currentUser;
   const [playersInChat, setPlayersInChat] = useState([]);
   const [isLoadingActivePlayers, setIsLoadingActivePlayers] = useState(false);
@@ -68,13 +68,13 @@ export default function Chat() {
     let text = textRef.current.trim();
     try {
       setIsSendMessage(true);
-      if (!gameRoomID || !text) return;
+      if (!playerGameRoomID || !text) return;
       textRef.current = "";
       if (textInputRef) textInputRef.current.clear();
       const publicChatRef = collection(
         FIREBASE_DB,
         "gameRooms",
-        gameRoomID,
+        playerGameRoomID,
         "publicChat"
       );
 
@@ -95,11 +95,11 @@ export default function Chat() {
   };
 
   useEffect(() => {
-    if (!gameRoomID) return;
+    if (!playerGameRoomID) return;
     const messageRef = collection(
       FIREBASE_DB,
       "gameRooms",
-      gameRoomID,
+      playerGameRoomID,
       "publicChat"
     );
     const q = query(messageRef, orderBy("createdAt", "desc"), limit(50));
@@ -109,12 +109,12 @@ export default function Chat() {
       setMessages(messages);
     });
     return unsubscribe;
-  }, [gameRoomID]);
+  }, [playerGameRoomID]);
 
   useEffect(() => {
     const auth = FIREBASE_AUTH;
     if (!auth.currentUser) return;
-    if (!gameRoomID) return;
+    if (!playerGameRoomID) return;
     setIsLoadingActivePlayers(true);
 
     const usersRef = collection(FIREBASE_DB, "users");
@@ -124,7 +124,7 @@ export default function Chat() {
       userSnapshot.docs.forEach((userDoc) => {
         const uid = userDoc.id;
         const userData = userDoc.data();
-        if (userData.gameRoomID === gameRoomID) {
+        if (userData.playerGameRoomID === playerGameRoomID) {
           activePlayers.push({
             uid,
             displayName: userData.displayName,
@@ -140,12 +140,12 @@ export default function Chat() {
     return () => {
       unsubscribeUsers();
     };
-  }, [gameRoomID, FIREBASE_AUTH.currentUser]);
+  }, [playerGameRoomID, FIREBASE_AUTH.currentUser]);
 
   return (
     <SafeAreaView style={styles.mainContainer}>
       <PlayersList
-        gameRoomID={gameRoomID}
+        playerGameRoomID={playerGameRoomID}
         users={playersInChat}
         gameState={gameState}
       />
@@ -185,10 +185,11 @@ export default function Chat() {
           borderWidth: 1,
           width: "95%",
           marginBottom: 10,
+          boxShadow: `0px 0px 6px ${Colors.hud}`,
         }}
       >
         <TextInput
-          editable={!gameRoomID || !isSendMessage}
+          editable={!playerGameRoomID || !isSendMessage}
           ref={textInputRef}
           onChangeText={(value) => (textRef.current = value)}
           style={{
@@ -206,9 +207,9 @@ export default function Chat() {
           onPress={async () => await createPublicChatRoom()}
           style={[
             styles.sendButton,
-            { opacity: !gameRoomID || isSendMessage ? 0.5 : 1 },
+            { opacity: !playerGameRoomID || isSendMessage ? 0.5 : 1 },
           ]}
-          disabled={isSendMessage || !gameRoomID}
+          disabled={isSendMessage || !playerGameRoomID}
         >
           <Image
             style={{

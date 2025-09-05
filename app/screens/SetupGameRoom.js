@@ -43,11 +43,11 @@ export default function SetupGameRoom({
   const [showGameRoomCreated, setShowGameRoomCreated] = useState(false);
   const [gameRoomIDWarning, setGameRoomIDWarning] = useState(false);
   const uid = FIREBASE_AUTH.currentUser?.uid;
-  const { gameRoomID, setGameRoomID } = useStarBoundContext();
-  const { state: gameState } = useMyTurn(gameRoomID);
+  const { playerGameRoomID } = useStarBoundContext();
+  const { state: gameState } = useMyTurn(playerGameRoomID);
 
   /*   const disableSaveButton =
-    inputValue.trim() === "" || inputValue.trim() === gameRoomID; */
+    inputValue.trim() === "" || inputValue.trim() === playerGameRoomID; */
 
   const handleIsJoiningGameRoom = () => {
     setIsJoiningGameRoom((prev) => !prev);
@@ -55,7 +55,7 @@ export default function SetupGameRoom({
   };
 
   /*   console.log("Game Value:", gameValue);
-  console.log("gameRoomID in setup:", gameRoomID); */
+  console.log("playerGameRoomID in setup:", playerGameRoomID); */
   /* console.log("GameRoomIDWarning:", gameRoomIDWarning); */
 
   const renderLabelGameValue = () => {
@@ -92,7 +92,7 @@ export default function SetupGameRoom({
   };
 
   const randomGameRoomId = () => {
-    /*  if (gameRoomID === inputValue.trim()) {
+    /*  if (playerGameRoomID === inputValue.trim()) {
       setGameRoomIDWarning(true);
       return;
     } */
@@ -102,14 +102,14 @@ export default function SetupGameRoom({
 
   useEffect(() => {
     if (showGameRoomModal) {
-      setInputValue(gameRoomID || "");
+      setInputValue(playerGameRoomID || "");
       setCopiedText(false);
     }
   }, [showGameRoomModal]);
 
   const copyToClipboard = () => {
     try {
-      Clipboard.setString(gameRoomID);
+      Clipboard.setString(playerGameRoomID);
       setCopiedText(true);
     } catch (error) {
       console.error("Error copying to clipboard:", error);
@@ -125,7 +125,7 @@ export default function SetupGameRoom({
       return;
     }
 
-    /*  if (next === gameRoomID) {
+    /*  if (next === playerGameRoomID) {
       setGameRoomIDWarning(true);
       return;
     } */
@@ -486,7 +486,7 @@ export default function SetupGameRoom({
             >
               <TouchableOpacity
                 disabled={
-                  (!isJoiningGameRoom && !gameRoomID && !gameValue) ||
+                  (!isJoiningGameRoom && !playerGameRoomID && !gameValue) ||
                   loading ||
                   isValid === false ||
                   showGameRoomJoined ||
@@ -495,8 +495,14 @@ export default function SetupGameRoom({
                 style={[
                   styles.gameRoomButton,
                   {
+                    backgroundColor: isJoiningGameRoom
+                      ? Colors.darker_green_toggle
+                      : Colors.hud,
+                    borderColor: isJoiningGameRoom
+                      ? Colors.green_toggle
+                      : Colors.hud,
                     opacity:
-                      (!isJoiningGameRoom && !gameRoomID && !gameValue) ||
+                      (!isJoiningGameRoom && !playerGameRoomID && !gameValue) ||
                       loading ||
                       isValid === false ||
                       showGameRoomJoined ||
@@ -507,7 +513,16 @@ export default function SetupGameRoom({
                 ]}
                 onPress={handleUpdateGameRoom}
               >
-                <Text style={[styles.gameRoomID, { color: Colors.hudDarker }]}>
+                <Text
+                  style={[
+                    styles.playerGameRoomID,
+                    {
+                      color: isJoiningGameRoom
+                        ? Colors.green_toggle
+                        : Colors.hudDarker,
+                    },
+                  ]}
+                >
                   {loading ? (
                     <ActivityIndicator size="small" />
                   ) : isJoiningGameRoom ? (
@@ -521,7 +536,12 @@ export default function SetupGameRoom({
                 disabled={loading}
                 style={[
                   styles.gameRoomButton,
-                  { backgroundColor: Colors.dark_gray },
+                  {
+                    backgroundColor: Colors.dark_gray,
+                    borderColor: isJoiningGameRoom
+                      ? Colors.green_toggle
+                      : Colors.hud,
+                  },
                 ]}
                 onPress={() => {
                   setLoading(false);
@@ -535,7 +555,16 @@ export default function SetupGameRoom({
                   setShowGameRoomCreated(false);
                 }}
               >
-                <Text style={styles.gameRoomID}>
+                <Text
+                  style={[
+                    styles.playerGameRoomID,
+                    {
+                      color: isJoiningGameRoom
+                        ? Colors.green_toggle
+                        : Colors.hud,
+                    },
+                  ]}
+                >
                   {loading ? <ActivityIndicator size="small" /> : "Close"}
                 </Text>
               </TouchableOpacity>
@@ -580,7 +609,7 @@ export default function SetupGameRoom({
                         numberOfLines={1}
                         ellipsizeMode="middle"
                       >
-                        {gameRoomID}
+                        {playerGameRoomID}
                       </Text>
                     </View>
                   </TouchableOpacity>
@@ -623,7 +652,7 @@ const styles = StyleSheet.create({
     fontFamily: "LeagueSpartan-Bold",
     padding: 5,
   },
-  gameRoomID: {
+  playerGameRoomID: {
     color: Colors.hud,
     fontSize: 14,
     textAlign: "center",

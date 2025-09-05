@@ -9,10 +9,10 @@ import { GameFactions } from "@/constants/GameFactions";
 import FactionAvatars from "@/constants/FactionAvatars";
 import useMyTurn from "../Functions/useMyTurn";
 
-const DropdownComponentFactions = ({ gameRoomID }) => {
+const DropdownComponentFactions = ({ playerGameRoomID }) => {
   const { faction, setFaction, data } = useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
-  const { state: gameState } = useMyTurn(gameRoomID);
+  const { state: gameState } = useMyTurn(playerGameRoomID);
 
   const renderLabel = () => {
     if (isFocus) {

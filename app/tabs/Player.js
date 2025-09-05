@@ -31,14 +31,14 @@ import { factionIcons } from "../../constants/shipIcons";
 import ViewShot from "react-native-view-shot";
 import Share from "react-native-share";
 import DropdownComponentSectors from "../../components/dropdown/DropdownComponentSectors";
-import { ActivityIndicator } from "react-native";
 import EndRoundModal from "../../components/Modals/EndRoundModal/EndRoundModal";
 import EndTurnModal from "../../components/Modals/EndTurnModal/EndTurnModal";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { startGame, stopGame } from "../../components/Functions/StartGame";
 import useAllUsersAndDataFromGameRoom from "../../components/Functions/useAllUsersAndDataFromGameRoom";
-import { useNavigation } from "expo-router";
+import DeleteWarning from "../../components/DeleteWarning/DeleteWarning";
 import NewUser from "../../components/NewUser/NewUser";
+import fetchUser from "../../components/FetchUser/FetchUser";
 import {
   collection,
   query,
@@ -72,7 +72,8 @@ export default function Player() {
   const [isShowRules, setIsShowRules] = useState(false);
   const [isEndingRound, setIsEndingRound] = useState(false);
   const [isEndingTurn, setIsEndingTurn] = useState(false);
-  const [playerGameRoomID, setPlayerGameRoomID] = useState("");
+  // const [playerGameRoomID, setPlayerGameRoomID] = useState("");
+  const [playerData, setPlayerData] = useState(null);
   const {
     username,
     setUsername,
@@ -89,20 +90,19 @@ export default function Player() {
     setUserFactionColor,
     myShips,
     setMyShips,
-    gameRoomID,
-    setGameRoomID,
+    playerGameRoomID,
+    setPlayerGameRoomID,
     adminStatus,
     setAdminStatus,
   } = useStarBoundContext();
   const uid = user?.uid ?? null;
 
-  const { myTurn, state: gameState, loading } = useMyTurn(gameRoomID);
+  const { myTurn, state: gameState, loading } = useMyTurn(playerGameRoomID);
+
   const { playersInGameRoom, getAllUsersShipToggled } =
-    useAllUsersAndDataFromGameRoom(gameRoomID);
+    useAllUsersAndDataFromGameRoom(playerGameRoomID);
 
   const gameStarted = gameState?.started;
-
-  //console.log(getAllUsersShipToggled.length, playersInGameRoom.length);
 
   const hasShownEndRoundModal = useRef(false);
   const isPlayerTurn = myTurn;
@@ -135,7 +135,7 @@ export default function Player() {
 
   const copyToClipboard = () => {
     try {
-      Clipboard.setString(gameRoomID);
+      Clipboard.setString(playerGameRoomID);
       Toast.show({
         type: "success",
         text1: "StarBound Conquest",
@@ -173,20 +173,30 @@ export default function Player() {
     return all.filter((s) => s?.user === uid);
   }, [getAllUsersShipToggled, uid]);
 
-  // optional: shallow equality on IDs to avoid re-renders
+  /*   // optional: shallow equality on IDs to avoid re-renders
   const sameIds = (a, b) => {
     if (a.length !== b.length) return false;
     const bIds = new Set(b.map((x) => x.shipId ?? x.id));
     return a.every((x) => bIds.has(x.shipId ?? x.id));
-  };
+  }; */
 
   useEffect(() => {
     setMyShips(myShipsToSave);
   }, [myShipsToSave, setMyShips]);
 
   useEffect(() => {
+    const loadUserData = async () => {
+      if (!uid) return;
+      const userData = await fetchUser(uid);
+      setPlayerData(userData);
+      //console.log("User Data:", userData);
+    };
+    loadUserData();
+  }, [uid]);
+
+  /*   useEffect(() => {
     setGameRoomID(playerGameRoomID);
-  }, [playerGameRoomID]);
+  }, [playerGameRoomID]); */
 
   //get the number of ships that are toggled or pending destruction
   const myToggledOrDestroyingShips =
@@ -207,12 +217,13 @@ export default function Player() {
   const onCancelWarning = () => {
     setIsShowWarning(false);
     setToggleToDelete(false);
+    //console.log("Toggled:", toggleToDelete);
   };
 
   const onConfirmWarning = () => {
     setIsShowWarning(false);
     setToggleToDelete(true);
-    // console.log("Toggled:", toggleToDelete);
+    //console.log("Toggled:", toggleToDelete);
   };
 
   const valueWarning = () => {
@@ -227,7 +238,7 @@ export default function Player() {
 
   const addingShipToFleet = (item) => {
     if (!uid) return false;
-    if (!gameRoomID) {
+    if (!playerGameRoomID) {
       Toast.show({
         type: "info",
         text1: "Starbound Conquest",
@@ -310,7 +321,7 @@ export default function Player() {
           isSelected: false,
           isToggled: false,
           hasBeenInteractedWith: false,
-          gameRoomID: gameRoomID,
+          playerGameRoomID: playerGameRoomID,
           factionColor: userFactionColor,
           hit: false,
           miss: false,
@@ -338,7 +349,7 @@ export default function Player() {
     } catch (e) {
       console.error("Error adding document: ", e);
     } finally {
-      getFleetData({ data, setData, gameRoomID, gameSectors });
+      getFleetData({ data, setData, gameSectors, playerGameRoomID });
       setIsLoading(false);
     }
   };
@@ -358,13 +369,12 @@ export default function Player() {
         setUsername(data.displayName || "");
         setProfile(data.photoURL || "");
         setFaction(data.factionName || "");
-        setPlayerGameRoomID(data.gameRoomID || "");
+        setPlayerGameRoomID(data.playerGameRoomID || "");
         setUserFactionColor(data.userFactionColor || "");
-        setGameValue(data.gameValue || "");
         setAdminStatus(data.gameRoomAdmin || "");
       }
     });
-    // console.log("Game Room ID in Player:", gameRoomID);
+    // console.log("Game Room ID in Player:", playerGameRoomID);
     return () => unsubscribe();
   }, [user?.uid, FIREBASE_AUTH.currentUser]);
 
@@ -427,13 +437,13 @@ export default function Player() {
     const params = {
       username: "Starbound Conquest",
       avatar_url: "",
-      content: `The Round has ended in ${gameRoomID}. Resetting your ships.`,
+      content: `The Round has ended in ${playerGameRoomID}. Resetting your ships.`,
     };
     request.send(JSON.stringify(params)) */
   }
 
-  async function advanceTurn(gameRoomID, myUId) {
-    const ref = doc(FIREBASE_DB, "gameRooms", gameRoomID);
+  async function advanceTurn(playerGameRoomID, myUId) {
+    const ref = doc(FIREBASE_DB, "gameRooms", playerGameRoomID);
     let nextUidOut = null;
 
     await runTransaction(FIREBASE_DB, async (transaction) => {
@@ -470,7 +480,7 @@ export default function Player() {
     setIsEndingTurn(true);
     try {
       // 1. Get players
-      if (!user || !gameRoomID) throw new Error("Missing user or room");
+      if (!user || !playerGameRoomID) throw new Error("Missing user or room");
 
       //3. Update ship isToggled for non-toggled ships
       const shipsRef = collection(FIREBASE_DB, "users", uid, "ships");
@@ -493,14 +503,14 @@ export default function Player() {
 
       await batch.commit();
 
-      const nextUid = await advanceTurn(gameRoomID, uid);
+      const nextUid = await advanceTurn(playerGameRoomID, uid);
       const nextName = nextUid.username || "Next Player";
 
       /*     // 4. THEN send Discord message
       const discordMessage = {
         username: "Starbound Conquest",
         avatar_url: "",
-        content: `${username} has ended their turn in ${gameRoomID}. ${nextPlayer.displayName} is up next!`,
+        content: `${username} has ended their turn in ${playerGameRoomID}. ${nextPlayer.displayName} is up next!`,
       };
       await fetch(
         "https://discord.com/api/webhooks/1400193598691217428/wIGjO6m0CUTV1rEanECgljpMRyWbrkLoP0nUtdqDerJOvHzYeOCjgOKx25ImJU8vFoi1",
@@ -532,7 +542,7 @@ export default function Player() {
 
   //reset the round for the current user IF there are no ships in the fleet from ANYONE
   const resetRoundForCurretUser = async () => {
-    if (!user || !gameRoomID) return;
+    if (!user || !playerGameRoomID) return;
     //console.log(hasNoShips, getAllUsersShipToggled.length);
 
     if (!hasNoShips || getAllUsersShipToggled.length > 0) {
@@ -566,11 +576,11 @@ export default function Player() {
 
   //users in a game room, increment the round
   /*  const updateRoundForAllUsers = async () => {
-    if (!user || !gameRoomID) return;
+    if (!user || !playerGameRoomID) return;
     const usersCollection = collection(FIREBASE_DB, "users");
     const myQuery = query(
       usersCollection,
-      where("gameRoomID", "==", gameRoomID)
+      where("playerGameRoomID", "==", playerGameRoomID)
     );
     const querySnapshot = await getDocs(myQuery);
     const updatePromises = querySnapshot.docs.map((doc) => {
@@ -583,10 +593,13 @@ export default function Player() {
 
   //clean up ships with isPendingDestruction
   const cleanUpPendingDestruction = async () => {
-    if (!gameRoomID) return;
+    if (!playerGameRoomID) return;
 
     const usersRef = collection(FIREBASE_DB, "users");
-    const userQuery = query(usersRef, where("gameRoomID", "==", gameRoomID));
+    const userQuery = query(
+      usersRef,
+      where("playerGameRoomID", "==", playerGameRoomID)
+    );
     const userSnapshots = await getDocs(userQuery);
 
     const batch = writeBatch(FIREBASE_DB);
@@ -623,7 +636,7 @@ export default function Player() {
   useEffect(() => {
     const auth = FIREBASE_AUTH;
     if (!auth.currentUser) return;
-    if (!user || !gameRoomID) return;
+    if (!user || !playerGameRoomID) return;
     const docRef = doc(FIREBASE_DB, "users", uid); // or "gameRooms", depending on your structure
 
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
@@ -633,7 +646,7 @@ export default function Player() {
     });
 
     return () => unsubscribe();
-  }, [gameRoomID, user?.uid, FIREBASE_AUTH.currentUser]);
+  }, [playerGameRoomID, user?.uid, FIREBASE_AUTH.currentUser]);
 
   /*   useEffect(() => {
     const count = getAllUsersShipToggled.filter((s) => s.isToggled).length;
@@ -643,11 +656,11 @@ export default function Player() {
   useEffect(() => {
     const auth = FIREBASE_AUTH;
     if (!auth.currentUser) return;
-    if (!gameRoomID) return;
+    if (!playerGameRoomID) return;
 
     const ref = query(
       collection(FIREBASE_DB, "users", uid, "ships"),
-      where("gameRoomID", "==", gameRoomID)
+      where("playerGameRoomID", "==", playerGameRoomID)
     );
 
     const unsubscribe = onSnapshot(ref, (snap) => {
@@ -656,10 +669,10 @@ export default function Player() {
     });
 
     return () => unsubscribe();
-  }, [FIREBASE_AUTH.currentUser, gameRoomID]);
+  }, [FIREBASE_AUTH.currentUser, playerGameRoomID]);
 
-  async function resetToFirstPerson(gameRoomID) {
-    const roomRef = doc(FIREBASE_DB, "gameRooms", gameRoomID);
+  async function resetToFirstPerson(playerGameRoomID) {
+    const roomRef = doc(FIREBASE_DB, "gameRooms", playerGameRoomID);
     await runTransaction(FIREBASE_DB, async (transaction) => {
       const snap = await transaction.get(roomRef);
       if (!snap.exists()) throw new Error("No such document!");
@@ -678,7 +691,7 @@ export default function Player() {
   }
 
   const endRound = async () => {
-    if (!user || !gameRoomID) return;
+    if (!user || !playerGameRoomID) return;
     setShowEndOfRound(true);
 
     try {
@@ -780,7 +793,7 @@ export default function Player() {
       const usersRef = collection(FIREBASE_DB, "users");
       const opponentsQuery = query(
         usersRef,
-        where("gameRoomID", "==", gameRoomID),
+        where("playerGameRoomID", "==", playerGameRoomID),
         where("email", "!=", user.email)
       );
       const opponentSnapshots = await getDocs(opponentsQuery);
@@ -890,13 +903,13 @@ export default function Player() {
 
       // ✅ Then, update round for all users
       //await updateRoundForAllUsers();
-      await resetToFirstPerson(gameRoomID);
+      await resetToFirstPerson(playerGameRoomID);
 
       //setGetAllUsersShipToggled([]);
       //setGetAllUsersShipTotals(0);
 
       // 🔄 Refresh local fleet state
-      getFleetData({ data, setData, gameRoomID, gameSectors });
+      getFleetData({ data, setData, gameSectors, playerGameRoomID });
       setShowEndOfRound(false);
     } catch (e) {
       console.error("Error in endYourTurn:", e);
@@ -951,70 +964,22 @@ export default function Player() {
   const getLoadingMessage = () => {
     if (showEndOfRound) return "Round has ended. Resetting your ships...";
     if (isLoading) return "Adding ships to your Fleet...";
+    if (loading) return "Loading...";
     return null;
   };
 
   const loadingMessage = getLoadingMessage();
 
-  if (loadingMessage) {
+  if (isLoading || loading || showEndOfRound) {
     return <LoadingComponent whatToSay={loadingMessage} />;
   }
 
   if (isShowWarning) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text style={[styles.valueWarning, { fontSize: 20, padding: 10 }]}>
-          Warning: You are now in a delete mode, any ship you tap on WILL be
-          deleted. To return to normal mode, tap on the X button.
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-around",
-            gap: 40,
-          }}
-        >
-          <TouchableOpacity style={styles.button} onPress={onCancelWarning}>
-            <Image
-              source={require("../../assets/icons/icons8-x-48.png")}
-              style={{
-                width: 25,
-                height: 25,
-                marginTop: 5,
-                tintColor: Colors.lighter_red,
-              }}
-            />
-            <Image
-              style={{
-                width: 60,
-                height: 60,
-                position: "absolute",
-              }}
-              source={require("../../assets/images/edithud.png")}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={onConfirmWarning}>
-            <Image
-              source={require("../../assets/icons/icons8-check-50.png")}
-              style={{
-                width: 25,
-                height: 25,
-                marginTop: 5,
-                tintColor: Colors.green_toggle,
-              }}
-            />
-            <Image
-              style={{
-                width: 60,
-                height: 60,
-                position: "absolute",
-              }}
-              source={require("../../assets/images/edithud.png")}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
+      <DeleteWarning
+        onConfirmWarning={onConfirmWarning}
+        onCancelWarning={onCancelWarning}
+      />
     );
   }
   return (
@@ -1069,10 +1034,13 @@ export default function Player() {
                     // disabled={playersInGameRoom.length <= 1}
                     onLongPress={async () => {
                       if (gameState?.started) {
-                        await stopGame(gameRoomID, getAllUsersShipToggled);
+                        await stopGame(
+                          playerGameRoomID,
+                          getAllUsersShipToggled
+                        );
                       } else {
                         await startGame(
-                          gameRoomID,
+                          playerGameRoomID,
                           playersInGameRoom,
                           getAllUsersShipToggled
                         );
@@ -1124,7 +1092,7 @@ export default function Player() {
                     gap: 20,
                   }}
                 >
-                  {gameRoomID && isShowPlayers ? (
+                  {playerGameRoomID && isShowPlayers ? (
                     <Text
                       style={{
                         color: Colors.hud,
@@ -1157,7 +1125,7 @@ export default function Player() {
                             marginBottom: 5,
                           }}
                         >
-                          {gameRoomID
+                          {playerGameRoomID
                             ? "All Players:"
                             : "No Game Room Selected"}
                         </Text>
@@ -1215,15 +1183,26 @@ export default function Player() {
                 </View>
               </TouchableOpacity>
               {gameState?.started ? (
-                gameRoomID && !isPlayerTurn ? (
+                playerGameRoomID && !isPlayerTurn ? (
                   <Text style={{ textAlign: "center", color: Colors.hud }}>
                     Waiting for your turn...
                   </Text>
                 ) : null
               ) : (
-                <Text style={{ textAlign: "center", color: Colors.hud }}>
-                  Waiting for game to start...
-                </Text>
+                !gameStarted && (
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: Colors.green_toggle,
+                      padding: 7,
+                      fontFamily: "LeagueSpartan-Light",
+                    }}
+                  >
+                    The game has not started yet. You can build your fleet now
+                    or do it on your turn. Just remember you max ship limit is{" "}
+                    {gameState?.gameValue} points.
+                  </Text>
+                )
               )}
 
               <ViewShot
@@ -1241,11 +1220,9 @@ export default function Player() {
                     {
                       borderColor: toggleToDelete
                         ? Colors.lighter_red
-                        : userFactionColor || Colors.hud,
+                        : Colors.hud,
                       boxShadow: `0px 0px 10px ${
-                        toggleToDelete
-                          ? Colors.lighter_red
-                          : userFactionColor || Colors.hud
+                        toggleToDelete ? Colors.lighter_red : Colors.hud
                       }`,
                     },
                   ]}
@@ -1314,7 +1291,7 @@ export default function Player() {
                       justifyContent: "center",
                     }}
                   >
-                    {gameRoomID ? (
+                    {playerGameRoomID ? (
                       <TouchableOpacity
                         onPress={copyToClipboard}
                         style={[
@@ -1374,7 +1351,7 @@ export default function Player() {
                               },
                             ]}
                           >
-                            {gameRoomID || "Not Connected"}
+                            {playerGameRoomID || "Not Connected"}
                           </Text>
                         </View>
                       </TouchableOpacity>
@@ -1451,7 +1428,7 @@ export default function Player() {
                       Total Fleet Value: {totalFleetValue || 0}/
                       {gameState?.gameValue || 0}
                     </Text>
-                    {gameRoomID && (
+                    {playerGameRoomID && (
                       <TouchableOpacity
                         disabled={!isPlayerTurn && gameState?.started}
                         onLongPress={resetRoundForCurretUser}
@@ -1583,7 +1560,7 @@ export default function Player() {
                               !isPlayerTurn ||
                               hasNoShips ||
                               shouldEndRound ||
-                              !gameRoomID ||
+                              !playerGameRoomID ||
                               !gameState?.started
                                 ? 0.5
                                 : 1,
@@ -1591,7 +1568,7 @@ export default function Player() {
                               !isPlayerTurn ||
                               hasNoShips ||
                               shouldEndRound ||
-                              !gameRoomID ||
+                              !playerGameRoomID ||
                               !gameState?.started
                                 ? Colors.hudDarker
                                 : Colors.hud,
@@ -1602,7 +1579,7 @@ export default function Player() {
                           !isPlayerTurn ||
                           hasNoShips ||
                           shouldEndRound ||
-                          !gameRoomID ||
+                          !playerGameRoomID ||
                           !gameState?.started
                         }
                         onPress={async () => setShowEndTurnModal(true)}
@@ -1615,7 +1592,7 @@ export default function Player() {
                                 !isPlayerTurn ||
                                 hasNoShips ||
                                 shouldEndRound ||
-                                !gameRoomID ||
+                                !playerGameRoomID ||
                                 !gameState?.started
                                   ? Colors.hud
                                   : Colors.hudDarker,
@@ -1694,7 +1671,7 @@ export default function Player() {
                       {shipInSector.length > 0 ? shipInSector.length : "0"} */}
                     </Text>
                   </View>
-                  {!toggleToDelete && gameRoomID && (
+                  {!toggleToDelete && playerGameRoomID && (
                     <DropdownComponentSectors getShips={getFleetData} />
                   )}
                 </View>
@@ -1959,12 +1936,6 @@ const styles = StyleSheet.create({
     color: Colors.lighter_red,
     fontFamily: "leagueBold",
     textAlign: "center",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: Colors.dark_gray,
   },
   button: {
     width: 35,

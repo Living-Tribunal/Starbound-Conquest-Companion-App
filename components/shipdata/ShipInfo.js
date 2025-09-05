@@ -47,14 +47,11 @@ export default function ShipInfo({
           style={[
             styles.shipInfo,
             {
-              color: selectedShip.bonuses.inFighterRangeBonus
-                ? Colors.green_toggle
-                : Colors.hud,
+              color: Colors.hud,
             },
           ]}
         >
-          HP: {selectedShip.hp + selectedShip.bonuses.inFighterRangeBonus || 0}{" "}
-          / {selectedShip.maxHP ?? 0}
+          HP: {selectedShip.hp || 0} / {selectedShip.maxHP ?? 0}
         </Text>
         <Text style={styles.shipInfo}>Type: {selectedShip.type}</Text>
         <Text style={styles.shipInfo}>

@@ -56,10 +56,10 @@ export default function ShipStats({ route }) {
     fromGameMap,
     setFromGameMap,
     myShips,
-    gameRoomID,
+    playerGameRoomID,
   } = useStarBoundContext();
   const ship = data.find((s) => s.id === shipId);
-  const { state: gameState } = useMyTurn(gameRoomID);
+  const { state: gameState } = useMyTurn(playerGameRoomID);
   const gameStarted = gameState?.started;
 
   const carrierId = ship?.id;
@@ -514,16 +514,13 @@ export default function ShipStats({ route }) {
                   <Text
                     style={{
                       textAlign: "center",
-                      color:
-                        ship.bonuses.inFighterRangeBonus > 0
-                          ? Colors.green_toggle
-                          : Colors.hud,
+                      color: Colors.hud,
                       fontFamily: "monospace",
                       fontSize: 12,
                       marginTop: 2,
                     }}
                   >
-                    {ship.hp + ship.bonuses.inFighterRangeBonus || 0}
+                    {ship.hp}
                   </Text>
                   <Text
                     style={{
@@ -616,14 +613,15 @@ export default function ShipStats({ route }) {
                 style={{
                   textAlign: "center",
                   color:
-                    /*  ship.bonuses.inFighterRangeBonus > 0
+                    ship.bonuses.inFighterRangeBonus > 0
                       ? Colors.green_toggle
-                      : */ Colors.white,
+                      : Colors.hud,
                   fontFamily: "monospace",
-                  fontSize: 9,
+                  fontSize: 12,
+                  marginTop: 2,
                 }}
               >
-                {ship.damageThreshold}
+                {ship.damageThreshold + ship.bonuses.inFighterRangeBonus || 0}
               </Text>
             </View>
           </View>

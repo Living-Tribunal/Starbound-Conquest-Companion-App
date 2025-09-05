@@ -2,21 +2,21 @@ import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_AUTH } from "@/FirebaseConfig";
 
 export const getAllShipsInGameRoom = async ({
-  gameRoomID,
+  playerGameRoomID,
   gameSectors,
   setData,
   setLoading,
 }) => {
   const user = FIREBASE_AUTH.currentUser;
   if (!user) return;
-  if (!gameRoomID) return;
+  if (!playerGameRoomID) return;
 
   if (setLoading) setLoading(true);
   const shipUnsubs = [];
 
   const usersQuery = query(
     collection(FIREBASE_DB, "users"),
-    where("gameRoomID", "==", gameRoomID)
+    where("playerGameRoomID", "==", playerGameRoomID)
   );
 
   // Store all ships per userId to rebuild a clean combined array

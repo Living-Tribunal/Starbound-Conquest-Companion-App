@@ -12,7 +12,6 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import { Colors } from "@/constants/Colors";
-import { useStarBoundContext } from "../../components/Global/StarBoundProvider";
 import ColorPicker, {
   Panel3,
   Swatches,
@@ -23,7 +22,6 @@ import ColorPicker, {
   ExtraThumb,
 } from "reanimated-color-picker";
 import type { ColorFormatsObject } from "reanimated-color-picker";
-import { runOnJS } from "react-native-reanimated";
 
 export default function Example({ userFactionColor, setUserFactionColor }) {
   const [showModal, setShowModal] = useState(false);

@@ -32,9 +32,9 @@ export default function ZoomControls({
   setResetingPosition,
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const { gameRoomID } = useStarBoundContext();
+  const { playerGameRoomID } = useStarBoundContext();
   const [isCancelling, setIsCancelling] = useState(false);
-  const { state: gameState, myTurn } = useMyTurn(gameRoomID);
+  const { state: gameState, myTurn } = useMyTurn(playerGameRoomID);
   const gameStarted = gameState?.started;
 
   useEffect(() => {
@@ -111,11 +111,15 @@ export default function ZoomControls({
     } catch (e) {
       console.error("Error resetting position:", e);
     }
+    console.log("Ship pressed:", shipPressed);
+    console.log("Original position:", originalShipPosition);
+    console.log("Targeted ship:", targetedShip);
 
     setOriginalShipPosition(null);
     setShipPressed(null);
     setMovementDistanceCircle(null);
     setTargetedShip(null);
+    console.log("Resetting ship pressed");
 
     Toast.show({
       type: "info",

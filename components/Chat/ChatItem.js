@@ -42,9 +42,7 @@ export default function ChatItem({ item, index, noBorder }) {
               style={[
                 styles.playerName,
                 {
-                  color: item.userFactionColor
-                    ? item.userFactionColor
-                    : Colors.hud,
+                  color: Colors.hud,
                 },
               ]}
             >

@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { FIREBASE_AUTH } from "@/FirebaseConfig";
-import { useStarBoundContext } from "../Global/StarBoundProvider";
 
 export default function ChatBubble({
   message,
@@ -55,7 +54,7 @@ export default function ChatBubble({
             style={[
               styles.userName,
               {
-                color: userFactionColor ? userFactionColor : Colors.hud,
+                color: currentUser ? Colors.hud : Colors.white,
                 textAlign: !currentUser ? "right" : "left",
               },
             ]}
@@ -72,6 +71,10 @@ export default function ChatBubble({
             padding: 10,
             maxWidth: "100%",
             alignItems: "center",
+            borderTopRightRadius: !currentUser ? 25 : 0,
+            borderTopLeftRadius: !currentUser ? 0 : 25,
+            borderWidth: 1,
+            borderColor: Colors.hudDarker,
           }}
         >
           <Text style={[styles.chatMessage, { textAlign: "left", padding: 5 }]}>

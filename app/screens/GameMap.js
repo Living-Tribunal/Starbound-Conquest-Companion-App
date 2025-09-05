@@ -51,7 +51,7 @@ export default function FleetMap() {
   const navigation = useNavigation();
   const user = FIREBASE_AUTH.currentUser;
   const { gameSectors, setGameSectors } = useMapImageContext();
-  const { data, setData, gameRoomID } = useStarBoundContext();
+  const { data, setData, playerGameRoomID } = useStarBoundContext();
   const [ships, setShips] = useState([]);
   const [shipPressed, setShipPressed] = useState(null);
   const [showFiringArcs, setShowFiringArcs] = useState(true);
@@ -72,7 +72,7 @@ export default function FleetMap() {
   const [tempDisableMovementRestriction, setTempDisableMovementRestriction] =
     useState(false);
 
-  const { state: gameState, myTurn } = useMyTurn(gameRoomID);
+  const { state: gameState, myTurn } = useMyTurn(playerGameRoomID);
 
   const gameStarted = gameState?.started;
 
@@ -96,7 +96,8 @@ export default function FleetMap() {
   const panY = useRef(new Animated.Value(0)).current;
   const shipAnim = useRef(new Animated.Value(0)).current;
   const filteredShips = ships.filter(
-    (s) => s.gameRoomID === gameRoomID && s.gameSector === gameSectors
+    (s) =>
+      s.playerGameRoomID === playerGameRoomID && s.gameSector === gameSectors
   );
 
   //console.log("scanning battle field in gamemap:", isScanBattleField);
@@ -191,7 +192,7 @@ export default function FleetMap() {
               s.id !== carrier.id &&
               s.type !== "Carrier" &&
               s.user === user.uid &&
-              s.gameRoomID === gameRoomID &&
+              s.playerGameRoomID === playerGameRoomID &&
               s.gameSector === gameSectors &&
               checkIfInFighterRange(s, radius, center)
           );
@@ -306,8 +307,6 @@ export default function FleetMap() {
         ...prev,
         { attackingShip, targetedShip },
       ]);
-      console.log("Doing Stuff in Maps");
-
       setShipPressed(null);
       setTargetedShip(null);
       setShowConfirmModal(false);
@@ -323,6 +322,8 @@ export default function FleetMap() {
   };
 
   const updatingPosition = async (shipId, x, y, rotation, distanceTraveled) => {
+    /*   setShipPressed(null);
+    setTargetedShip(null); */
     if (!ships || !user) return;
     setUpdateMovement(true);
     try {
@@ -443,8 +444,11 @@ export default function FleetMap() {
 
           if (carrier.numberOfShipsProtecting > 0) {
             s.bonuses.inFighterRangeBonus = Math.floor(
-              carrier.currentCapacity / carrier.numberOfShipsProtecting
+              Math.sqrt(
+                carrier.currentCapacity / carrier.numberOfShipsProtecting
+              )
             );
+            console.log("Bonus:", s.bonuses.inFighterRangeBonus);
           } else {
             s.bonuses.inFighterRangeBonus = 0;
           }
@@ -493,7 +497,6 @@ export default function FleetMap() {
         numberOfShipsProtecting: s.numberOfShipsProtecting || 0,
       });
     });
-
     try {
       await batch.commit();
       //console.log("✅ updateFighterProtection batch committed");
@@ -510,7 +513,7 @@ export default function FleetMap() {
       setPendingBattle(null);
       setShowConfirmModal(false);
 
-      if (!user || !gameRoomID || !gameSectors) return;
+      if (!user || !playerGameRoomID || !gameSectors) return;
       setShips([]); // Clear animated ships
       setData([]);
       setLoading(true);
@@ -519,7 +522,7 @@ export default function FleetMap() {
         try {
           const q = query(
             collection(FIREBASE_DB, "users", user.uid, "ships"),
-            where("gameRoomID", "==", gameRoomID),
+            where("playerGameRoomID", "==", playerGameRoomID),
             where("gameSector", "==", gameSectors)
           );
 
@@ -537,7 +540,7 @@ export default function FleetMap() {
 
       fetchUserShips();
       setLoading(false);
-    }, [user?.uid, gameRoomID, gameSectors])
+    }, [user?.uid, playerGameRoomID, gameSectors])
   ); */
 
   useFocusEffect(
@@ -559,7 +562,7 @@ export default function FleetMap() {
         });
 
         // Validate inputs
-        if (!user?.uid || !gameRoomID || !gameSectors) {
+        if (!user?.uid || !playerGameRoomID || !gameSectors) {
           setLoading(false);
           return;
         }
@@ -568,7 +571,7 @@ export default function FleetMap() {
           // Step 1: Fetch user's own ships
           const userQuery = query(
             collection(FIREBASE_DB, "users", user.uid, "ships"),
-            where("gameRoomID", "==", gameRoomID),
+            where("playerGameRoomID", "==", playerGameRoomID),
             where("gameSector", "==", gameSectors)
           );
           const userSnapshot = await getDocs(userQuery);
@@ -588,7 +591,7 @@ export default function FleetMap() {
             setData,
             setLoading,
             gameSectors,
-            gameRoomID,
+            playerGameRoomID,
           });
         } catch (e) {
           console.error("❌ Error loading fleet data:", e);
@@ -602,7 +605,7 @@ export default function FleetMap() {
       return () => {
         isMounted = false;
       };
-    }, [user?.uid, gameRoomID, gameSectors])
+    }, [user?.uid, playerGameRoomID, gameSectors])
   );
 
   useEffect(() => {
@@ -613,6 +616,26 @@ export default function FleetMap() {
   }, []);
 
   const shipBeingTargeted = (ship) => {
+    //first check if the targeted ship is protected by a carrier
+    //if so show a toast and return
+    //if not continue as normal to battleground
+    if (
+      ship.protectedByCarrierID !== "Not being protected by a carrier" &&
+      shipPressed?.type === "Destroyer"
+    ) {
+      const carrier = ships.find((s) => s.id === ship.protectedByCarrierID);
+      console.log(
+        `${ship.id} is protected by a carrier: ${carrier.id}. Attacking it's fighters first.`
+      );
+      Toast.show({
+        type: "info",
+        text1: "Starbound Conquest",
+        text2: `${ship.shipId} is protected! Fighters will intercept damage first.`,
+        position: "top",
+      });
+      setTargetedShip(carrier);
+      return;
+    }
     if (
       shipHasMovedButNotConfirmed ||
       ship.isPendingDestruction === true ||
@@ -620,20 +643,28 @@ export default function FleetMap() {
       ship.user === user.uid
     )
       return;
-    setTargetedShip(ship);
-    console.log("Targeting ship:", ship.shipId);
+
+    setTargetedShip(ship.id);
   };
 
   const attackingShip = (ship) => {
+    if (shipHasMovedButNotConfirmed) {
+      Toast.show({
+        type: "info",
+        text1: "Starbound Conquest",
+        text2: "Confirm your current ship’s movement first.",
+        position: "top",
+      });
+      return;
+    }
     if (!gameStarted) return;
     if (ship.isToggled) return;
     if (ship.user !== user.uid) return;
     setShipPressed(ship.id);
-    /*    console.log("Attacking ship:", ship.shipId);
-    console.log("Pressed:"); */
   };
 
   useEffect(() => {
+    if (shipHasMovedButNotConfirmed) return;
     if (shipPressed && targetedShip) {
       const attackerShip = ships.find((s) => s.id === shipPressed);
       if (attackerShip.isToggled) return;
@@ -684,6 +715,7 @@ export default function FleetMap() {
   }, [shipPressed, targetedShip]);
 
   useEffect(() => {
+    if (shipHasMovedButNotConfirmed) return;
     if (!Array.isArray(data)) return;
 
     setShips((prevShips) => {
@@ -722,9 +754,8 @@ export default function FleetMap() {
             x: incomingShip.x ?? 100,
             y: incomingShip.y ?? 100,
           });
-          pos.setOffset({ x: 0, y: 0 });
-          pos.setValue({ x: incomingShip.x ?? 100, y: incomingShip.y ?? 100 });
           const rotation = new Animated.Value(incomingShip.rotation_angle ?? 0);
+
           newShipsMap.set(incomingShip.id, {
             ...incomingShip,
             position: pos,
@@ -867,6 +898,7 @@ export default function FleetMap() {
             onStartShouldSetPanResponder: () => true,
 
             onPanResponderGrant: () => {
+              // if (shipHasMovedButNotConfirmed) return;
               if (isUserShip) {
                 //first set the original position and prevent if its NOT the original position
                 if (selectedShip && !originalShipPosition) {
@@ -882,7 +914,16 @@ export default function FleetMap() {
 
                 ship.position.extractOffset();
                 if (shipPressed !== ship.id) {
-                  // Store current position
+                  if (shipHasMovedButNotConfirmed) {
+                    Toast.show({
+                      type: "info",
+                      text1: "Starbound Conquest",
+                      text2:
+                        "You must confirm your movement before selecting another ship.",
+                      position: "top",
+                    });
+                    return;
+                  }
                   setShipPressed(ship.id);
                   attackingShip(ship);
                   setMovementDistanceCircle(null);
@@ -915,7 +956,7 @@ export default function FleetMap() {
                       (s) =>
                         s.id !== ship.id &&
                         s.type !== "Carrier" &&
-                        s.gameRoomID === gameRoomID &&
+                        s.playerGameRoomID === playerGameRoomID &&
                         s.gameSector === gameSectors &&
                         checkIfInFighterRange(s, radius, center)
                     );
@@ -939,6 +980,7 @@ export default function FleetMap() {
             // Inside your PanResponder.create's onPanResponderMove function:
 
             onPanResponderMove: (e, gestureState) => {
+              // if (shipHasMovedButNotConfirmed) return;
               if (!isPlayerTurn && gameStarted) return;
               const actionsTaken = getShipsActionsTakenCount(ship);
 
@@ -1017,6 +1059,7 @@ export default function FleetMap() {
             },
             // In onPanResponderRelease, after ship.position.flattenOffset() and updatingPosition:
             onPanResponderRelease: async () => {
+              if (shipHasMovedButNotConfirmed) return;
               if (!isUserShip) return;
               if (ship.shipActions?.move === true) return;
               if (ship.hasRolledDToHit === true) return;
@@ -1034,6 +1077,10 @@ export default function FleetMap() {
                 setFighterRangeLength,
                 setShipInFighterRange
               );
+              {
+                /* setShipPressed(null);
+              setTargetedShip(null); */
+              }
             },
           });
 

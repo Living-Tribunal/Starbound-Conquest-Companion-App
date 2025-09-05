@@ -30,9 +30,9 @@ export default function BackIconArcs({
     Carrier: "Ca",
     Dreadnought: "Dr",
   };
-  const { gameRoomID } = useStarBoundContext();
+  const { playerGameRoomID } = useStarBoundContext();
 
-  const { state: gameState } = useMyTurn(gameRoomID);
+  const { state: gameState } = useMyTurn(playerGameRoomID);
   const gameStarted = gameState?.started;
 
   const playerShips = ships.filter((s) => s.user === user.uid);

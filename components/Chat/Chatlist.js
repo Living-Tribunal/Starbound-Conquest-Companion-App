@@ -10,7 +10,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Colors } from "@/constants/Colors";
 import ChatItem from "./ChatItem";
 
-export default function Chatlist({ messages, gameRoomID, users, gameState }) {
+export default function Chatlist({ users }) {
   const testData = [
     {
       displayName: "Cody",

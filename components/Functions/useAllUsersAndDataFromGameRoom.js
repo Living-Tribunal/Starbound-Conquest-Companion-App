@@ -3,14 +3,14 @@ import { FIREBASE_DB, FIREBASE_AUTH } from "@/FirebaseConfig";
 import { useEffect, useState } from "react";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
-export default function useAllUsersAndDataFromGameRoom(gameRoomID) {
+export default function useAllUsersAndDataFromGameRoom(playerGameRoomID) {
   const [playersInGameRoom, setPlayersInGameRoom] = useState([]);
   const [getAllUsersShipToggled, setGetAllUsersShipToggled] = useState([]);
   const user = FIREBASE_AUTH.currentUser;
 
   useEffect(() => {
     if (!user) return;
-    if (!gameRoomID) return;
+    if (!playerGameRoomID) return;
 
     const userShipUnsubs = [];
     const allShipMap = {};
@@ -29,7 +29,7 @@ export default function useAllUsersAndDataFromGameRoom(gameRoomID) {
       userSnapshot.docs.forEach((userDoc) => {
         const uid = userDoc.id;
         const userData = userDoc.data();
-        if (userData.gameRoomID === gameRoomID) {
+        if (userData.playerGameRoomID === playerGameRoomID) {
           activePlayers.push({
             uid,
             displayName: userData.displayName,
@@ -41,7 +41,7 @@ export default function useAllUsersAndDataFromGameRoom(gameRoomID) {
         const shipsRef = collection(FIREBASE_DB, "users", uid, "ships");
         const shipsQuery = query(
           shipsRef,
-          where("gameRoomID", "==", gameRoomID)
+          where("playerGameRoomID", "==", playerGameRoomID)
         );
 
         const unsub = onSnapshot(shipsQuery, (shipsSnap) => {
@@ -62,6 +62,6 @@ export default function useAllUsersAndDataFromGameRoom(gameRoomID) {
       unsubscribeUsers();
       userShipUnsubs.forEach((unsub) => unsub());
     };
-  }, [gameRoomID]);
-  return { gameRoomID, playersInGameRoom, getAllUsersShipToggled };
+  }, [playerGameRoomID]);
+  return { playerGameRoomID, playersInGameRoom, getAllUsersShipToggled };
 }

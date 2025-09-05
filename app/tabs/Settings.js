@@ -39,9 +39,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import ColorPickerComponent from "../../components/ColorPicker/ColorPicker";
 import SetupGameRoom from "../../app/screens/SetupGameRoom";
 import useMyTurn from "../../components/Functions/useMyTurn";
+import fetchUser from "@/components/FetchUser/FetchUser";
 
 export default function Settings() {
   const user = FIREBASE_AUTH.currentUser;
+  const uid = user?.uid ?? null;
   const navigation = useNavigation();
   GoogleSignin.configure({
     webClientId:
@@ -61,15 +63,15 @@ export default function Settings() {
     data,
     userFactionColor,
     setUserFactionColor,
-    gameRoomID,
-    setGameRoomID,
+    playerGameRoomID,
+    setPlayerGameRoomID,
   } = useStarBoundContext();
   const [isFocus, setIsFocus] = useState(false);
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [showGameRoomModal, setShowGameRoomModal] = useState(false);
   const [isJoiningGameRoom, setIsJoiningGameRoom] = useState(false);
   const [gameRoomUserID, setGameRoomUserID] = useState("");
-  const { state: gameState } = useMyTurn(gameRoomID);
+  const { state: gameState } = useMyTurn(playerGameRoomID);
 
   const gameHasStarted = () => {
     if (gameState?.started) {
@@ -119,6 +121,16 @@ export default function Settings() {
     } */
   };
 
+  useEffect(() => {
+    const loadUserData = async () => {
+      if (!uid) return;
+      const userData = await fetchUser(uid);
+      setPlayerData(userData);
+      console.log("User Data:", userData);
+    };
+    loadUserData();
+  }, [uid]);
+
   //getting the logged in user data
   useFocusEffect(
     useCallback(() => {
@@ -135,12 +147,12 @@ export default function Settings() {
             setProfile(data.photoURL || "");
             setFaction(data.factionName || "");
             setUserFactionColor(data.userFactionColor || "");
-            setGameRoomUserID(data.gameRoomID || "");
+            setGameRoomUserID(data.playerGameRoomID || "");
             /* console.log(
               "User in GameRoomID Settings:",
               JSON.stringify(gameRoomUserID, null, 2)
             ); */
-            //console.log("User in game roomm id in Settings:", gameRoomID);
+            //console.log("User in game roomm id in Settings:", playerGameRoomID);
           }
         } catch (error) {
           console.error("Failed to retrieve user data:", error);
@@ -153,7 +165,7 @@ export default function Settings() {
     }, [])
   );
 
-  async function updateGameRoomId(gameRoomID) {
+  async function updateGameRoomId(playerGameRoomID) {
     const uid = FIREBASE_AUTH.currentUser?.uid;
     if (!uid) return;
 
@@ -163,17 +175,17 @@ export default function Settings() {
     try {
       const userRef = doc(FIREBASE_DB, "users", FIREBASE_AUTH.currentUser.uid);
       await updateDoc(userRef, {
-        gameRoomID: gameRoomID,
+        playerGameRoomID: playerGameRoomID,
         gameRoomAdmin: !isJoiningGameRoom,
       });
 
-      const gameRoomRef = doc(FIREBASE_DB, "gameRooms", gameRoomID);
+      const gameRoomRef = doc(FIREBASE_DB, "gameRooms", playerGameRoomID);
       const chatRoomRef = doc(
         FIREBASE_DB,
         "gameRooms",
-        gameRoomID,
+        playerGameRoomID,
         "publicChat",
-        gameRoomID
+        playerGameRoomID
       );
       //console.log("Game Room Ref:", gameRoomRef);
       const snap = await getDoc(gameRoomRef);
@@ -200,12 +212,12 @@ export default function Settings() {
           turnOrder: arrayUnion({ uid, username, profile, userFactionColor }),
         });
       }
-      console.log("Game Room Created:", gameRoomID);
+      console.log("Game Room Created:", playerGameRoomID);
     } catch (e) {
       console.error("Error updating game room ID:", e);
     }
   }
-  const updateUserProfile = async (gameRoomID) => {
+  const updateUserProfile = async (playerGameRoomID) => {
     if (!user) return;
     console.log("Photo URL:", userProfilePicture);
     setUpdatingProfile(true);
@@ -226,7 +238,7 @@ export default function Settings() {
         "users",
         FIREBASE_AUTH.currentUser.uid
       );
-      //console.log("Game Room ID Being Saved:", gameRoomID);
+      //console.log("Game Room ID Being Saved:", playerGameRoomID);
       await updateDoc(userDocRef, {
         displayName: username ?? "",
         photoURL: finalPhotourl ?? "",
@@ -331,7 +343,7 @@ export default function Settings() {
 
   //instead of just opening the modal, prompt the user to change the game room id
   const handleOpenGameRoom = () => {
-    if (gameRoomID) {
+    if (playerGameRoomID) {
       Alert.alert(
         "Game Room Exists",
         "You already have a Game Room. Do you want to modify it?",
@@ -419,17 +431,19 @@ export default function Settings() {
                   >
                     <Text
                       style={[
-                        styles.gameRoomID,
-                        { fontSize: gameRoomID ? 10 : 15 },
+                        styles.playerGameRoomID,
+                        { fontSize: playerGameRoomID ? 10 : 15 },
                       ]}
                     >
-                      {gameRoomID
-                        ? "Game Room ID: " + gameRoomID
+                      {playerGameRoomID
+                        ? "Game Room ID: " + playerGameRoomID
                         : "Tap to create/join a game room"}
                     </Text>
                   </TouchableOpacity>
                 </View>
-                <DropdownComponentFactions gameRoomID={gameRoomID} />
+                <DropdownComponentFactions
+                  playerGameRoomID={playerGameRoomID}
+                />
 
                 {/* <DropdownComponentCampaigns /> */}
                 <View
@@ -727,7 +741,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "LeagueSpartan-Bold",
   },
-  gameRoomID: {
+  playerGameRoomID: {
     color: Colors.hudDarker,
     fontSize: 10,
     textAlign: "center",
